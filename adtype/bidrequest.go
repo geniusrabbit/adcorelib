@@ -56,7 +56,6 @@ type BidRequest struct {
 	Adblock         int                    `json:"adb,omitempty"`
 	PrivateBrowsing int                    `json:"pb,omitempty"`
 	Ext             map[string]interface{} `json:"ext,omitempty"`
-	Context         context.Context        `json:"-"`
 	Timemark        time.Time              `json:"timemark,omitempty"`
 	Tracer          interface{}            `json:"-"`
 

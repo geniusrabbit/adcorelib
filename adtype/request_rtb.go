@@ -117,7 +117,7 @@ func (r *RTBRequest) ImpressionByID(id string) *openrtb.Impression {
 }
 
 // BidRequest from RTB request
-func (r *RTBRequest) BidRequest(formats types.FormatsAccessor, person personification.Person, defaultTarget admodels.Target) (*BidRequest, error) {
+func (r *RTBRequest) BidRequest(ctx context.Context, formats types.FormatsAccessor, person personification.Person, defaultTarget admodels.Target) (*BidRequest, error) {
 	if err := r.Validate([]string{"USD"}); err != nil {
 		return nil, err
 	}
@@ -125,6 +125,7 @@ func (r *RTBRequest) BidRequest(formats types.FormatsAccessor, person personific
 		person = personification.EmptyPerson
 	}
 	request := &BidRequest{
+		Ctx:    ctx,
 		ID:     r.ID,
 		ExtID:  r.RTBRequest.ID,
 		Person: person,

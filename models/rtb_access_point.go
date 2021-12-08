@@ -24,7 +24,8 @@ type RTBAccessPoint struct {
 	Title     string   `json:"title,omitempty"`
 	Codename  string   `json:"codename,omitempty"`
 
-	RevenueShare float64 `json:"revenue_share,omitempty"`
+	RevenueShareReduce float64 `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	AuctionType        int     `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
 
 	Status int           `json:"status,omitempty"`
 	Active int           `json:"active,omitempty"`
@@ -32,7 +33,8 @@ type RTBAccessPoint struct {
 
 	// Money configs
 	Protocol      string        `json:"protocol,omitempty"`
-	Timeout       int           `json:"timeout"`
+	Timeout       int           `json:"timeout,omitempty"`
+	RPS           int           `json:"rps,omitempty"`
 	DomainDefault string        `json:"domain_default,omitempty"`
 	Headers       pgtype.Hstore `json:"headers,omitempty"`
 
@@ -53,6 +55,7 @@ type RTBAccessPoint struct {
 	Secure          int                           `json:"secure,omitempty"`                        // 0 - any, 1 - only, 2 - exclude
 	AdBlock         int                           `json:"adblock,omitempty" gorm:"column:adblock"` // 0 - any, 1 - only, 2 - exclude
 	PrivateBrowsing int                           `json:"private_browsing,omitempty"`              // 0 - any, 1 - only, 2 - exclude
+	IP              int                           `json:"ip,omitempty"`                            // 0 - any, 1 - IPv4, 2 - IPv6
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

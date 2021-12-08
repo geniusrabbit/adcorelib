@@ -88,7 +88,7 @@ func (r *BidRequest) _RTBImpressions(opts *BidRequestRTBOptions) (list []openrtb
 			}
 		}
 	}
-	return
+	return list
 }
 
 func (r *BidRequest) impressionByFormat(imp *Impression, format *types.Format, opts *BidRequestRTBOptions) *openrtb.Impression {
