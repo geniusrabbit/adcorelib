@@ -40,7 +40,7 @@ type Target interface {
 // TargetFromModel convert datavase model specified model
 // which implements Target interface
 func TargetFromModel(zone models.Zone) Target {
-	if zone.Type == models.ZoneTypeSmartlink {
+	if zone.Type.IsSmartlink() {
 		return SmartlinkFromModel(zone)
 	}
 	return ZoneFromModel(zone)

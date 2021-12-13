@@ -7,6 +7,7 @@ package middleware
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -18,6 +19,7 @@ import (
 
 // CollectMetrics and send to metrics
 func CollectMetrics(metric string, spy Spy, next func(p personification.Person, ctx *fasthttp.RequestCtx)) fasthttp.RequestHandler {
+	metric = strings.ReplaceAll(metric, ".", "_")
 	var (
 		buckets      = []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
 		metricsCount = promauto.NewCounterVec(prometheus.CounterOpts{
@@ -48,12 +50,14 @@ func CollectMetrics(metric string, spy Spy, next func(p personification.Person, 
 		next(p, ctx)
 		duration := time.Since(start)
 		statusCode := strconv.Itoa(ctx.Response.StatusCode())
-		metricTiming.WithLabelValues(country, string(ctx.Method()), statusCode).Observe(duration.Seconds())
+		metricTiming.WithLabelValues(country, string(ctx.Method()), statusCode).
+			Observe(duration.Seconds())
 	})
 }
 
 // CollectSimpleMetrics and send to metrics
 func CollectSimpleMetrics(metric string, next fasthttp.RequestHandler) fasthttp.RequestHandler {
+	metric = strings.ReplaceAll(metric, ".", "_")
 	var (
 		buckets      = []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
 		metricsCount = promauto.NewCounter(prometheus.CounterOpts{

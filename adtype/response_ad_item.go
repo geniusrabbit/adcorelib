@@ -18,19 +18,20 @@ import (
 
 // ResponseAdItem for select from storage
 type ResponseAdItem struct {
+	Ctx         context.Context    `json:"-"`
 	ItemID      string             `json:"id"`
 	Src         Source             `json:"source,omitempty"`     //
 	Req         *BidRequest        `json:"request,omitempty"`    //
 	Imp         *Impression        `json:"impression,omitempty"` // Impression Unique
 	Campaign    *admodels.Campaign `json:"campaign,omitempty"`   //
 	Ad          *admodels.Ad       `json:"ad,omitempty"`         //
+	AdLink      admodels.AdLink    `json:"ad_link,omitempty"`    //
 	BidECPM     billing.Money      `json:"bid_ecpm,omitempty"`   //
 	BidPrice    billing.Money      `json:"bid_price,omitempty"`  // Max RTB bid price (CPM only)
 	AdPrice     billing.Money      `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
 	AdLeadPrice billing.Money      `json:"lead_price,omitempty"` //
 	CPMBidPrice billing.Money      `json:"cpm_bid,omitempty"`    // This param can update only price predictor
 	SecondAd    SecondAd           `json:"second_ad,omitempty"`  //
-	context     context.Context
 }
 
 // ID of current response item (unique code of current response)
@@ -107,16 +108,24 @@ func (it *ResponseAdItem) Request() *BidRequest {
 	return it.Req
 }
 
+// AdDirectLink of the ad
+func (it *ResponseAdItem) AdDirectLink() string {
+	if it.AdLink.ID == 0 {
+		it.AdLink = it.Ad.RandomAdLink()
+	}
+	return it.AdLink.Link
+}
+
 // ContentItemString from the ad
 func (it *ResponseAdItem) ContentItemString(name string) string {
 	switch name {
 	case ContentItemLink:
 		if !it.Ad.Format.IsProxy() {
-			return it.processParameters(it.Ad.Link)
+			return it.processParameters(it.AdDirectLink())
 		}
 	case ContentItemIFrameURL:
 		if it.Ad.Format.IsProxy() {
-			return it.processParameters(it.Ad.Link)
+			return it.processParameters(it.Ad.ProxyURL())
 		}
 	}
 	return it.processParameters(it.Ad.ContentItemString(name))
@@ -127,11 +136,11 @@ func (it *ResponseAdItem) ContentItem(name string) interface{} {
 	switch name {
 	case ContentItemLink:
 		if !it.Ad.Format.IsProxy() {
-			return it.processParameters(it.Ad.Link)
+			return it.processParameters(it.AdDirectLink())
 		}
 	case ContentItemIFrameURL:
 		if it.Ad.Format.IsProxy() {
-			return it.processParameters(it.Ad.Link)
+			return it.processParameters(it.Ad.ProxyURL())
 		}
 	}
 	item := it.Ad.ContentItem(name)
@@ -287,7 +296,7 @@ func (it *ResponseAdItem) IsDirect() bool {
 
 // ActionURL for direct baners
 func (it *ResponseAdItem) ActionURL() string {
-	return it.processParameters(it.Ad.Link)
+	return it.processParameters(it.AdDirectLink())
 }
 
 // ECPM item value
@@ -396,19 +405,19 @@ func (it *ResponseAdItem) ComissionShareFactor() float64 {
 
 // Context value
 func (it *ResponseAdItem) Context(ctx ...context.Context) (c context.Context) {
-	c = it.context
+	c = it.Ctx
 	if len(ctx) > 0 {
-		it.context = ctx[0]
+		it.Ctx = ctx[0]
 	}
-	return
+	return c
 }
 
 // Get ext field
 func (it *ResponseAdItem) Get(key string) interface{} {
-	if it.context == nil {
+	if it.Ctx == nil {
 		return nil
 	}
-	return it.context.Value(key)
+	return it.Ctx.Value(key)
 }
 
 // PreparePrice value

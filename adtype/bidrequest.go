@@ -42,7 +42,7 @@ type BidRequest struct {
 	ID              string                 `json:"id,omitempty"`    // Auction ID
 	ExtID           string                 `json:"bidid,omitempty"` // External Auction ID
 	Debug           bool                   `json:"debug,omitempty"`
-	AuctionType     AuctionType            `json:"auction_type,omitempty"`
+	AuctionType     types.AuctionType      `json:"auction_type,omitempty"`
 	RequestCtx      *fasthttp.RequestCtx   `json:"-"` // HTTP request context
 	Request         interface{}            `json:"-"` // Contains original request from RTB or another protocol
 	Person          personification.Person `json:"-"`
@@ -363,14 +363,12 @@ func (r *BidRequest) Keywords() []string {
 
 // Categories for request
 func (r *BidRequest) Categories() []uint {
-	if r.categoryArray == nil {
-		if r.App != nil {
-		}
-
-		if r.Site != nil {
-
-		}
-	}
+	// if r.categoryArray == nil {
+	// 	if r.App != nil {
+	// 	}
+	// 	if r.Site != nil {
+	// 	}
+	// }
 	return r.categoryArray
 }
 
@@ -515,8 +513,7 @@ func (r *BidRequest) Get(key string) interface{} {
 	if r.Ext == nil {
 		return nil
 	}
-	v, _ := r.Ext[key]
-	return v
+	return r.Ext[key]
 }
 
 // Set context item with key
@@ -572,19 +569,19 @@ func (r *BidRequest) Time() time.Time {
 	return r.Timemark
 }
 
-func (r *BidRequest) reset() {
-	r.targetIDs = r.targetIDs[:0]
-	r.externalTargetIDs = r.externalTargetIDs[:0]
-	r.categoryArray = r.categoryArray[:0]
-	r.domain = r.domain[:0]
-	r.tags = r.tags[:0]
-	r.formats = r.formats[:0]
-	r.sourceIDs = r.sourceIDs[:0]
-	r.Imps = r.Imps[:0]
-	r.formatBitset.Reset()
-	r.Tracer = nil
-	r.Ext = nil
-}
+// func (r *BidRequest) reset() {
+// 	r.targetIDs = r.targetIDs[:0]
+// 	r.externalTargetIDs = r.externalTargetIDs[:0]
+// 	r.categoryArray = r.categoryArray[:0]
+// 	r.domain = r.domain[:0]
+// 	r.tags = r.tags[:0]
+// 	r.formats = r.formats[:0]
+// 	r.sourceIDs = r.sourceIDs[:0]
+// 	r.Imps = r.Imps[:0]
+// 	r.formatBitset.Reset()
+// 	r.Tracer = nil
+// 	r.Ext = nil
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Validation
@@ -593,12 +590,4 @@ func (r *BidRequest) reset() {
 // Validate request by currency
 func (r *BidRequest) Validate() error {
 	return nil
-}
-
-func intO(v int) (vv *int) {
-	if v != 0 {
-		vv = new(int)
-		*vv = v
-	}
-	return
 }

@@ -112,7 +112,7 @@ func (m *Money) Scan(value interface{}) error {
 
 // MarshalJSON implements the json.Marshaler
 func (m Money) MarshalJSON() ([]byte, error) {
-	return json.Marshal(m.Int64())
+	return json.Marshal(m.Float64())
 }
 
 // UnmarshalJSON implements the json.Unmarshaller
@@ -120,6 +120,7 @@ func (m *Money) UnmarshalJSON(b []byte) error {
 	if bytes.ContainsAny(b, ".") {
 		if val, err := strconv.ParseFloat(string(b), 64); err == nil {
 			*m = MoneyFloat(val)
+			return nil
 		} else {
 			return err
 		}
@@ -127,7 +128,7 @@ func (m *Money) UnmarshalJSON(b []byte) error {
 
 	val, err := strconv.ParseInt(string(b), 10, 64)
 	if err == nil {
-		*m = Money(val)
+		*m = MoneyInt(val)
 	}
 	return err
 }
@@ -148,7 +149,17 @@ func (m *Money) DecodeValue(v interface{}) (err error) {
 	case Money:
 		*m = val
 	default:
-		err = fmt.Errorf("Invalid decode value")
+		err = fmt.Errorf("invalid decode value")
 	}
 	return
+}
+
+// Implements the Unmarshaler interface of the yaml pkg.
+func (m *Money) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var yamlValue float64
+	if err := unmarshal(&yamlValue); err != nil {
+		return err
+	}
+	m.SetFromFloat64(yamlValue)
+	return nil
 }

@@ -12,9 +12,11 @@ import (
 	"time"
 
 	"geniusrabbit.dev/corelib/billing"
-	"geniusrabbit.dev/corelib/billing/billingthrift"
 	"geniusrabbit.dev/corelib/msgpack"
-	"geniusrabbit.dev/corelib/msgpack/thrift"
+
+	// "geniusrabbit.dev/corelib/billing/billingthrift"
+	// "geniusrabbit.dev/corelib/msgpack/thrift"
+	msgjson "geniusrabbit.dev/corelib/msgpack/json"
 )
 
 // Event status
@@ -26,9 +28,14 @@ const (
 	StatusCustom      = 4 // User code
 )
 
-var streamCoder = thrift.NewAPI(
-	billingthrift.MoneyExt{},
-	typeThriftExy{},
+// var streamCoder = thrift.NewAPI(
+// 	billingthrift.MoneyExt{},
+// 	typeThriftExy{},
+// )
+
+var (
+	streamCodeEncoder = &msgjson.EncodeGenerator{}
+	streamCodeDecoder = &msgjson.DecodeGenerator{}
 )
 
 // Event struct
@@ -202,7 +209,7 @@ func (e *Event) DecodeCodeOld(data string) error {
 
 // Pack object to event Code
 func (e *Event) Pack() Code {
-	return ThriftObjectCode(e, streamCoder)
+	return ObjectCode(e, streamCodeEncoder)
 }
 
 // Unpack event object
@@ -211,7 +218,7 @@ func (e *Event) Unpack(data []byte, unpuckFnc ...func(code Code) Code) error {
 	if len(unpuckFnc) > 0 && unpuckFnc[0] != nil {
 		code = unpuckFnc[0](code)
 	}
-	return code.DecodeThriftObject(e, streamCoder)
+	return code.DecodeObject(e, streamCodeDecoder)
 }
 
 // PreparedURL string

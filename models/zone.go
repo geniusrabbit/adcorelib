@@ -12,24 +12,21 @@ import (
 	"github.com/geniusrabbit/gosql"
 	"github.com/guregu/null"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
-)
-
-// Zone Types enum
-const (
-	ZoneTypeDefault   = iota // 0
-	ZoneTypeSmartlink        // 1
 )
 
 // Zone model
 type Zone struct {
-	ID                uint64                        `json:"id"`
-	Title             string                        `json:"title"`
-	Type              int                           `json:"type,omitempty"`
-	Company           *Company                      `json:"company,omitempty"`
-	CompanyID         uint64                        `json:"company_id,omitempty"`
-	Status            ApproveStatus                 `json:"status"`
-	Active            uint                          `json:"active"`
+	ID        uint64   `json:"id"`
+	Title     string   `json:"title"`
+	Company   *Company `json:"company,omitempty"`
+	CompanyID uint64   `json:"company_id,omitempty"`
+
+	Type   types.ZoneType      `json:"type,omitempty"`
+	Status types.ApproveStatus `json:"status"`
+	Active types.ActiveStatus  `json:"active"`
+
 	DefaultCode       gosql.NullableJSON            `json:"default_code,omitempty"`
 	Context           gosql.NullableJSON            `json:"context,omitempty"`            //
 	MinECPM           float64                       `json:"min_ecpm,omitempty"`           // Default

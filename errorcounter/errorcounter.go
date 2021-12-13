@@ -27,6 +27,15 @@ func (cn *ErrorCounter) Dec() {
 	}
 }
 
+// Do counter incrementation
+func (cn *ErrorCounter) Do(inc bool) {
+	if inc {
+		cn.Inc()
+	} else {
+		cn.Dec()
+	}
+}
+
 // Next value
 func (cn *ErrorCounter) Next() bool {
 	v := cn.factor()

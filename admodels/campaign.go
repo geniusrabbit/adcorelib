@@ -7,13 +7,17 @@ package admodels
 
 import (
 	"errors"
+	"log"
 	"math/rand"
 	"time"
 
+	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/corelib/i18n/languages"
+	"geniusrabbit.dev/corelib/models"
 	"geniusrabbit.dev/corelib/searchtypes"
 )
 
@@ -33,18 +37,6 @@ const (
 // CampaignCamparator interface for index
 type CampaignCamparator interface {
 	CompareCampaign(c *Campaign) int
-}
-
-// FormatsAccessor object interface
-type FormatsAccessor interface {
-	// Format list collection
-	Formats() []*types.Format
-
-	// // FormatByModel original model
-	// FormatByModel(format *models.Format) *types.Format
-
-	// FormatByID of the model
-	FormatByID(id uint64) *types.Format
 }
 
 // Campaign model
@@ -89,87 +81,101 @@ type Campaign struct {
 	TracePercent int
 }
 
-// // CampaignFromModel convert database model to specified model
-// func CampaignFromModel(camp models.Campaign, formats types.FormatsAccessor) *Campaign {
-// 	var (
-// 		countriesArr gosql.NullableOrderedUintArray
-// 		languagesArr gosql.NullableOrderedUintArray
-// 		// bids, _      = gocast.ToSiMap(camp.Bids.GetValue(), "", false)
-// 		// geoBids      = parseGeoBids(billing.Money(camp.MaxBid), gocast.ToInterfaceSlice(mapDef(bids, "geo", nil)))
-// 		hours, err = types.HoursByString(camp.Hours.String)
-// 		flags      uint8
-// 	)
+// CampaignFromModel convert database model to specified model
+func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Campaign {
+	var (
+		countriesArr gosql.NullableOrderedUintArray
+		languagesArr gosql.NullableOrderedUintArray
+		// bids, _      = gocast.ToSiMap(camp.Bids.GetValue(), "", false)
+		// geoBids      = parseGeoBids(billing.Money(camp.MaxBid), gocast.ToInterfaceSlice(mapDef(bids, "geo", nil)))
+		hours, err = types.HoursByString(camp.Hours.String)
+		flags      uint8
+	)
 
-// 	if err != nil {
-// 		return nil
-// 	}
+	if err != nil {
+		return nil
+	}
 
-// 	if camp.DeletedAt.Valid {
-// 		flags = CampaignFlagDeleted
-// 	} else if camp.Active == models.StatusActive && camp.Status == models.StatusApproved {
-// 		flags = CampaignFlagActive
-// 	}
+	if camp.DeletedAt.Valid {
+		flags = CampaignFlagDeleted
+	} else if camp.Active.IsActive() && camp.Status.IsApproved() {
+		flags = CampaignFlagActive
+	}
 
-// 	if camp.Private == models.StatusPrivate {
-// 		flags |= CampaignFlagPrivate
-// 	}
+	if camp.Private.IsPrivate() {
+		flags |= CampaignFlagPrivate
+	}
 
-// 	// Countries filter
-// 	if camp.Geos.Len() > 0 {
-// 		for _, cc := range camp.Geos {
-// 			countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
-// 		}
-// 		countriesArr.Sort()
-// 	}
+	// Countries filter
+	if camp.Geos.Len() > 0 {
+		for _, cc := range camp.Geos {
+			countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
+		}
+		countriesArr.Sort()
+	}
 
-// 	// Languages filter
-// 	if len(camp.Languages) > 0 {
-// 		for _, lg := range camp.Languages {
-// 			languagesArr = append(languagesArr, languages.GetLanguageIdByCodeString(lg))
-// 		}
-// 		languagesArr.Sort()
-// 	}
+	// Languages filter
+	if len(camp.Languages) > 0 {
+		for _, lg := range camp.Languages {
+			languagesArr = append(languagesArr, languages.GetLanguageIdByCodeString(lg))
+		}
+		languagesArr.Sort()
+	}
 
-// 	// Order ext bids
-// 	// sort.Sort(geoBids)
+	// Order ext bids
+	// sort.Sort(geoBids)
 
-// 	campaign := &Campaign{
-// 		// MaxBid:      billing.Money(camp.MaxBid),
-// 		ID:              camp.ID,
-// 		CompanyID:       camp.CompanyID,
-// 		Weight:          0, // camp.Weight,
-// 		Flags:           flags,
-// 		DailyBudget:     camp.DailyBudget,
-// 		Budget:          camp.Budget,
-// 		DailyTestBudget: camp.DailyTestBudget,
-// 		TestBudget:      camp.TestBudget,
-// 		Context:         camp.Context,
-// 		Keywords:        nil,
-// 		Zones:           camp.Zones.Ordered(),
-// 		Domains:         camp.Domains,
-// 		Categories:      camp.Categories.Ordered(),
-// 		Countries:       countriesArr,
-// 		Languages:       languagesArr,
-// 		Browsers:        camp.Browsers.Ordered(),
-// 		Os:              camp.Os.Ordered(),
-// 		DeviceTypes:     camp.DeviceTypes.Ordered(),
-// 		Devices:         camp.Devices.Ordered(),
-// 		Hours:           hours,
-// 		Sex:             camp.Sex.Ordered(),
-// 		Age:             camp.Age.Ordered(),
-// 		Trace:           camp.Trace,
-// 		TracePercent:    camp.TracePercent,
-// 	}
+	campaign := &Campaign{
+		// MaxBid:      billing.Money(camp.MaxBid),
+		ID:        camp.ID,
+		CompanyID: camp.CompanyID,
+		Weight:    0, // camp.Weight,
+		Flags:     flags,
 
-// 	campaign.Ads = parseAds(campaign, camp, formats)
+		DailyBudget:     camp.DailyBudget,
+		Budget:          camp.Budget,
+		DailyTestBudget: camp.DailyTestBudget,
+		TestBudget:      camp.TestBudget,
 
-// 	// supported types
-// 	for _, ad := range campaign.Ads {
-// 		campaign.FormatSet.Set(uint(ad.Format.ID))
-// 	}
+		Ads:   nil,
+		Links: nil,
 
-// 	return campaign
-// }
+		Context:      camp.Context,
+		Keywords:     nil,
+		Zones:        camp.Zones.Ordered(),
+		Domains:      camp.Domains,
+		Categories:   camp.Categories.Ordered(),
+		Countries:    countriesArr,
+		Languages:    languagesArr,
+		Browsers:     camp.Browsers.Ordered(),
+		Os:           camp.Os.Ordered(),
+		DeviceTypes:  camp.DeviceTypes.Ordered(),
+		Devices:      camp.Devices.Ordered(),
+		Hours:        hours,
+		Sex:          camp.Sex.Ordered(),
+		Age:          camp.Age.Ordered(),
+		Trace:        camp.Trace,
+		TracePercent: camp.TracePercent,
+	}
+
+	campaign.Ads = parseAds(campaign, camp, formats)
+	campaign.Links = make([]AdLink, 0, len(camp.Links))
+
+	// Assign links
+	for _, link := range camp.Links {
+		campaign.Links = append(campaign.Links, AdLink{
+			ID:   link.ID,
+			Link: link.Link,
+		})
+	}
+
+	// supported types
+	for _, ad := range campaign.Ads {
+		campaign.FormatSet.Set(uint(ad.Format.ID))
+	}
+
+	return campaign
+}
 
 // GetID of the object
 func (c *Campaign) GetID() uint64 {
@@ -400,16 +406,15 @@ func (c *Campaign) TraceExperiment(experiment string) bool {
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-// func parseAds(newCampaign *Campaign, camp models.Campaign, formats types.FormatsAccessor) (ads []*Ad) {
-// 	if len(camp.Ads) > 0 {
-// 		for _, adBase := range camp.Ads {
-// 			if ad, err := parseAd(newCampaign, adBase, formats); err == nil {
-// 				ad.Campaign = newCampaign
-// 				ads = append(ads, ad)
-// 			} else {
-// 				log.Print("[parseAds]", err)
-// 			}
-// 		}
-// 	}
-// 	return
-// }
+func parseAds(newCampaign *Campaign, camp *models.Campaign, formats types.FormatsAccessor) (ads []*Ad) {
+	ads = make([]*Ad, 0, len(camp.Ads))
+	for _, adBase := range camp.Ads {
+		if ad, err := parseAd(newCampaign, adBase, formats); err == nil {
+			ad.Campaign = newCampaign
+			ads = append(ads, ad)
+		} else {
+			log.Print("[parseAds]", err)
+		}
+	}
+	return ads
+}

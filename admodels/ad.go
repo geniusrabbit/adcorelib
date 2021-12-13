@@ -9,11 +9,13 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strings"
 
 	"github.com/demdxx/gocast"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/corelib/models"
 )
 
 // Errors
@@ -30,8 +32,12 @@ type AdFlag uint8
 const (
 	AdFlagIsPremium AdFlag = 0x01
 	AdFlagActive    AdFlag = 0x02
-	AdFlagSecure    AdFlag = 0x04
+	AdFlagInsecure  AdFlag = 0x04
 	AdFlagAsPopover AdFlag = 0x08
+)
+
+const (
+	proxyIFrameURL = "iframe_url"
 )
 
 // Ad model
@@ -39,7 +45,6 @@ type Ad struct {
 	ID uint64 // Ad ID
 
 	// Data
-	Link    string                 // link to target
 	Content map[string]interface{} // Extend data
 	Assets  []AdFile               //
 
@@ -106,9 +111,6 @@ func (a *Ad) Asset(name string) *AdFile {
 
 // RandomAdLink from ad model
 func (a *Ad) RandomAdLink() AdLink {
-	if a.Link != "" {
-		return AdLink{Link: a.Link}
-	}
 	if a.Campaign != nil {
 		if count := len(a.Campaign.Links); count > 0 {
 			return a.Campaign.Links[rand.Int()%count]
@@ -155,6 +157,10 @@ func (a *Ad) SetWeight(w uint8) {
 // SetFrequencyCapping of the AD
 func (a *Ad) SetFrequencyCapping(frequencyCapping uint8) {
 	a.FrequencyCapping = frequencyCapping
+}
+
+func (a *Ad) ProxyURL() string {
+	return a.ContentItemString(proxyIFrameURL)
 }
 
 // // GetTotalSpent of campaign
@@ -273,7 +279,7 @@ func (a *Ad) Active() bool {
 
 // Secure ad
 func (a *Ad) Secure() bool {
-	return a.Flags&AdFlagSecure != 0
+	return a.Flags&AdFlagInsecure == 0
 }
 
 // AsPopover ad
@@ -364,92 +370,79 @@ func (a *Ad) ecpm(pointer types.TargetPointer, price billing.Money) billing.Mone
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-// func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (ad *Ad, err error) {
-// 	var (
-// 		bids  []AdBid
-// 		hours types.Hours
-// 		flags AdFlag
-// 	)
+func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (ad *Ad, err error) {
+	var (
+		bids  []AdBid
+		hours types.Hours
+		flags AdFlag
+	)
 
-// 	// Preprocess info
-// 	{
-// 		if hours, err = types.HoursByString(adBase.Hours); err != nil {
-// 			return
-// 		}
+	// Preprocess info
+	{
+		if hours, err = types.HoursByString(adBase.Hours); err != nil {
+			return
+		}
 
-// 		if adBase.Bids.Length() > 0 {
-// 			if err = adBase.Bids.UnmarshalTo(&bids); err != nil {
-// 				return nil, fmt.Errorf("AD bids decode: %s", err.Error())
-// 			}
-// 		}
-// 	}
+		if adBase.Bids.Length() > 0 {
+			if err = adBase.Bids.UnmarshalTo(&bids); err != nil {
+				return nil, fmt.Errorf("AD bids decode: %s", err.Error())
+			}
+		}
+	}
 
-// 	if adBase.Active == models.StatusActive && adBase.Status == models.StatusApproved {
-// 		flags |= AdFlagActive
-// 	}
+	if adBase.Active.IsActive() && adBase.Status.IsApproved() {
+		flags |= AdFlagActive
+	}
 
-// 	if !strings.HasPrefix(adBase.Link, "http://") {
-// 		flags |= AdFlagSecure
-// 	}
+	ad = &Ad{
+		ID:               adBase.ID,
+		Format:           formats.FormatByID(adBase.FormatID),
+		Assets:           nil,
+		PricingModel:     adBase.PricingModel,
+		FrequencyCapping: uint8(adBase.FrequencyCapping),
+		Weight:           uint8(adBase.Weight),
+		Flags:            flags,
+		Bids:             bids,
+		Price:            adBase.Price,
+		BidPrice:         adBase.BidPrice,
+		LeadPrice:        adBase.LeadPrice,
+		DailyBudget:      adBase.DailyBudget,
+		Budget:           adBase.Budget,
+		DailyTestBudget:  adBase.DailyTestBudget,
+		TestBudget:       adBase.TestBudget,
+		Hours:            hours,
+		Campaign:         camp,
+	}
 
-// 	ad = &Ad{
-// 		ID:               adBase.ID,
-// 		Format:           formats.FormatByID(adBase.FormatID),
-// 		Assets:           nil,
-// 		PricingModel:     adBase.PricingModel,
-// 		FrequencyCapping: uint8(adBase.FrequencyCapping),
-// 		Weight:           uint8(adBase.Weight),
-// 		Flags:            flags,
-// 		Bids:             bids,
-// 		Link:             adBase.Link,
-// 		Price:            adBase.Price,
-// 		BidPrice:         adBase.BidPrice,
-// 		LeadPrice:        adBase.LeadPrice,
-// 		DailyBudget:      adBase.DailyBudget,
-// 		Budget:           adBase.Budget,
-// 		DailyTestBudget:  adBase.DailyTestBudget,
-// 		TestBudget:       adBase.TestBudget,
-// 		Hours:            hours,
-// 		Campaign:         camp,
-// 	}
+	if ad.Format == nil {
+		return nil, fmt.Errorf("ad[%d] undefined format ID: %d", adBase.ID, adBase.FormatID)
+	}
 
-// 	if ad.Format == nil {
-// 		return nil, fmt.Errorf("Ad[%d] undefined format ID: %d", adBase.ID, adBase.FormatID)
-// 	}
+	for _, as := range adBase.Assets {
+		ad.Assets = append(ad.Assets, AdFile{ID: as.ID, Name: as.Name.String, Path: as.Path})
+	}
 
-// 	for _, as := range adBase.Assets {
-// 		ad.Assets = append(ad.Assets, AdFile{ID: as.ID, Name: as.Name.String, Path: as.Path})
-// 	}
+	// Add restriction of minimal-maximal dementions
+	if ad.Format.IsStretch() {
+		if adBase.MinWidth > 0 || adBase.MinHeight > 0 || adBase.MaxWidth > 0 || adBase.MaxHeight > 0 {
+			ad.Format = ad.Format.CloneWithSize(adBase.MaxWidth, adBase.MaxHeight, adBase.MinWidth, adBase.MinHeight)
+		}
+	}
 
-// 	// Add restriction of minimal-maximal dementions
-// 	if ad.Format.IsStretch() {
-// 		if adBase.MinWidth > 0 || adBase.MinHeight > 0 || adBase.MaxWidth > 0 || adBase.MaxHeight > 0 {
-// 			ad.Format = ad.Format.CloneWithSize(adBase.MaxWidth, adBase.MaxHeight, adBase.MinWidth, adBase.MinHeight)
-// 		}
-// 	}
+	// Up secure flag by iframe URL or content
+	urlFields := []string{proxyIFrameURL, "url"}
+	for _, key := range urlFields {
+		url := ad.ContentItemString(key)
+		if url == "" {
+			continue
+		}
+		if strings.HasPrefix(url, "http://") {
+			ad.Flags |= AdFlagInsecure
+			break
+		}
+	}
 
-// 	// Up secure flag by iframe URL or content
-// 	urlFields := []string{"iframe_url", "url"}
-// 	for _, key := range urlFields {
-// 		url := ad.ContentItemString(key)
-// 		if url == "" {
-// 			continue
-// 		}
-// 		if strings.HasPrefix(url, "http://") {
-// 			ad.Flags &= ^AdFlagSecure
-// 		} else {
-// 			ad.Flags |= AdFlagSecure
-// 		}
-// 	}
+	adBase.Context.UnmarshalTo(&ad.Content)
 
-// 	adBase.Context.UnmarshalTo(&ad.Content)
-
-// 	return
-// }
-
-// func unmarshalMeta(id uint64, jsn *gosql.NullableJSON, meta interface{}) (err error) {
-// 	if err = jsn.UnmarshalTo(meta); err != nil {
-// 		err = fmt.Errorf("Invalid Ad[%d] context: %s", id, jsn.String())
-// 	}
-// 	return err
-// }
+	return ad, err
+}

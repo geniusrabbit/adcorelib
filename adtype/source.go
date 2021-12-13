@@ -79,7 +79,7 @@ type SourceAccessor interface {
 	Iterator(request *BidRequest) SourceIterator
 
 	// SourceByID returns source instance
-	SourceByID(id uint64) Source
+	SourceByID(id uint64) (Source, error)
 
 	// SetTimeout for sourcer
 	SetTimeout(timeout time.Duration)

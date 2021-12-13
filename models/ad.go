@@ -11,6 +11,7 @@ import (
 	"github.com/geniusrabbit/gosql"
 	"github.com/guregu/null"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
 )
 
@@ -42,10 +43,10 @@ type Ad struct {
 	Bids gosql.NullableJSON `json:"bids,omitempty"`
 
 	// Status of the approvements
-	Status ApproveStatus `json:"status,omitempty"`
+	Status types.ApproveStatus `json:"status,omitempty"`
 
 	// Is Active advertisement
-	Active ActiveStatus `json:"active,omitempty"`
+	Active types.ActiveStatus `json:"active,omitempty"`
 
 	// Format of the advertisement with structure of allowed items
 	Format   *Format `json:"format,omitempty" gorm:"association_autoupdate:false"`
@@ -69,9 +70,6 @@ type Ad struct {
 	DailyTestBudget billing.Money `json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
 	TestBudget      billing.Money `json:"test_budget,omitempty"`       // Total test budget of whole time
 
-	// Link to the target
-	Link string `json:"link"`
-
 	// Context contains the most improtant information about Ad
 	Context gosql.NullableJSON `json:"context,omitempty"`
 
@@ -79,7 +77,7 @@ type Ad struct {
 	Weight int `json:"weight,omitempty"`
 
 	// Frequency Capping of advertisement display to one user
-	FrequencyCapping uint `json:"fc,omitempty"`
+	FrequencyCapping uint `json:"frequency_capping,omitempty"`
 
 	// Hours targetting 168 simbols. Every simbol means hour active or blocked
 	// 7 lines [day of week] + 24 hours as '1' or '0'
@@ -87,7 +85,7 @@ type Ad struct {
 	Hours string `json:"hours,omitempty"`
 
 	// Assets related to advertisement
-	Assets []*AdFile `gorm:"many2many:m2m_adv_ad_file_ad;association_autoupdate:false"`
+	Assets []*AdFile `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_ad;association_autoupdate:false"`
 
 	// Time marks
 	CreatedAt time.Time `json:"created_at"`

@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"hash/crc32"
 
-	"geniusrabbit.dev/corelib/msgpack/thrift"
+	"geniusrabbit.dev/corelib/msgpack"
 )
 
 const (
@@ -52,7 +52,7 @@ func (lc *LeadCode) Pack() Code {
 	// Sign the record
 	if _, err = buff.Write(lc.Sign()); err == nil {
 		// Encode message
-		if err = thrift.NewEncoder(&buff).Encode(lc); err != nil {
+		if err = msgpack.DefaultEncodeGenerator.NewEncoder(&buff).Encode(lc); err != nil {
 			return CodeObj(nil, err)
 		}
 	}
@@ -68,7 +68,7 @@ func (lc *LeadCode) Unpack(code []byte) (err error) {
 
 	var (
 		sign = code[:signSize]
-		dec  = thrift.NewDecoder(nil, code[signSize:])
+		dec  = msgpack.DefaultDecodeGenerator.NewDecoder(nil, code[signSize:])
 	)
 
 	if err = dec.Decode(&lc); err != nil {
@@ -80,7 +80,7 @@ func (lc *LeadCode) Unpack(code []byte) (err error) {
 		return errInvalidSign
 	}
 
-	return
+	return nil
 }
 
 // String implementation of fmt.Stringer interface

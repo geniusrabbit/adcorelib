@@ -1,10 +1,17 @@
+// Package msgpack provides premetive methods and object for message pack and unpacking
 package msgpack
 
 import (
 	"bytes"
-	"encoding/json"
 
 	"github.com/pierrec/lz4"
+
+	jsongen "geniusrabbit.dev/corelib/msgpack/json"
+)
+
+var (
+	DefaultEncodeGenerator = jsongen.EncodeGenerator{}
+	DefaultDecodeGenerator = jsongen.DecodeGenerator{}
 )
 
 // StdPack message
@@ -12,7 +19,7 @@ func StdPack(msg interface{}) ([]byte, error) {
 	var (
 		buff   bytes.Buffer
 		writer = lz4.NewWriter(&buff)
-		err    = json.NewEncoder(writer).Encode(msg)
+		err    = DefaultEncodeGenerator.NewEncoder(writer).Encode(msg)
 	)
 	if err != nil {
 		return nil, err
@@ -25,5 +32,5 @@ func StdPack(msg interface{}) ([]byte, error) {
 
 // StdUnpack message
 func StdUnpack(data []byte, msg interface{}) error {
-	return json.NewDecoder(lz4.NewReader(bytes.NewReader(data))).Decode(msg)
+	return DefaultDecodeGenerator.NewDecoder(lz4.NewReader(bytes.NewReader(data)), nil).Decode(msg)
 }

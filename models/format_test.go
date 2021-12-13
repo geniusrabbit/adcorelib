@@ -7,7 +7,7 @@ import (
 )
 
 func TestDirectFormat(t *testing.T) {
-	f, err := os.Open("./assets/format.direct.json")
+	f, err := os.Open("../admodels/assets/format.direct.json")
 	if err != nil {
 		t.Error(err)
 	}

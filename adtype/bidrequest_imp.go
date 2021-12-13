@@ -191,8 +191,7 @@ func (i *Impression) Get(key string) interface{} {
 	if i.Ext == nil {
 		return nil
 	}
-	v, _ := i.Ext[key]
-	return v
+	return i.Ext[key]
 }
 
 // Set context item with key

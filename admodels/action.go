@@ -8,6 +8,18 @@ package admodels
 // Action type
 type Action int
 
+func (a Action) String() string {
+	switch a {
+	case ActionImpression:
+		return "impression"
+	case ActionClick:
+		return "click"
+	case ActionLead:
+		return "lead"
+	}
+	return "undefined"
+}
+
 // Int value of action
 func (a Action) Int() int {
 	return int(a)

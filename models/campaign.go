@@ -13,6 +13,7 @@ import (
 	"github.com/geniusrabbit/gosql"
 	"github.com/guregu/null"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
 )
 
@@ -43,13 +44,13 @@ type Campaign struct {
 	ModeratorID uint64   `json:"moderator_id"`
 
 	// Status of the campaign
-	Status ApproveStatus `json:"status"`
+	Status types.ApproveStatus `json:"status"`
 
 	// Is Active campaign
-	Active uint `json:"active"`
+	Active types.ActiveStatus `json:"active"`
 
 	// Is private campaign type
-	Private uint `json:"private"`
+	Private types.PrivateStatus `json:"private"`
 
 	// Money limit counters
 	DailyBudget     billing.Money `json:"daily_budget,omitempty"`      // Max daily budget spent
@@ -76,7 +77,8 @@ type Campaign struct {
 	Age         gosql.NullableUintArray   `json:"age,omitempty"`
 
 	// Advertisement list
-	Ads []*Ad `json:"ads,omitempty" gorm:"ForeignKey:CampaignID"`
+	Ads   []*Ad     `json:"ads,omitempty" gorm:"ForeignKey:CampaignID"`
+	Links []*AdLink `json:"links,omitempty" gorm:"ForeignKey:CampaignID"`
 
 	Trace        gosql.NullableStringArray `json:"trace,omitempty"`
 	TracePercent int                       `json:"trace_percent,omitempty"`

@@ -149,9 +149,7 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 
 // Events object list
 func (g generator) Events(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItemCommon) (events []*events.Event) {
-	var items []adtype.ResponserItem
-
-	if mit, _ := it.(adtype.ResponserMultipleItem); items != nil {
+	if mit, _ := it.(adtype.ResponserMultipleItem); mit != nil {
 		for _, it := range mit.Ads() {
 			if event, err := g.Event(event, status, response, it); err == nil {
 				events = append(events, event)
@@ -160,7 +158,7 @@ func (g generator) Events(event events.Type, status uint8, response adtype.Respo
 	} else if event, err := g.Event(event, status, response, it.(adtype.ResponserItem)); err == nil {
 		events = append(events, event)
 	}
-	return
+	return events
 }
 
 // UserInfo event object by response
@@ -217,5 +215,5 @@ func sex(s string) (sx byte) {
 	case "female", "f", "F":
 		sx = byte(adtype.UserSexFemale)
 	}
-	return
+	return sx
 }

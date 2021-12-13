@@ -25,8 +25,8 @@ type RTBAccessPoint struct {
 	Codename string // Unical name of the access point
 	Headers  pgtype.Hstore
 
-	AuctionType        int     // default: 0 – first price type, 1 – second price type
-	RevenueShareReduce float64 // % 100, 80%, 65.5%
+	AuctionType        types.AuctionType // default: 0 – first price type, 1 – second price type
+	RevenueShareReduce float64           // % 100, 80%, 65.5%
 
 	Protocol string // rtb as default
 	RPS      int    // 0 – unlimit
@@ -66,6 +66,7 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 	return &RTBAccessPoint{
 		ID:                 cl.ID,
 		Company:            comp,
+		Codename:           cl.Codename,
 		Protocol:           strings.ToLower(cl.Protocol),
 		Headers:            cl.Headers,
 		AuctionType:        cl.AuctionType,

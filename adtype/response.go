@@ -7,6 +7,8 @@ package adtype
 
 import (
 	"context"
+
+	"geniusrabbit.dev/corelib/admodels/types"
 )
 
 // Response from different sources
@@ -39,7 +41,7 @@ func (r *Response) AuctionID() string {
 }
 
 // AuctionType of request
-func (r *Response) AuctionType() AuctionType {
+func (r *Response) AuctionType() types.AuctionType {
 	return r.request.AuctionType
 }
 

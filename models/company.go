@@ -8,8 +8,10 @@ package models
 import (
 	"time"
 
-	"geniusrabbit.dev/corelib/billing"
 	"github.com/guregu/null"
+
+	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/corelib/billing"
 )
 
 // ```pg
@@ -31,19 +33,19 @@ import (
 
 // Company model
 type Company struct {
-	ID          uint64        `json:"id"`                                           //
-	Name        string        `json:"name"`                                         // Unique project name. Like login
-	Title       string        `json:"title"`                                        //
-	Description string        `json:"description"`                                  //
-	Status      ApproveStatus `json:"status"`                                       //
-	Members     []*User       `gorm:"many2many:company_m2m_member;" json:"members"` // Members of project
-	CompanyName string        `json:"company_name"`                                 // Company info
-	Country     string        `json:"country"`                                      // - // -
-	City        string        `json:"city"`                                         // - // -
-	Address     string        `json:"address"`                                      // - // -
-	Phone       string        `json:"phone"`                                        // Contacts
-	Email       string        `json:"email"`                                        // - // -
-	Messanger   string        `json:"messanger"`                                    // - // -
+	ID          uint64              `json:"id"`                                           //
+	Name        string              `json:"name"`                                         // Unique project name. Like login
+	Title       string              `json:"title"`                                        //
+	Description string              `json:"description"`                                  //
+	Status      types.ApproveStatus `json:"status"`                                       //
+	Members     []*User             `gorm:"many2many:company_m2m_member;" json:"members"` // Members of project
+	CompanyName string              `json:"company_name"`                                 // Company info
+	Country     string              `json:"country"`                                      // - // -
+	City        string              `json:"city"`                                         // - // -
+	Address     string              `json:"address"`                                      // - // -
+	Phone       string              `json:"phone"`                                        // Contacts
+	Email       string              `json:"email"`                                        // - // -
+	Messanger   string              `json:"messanger"`                                    // - // -
 
 	MaxDaily     billing.Money `json:"max_daily,omitempty"`
 	RevenueShare float64       `json:"revenue_share,omitempty"`

@@ -5,7 +5,14 @@
 
 package types
 
-import "strings"
+import (
+	"bytes"
+	"database/sql/driver"
+	"strings"
+
+	"github.com/geniusrabbit/gosql"
+	"github.com/pkg/errors"
+)
 
 // PricingModel value
 type PricingModel uint8
@@ -17,6 +24,19 @@ const (
 	PricingModelCPC
 	PricingModelCPA
 )
+
+// PricingModelByName string
+func PricingModelByName(model string) PricingModel {
+	switch strings.ToUpper(model) {
+	case `CPM`:
+		return PricingModelCPM
+	case `CPC`:
+		return PricingModelCPC
+	case `CPA`:
+		return PricingModelCPA
+	}
+	return PricingModelUndefined
+}
 
 func (pm PricingModel) String() string {
 	return pm.Name()
@@ -55,15 +75,44 @@ func (pm PricingModel) UInt() uint {
 	return uint(pm)
 }
 
-// PricingModelByName string
-func PricingModelByName(model string) PricingModel {
-	switch strings.ToUpper(model) {
-	case `CPM`:
-		return PricingModelCPM
-	case `CPC`:
-		return PricingModelCPC
-	case `CPA`:
-		return PricingModelCPA
+// Value implements the driver.Valuer interface, json field interface
+func (pm PricingModel) Value() (_ driver.Value, err error) {
+	var v []byte
+	if v, err := pm.MarshalJSON(); err == nil && nil != v {
+		return string(v), nil
 	}
-	return PricingModelUndefined
+	return v, err
+}
+
+// Scan implements the driver.Valuer interface, json field interface
+func (pm *PricingModel) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case string:
+		*pm = PricingModelByName(v[1 : len(v)-1])
+	case []byte:
+		*pm = PricingModelByName(string(v[1 : len(v)-1]))
+	case nil:
+		*pm = PricingModelUndefined
+	default:
+		return gosql.ErrInvalidScan
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaler
+func (pm PricingModel) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + pm.Name() + `"`), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaller
+func (pm *PricingModel) UnmarshalJSON(b []byte) error {
+	if len(b) == 0 {
+		return errors.Wrap(errInvalidUnmarshalValue, "`"+string(b)+"`")
+	}
+	if bytes.HasPrefix(b, []byte(`"`)) {
+		*pm = PricingModelByName(string(b[1 : len(b)-1]))
+	} else {
+		*pm = PricingModelByName(string(b))
+	}
+	return nil
 }

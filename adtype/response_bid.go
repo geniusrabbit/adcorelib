@@ -42,7 +42,7 @@ func (r *BidResponse) AuctionID() string {
 }
 
 // AuctionType of request
-func (r *BidResponse) AuctionType() AuctionType {
+func (r *BidResponse) AuctionType() types.AuctionType {
 	return r.Req.AuctionType
 }
 
@@ -74,8 +74,8 @@ func (r *BidResponse) Prepare() {
 					url interface{}
 				)
 				if json.Unmarshal(bid.Ext, &ext); ext != nil {
-					if url, _ = ext["url"]; url == nil {
-						url, _ = ext["landingpage"]
+					if url = ext["url"]; url == nil {
+						url = ext["landingpage"]
 					}
 
 					if url != nil {

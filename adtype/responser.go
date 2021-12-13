@@ -7,27 +7,9 @@ package adtype
 
 import (
 	"context"
+
+	"geniusrabbit.dev/corelib/admodels/types"
 )
-
-// AuctionType data
-type AuctionType uint8
-
-// Auction types
-const (
-	UndefinedAuctionType   AuctionType = 0
-	FirstPriceAuctionType  AuctionType = 1
-	SecondPriceAuctionType AuctionType = 2
-)
-
-// IsFirtsPrice auction type
-func (at AuctionType) IsFirtsPrice() bool {
-	return at == FirstPriceAuctionType
-}
-
-// IsSecondPrice auction type
-func (at AuctionType) IsSecondPrice() bool {
-	return at == SecondPriceAuctionType
-}
 
 // Responser type
 type Responser interface {
@@ -35,7 +17,7 @@ type Responser interface {
 	AuctionID() string
 
 	// AuctionType of request
-	AuctionType() AuctionType
+	AuctionType() types.AuctionType
 
 	// Source of response
 	Source() Source

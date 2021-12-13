@@ -13,9 +13,9 @@ import (
 
 	// "github.com/pierrec/lz4"
 	lz4 "github.com/bkaradzic/go-lz4"
-	basethrift "github.com/thrift-iterator/go"
 
-	"geniusrabbit.dev/corelib/msgpack/thrift"
+	"geniusrabbit.dev/corelib/msgpack"
+	"geniusrabbit.dev/corelib/msgpack/types"
 )
 
 // LZ4BlockMaxSize constant
@@ -35,17 +35,17 @@ func CodeObj(data []byte, err error) Code {
 	return Code{data: data, err: err}
 }
 
-// ThriftObjectCode converts object to code object with thrift parser
-func ThriftObjectCode(obj interface{}, apis ...basethrift.API) Code {
+// ObjectCode converts object to code object with defined encoder/decoder
+func ObjectCode(obj interface{}, gen ...types.EncodeGenerator) Code {
 	var (
 		buff bytes.Buffer
-		enc  *basethrift.Encoder
+		enc  types.Encoder
 	)
 
-	if len(apis) > 0 && apis[0] != nil {
-		enc = apis[0].NewEncoder(&buff)
+	if len(gen) > 0 && gen[0] != nil {
+		enc = gen[0].NewEncoder(&buff)
 	} else {
-		enc = thrift.NewEncoder(&buff)
+		enc = msgpack.DefaultEncodeGenerator.NewEncoder(&buff)
 	}
 
 	if err := enc.Encode(obj); err != nil {
@@ -135,17 +135,17 @@ func (c Code) URLDecode() Code {
 	return CodeObj(data, err)
 }
 
-// DecodeThriftObject to target
-func (c Code) DecodeThriftObject(target interface{}, apis ...basethrift.API) error {
+// DecodeObject converts current object data to target
+func (c Code) DecodeObject(target interface{}, gen ...types.DecodeGenerator) error {
 	if c.err != nil {
 		return c.err
 	}
 
-	var dec *basethrift.Decoder
-	if len(apis) > 0 && apis[0] != nil {
-		dec = apis[0].NewDecoder(nil, c.data)
+	var dec types.Decoder
+	if len(gen) > 0 && gen[0] != nil {
+		dec = gen[0].NewDecoder(nil, c.data)
 	} else {
-		dec = thrift.NewDecoder(nil, c.data)
+		dec = msgpack.DefaultDecodeGenerator.NewDecoder(nil, c.data)
 	}
 	return dec.Decode(target)
 }

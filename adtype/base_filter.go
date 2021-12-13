@@ -99,10 +99,10 @@ func hasInIntArr(v int, arr []int) bool {
 	return i >= 0 && i < len(arr) && v == arr[i]
 }
 
-func hasInInt32Arr(v int32, arr []int32) bool {
-	i := sortutil.SearchInt32s(arr, v)
-	return i >= 0 && i < len(arr) && v == arr[i]
-}
+// func hasInInt32Arr(v int32, arr []int32) bool {
+// 	i := sortutil.SearchInt32s(arr, v)
+// 	return i >= 0 && i < len(arr) && v == arr[i]
+// }
 
 func hasInUintArr(v uint, arr []uint) bool {
 	i := sortutil.SearchUints(arr, v)
@@ -123,37 +123,37 @@ func hasOneInStringArr(arr1, arr2 []string) bool {
 	return false
 }
 
-func intersecInt32Arr(cat1, cat2 []int32) bool {
-	if len(cat1) < 1 && len(cat2) < 1 {
-		return true
-	}
-	if len(cat1) < 1 || len(cat2) < 1 {
-		return false
-	}
+// func intersecInt32Arr(cat1, cat2 []int32) bool {
+// 	if len(cat1) < 1 && len(cat2) < 1 {
+// 		return true
+// 	}
+// 	if len(cat1) < 1 || len(cat2) < 1 {
+// 		return false
+// 	}
 
-	for _, c1 := range cat1 {
-		if hasInInt32Arr(c1, cat2) {
-			return true
-		}
-	}
-	return false
-}
+// 	for _, c1 := range cat1 {
+// 		if hasInInt32Arr(c1, cat2) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
-func intersecIntArr(cat1, cat2 []int) bool {
-	if len(cat1) < 1 && len(cat2) < 1 {
-		return true
-	}
-	if len(cat1) < 1 || len(cat2) < 1 {
-		return false
-	}
+// func intersecIntArr(cat1, cat2 []int) bool {
+// 	if len(cat1) < 1 && len(cat2) < 1 {
+// 		return true
+// 	}
+// 	if len(cat1) < 1 || len(cat2) < 1 {
+// 		return false
+// 	}
 
-	for _, c1 := range cat1 {
-		if hasInIntArr(c1, cat2) {
-			return true
-		}
-	}
-	return false
-}
+// 	for _, c1 := range cat1 {
+// 		if hasInIntArr(c1, cat2) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
 func intersecUintArr(cat1, cat2 []uint) bool {
 	if len(cat1) < 1 && len(cat2) < 1 {

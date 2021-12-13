@@ -21,7 +21,7 @@ import (
 
 // Errors
 var (
-	ErrInvalidURL = errors.New("Invalid URL value")
+	ErrInvalidURL = errors.New("invalid URL value")
 )
 
 // WinEvent models

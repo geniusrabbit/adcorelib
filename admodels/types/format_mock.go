@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-
-	"geniusrabbit.dev/corelib/models"
 )
 
 var mockFormats = []*Format{
@@ -80,10 +78,10 @@ func MockFormats() []*Format {
 	return mockFormats
 }
 
-func configByJSON(path string) (*models.FormatConfig, error) {
+func configByJSON(path string) (*FormatConfig, error) {
 	var (
 		_, fileName, _, _ = runtime.Caller(1)
-		conf              *models.FormatConfig
+		conf              *FormatConfig
 		f, err            = os.Open(filepath.Dir(fileName) + "/" + path)
 	)
 	if err != nil {

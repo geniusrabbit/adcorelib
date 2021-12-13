@@ -5,7 +5,10 @@
 
 package admodels
 
-import "geniusrabbit.dev/corelib/billing"
+import (
+	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/corelib/models"
+)
 
 // Company model
 type Company struct {
@@ -16,16 +19,16 @@ type Company struct {
 	RevenueShare float64       // From 0 to 100 percents
 }
 
-// // CompanyFromModel convert database model to specified model
-// func CompanyFromModel(c models.Company) *Company {
-// 	return &Company{
-// 		ID:           c.ID,
-// 		Balance:      0,
-// 		MaxDaily:     c.MaxDaily,
-// 		Spent:        0,
-// 		RevenueShare: c.RevenueShare,
-// 	}
-// }
+// CompanyFromModel convert database model to specified model
+func CompanyFromModel(c *models.Company) *Company {
+	return &Company{
+		ID:           c.ID,
+		Balance:      0,
+		MaxDaily:     c.MaxDaily,
+		Spent:        0,
+		RevenueShare: c.RevenueShare,
+	}
+}
 
 // RevenueShareFactor multipler 0..1
 func (c *Company) RevenueShareFactor() float64 {
@@ -53,7 +56,7 @@ func (c CompanyTarget) ID() uint64 {
 
 // Size default of target item
 func (c CompanyTarget) Size() (w, h int) {
-	return
+	return w, h
 }
 
 // RevenueShareFactor of current target

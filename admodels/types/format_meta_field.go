@@ -142,5 +142,5 @@ func (f FormatField) Prepare(value interface{}) (result interface{}, err error) 
 	case FormatFieldPhoneType:
 	}
 
-	return
+	return result, err
 }

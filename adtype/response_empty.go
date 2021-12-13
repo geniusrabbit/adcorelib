@@ -21,8 +21,8 @@ type ResponseEmpty struct {
 }
 
 // NewEmptyResponse by bid request
-func NewEmptyResponse(request *BidRequest, err error) *ResponseEmpty {
-	return &ResponseEmpty{Req: request, Err: err}
+func NewEmptyResponse(request *BidRequest, src Source, err error) *ResponseEmpty {
+	return &ResponseEmpty{Req: request, Src: src, Err: err}
 }
 
 // ID of current response item (unique code of current response)
@@ -39,9 +39,9 @@ func (r ResponseEmpty) AuctionID() string {
 }
 
 // AuctionType of request
-func (r ResponseEmpty) AuctionType() AuctionType {
+func (r ResponseEmpty) AuctionType() types.AuctionType {
 	if r.Req == nil {
-		return UndefinedAuctionType
+		return types.UndefinedAuctionType
 	}
 	return r.Req.AuctionType
 }

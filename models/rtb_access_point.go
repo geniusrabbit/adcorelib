@@ -12,6 +12,8 @@ import (
 	"github.com/geniusrabbit/gosql"
 	"github.com/geniusrabbit/gosql/pgtype"
 	"github.com/guregu/null"
+
+	"geniusrabbit.dev/corelib/admodels/types"
 )
 
 // RTBAccessPoint for DSP connect.
@@ -24,14 +26,14 @@ type RTBAccessPoint struct {
 	Title     string   `json:"title,omitempty"`
 	Codename  string   `json:"codename,omitempty"`
 
-	RevenueShareReduce float64 `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
-	AuctionType        int     `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
+	RevenueShareReduce float64           `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	AuctionType        types.AuctionType `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
 
-	Status int           `json:"status,omitempty"`
-	Active int           `json:"active,omitempty"`
-	Flags  pgtype.Hstore `json:"flags,omitempty"`
+	Status types.ApproveStatus `json:"status,omitempty"`
+	Active types.ActiveStatus  `json:"active,omitempty"`
+	Flags  pgtype.Hstore       `json:"flags,omitempty"`
 
-	// Money configs
+	// Protocol configs
 	Protocol      string        `json:"protocol,omitempty"`
 	Timeout       int           `json:"timeout,omitempty"`
 	RPS           int           `json:"rps,omitempty"`
@@ -39,7 +41,7 @@ type RTBAccessPoint struct {
 	Headers       pgtype.Hstore `json:"headers,omitempty"`
 
 	// Targeting filters
-	Formats         gosql.StringArray             `json:"formats,omitempty"`                       // => Filters [pop,250x300]
+	Formats         gosql.StringArray             `json:"formats,omitempty"`                       // => Filters [direct,banner_250x300]
 	DeviceTypes     gosql.NullableOrderedIntArray `json:"device_types,omitempty"`                  //
 	Devices         gosql.NullableOrderedIntArray `json:"devices,omitempty"`                       //
 	OS              gosql.NullableOrderedIntArray `json:"os,omitempty"`                            //

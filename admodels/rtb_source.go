@@ -16,16 +16,16 @@ import (
 )
 
 // RTBRequestType contains type of representation of request information
-type RTBRequestType = models.RTBRequestType
+type RTBRequestType = types.RTBRequestType
 
 // Request types
 const (
-	RTBRequestTypeUndefined       = models.RTBRequestTypeUndefined
-	RTBRequestTypeJSON            = models.RTBRequestTypeJSON
-	RTBRequestTypeXML             = models.RTBRequestTypeXML
-	RTBRequestTypeProtoBUFF       = models.RTBRequestTypeProtoBUFF
-	RTBRequestTypePOSTFormEncoded = models.RTBRequestTypePOSTFormEncoded
-	RTBRequestTypePLAINTEXT       = models.RTBRequestTypePLAINTEXT
+	RTBRequestTypeUndefined       = types.RTBRequestTypeUndefined
+	RTBRequestTypeJSON            = types.RTBRequestTypeJSON
+	RTBRequestTypeXML             = types.RTBRequestTypeXML
+	RTBRequestTypeProtoBUFF       = types.RTBRequestTypeProtoBUFF
+	RTBRequestTypePOSTFormEncoded = types.RTBRequestTypePOSTFormEncoded
+	RTBRequestTypePLAINTEXT       = types.RTBRequestTypePLAINTEXT
 )
 
 // RTBSourceOptions flags
@@ -46,11 +46,11 @@ type RTBSource struct {
 	RequestType RTBRequestType // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - MultipleFormaData, 5 - PLAINTEXT
 	Headers     pgtype.Hstore
 
-	AuctionType int              // default: 0 – first price type, 1 – second price type
-	RPS         int              // 0 – unlimit
-	Timeout     int              // In milliseconds
-	Options     RTBSourceOptions //
-	Filter      types.BaseFilter //
+	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
+	RPS         int               // 0 – unlimit
+	Timeout     int               // In milliseconds
+	Options     RTBSourceOptions  //
+	Filter      types.BaseFilter  //
 
 	Accuracy           float64 // Price accuracy for auction in percentages
 	RevenueShareReduce float64 // % 100, 80%, 65.5%

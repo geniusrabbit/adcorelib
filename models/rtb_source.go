@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"github.com/geniusrabbit/gosql"
 	"github.com/geniusrabbit/gosql/pgtype"
 	"github.com/guregu/null"
@@ -20,25 +21,6 @@ const (
 	RTBPricePerOne
 )
 
-// RTB auction price type
-const (
-	RTBAuctionFirstPrice = iota
-	RTBAuctionSecondPrice
-)
-
-// RTBRequestType contains type of representation of request information
-type RTBRequestType int
-
-// Request types
-const (
-	RTBRequestTypeUndefined       RTBRequestType = 0
-	RTBRequestTypeJSON            RTBRequestType = 1
-	RTBRequestTypeXML             RTBRequestType = 2
-	RTBRequestTypeProtoBUFF       RTBRequestType = 3
-	RTBRequestTypePOSTFormEncoded RTBRequestType = 4 // application/x-www-form-urlencoded
-	RTBRequestTypePLAINTEXT       RTBRequestType = 5
-)
-
 // RTBSource for SSP connect
 type RTBSource struct {
 	ID        uint64   `json:"id"`
@@ -46,23 +28,23 @@ type RTBSource struct {
 	CompanyID uint64   `json:"company_id,omitempty"`
 	Title     string   `json:"title,omitempty"`
 
-	Status ApproveStatus `json:"status,omitempty"`
-	Active ActiveStatus  `json:"active,omitempty"`
-	Flags  pgtype.Hstore `json:"flags,omitempty"`
+	Status types.ApproveStatus `json:"status,omitempty"`
+	Active types.ActiveStatus  `json:"active,omitempty"`
+	Flags  pgtype.Hstore       `json:"flags,omitempty"`
 
-	Protocol      string         `json:"protocol"`          // rtb as default
-	MinimalWeight float64        `json:"minimal_weight"`    //
-	URL           string         `json:"url"`               // RTB client request URL
-	Method        string         `json:"method"`            // HTTP method GET, POST, ect; Default POST
-	RequestType   RTBRequestType `json:"request_type"`      // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - PLAINTEXT
-	Headers       pgtype.Hstore  `json:"headers,omitempty"` //
-	RPS           int            `json:"rps"`               // 0 – unlimit
-	Timeout       int            `json:"timeout"`           // In milliseconds
+	Protocol      string               `json:"protocol"`          // rtb as default
+	MinimalWeight float64              `json:"minimal_weight"`    //
+	URL           string               `json:"url"`               // RTB client request URL
+	Method        string               `json:"method"`            // HTTP method GET, POST, ect; Default POST
+	RequestType   types.RTBRequestType `json:"request_type"`      // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - PLAINTEXT
+	Headers       pgtype.Hstore        `json:"headers,omitempty"` //
+	RPS           int                  `json:"rps"`               // 0 – unlimit
+	Timeout       int                  `json:"timeout"`           // In milliseconds
 
 	// Money configs
-	Accuracy           float64 `json:"accuracy,omitempty"`             // Price accuracy for auction in percentages
-	RevenueShareReduce float64 `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
-	AuctionType        int     `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
+	Accuracy           float64           `json:"accuracy,omitempty"`             // Price accuracy for auction in percentages
+	RevenueShareReduce float64           `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	AuctionType        types.AuctionType `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
 
 	// Targeting filters
 	Formats         gosql.StringArray             `json:"formats,omitempty"`                       // => Filters

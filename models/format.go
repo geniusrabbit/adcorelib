@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"github.com/geniusrabbit/gosql"
 	"github.com/guregu/null"
 )
@@ -21,12 +22,26 @@ const (
 	FormatTypeNative = `native`
 )
 
+type (
+	// FormatConfig description
+	FormatConfig = types.FormatConfig
+
+	// FormatFileRequirement rule
+	FormatFileRequirement = types.FormatFileRequirement
+)
+
+// Format asset defaults
+const (
+	FormatAssetMain = types.FormatAssetMain
+	FormatAssetIcon = types.FormatAssetIcon
+)
+
 // Format model description
 type Format struct {
-	ID       uint64 `json:"id"`
-	Codename string `json:"codename"`
-	Title    string `json:"title"`
-	Active   uint   `json:"active,omitempty"`
+	ID       uint64             `json:"id"`
+	Codename string             `json:"codename"`
+	Title    string             `json:"title"`
+	Active   types.ActiveStatus `json:"active,omitempty"`
 
 	Width     int `json:"width,omitempty"`
 	Height    int `json:"height,omitempty"`

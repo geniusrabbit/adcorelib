@@ -5,7 +5,16 @@
 
 package types
 
-import "math"
+import (
+	"bytes"
+	"database/sql/driver"
+	"math"
+
+	"github.com/geniusrabbit/gosql"
+	"github.com/pkg/errors"
+)
+
+var errInvalidUnmarshalValue = errors.New("invalid unmarshal value")
 
 // FormatType value
 type FormatType int
@@ -34,6 +43,19 @@ var FormatTypeList = []FormatType{
 	FormatBannerHTML5Type,
 	FormatNativeType,
 	FormatCustomType,
+}
+
+// FormatMapping from name to constant
+var FormatMapping = map[string]FormatType{
+	`invalid`:   FormatInvalidType,
+	`undefined`: FormatUndefinedType,
+	`direct`:    FormatDirectType,
+	`proxy`:     FormatProxyType,
+	`video`:     FormatVideoType,
+	`banner`:    FormatBannerType,
+	`html5`:     FormatBannerHTML5Type,
+	`native`:    FormatNativeType,
+	`custom`:    FormatCustomType,
 }
 
 // Name by format type
@@ -82,4 +104,46 @@ func (t FormatType) IsBannerHTML5() bool {
 // IsProxy format type
 func (t FormatType) IsProxy() bool {
 	return t == FormatProxyType
+}
+
+// Value implements the driver.Valuer interface, json field interface
+func (t FormatType) Value() (_ driver.Value, err error) {
+	var v []byte
+	if v, err := t.MarshalJSON(); err == nil && nil != v {
+		return string(v), nil
+	}
+	return v, err
+}
+
+// Scan implements the driver.Valuer interface, json field interface
+func (t *FormatType) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case string:
+		*t = FormatMapping[v[1:len(v)-1]]
+	case []byte:
+		*t = FormatMapping[string(v[1:len(v)-1])]
+	case nil:
+		*t = FormatUndefinedType
+	default:
+		return gosql.ErrInvalidScan
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaler
+func (t FormatType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + t.Name() + `"`), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaller
+func (t *FormatType) UnmarshalJSON(b []byte) error {
+	if len(b) == 0 {
+		return errors.Wrap(errInvalidUnmarshalValue, "`"+string(b)+"`")
+	}
+	if bytes.HasPrefix(b, []byte(`"`)) {
+		*t = FormatMapping[string(b[1:len(b)-1])]
+	} else {
+		*t = FormatMapping[string(b)]
+	}
+	return nil
 }

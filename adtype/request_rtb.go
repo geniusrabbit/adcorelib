@@ -355,14 +355,14 @@ func (r *RTBRequest) imp(target admodels.Target, imp *openrtb.Impression) *Impre
 	}
 
 	// Prepare params by ext
-	if ext != nil && len(ext) > 0 {
-		if nimp.SubID1, _ = ext["subid1"]; nimp.SubID1 == "" {
-			nimp.SubID1, _ = ext["subid"]
+	if len(ext) > 0 {
+		if nimp.SubID1 = ext["subid1"]; nimp.SubID1 == "" {
+			nimp.SubID1 = ext["subid"]
 		}
-		nimp.SubID2, _ = ext["subid2"]
-		nimp.SubID3, _ = ext["subid3"]
-		nimp.SubID4, _ = ext["subid4"]
-		nimp.SubID5, _ = ext["subid5"]
+		nimp.SubID2 = ext["subid2"]
+		nimp.SubID3 = ext["subid3"]
+		nimp.SubID4 = ext["subid4"]
+		nimp.SubID5 = ext["subid5"]
 	}
 
 	switch {
@@ -382,7 +382,7 @@ func (r *RTBRequest) imp(target admodels.Target, imp *openrtb.Impression) *Impre
 
 		// Rewrite type if it's passed
 		if !nimp.IsDirect() && ext != nil && len(ext) > 0 {
-			if tp, _ := ext["type"]; tp == "pop" || tp == "direct" {
+			if tp := ext["type"]; tp == "pop" || tp == "direct" {
 				nimp.FormatTypes.Reset().Set(types.FormatDirectType)
 			}
 		}
