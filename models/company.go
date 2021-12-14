@@ -47,8 +47,14 @@ type Company struct {
 	Email       string              `json:"email"`                                        // - // -
 	Messanger   string              `json:"messanger"`                                    // - // -
 
-	MaxDaily     billing.Money `json:"max_daily,omitempty"`
-	RevenueShare float64       `json:"revenue_share,omitempty"`
+	MaxDaily billing.Money `json:"max_daily,omitempty"`
+	// RevenueShare it's amount of percent of the raw incode which will be shared with the publisher company
+	// For example:
+	//   Displayed ads for 100$
+	//   Company revenue share 60%
+	//   In such case the ad network have 40$
+	//   The publisher have 60$
+	RevenueShare float64 `json:"revenue_share,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

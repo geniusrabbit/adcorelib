@@ -30,4 +30,10 @@ func (p *person) PredictPrice(req *PredictPriceRequest) (*PredictPriceResponse, 
 	return nil, nil
 }
 
-var EmptyPerson = &person{}
+var EmptyPerson = &person{
+	userInfo: UserInfo{
+		User:   &udetect.User{},
+		Device: &udetect.DeviceDefault,
+		Geo:    &udetect.GeoDefault,
+	},
+}

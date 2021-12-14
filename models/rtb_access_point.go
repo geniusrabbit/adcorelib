@@ -26,6 +26,11 @@ type RTBAccessPoint struct {
 	Title     string   `json:"title,omitempty"`
 	Codename  string   `json:"codename,omitempty"`
 
+	// RevenueShareReduce represents extra reduce factor to nevilate AdExchange and SSP discrepancy.
+	// It means that the final bid respose will be decresed by RevenueShareReduce %
+	// Example:
+	//   1. Found advertisement with `bid=1.0$`
+	//   2. Final `bid = bid - $AdSourceComission{%} - $AdExchangeComission{%} - $RevenueShareReduce{%}`
 	RevenueShareReduce float64           `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 	AuctionType        types.AuctionType `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
 

@@ -25,8 +25,14 @@ type RTBAccessPoint struct {
 	Codename string // Unical name of the access point
 	Headers  pgtype.Hstore
 
-	AuctionType        types.AuctionType // default: 0 – first price type, 1 – second price type
-	RevenueShareReduce float64           // % 100, 80%, 65.5%
+	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
+
+	// RevenueShareReduce represents extra reduce factor to nevilate AdExchange and SSP discrepancy.
+	// It means that the final bid respose will be decresed by RevenueShareReduce %
+	// Example:
+	//   1. Found advertisement with `bid=1.0$`
+	//   2. Final `bid = bid - $AdSourceComission{%} - $AdExchangeComission{%} - $RevenueShareReduce{%}`
+	RevenueShareReduce float64 // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 
 	Protocol string // rtb as default
 	RPS      int    // 0 – unlimit
@@ -90,5 +96,5 @@ func (s *RTBAccessPoint) TestFormat(f *types.Format) bool {
 
 // RevenueShareReduceFactor from 0. to 1.
 func (s *RTBAccessPoint) RevenueShareReduceFactor() float64 {
-	return s.RevenueShareReduce / 100.0
+	return s.RevenueShareReduce / 10000.
 }

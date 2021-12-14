@@ -8,8 +8,10 @@ package adtype
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
+	"time"
 
 	"github.com/bsm/openrtb"
 	"github.com/sspserver/udetect"
@@ -70,6 +72,7 @@ func (r *RTBRequest) UpdateState() {
 		r.RTBRequest.User = &emptyRtbUser
 	}
 
+	fmt.Println(">>>>!", r.RTBRequest.User.Geo, r.RTBRequest.Device.Geo)
 	if r.RTBRequest.User.Geo == nil {
 		r.RTBRequest.User.Geo = r.RTBRequest.Device.Geo
 	}
@@ -125,14 +128,15 @@ func (r *RTBRequest) BidRequest(ctx context.Context, formats types.FormatsAccess
 		person = personification.EmptyPerson
 	}
 	request := &BidRequest{
-		Ctx:    ctx,
-		ID:     r.ID,
-		ExtID:  r.RTBRequest.ID,
-		Person: person,
-		App:    r.app(),
-		Site:   r.site(),
-		Device: r.device(person),
-		User:   r.user(person),
+		Ctx:      ctx,
+		ID:       r.ID,
+		ExtID:    r.RTBRequest.ID,
+		Person:   person,
+		App:      r.app(),
+		Site:     r.site(),
+		Device:   r.device(person),
+		User:     r.user(person),
+		Timemark: time.Now(),
 	}
 	for _, imp := range r.RTBRequest.Imp {
 		if _imp := r.imp(defaultTarget, &imp); _imp != nil {
@@ -297,7 +301,7 @@ func (r *RTBRequest) geo(person personification.Person) *udetect.Geo {
 			Carrier:       r.carrier(person),                                                   // Carrier or ISP derived from the IP address
 			Lat:           defFloat(info.Geo.Lat, r.RTBRequest.User.Geo.Lat),                   // Latitude from -90 to 90
 			Lon:           defFloat(info.Geo.Lon, r.RTBRequest.User.Geo.Lon),                   // Longitude from -180 to 180
-			Country:       defStr(info.Geo.Country, r.RTBRequest.User.Geo.Country),             // Country using ISO 3166-1 Alpha 2
+			Country:       defCountryCode(info.Geo.Country, r.RTBRequest.User.Geo.Country),     // Country using ISO 3166-1 Alpha 2
 			Region:        defStr(info.Geo.Region, r.RTBRequest.User.Geo.Region),               // Region using ISO 3166-2
 			RegionFIPS104: defStr(info.Geo.RegionFIPS104, r.RTBRequest.User.Geo.RegionFIPS104), // Region of a country using FIPS 10-4
 			Metro:         defStr(info.Geo.Metro, r.RTBRequest.User.Geo.Metro),                 //
@@ -498,5 +502,5 @@ func (r *RTBRequest) Validate(currency []string) (err error) {
 			} // end if
 		}
 	}
-	return
+	return err
 }
