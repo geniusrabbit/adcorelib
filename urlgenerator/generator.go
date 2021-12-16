@@ -46,7 +46,7 @@ func (g *Generator) PixelURL(event events.Type, status uint8, item adtype.Respon
 	return g.PixelGenerator.Event(ev, js)
 }
 
-// PixelLead url
+// Lead URL traking for lead type of event
 func (g *Generator) PixelLead(item adtype.ResponserItem, response adtype.Responser, js bool) (string, error) {
 	var sourceID uint64
 	if item.Source() != nil {
@@ -110,31 +110,28 @@ func (g *Generator) EventCode(event events.Type, status uint8, item adtype.Respo
 	if err != nil {
 		return "", err
 	}
-
 	code := ev.Pack().Compress().URLEncode()
 	return code.String(), code.ErrorObj()
 }
 
 func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
 	var (
-		ctx       = response.Request().HTTPRequest()
+		rctx      = response.Request().HTTPRequest()
 		code, err = g.EventCode(event, status, item, response)
 	)
-
 	if err != nil {
 		return "", err
 	}
-
 	code = url.QueryEscape(code)
 	if !strings.Contains(pattern, "{hostname}") {
-		if '/' == pattern[0] {
-			return "//" + string(ctx.Host()) + strings.Replace(pattern, "{code}", code, -1), nil
+		if strings.HasPrefix(pattern, "/") {
+			return "//" + string(rctx.Host()) + strings.Replace(pattern, "{code}", code, -1), nil
 		}
-		return "//" + string(ctx.Host()) + "/" + strings.Replace(pattern, "{code}", code, -1), nil
+		return "//" + string(rctx.Host()) + "/" + strings.Replace(pattern, "{code}", code, -1), nil
 	}
 
 	return strings.NewReplacer(
 		"{code}", code,
-		"{hostname}", string(ctx.Host()),
+		"{hostname}", string(rctx.Host()),
 	).Replace(pattern), nil
 }

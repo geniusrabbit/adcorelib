@@ -24,26 +24,25 @@ func NewPixelGenerator(hostname string) PixelGenerator {
 	}
 }
 
-// Event pixel
+// Event generates pixel URL with event registration
 func (g PixelGenerator) Event(ev *events.Event, js bool) (a string, err error) {
 	var (
 		code = ev.Pack().Compress().URLEncode()
 		u    = url.Values{"i": []string{code.String()}}
 	)
-
 	if err = code.ErrorObj(); err != nil {
-		return
+		return a, err
 	}
-
 	if js {
 		a = fmt.Sprintf("//%s/t/px.js?%s", g.hostname, u.Encode())
 	} else {
 		a = fmt.Sprintf("//%s/t/px.gif?%s", g.hostname, u.Encode())
 	}
-	return
+	return a, err
 }
 
-// EventDirect pixel
+// EventDirect can be used in case of traking `direct` or `no-traking` ad type.
+// Pixel must automaticaly redirect to `u` param after pixel will be registered
 func (g PixelGenerator) EventDirect(ev *events.Event, direct string) (a string, err error) {
 	var (
 		code = ev.Pack().Compress().URLEncode()
@@ -52,15 +51,13 @@ func (g PixelGenerator) EventDirect(ev *events.Event, direct string) (a string, 
 			"u": []string{direct},
 		}
 	)
-
 	if err = code.ErrorObj(); err != nil {
-		return
+		return a, err
 	}
-
 	return fmt.Sprintf("//%s/go/m?%s", g.hostname, u.Encode()), nil
 }
 
-// Lead URL
+// Lead URL traking for lead type of event
 func (g PixelGenerator) Lead(lead *events.LeadCode) (string, error) {
 	return fmt.Sprintf("//%s/lead?l=%s", g.hostname, url.QueryEscape(lead.String())), nil
 }

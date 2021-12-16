@@ -372,9 +372,10 @@ func (a *Ad) ecpm(pointer types.TargetPointer, price billing.Money) billing.Mone
 
 func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (ad *Ad, err error) {
 	var (
-		bids  []AdBid
-		hours types.Hours
-		flags AdFlag
+		bids   []AdBid
+		hours  types.Hours
+		flags  AdFlag
+		format *types.Format
 	)
 
 	// Preprocess info
@@ -394,9 +395,19 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 		flags |= AdFlagActive
 	}
 
+	if adBase.FormatID != 0 {
+		format = formats.FormatByID(adBase.FormatID)
+	} else if adBase.Format != nil {
+		if adBase.Format.ID > 0 {
+			format = formats.FormatByID(adBase.Format.ID)
+		} else {
+			format = formats.FormatByCode(adBase.Format.Codename)
+		}
+	}
+
 	ad = &Ad{
 		ID:               adBase.ID,
-		Format:           formats.FormatByID(adBase.FormatID),
+		Format:           format,
 		Assets:           nil,
 		PricingModel:     adBase.PricingModel,
 		FrequencyCapping: uint8(adBase.FrequencyCapping),

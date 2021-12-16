@@ -179,7 +179,7 @@ func (i *Impression) PlacementType() openrtbnreq.PlacementTypeID {
 // RTBNativeRequest object
 func (i *Impression) RTBNativeRequest() (r *openrtbnreq.Request) {
 	r, _ = i.Request.(*openrtbnreq.Request)
-	return
+	return r
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,11 +204,9 @@ func (i *Impression) Set(key string, val interface{}) {
 
 // Unset context item with keys
 func (i *Impression) Unset(keys ...string) {
-	if i.Ext == nil {
-		return
-	}
-
-	for _, key := range keys {
-		delete(i.Ext, key)
+	if i.Ext != nil && len(i.Ext) > 0 {
+		for _, key := range keys {
+			delete(i.Ext, key)
+		}
 	}
 }

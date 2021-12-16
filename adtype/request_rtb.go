@@ -8,7 +8,6 @@ package adtype
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net"
 	"time"
@@ -72,7 +71,6 @@ func (r *RTBRequest) UpdateState() {
 		r.RTBRequest.User = &emptyRtbUser
 	}
 
-	fmt.Println(">>>>!", r.RTBRequest.User.Geo, r.RTBRequest.Device.Geo)
 	if r.RTBRequest.User.Geo == nil {
 		r.RTBRequest.User.Geo = r.RTBRequest.Device.Geo
 	}
@@ -390,7 +388,6 @@ func (r *RTBRequest) imp(target admodels.Target, imp *openrtb.Impression) *Impre
 				nimp.FormatTypes.Reset().Set(types.FormatDirectType)
 			}
 		}
-
 	// Native Ad information
 	case imp.Native != nil:
 		if len(imp.Native.Request) < 1 {
@@ -425,15 +422,18 @@ func (r *RTBRequest) imp(target admodels.Target, imp *openrtb.Impression) *Impre
 				}
 			}
 		}
-
 	// Video Ad information
 	case imp.Video != nil:
 		// It's not supported at the moment
 		return nil
+	case imp.Instl == 1:
+		nimp.FormatTypes.Reset().Set(types.FormatDirectType)
 	default:
 		nimp.FormatTypes.Reset().Set(types.FormatBannerType)
 	}
-
+	if nimp.Count <= 0 {
+		nimp.Count = 1
+	}
 	return nimp
 }
 

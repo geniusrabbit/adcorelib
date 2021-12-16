@@ -20,6 +20,9 @@ type Stream interface {
 	// SendEvent native action
 	SendEvent(ctx context.Context, event *events.Event) error
 
+	// SendLeadEvent as lead code type
+	SendLeadEvent(ctx context.Context, event *events.LeadCode) error
+
 	// Send response
 	Send(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) error
 }
@@ -41,6 +44,11 @@ func New(events, userInfo nc.Publisher, generator eventgenerator.Generator) Stre
 
 // SendEvent native action
 func (s *stream) SendEvent(ctx context.Context, event *events.Event) error {
+	return s.events.Publish(ctx, event)
+}
+
+// SendLeadEvent as lead code type
+func (s *stream) SendLeadEvent(ctx context.Context, event *events.LeadCode) error {
 	return s.events.Publish(ctx, event)
 }
 

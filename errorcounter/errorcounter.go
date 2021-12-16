@@ -38,18 +38,17 @@ func (cn *ErrorCounter) Do(inc bool) {
 
 // Next value
 func (cn *ErrorCounter) Next() bool {
-	v := cn.factor()
-	return v <= 0.01 || rand.Float64()*1.03 > v
+	return rand.Float64()*1.03 > cn.factor()
 }
 
 func (cn *ErrorCounter) factor() float64 {
-	return notmalise(cn.getValue() / treshold * 7.8)
+	return normalise(cn.getValue() / treshold * 7.8)
 }
 
 func (cn *ErrorCounter) getValue() float64 {
 	return float64(atomic.LoadInt32(&cn.value))
 }
 
-func notmalise(x float64) float64 {
-	return 1.0 / (1.0 + math.Exp(-x))
+func normalise(x float64) float64 {
+	return 1.0 / (1.0 + math.Exp(-(x - 10)))
 }

@@ -53,7 +53,6 @@ func (r *BidResponse) Source() Source {
 
 // Prepare bid response
 func (r *BidResponse) Prepare() {
-	fmt.Println(">> PREPARE", r.BidResponse.SeatBid)
 	for i, seat := range r.BidResponse.SeatBid {
 		for i, bid := range seat.Bid {
 			replacer := strings.NewReplacer(
@@ -131,7 +130,6 @@ func (r *BidResponse) Prepare() {
 	bids := r.OptimalBids()
 	for _, bid := range bids {
 		imp := r.Req.ImpressionByIDvariation(bid.ImpID)
-		fmt.Println(">>>>!", bid, imp)
 		if imp == nil {
 			continue
 		}
