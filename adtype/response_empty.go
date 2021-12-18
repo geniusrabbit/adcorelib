@@ -140,7 +140,7 @@ func (r ResponseEmpty) Error() error {
 
 // Context value
 func (r *ResponseEmpty) Context(ctx ...context.Context) context.Context {
-	if len(ctx) > 0 && ctx[0] != nil {
+	if r != nil && len(ctx) > 0 && ctx[0] != nil {
 		r.context = ctx[0]
 	}
 	return r.context
@@ -148,10 +148,10 @@ func (r *ResponseEmpty) Context(ctx ...context.Context) context.Context {
 
 // Get ext field
 func (r *ResponseEmpty) Get(key string) (res interface{}) {
-	if r.context != nil {
+	if r != nil && r.context != nil {
 		res = r.context.Value(key)
 	}
-	return
+	return res
 }
 
 var (

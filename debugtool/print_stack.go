@@ -12,7 +12,8 @@ import (
 
 // Trace debug stack
 func Trace() {
-	if recover() != nil {
+	if err := recover(); err != nil {
+		fmt.Println(err)
 		fmt.Println(string(debug.Stack()))
 	}
 }

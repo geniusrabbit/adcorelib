@@ -94,8 +94,8 @@ func (i *Impression) IDByFormat(format *types.Format) string {
 }
 
 // TargetID value
-func (i Impression) TargetID() uint {
-	if i.Target == nil {
+func (i *Impression) TargetID() uint {
+	if i == nil || i.Target == nil {
 		return 0
 	}
 	return uint(i.Target.ID())
@@ -103,7 +103,7 @@ func (i Impression) TargetID() uint {
 
 // CompanyID number
 func (i *Impression) CompanyID() uint64 {
-	if i.Target != nil {
+	if i != nil && i.Target != nil {
 		return i.Target.CompanyID()
 	}
 	return 0
@@ -145,6 +145,9 @@ func (i *Impression) ComissionShareFactor() float64 {
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
 func (i *Impression) PurchasePrice(action admodels.Action) billing.Money {
+	if i == nil {
+		return 0
+	}
 	if action.IsImpression() && i.SourcePrice > 0 {
 		return i.SourcePrice
 	}

@@ -58,7 +58,7 @@ func (i *ResponseItemBlock) Price(action admodels.Action) (price billing.Money) 
 	for _, it := range i.Items {
 		price += it.Price(action)
 	}
-	return
+	return price
 }
 
 // AuctionCPMBid value price without any comission
@@ -66,7 +66,7 @@ func (i *ResponseItemBlock) AuctionCPMBid() (bid billing.Money) {
 	for _, it := range i.Items {
 		bid += it.AuctionCPMBid()
 	}
-	return
+	return bid
 }
 
 // Ads list
@@ -86,10 +86,10 @@ func (i *ResponseItemBlock) Validate() (err error) {
 	}
 	for _, it := range i.Items {
 		if err = it.Validate(); nil != err {
-			return
+			return err
 		}
 	}
-	return
+	return err
 }
 
 // Context value

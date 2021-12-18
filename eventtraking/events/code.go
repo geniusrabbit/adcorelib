@@ -11,7 +11,6 @@ import (
 	"errors"
 	"io"
 
-	// "github.com/pierrec/lz4"
 	lz4 "github.com/bkaradzic/go-lz4"
 
 	"geniusrabbit.dev/corelib/msgpack"
@@ -68,26 +67,7 @@ func (c Code) Compress() Code {
 	if c.err != nil {
 		return c
 	}
-
 	return CodeObj(lz4.Encode(nil, c.data))
-
-	// var (
-	// 	newCode Code
-	// 	lzwr    = lz4.NewWriter(&newCode)
-	// )
-	// lzwr.Header.BlockMaxSize = LZ4BlockMaxSize
-	// defer lzwr.Close()
-
-	// if _, newCode.err = lzwr.Write(c.data); newCode.err == nil {
-	// 	newCode.err = lzwr.Flush()
-	// }
-
-	// if newCode.err != nil {
-	// 	newCode.ResetData()
-	// }
-
-	// // data, err := lz4.Encode(nil, c.data)
-	// return newCode
 }
 
 // Decompress current code.data
@@ -95,18 +75,7 @@ func (c Code) Decompress() Code {
 	if c.err != nil {
 		return c
 	}
-
 	return CodeObj(lz4.Decode(nil, c.data))
-
-	// 	if len(c.data) < 1 {
-	// 		return CodeObj(nil, ErrEmptyData)
-	// 	}
-
-	// 	lzrd := lz4.NewReader(bytes.NewBuffer(c.data))
-	// 	data, err := ioutil.ReadAll(lzrd)
-
-	// 	// data, err := lz4.Decode(nil, c.data)
-	// 	return CodeObj(data, err)
 }
 
 func (c Code) Error() string {

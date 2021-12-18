@@ -46,10 +46,11 @@ func New(service string) Generator {
 // Event object by response
 func (g generator) Event(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) (*events.Event, error) {
 	var (
-		r        = response.Request()
-		imp      = it.Impression()
-		sourceID uint64
-		zoneID   uint64
+		r             = response.Request()
+		imp           = it.Impression()
+		sourceID      uint64
+		zoneID        uint64
+		accessPointID uint64
 	)
 
 	if src := it.Source(); src != nil {
@@ -62,6 +63,10 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 
 	if _, ok := it.(adtype.ResponserMultipleItem); ok {
 		return nil, ErrInvalidMultipleItemAsSingle
+	}
+
+	if response.Request().AccessPoint != nil {
+		accessPointID = response.Request().AccessPoint.ID()
 	}
 
 	return &events.Event{
@@ -84,7 +89,7 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		ExtImpID:     it.ExtImpressionID(),          // External auction Imp ID
 		Source:       sourceID,                      // Advertisement Source ID
 		Network:      it.NetworkName(),              // Source Network Name or Domain (Cross sails)
-		AccessPoint:  0,                             // Access Point ID to own Advertisement
+		AccessPoint:  accessPointID,                 // Access Point ID to own Advertisement
 		// State Location
 		Platform:    0,                 // Where displaid? 0 – undefined, 1 – web site, 2 – native app, 3 – game
 		Domain:      r.DomainName(),    //

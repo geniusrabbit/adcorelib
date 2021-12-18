@@ -41,6 +41,7 @@ type BidRequest struct {
 
 	ID              string                 `json:"id,omitempty"`    // Auction ID
 	ExtID           string                 `json:"bidid,omitempty"` // External Auction ID
+	AccessPoint     AccessPoint            `json:"-"`
 	Debug           bool                   `json:"debug,omitempty"`
 	AuctionType     types.AuctionType      `json:"auction_type,omitempty"`
 	RequestCtx      *fasthttp.RequestCtx   `json:"-"` // HTTP request context

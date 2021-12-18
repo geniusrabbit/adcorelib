@@ -43,6 +43,7 @@ func ReturnResponseAdItem(o *ResponseAdItem) {
 // BorrowResponse object
 func BorrowResponse(request *BidRequest, source Source, items []ResponserItemCommon, err error) *Response {
 	resp := responsePool.Get().(*Response)
+	resp.context = request.Ctx
 	resp.request = request
 	resp.source = source
 	resp.items = items

@@ -23,7 +23,6 @@ const (
 )
 
 var (
-	errInvalidCode    = errors.New("lead code: invalid code")
 	errInvalidSign    = errors.New("lead code: invalid sign")
 	errInvalidMessage = errors.New("lead code: invalid message")
 )
@@ -70,16 +69,14 @@ func (lc *LeadCode) Unpack(code []byte) (err error) {
 		sign = code[:signSize]
 		dec  = msgpack.DefaultDecodeGenerator.NewDecoder(nil, code[signSize:])
 	)
-
 	if err = dec.Decode(&lc); err != nil {
 		return err
 	}
 
 	// If sign isn't correct
-	if bytes.Compare(sign, lc.Sign()) != 0 {
+	if !bytes.Equal(sign, lc.Sign()) {
 		return errInvalidSign
 	}
-
 	return nil
 }
 
