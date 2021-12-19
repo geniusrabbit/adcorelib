@@ -24,6 +24,7 @@ type Generator struct {
 	CDNDomain      string
 	ClickPattern   string
 	DirectPattern  string
+	WinPattern     string
 }
 
 // CDNURL returns full URL to path
@@ -101,6 +102,20 @@ func (g *Generator) DirectURL(event events.Type, item adtype.ResponserItem, resp
 // DirectRouterURL returns router pattern
 func (g *Generator) DirectRouterURL() string {
 	urls := strings.Split(g.DirectPattern, "?")
+	return urls[0]
+}
+
+// WinURL generator from response of item
+func (g *Generator) WinURL(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+	if event == events.Undefined {
+		event = events.AccessPointWin
+	}
+	return g.encodeURL(g.WinPattern, event, events.StatusSuccess, item, response)
+}
+
+// WinRouterURL returns router pattern
+func (g *Generator) WinRouterURL() string {
+	urls := strings.Split(g.WinPattern, "?")
 	return urls[0]
 }
 

@@ -13,6 +13,7 @@ type MetricsCounter struct {
 	avgLatency   int64 // In Milliseconds
 	queries      int32
 	success      int32
+	skips        int32
 	timeouts     int32
 	noBids       int32
 	errors       int32
@@ -41,8 +42,8 @@ func (cnt *MetricsCounter) UpdateQueryLatency(latency time.Duration) {
 	}
 }
 
-// StartQuery new query counter
-func (cnt *MetricsCounter) StartQuery() int32 {
+// BeginQuery new query counter
+func (cnt *MetricsCounter) BeginQuery() int32 {
 	return atomic.AddInt32(&cnt.queries, 1)
 }
 
@@ -54,6 +55,11 @@ func (cnt *MetricsCounter) IncTimeout() int32 {
 // IncNobid counter
 func (cnt *MetricsCounter) IncNobid() int32 {
 	return atomic.AddInt32(&cnt.noBids, 1)
+}
+
+// IncSkip counter
+func (cnt *MetricsCounter) IncSkip() int32 {
+	return atomic.AddInt32(&cnt.skips, 1)
 }
 
 // IncSuccess counter
@@ -77,10 +83,15 @@ func (cnt *MetricsCounter) FillMetrics(info *MetricsInfo) {
 	info.MaxLatency = atomic.LoadInt64(&cnt.maxLatency)
 	info.AvgLatency = atomic.LoadInt64(&cnt.avgLatency)
 	info.QPS = counter(&cnt.queries, seconds)
+	info.Skips = counter(&cnt.skips, seconds)
 	info.Success = counter(&cnt.success, seconds)
 	info.Timeouts = counter(&cnt.timeouts, seconds)
 	info.NoBids = counter(&cnt.noBids, seconds)
 	info.Errors = counter(&cnt.errors, seconds)
+
+	if seconds > 60*10 { // Refresh every 10 mins
+		cnt.refresh()
+	}
 }
 
 func (cnt *MetricsCounter) refresh() {

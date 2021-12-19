@@ -31,6 +31,7 @@ type MetricsInfo struct {
 	AvgLatency int64             `json:"avg_latency"`
 	QPSLimit   int               `json:"qps_limit,omitempty"`
 	QPS        int32             `json:"qps"`
+	Skips      int32             `json:"skips"`
 	Success    int32             `json:"success"`
 	Timeouts   int32             `json:"timeouts"`
 	NoBids     int32             `json:"no_bids"`

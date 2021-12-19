@@ -36,4 +36,10 @@ type URLGenerator interface {
 
 	// DirectRouterURL returns router pattern
 	DirectRouterURL() string
+
+	// WinURL generator from response of item
+	WinURL(event events.Type, status uint8, item ResponserItem, response Responser) (string, error)
+
+	// WinRouterURL returns router pattern
+	WinRouterURL() string
 }

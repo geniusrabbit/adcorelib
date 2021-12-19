@@ -13,7 +13,7 @@ func BenchmarkCounter(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			now := time.Now()
-			counter.StartQuery()
+			counter.BeginQuery()
 			switch rand.Intn(4) {
 			case 0:
 				counter.IncNobid()

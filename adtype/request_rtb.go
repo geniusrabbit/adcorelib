@@ -33,9 +33,10 @@ var (
 
 // RTBRequest object
 type RTBRequest struct {
-	ID         string
-	RTBRequest openrtb.BidRequest
-	Context    context.Context
+	ID          string
+	AccessPoint AccessPoint
+	RTBRequest  openrtb.BidRequest
+	Context     context.Context
 }
 
 // Load from reader
@@ -126,15 +127,16 @@ func (r *RTBRequest) BidRequest(ctx context.Context, formats types.FormatsAccess
 		person = personification.EmptyPerson
 	}
 	request := &BidRequest{
-		Ctx:      ctx,
-		ID:       r.ID,
-		ExtID:    r.RTBRequest.ID,
-		Person:   person,
-		App:      r.app(),
-		Site:     r.site(),
-		Device:   r.device(person),
-		User:     r.user(person),
-		Timemark: time.Now(),
+		Ctx:         ctx,
+		AccessPoint: r.AccessPoint,
+		ID:          r.ID,
+		ExtID:       r.RTBRequest.ID,
+		Person:      person,
+		App:         r.app(),
+		Site:        r.site(),
+		Device:      r.device(person),
+		User:        r.user(person),
+		Timemark:    time.Now(),
 	}
 	for _, imp := range r.RTBRequest.Imp {
 		if _imp := r.imp(defaultTarget, &imp); _imp != nil {
