@@ -19,7 +19,7 @@ import (
 
 // Errors set
 var (
-	ErrInvalidMultipleItemAsSingle = errors.New("Cant convert multipleitem to single action")
+	ErrInvalidMultipleItemAsSingle = errors.New("can`t convert multipleitem to single action")
 )
 
 // Generator object
@@ -55,6 +55,10 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 
 	if src := it.Source(); src != nil {
 		sourceID = src.ID()
+	}
+
+	if sourceID == 0 && response.Source() != nil {
+		sourceID = response.Source().ID()
 	}
 
 	if imp != nil && imp.Target != nil {

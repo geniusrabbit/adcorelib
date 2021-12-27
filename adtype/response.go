@@ -27,6 +27,7 @@ func NewResponse(request *BidRequest, source Source, items []ResponserItemCommon
 		source:  source,
 		items:   items,
 		err:     err,
+		context: request.Ctx,
 	}
 }
 

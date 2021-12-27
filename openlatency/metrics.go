@@ -25,6 +25,7 @@ type MetricsGeoRate struct {
 type MetricsInfo struct {
 	ID         uint64            `json:"id"`
 	Protocol   string            `json:"protocol"`
+	Codename   string            `json:"codename,omitempty"`
 	Traceroute string            `json:"traceroute,omitempty"`
 	MinLatency int64             `json:"min_latency"` // Minimal request delay in Milliseconds
 	MaxLatency int64             `json:"max_latency"` // Maximal request delay in Milliseconds
