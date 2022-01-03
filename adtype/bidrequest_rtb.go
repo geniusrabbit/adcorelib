@@ -52,31 +52,29 @@ func WithFormatFilter(f func(f *types.Format) bool) BidRequestRTBOption {
 ///////////////////////////////////////////////////////////////////////////////
 
 // RTBBidRequest object
-func (r *BidRequest) RTBBidRequest(opts ...BidRequestRTBOption) *RTBRequest {
+func (r *BidRequest) RTBBidRequest(opts ...BidRequestRTBOption) *openrtb.BidRequest {
 	var opt BidRequestRTBOptions
 
 	for _, fn := range opts {
 		fn(&opt)
 	}
 
-	return &RTBRequest{
-		RTBRequest: openrtb.BidRequest{
-			ID:          r.ID,
-			Imp:         r._RTBImpressions(&opt),
-			Site:        uopenrtb.SiteFrom(r.SiteInfo()),
-			App:         uopenrtb.ApplicationFrom(r.AppInfo()),
-			Device:      uopenrtb.DeviceFrom(r.DeviceInfo(), r.UserInfo().Geo),
-			User:        r.UserInfo().RTBObject(),
-			AuctionType: 1,                // 1 = First Price, 2 = Second Price Plus
-			TMax:        0,                // Maximum amount of time in milliseconds to submit a bid
-			WSeat:       nil,              // Array of buyer seats allowed to bid on this auction
-			AllImps:     0,                //
-			Cur:         opt.currencies(), // Array of allowed currencies
-			Bcat:        nil,              // Blocked Advertiser Categories
-			BAdv:        nil,              // Array of strings of blocked toplevel domains of advertisers
-			Regs:        nil,
-			Ext:         nil,
-		},
+	return &openrtb.BidRequest{
+		ID:          r.ID,
+		Imp:         r._RTBImpressions(&opt),
+		Site:        uopenrtb.SiteFrom(r.SiteInfo()),
+		App:         uopenrtb.ApplicationFrom(r.AppInfo()),
+		Device:      uopenrtb.DeviceFrom(r.DeviceInfo(), r.UserInfo().Geo),
+		User:        r.UserInfo().RTBObject(),
+		AuctionType: 1,                // 1 = First Price, 2 = Second Price Plus
+		TMax:        0,                // Maximum amount of time in milliseconds to submit a bid
+		WSeat:       nil,              // Array of buyer seats allowed to bid on this auction
+		AllImps:     0,                //
+		Cur:         opt.currencies(), // Array of allowed currencies
+		Bcat:        nil,              // Blocked Advertiser Categories
+		BAdv:        nil,              // Array of strings of blocked toplevel domains of advertisers
+		Regs:        nil,
+		Ext:         nil,
 	}
 }
 

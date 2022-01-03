@@ -104,14 +104,14 @@ type ResponserItem interface {
 	// NetworkName by source
 	NetworkName() string
 
-	// Price summ
+	// Price for specific action if supported `click`, `lead`, `view`
 	Price(action admodels.Action) billing.Money
 
-	// SetCPMPrice update of DSP auction value
-	SetCPMPrice(price billing.Money, includeFactors ...bool)
+	// SetAuctionCPMPrice update of DSP auction value
+	SetAuctionCPMPrice(price billing.Money, includeFactors ...bool)
 
 	// CPMPrice value price value for DSP auction
-	CPMPrice(removeFactors ...bool) billing.Money
+	AuctionCPMPrice(removeFactors ...bool) billing.Money
 
 	// Second campaigns
 	Second() *SecondAd

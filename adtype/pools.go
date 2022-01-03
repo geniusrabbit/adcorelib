@@ -14,9 +14,6 @@ var (
 	responsePool = sync.Pool{
 		New: func() interface{} { return new(Response) },
 	}
-	requestRTBPool = sync.Pool{
-		New: func() interface{} { return new(RTBRequest) },
-	}
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,19 +52,4 @@ func BorrowResponse(request *BidRequest, source Source, items []ResponserItemCom
 func ReturnResponse(o *Response) {
 	o.reset()
 	responsePool.Put(o)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// Request RTB item sync pool
-///////////////////////////////////////////////////////////////////////////////
-
-// BorrowRTBRequest object
-func BorrowRTBRequest() *RTBRequest {
-	return requestRTBPool.Get().(*RTBRequest)
-}
-
-// ReturnRequestRTB back to pool
-func ReturnRequestRTB(o *RTBRequest) {
-	o.reset()
-	requestRTBPool.Put(o)
 }

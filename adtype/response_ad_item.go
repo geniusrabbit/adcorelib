@@ -341,8 +341,8 @@ func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
 	return
 }
 
-// SetCPMPrice update of DSP auction value
-func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
+// SetAuctionCPMPrice update of DSP auction value
+func (it *ResponseAdItem) SetAuctionCPMPrice(price billing.Money, includeFactors ...bool) {
 	if len(includeFactors) > 0 && includeFactors[0] {
 		price = it.PreparePrice(price, false)
 	}
@@ -351,8 +351,8 @@ func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...boo
 	}
 }
 
-// CPMPrice value price value for DSP auction
-func (it *ResponseAdItem) CPMPrice(removeFactors ...bool) (price billing.Money) {
+// AuctionCPMPrice value price value for DSP auction
+func (it *ResponseAdItem) AuctionCPMPrice(removeFactors ...bool) (price billing.Money) {
 	if it.CPMBidPrice > 0 {
 		price = it.CPMBidPrice
 	} else if it.PricingModel().IsCPM() {
@@ -372,7 +372,7 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...bool) (price billing.Money) 
 
 // AuctionCPMBid value price without any comission
 func (it *ResponseAdItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice()
+	return it.AuctionCPMPrice()
 }
 
 // Revenue value (in percents)
@@ -452,7 +452,7 @@ func (it *ResponseAdItem) PriceByAction(action admodels.Action) (amount billing.
 		if it.Ad.PricingModel.IsCPM() {
 			amount = it.Price(admodels.ActionImpression)
 		} else {
-			amount = it.CPMPrice() / 1000
+			amount = it.AuctionCPMPrice() / 1000
 		}
 	case admodels.ActionClick:
 		if it.Ad.PricingModel.IsCPC() {

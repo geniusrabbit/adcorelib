@@ -58,8 +58,8 @@ func Test_ItemPricing(t *testing.T) {
 		})
 
 		t.Run(prefix+"_cpm_price", func(t *testing.T) {
-			if item.CPMPrice() != billing.MoneyFloat(5) {
-				t.Errorf("cpm_price value: 5 != %.3f", item.CPMPrice().Float64())
+			if item.AuctionCPMPrice() != billing.MoneyFloat(5) {
+				t.Errorf("cpm_price value: 5 != %.3f", item.AuctionCPMPrice().Float64())
 			}
 		})
 	}

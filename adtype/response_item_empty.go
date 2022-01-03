@@ -94,11 +94,11 @@ func (*ResponseItemEmpty) NetworkName() string { return "" }
 // Price summ
 func (*ResponseItemEmpty) Price(action admodels.Action) billing.Money { return 0 }
 
-// SetCPMPrice update of DSP auction value
-func (*ResponseItemEmpty) SetCPMPrice(price billing.Money, includeFactors ...bool) {}
+// SetAuctionCPMPrice update of DSP auction value
+func (*ResponseItemEmpty) SetAuctionCPMPrice(price billing.Money, includeFactors ...bool) {}
 
-// CPMPrice value price value for DSP auction
-func (*ResponseItemEmpty) CPMPrice(removeFactors ...bool) billing.Money { return 0 }
+// AuctionCPMPrice value price value for DSP auction
+func (*ResponseItemEmpty) AuctionCPMPrice(removeFactors ...bool) billing.Money { return 0 }
 
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }

@@ -321,8 +321,8 @@ func (it *ResponseBidItem) Price(action admodels.Action) billing.Money {
 	return 0
 }
 
-// SetCPMPrice update of DSP auction value
-func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
+// SetAuctionCPMPrice update of DSP auction value
+func (it *ResponseBidItem) SetAuctionCPMPrice(price billing.Money, includeFactors ...bool) {
 	if len(includeFactors) > 0 && includeFactors[0] {
 		price = it.PreparePrice(price, false)
 	}
@@ -331,8 +331,8 @@ func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...bo
 	}
 }
 
-// CPMPrice value price value for DSP auction
-func (it *ResponseBidItem) CPMPrice(removeFactors ...bool) (price billing.Money) {
+// AuctionCPMPrice value price value for DSP auction
+func (it *ResponseBidItem) AuctionCPMPrice(removeFactors ...bool) (price billing.Money) {
 	if it.PricingModel() == types.PricingModelCPM {
 		price = it.Price(admodels.ActionImpression) * 1000
 	} else {
@@ -349,7 +349,7 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...bool) (price billing.Money)
 
 // AuctionCPMBid value price without any comission
 func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice()
+	return it.AuctionCPMPrice()
 }
 
 // Second campaigns
