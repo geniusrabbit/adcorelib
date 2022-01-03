@@ -133,22 +133,26 @@ func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, i
 	var (
 		rctx      = response.Request().HTTPRequest()
 		code, err = g.EventCode(event, status, item, response)
+		urlVal    string
 	)
 	if err != nil {
 		return "", err
 	}
+
 	code = url.QueryEscape(code)
 	if !strings.Contains(pattern, "{hostname}") {
 		if strings.HasPrefix(pattern, "/") {
-			return "//" + string(rctx.Host()) + strings.Replace(pattern, "{code}", code, -1), nil
+			urlVal = "//" + string(rctx.Host()) + strings.Replace(pattern, "{code}", code, -1)
+		} else {
+			urlVal = "//" + string(rctx.Host()) + "/" + strings.Replace(pattern, "{code}", code, -1)
 		}
-		return "//" + string(rctx.Host()) + "/" + strings.Replace(pattern, "{code}", code, -1), nil
+	} else {
+		urlVal = strings.NewReplacer(
+			"{code}", code,
+			"{hostname}", string(rctx.Host()),
+		).Replace(pattern)
 	}
 
-	urlVal := strings.NewReplacer(
-		"{code}", code,
-		"{hostname}", string(rctx.Host()),
-	).Replace(pattern)
 	if err == nil && response.Request().AuctionType.IsSecondPrice() {
 		if strings.Contains(urlVal, "?") {
 			urlVal += "&"
