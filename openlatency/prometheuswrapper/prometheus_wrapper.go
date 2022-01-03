@@ -5,7 +5,6 @@ import (
 
 	"geniusrabbit.dev/corelib/openlatency"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type Wrapper struct {
@@ -23,31 +22,31 @@ func NewWrapperDefault(prefix string, tags, params []string) *Wrapper {
 	buckets := []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
 	return &Wrapper{
 		counter: openlatency.NewMetricsCounter(),
-		queries: promauto.NewCounterVec(prometheus.CounterOpts{
+		queries: newCounterVec(prometheus.CounterOpts{
 			Name: prefix + "queries_count",
 			Help: "Count of requests",
 		}, tags).WithLabelValues(params...),
-		errors: promauto.NewCounterVec(prometheus.CounterOpts{
+		errors: newCounterVec(prometheus.CounterOpts{
 			Name: prefix + "errors_count",
 			Help: "Count of errors",
 		}, tags).WithLabelValues(params...),
-		noBid: promauto.NewCounterVec(prometheus.CounterOpts{
+		noBid: newCounterVec(prometheus.CounterOpts{
 			Name: prefix + "nobid_count",
 			Help: "Count of nobids",
 		}, tags).WithLabelValues(params...),
-		skip: promauto.NewCounterVec(prometheus.CounterOpts{
+		skip: newCounterVec(prometheus.CounterOpts{
 			Name: prefix + "skip_count",
 			Help: "Count of skips",
 		}, tags).WithLabelValues(params...),
-		timeouts: promauto.NewCounterVec(prometheus.CounterOpts{
+		timeouts: newCounterVec(prometheus.CounterOpts{
 			Name: prefix + "timeout_count",
 			Help: "Count of timeouts",
 		}, tags).WithLabelValues(params...),
-		success: promauto.NewCounterVec(prometheus.CounterOpts{
+		success: newCounterVec(prometheus.CounterOpts{
 			Name: prefix + "success_count",
 			Help: "Count of success",
 		}, tags).WithLabelValues(params...),
-		latency: prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		latency: newHistogramVec(prometheus.HistogramOpts{
 			Name:    prefix + "latency_seconds",
 			Help:    "Histogram of response time in seconds",
 			Buckets: buckets,
