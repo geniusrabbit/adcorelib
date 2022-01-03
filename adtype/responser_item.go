@@ -107,11 +107,11 @@ type ResponserItem interface {
 	// Price for specific action if supported `click`, `lead`, `view`
 	Price(action admodels.Action) billing.Money
 
-	// SetAuctionCPMPrice update of DSP auction value
-	SetAuctionCPMPrice(price billing.Money, includeFactors ...bool)
+	// SetCPMPrice update of DSP auction value
+	SetCPMPrice(price billing.Money, includeFactors ...bool)
 
 	// CPMPrice value price value for DSP auction
-	AuctionCPMPrice(removeFactors ...bool) billing.Money
+	CPMPrice(removeFactors ...bool) billing.Money
 
 	// Second campaigns
 	Second() *SecondAd
