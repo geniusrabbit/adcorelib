@@ -38,11 +38,17 @@ func NewErrorResponse(request *BidRequest, err error) *Response {
 
 // AuctionID response
 func (r *Response) AuctionID() string {
+	if r == nil || r.request == nil {
+		return ""
+	}
 	return r.request.ID
 }
 
 // AuctionType of request
 func (r *Response) AuctionType() types.AuctionType {
+	if r == nil || r.request == nil {
+		return types.UndefinedAuctionType
+	}
 	return r.request.AuctionType
 }
 
@@ -104,10 +110,13 @@ func (r *Response) Error() error {
 
 // Context value
 func (r *Response) Context(ctx ...context.Context) context.Context {
-	if len(ctx) > 0 {
+	if r != nil && len(ctx) > 0 {
 		oldContext := r.context
 		r.context = ctx[0]
 		return oldContext
+	}
+	if r == nil || r.context == nil {
+		return context.Background()
 	}
 	return r.context
 }

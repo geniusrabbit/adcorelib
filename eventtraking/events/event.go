@@ -171,8 +171,8 @@ func (e *Event) DateTime() time.Time {
 }
 
 // SetDateTime timestamp
-func (e *Event) SetDateTime(tm time.Time) {
-	e.Time = tm.UnixNano()
+func (e *Event) SetDateTime(tmNano int64) {
+	e.Time = tmNano
 }
 
 // UpdateDateTime of event

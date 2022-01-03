@@ -110,7 +110,18 @@ func (g *Generator) WinURL(event events.Type, status uint8, item adtype.Response
 	if event == events.Undefined {
 		event = events.AccessPointWin
 	}
-	return g.encodeURL(g.WinPattern, event, events.StatusSuccess, item, response)
+	winURL, err := g.encodeURL(g.WinPattern, event, events.StatusSuccess, item, response)
+	if err == nil && response.Request().AuctionType.IsSecondPrice() {
+		if strings.Contains(winURL, "?") {
+			winURL += "&"
+		} else {
+			winURL += "?"
+		}
+		// ${AUCTION_PRICE} - Clearing price using the same currency and units as
+		// the bid. Note that this macro is currently not supported in AMP ads.
+		winURL += "price=${AUCTION_PRICE}"
+	}
+	return winURL, err
 }
 
 // WinRouterURL returns router pattern
