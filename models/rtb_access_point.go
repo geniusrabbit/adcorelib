@@ -14,6 +14,7 @@ import (
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/corelib/billing"
 )
 
 // RTBAccessPoint for DSP connect.
@@ -42,6 +43,7 @@ type RTBAccessPoint struct {
 	Protocol      string        `json:"protocol,omitempty"`
 	Timeout       int           `json:"timeout,omitempty"`
 	RPS           int           `json:"rps,omitempty"`
+	MaxBid        billing.Money `json:"max_bid,omitempty"`
 	DomainDefault string        `json:"domain_default,omitempty"`
 	Headers       pgtype.Hstore `json:"headers,omitempty"`
 

@@ -11,6 +11,7 @@ import (
 	"github.com/geniusrabbit/gosql/pgtype"
 
 	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/models"
 )
 
@@ -37,6 +38,7 @@ type RTBAccessPoint struct {
 	Protocol string // rtb as default
 	RPS      int    // 0 – unlimit
 	Timeout  int    // In milliseconds
+	MaxBid   billing.Money
 
 	Filter types.BaseFilter
 
@@ -78,6 +80,7 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 		AuctionType:        cl.AuctionType,
 		RPS:                cl.RPS,
 		Timeout:            cl.Timeout,
+		MaxBid:             cl.MaxBid,
 		Filter:             filter,
 		RevenueShareReduce: cl.RevenueShareReduce,
 		Flags:              cl.Flags,
