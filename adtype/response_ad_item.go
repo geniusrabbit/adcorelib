@@ -338,13 +338,15 @@ func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
 			price = it.Ad.LeadPrice
 		}
 	}
-	return
+	return price
 }
 
 // SetCPMPrice update of DSP auction value
 func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
 	if len(includeFactors) > 0 && includeFactors[0] {
-		price = it.PreparePrice(price, false)
+		price += PriceSourceFactors(price, it.Source())
+		price += PriceSystemComission(price, it)
+		price += PriceRevenueShareReduceFactors(price, it.Imp.Target)
 	}
 	if price < it.ECPM() || price < it.Ad.BidPrice {
 		it.CPMBidPrice = price
@@ -365,14 +367,47 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...bool) (price billing.Money) 
 
 	// Remove system commision from the price
 	if len(removeFactors) > 0 && removeFactors[0] {
-		price = it.PreparePrice(price, true)
+		price -= PriceSourceFactors(price, it.Source())
+		price -= PriceSystemComission(price, it)
+		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
 	}
 	return price
 }
 
 // AuctionCPMBid value price without any comission
+// Can be replaced on comission only
 func (it *ResponseAdItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice()
+	price := it.CPMPrice()
+	price -= PriceSourceFactors(price, it.Source())
+	price -= PriceSystemComission(price, it)
+	price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
+	return price
+}
+
+// PurchasePrice gives the price of view from external resource.
+// The cost of this request.
+func (it *ResponseAdItem) PurchasePrice(action admodels.Action) billing.Money {
+	if it == nil {
+		return 0
+	}
+	// Some sources can have the fixed price of buying
+	if action.IsImpression() && it.Imp.SourcePrice > 0 {
+		return it.Imp.SourcePrice
+	}
+	if it.Imp.Target != nil {
+		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
+			return pPrice
+		}
+	}
+	switch action {
+	case admodels.ActionImpression:
+		price := it.CPMPrice()
+		price -= PriceSourceFactors(price, it.Source())
+		price -= PriceSystemComission(price, it)
+		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
+		return price
+	}
+	return 0
 }
 
 // Revenue value (in percents)
@@ -383,7 +418,7 @@ func (it *ResponseAdItem) Revenue() float64 {
 // Potential money (in percents)
 func (it *ResponseAdItem) Potential() float64 {
 	if it.Src != nil {
-		return it.Src.RevenueShareReduceFactor() * 100
+		return it.Src.PriceCorrectionReduceFactor() * 100
 	}
 	return 0
 }
@@ -418,17 +453,6 @@ func (it *ResponseAdItem) Get(key string) interface{} {
 		return nil
 	}
 	return it.Ctx.Value(key)
-}
-
-// PreparePrice value
-func (it *ResponseAdItem) PreparePrice(price billing.Money, removeFactors bool) billing.Money {
-	fc := it.ComissionShareFactor() + it.Source().RevenueShareReduceFactor()
-	if removeFactors {
-		price -= price * billing.MoneyFloat(fc)
-	} else {
-		price += price * billing.MoneyFloat(fc)
-	}
-	return price
 }
 
 func (it *ResponseAdItem) prepareMaxBidPrice(price billing.Money, maxIfZero bool) billing.Money {

@@ -95,6 +95,11 @@ func (z *Zone) ComissionShareFactor() float64 {
 	return z.Comp.ComissionShareFactor()
 }
 
+// RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy
+// Returns percent from 0 to 1 for reducing of the value
+// If there is 10% of price correction, it means that 10% of the final price must be ignored
+func (z *Zone) RevenueShareReduceFactor() float64 { return 0 }
+
 // IsAllowedSource for targeting
 func (z *Zone) IsAllowedSource(id uint64, types []int) bool {
 	if len(z.AllowedSources) > 0 {

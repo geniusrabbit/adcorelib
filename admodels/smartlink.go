@@ -93,6 +93,11 @@ func (l *Smartlink) ComissionShareFactor() float64 {
 	return l.Comp.ComissionShareFactor()
 }
 
+// RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy
+// Returns percent from 0 to 1 for reducing of the value
+// If there is 10% of price correction, it means that 10% of the final price must be ignored
+func (l *Smartlink) RevenueShareReduceFactor() float64 { return 0 }
+
 // IsAllowedSource for targeting
 func (l *Smartlink) IsAllowedSource(id uint64, types []int) bool {
 	if len(l.AllowedSources) > 0 {

@@ -324,7 +324,9 @@ func (it *ResponseBidItem) Price(action admodels.Action) billing.Money {
 // SetCPMPrice update of DSP auction value
 func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
 	if len(includeFactors) > 0 && includeFactors[0] {
-		price = it.PreparePrice(price, false)
+		price += PriceSourceFactors(price, it.Source())
+		price += PriceSystemComission(price, it)
+		price += PriceRevenueShareReduceFactors(price, it.Imp.Target)
 	}
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price
@@ -342,7 +344,9 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...bool) (price billing.Money)
 		price = it.CPMBidPrice
 	}
 	if len(removeFactors) > 0 && removeFactors[0] {
-		price = it.PreparePrice(price, true)
+		price -= PriceSourceFactors(price, it.Source())
+		price -= PriceSystemComission(price, it)
+		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
 	}
 	return price
 }
@@ -350,6 +354,32 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...bool) (price billing.Money)
 // AuctionCPMBid value price without any comission
 func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
 	return it.CPMPrice()
+}
+
+// PurchasePrice gives the price of view from external resource.
+// The cost of this request.
+func (it *ResponseBidItem) PurchasePrice(action admodels.Action) billing.Money {
+	if it == nil {
+		return 0
+	}
+	// Some sources can have the fixed price of buying
+	if action.IsImpression() && it.Imp.SourcePrice > 0 {
+		return it.Imp.SourcePrice
+	}
+	if it.Imp.Target != nil {
+		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
+			return pPrice
+		}
+	}
+	switch action {
+	case admodels.ActionImpression:
+		price := it.CPMPrice()
+		price -= PriceSourceFactors(price, it.Source())
+		price -= PriceSystemComission(price, it)
+		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
+		return price
+	}
+	return 0
 }
 
 // Second campaigns
@@ -364,7 +394,7 @@ func (it *ResponseBidItem) Revenue() float64 {
 
 // Potential money (in percents)
 func (it *ResponseBidItem) Potential() float64 {
-	return it.Source().RevenueShareReduceFactor() * 100
+	return it.Source().PriceCorrectionReduceFactor() * 100
 }
 
 // RevenueShareFactor value
@@ -427,17 +457,6 @@ func (it *ResponseBidItem) Get(key string) (res interface{}) {
 		return res
 	}
 	return it.context.Value(key)
-}
-
-// PreparePrice value
-func (it *ResponseBidItem) PreparePrice(price billing.Money, removeFactors bool) billing.Money {
-	fc := it.ComissionShareFactor() + it.Source().RevenueShareReduceFactor()
-	if removeFactors {
-		price -= price * billing.MoneyFloat(fc)
-	} else {
-		price += price * billing.MoneyFloat(fc)
-	}
-	return price
 }
 
 var (

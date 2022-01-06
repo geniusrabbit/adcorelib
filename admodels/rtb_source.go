@@ -52,9 +52,9 @@ type RTBSource struct {
 	Options     RTBSourceOptions  //
 	Filter      types.BaseFilter  //
 
-	Accuracy           float64 // Price accuracy for auction in percentages
-	RevenueShareReduce float64 // % 100, 80%, 65.5%
-	MinimalWeight      float64
+	Accuracy              float64 // Price accuracy for auction in percentages
+	PriceCorrectionReduce float64 // % 100, 80%, 65.5%
+	MinimalWeight         float64
 
 	Flags  pgtype.Hstore
 	Config gosql.NullableJSON
@@ -91,23 +91,23 @@ func RTBSourceFromModel(cl *models.RTBSource, comp *Company) (src *RTBSource) {
 	filter.Set(types.FieldDomains, cl.Domains)
 
 	return &RTBSource{
-		ID:                 cl.ID,
-		Company:            comp,
-		Protocol:           strings.ToLower(cl.Protocol),
-		URL:                cl.URL,
-		Method:             strings.ToUpper(cl.Method),
-		RequestType:        cl.RequestType,
-		Headers:            cl.Headers,
-		AuctionType:        cl.AuctionType,
-		RPS:                cl.RPS,
-		Timeout:            cl.Timeout,
-		Options:            opt,
-		Filter:             filter,
-		Accuracy:           cl.Accuracy,
-		RevenueShareReduce: cl.RevenueShareReduce,
-		MinimalWeight:      cl.MinimalWeight,
-		Flags:              cl.Flags,
-		Config:             cl.Config,
+		ID:                    cl.ID,
+		Company:               comp,
+		Protocol:              strings.ToLower(cl.Protocol),
+		URL:                   cl.URL,
+		Method:                strings.ToUpper(cl.Method),
+		RequestType:           cl.RequestType,
+		Headers:               cl.Headers,
+		AuctionType:           cl.AuctionType,
+		RPS:                   cl.RPS,
+		Timeout:               cl.Timeout,
+		Options:               opt,
+		Filter:                filter,
+		Accuracy:              cl.Accuracy,
+		PriceCorrectionReduce: cl.PriceCorrectionReduce,
+		MinimalWeight:         cl.MinimalWeight,
+		Flags:                 cl.Flags,
+		Config:                cl.Config,
 	}
 }
 
@@ -121,7 +121,9 @@ func (s *RTBSource) TestFormat(f *types.Format) bool {
 	return s.Filter.TestFormat(f)
 }
 
-// RevenueShareReduceFactor from 0. to 1.
-func (s *RTBSource) RevenueShareReduceFactor() float64 {
-	return s.RevenueShareReduce / 100.0
+// PriceCorrectionReduceFactor which is a potential
+// Returns percent from 0 to 1 for reducing of the value
+// If there is 10% of price correction, it means that 10% of the final price must be ignored
+func (s *RTBSource) PriceCorrectionReduceFactor() float64 {
+	return s.PriceCorrectionReduce / 100.0
 }

@@ -134,27 +134,12 @@ func (i *Impression) RevenueShareFactor() float64 {
 	return i.Target.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher
+// ComissionShareFactor which system get from publisher from 0 to 1
 func (i *Impression) ComissionShareFactor() float64 {
 	if i == nil || i.Target == nil {
 		return 0
 	}
 	return i.Target.ComissionShareFactor()
-}
-
-// PurchasePrice gives the price of view from external resource.
-// The cost of this request.
-func (i *Impression) PurchasePrice(action admodels.Action) billing.Money {
-	if i == nil {
-		return 0
-	}
-	if action.IsImpression() && i.SourcePrice > 0 {
-		return i.SourcePrice
-	}
-	if i.Target != nil {
-		return i.Target.PurchasePrice(action)
-	}
-	return 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////

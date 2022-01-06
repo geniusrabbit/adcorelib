@@ -113,6 +113,10 @@ type ResponserItem interface {
 	// CPMPrice value price value for DSP auction
 	CPMPrice(removeFactors ...bool) billing.Money
 
+	// PurchasePrice gives the price of view from external resource.
+	// The cost of this request.
+	PurchasePrice(action admodels.Action) billing.Money
+
 	// Second campaigns
 	Second() *SecondAd
 

@@ -24,11 +24,16 @@ type Target interface {
 	// PurchasePrice gives the price of view from external resource
 	PurchasePrice(action Action) billing.Money
 
-	// RevenueShareFactor of current target
+	// RevenueShareFactor of current target from 0 to 1
 	RevenueShareFactor() float64
 
-	// ComissionShareFactor of current target
+	// ComissionShareFactor of current target from 0 to 1
 	ComissionShareFactor() float64
+
+	// RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy
+	// Returns percent from 0 to 1 for reducing of the value
+	// If there is 10% of price correction, it means that 10% of the final price must be ignored
+	RevenueShareReduceFactor() float64
 
 	// Company object
 	Company() *Company

@@ -100,6 +100,10 @@ func (*ResponseItemEmpty) SetCPMPrice(price billing.Money, includeFactors ...boo
 // CPMPrice value price value for DSP auction
 func (*ResponseItemEmpty) CPMPrice(removeFactors ...bool) billing.Money { return 0 }
 
+// PurchasePrice gives the price of view from external resource.
+// The cost of this request.
+func (*ResponseItemEmpty) PurchasePrice(action admodels.Action) billing.Money { return 0 }
+
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }
 

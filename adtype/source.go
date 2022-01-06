@@ -42,8 +42,10 @@ type Source interface {
 	// Test request before processing
 	Test(request *BidRequest) bool
 
-	// RevenueShareReduceFactor which is a potential
-	RevenueShareReduceFactor() float64
+	// PriceCorrectionReduceFactor which is a potential
+	// Returns percent from 0 to 1 for reducing of the value
+	// If there is 10% of price correction, it means that 10% of the final price must be ignored
+	PriceCorrectionReduceFactor() float64
 
 	// RequestStrategy description
 	RequestStrategy() RequestStrategy
@@ -103,8 +105,10 @@ func (wp minimalSourceWrapper) ProcessResponseItem(response Responser, item Resp
 	wp.source.ProcessResponseItem(response, item)
 }
 
-// RevenueShareReduceFactor which is a potential
-func (wp minimalSourceWrapper) RevenueShareReduceFactor() float64 { return 0 }
+// PriceCorrectionReduceFactor which is a potential
+// Returns percent from 0 to 1 for reducing of the value
+// If there is 10% of price correction, it means that 10% of the final price must be ignored
+func (wp minimalSourceWrapper) PriceCorrectionReduceFactor() float64 { return 0 }
 
 // RequestStrategy description
 func (wp minimalSourceWrapper) RequestStrategy() RequestStrategy {

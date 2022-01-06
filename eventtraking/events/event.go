@@ -90,7 +90,9 @@ type Event struct {
 	//  3) If we are buying the traffic for CPA
 	//		LeadPrice = 20$ - Have to pay advertiser
 	//		PurchaseViewPrice = 10$ - Have to pay to the source
-	PricingModel       uint          `thrift:",36" json:"pm,omitempty"`     // Display As CPM/CPC/CPA/CPI
+	PricingModel uint `thrift:",36" json:"pm,omitempty"` // Display As CPM/CPC/CPA/CPI
+	// Prurchase price from SSP or other TRAFFIC sources (menetisation of income requests)
+	// We are buying the place of advertisement display
 	PurchaseViewPrice  billing.Money `thrift:",37" json:"pvpr,omitempty"`   // Price of the view of source traffic cost
 	PurchaseClickPrice billing.Money `thrift:",38" json:"pcpr,omitempty"`   // Price of the click of source traffic cost
 	PurchaseLeadPrice  billing.Money `thrift:",39" json:"plpr,omitempty"`   // Price of the lead of source traffic cost

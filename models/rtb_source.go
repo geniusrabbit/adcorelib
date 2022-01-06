@@ -42,9 +42,9 @@ type RTBSource struct {
 	Timeout       int                  `json:"timeout"`           // In milliseconds
 
 	// Money configs
-	Accuracy           float64           `json:"accuracy,omitempty"`             // Price accuracy for auction in percentages
-	RevenueShareReduce float64           `json:"revenue_share_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
-	AuctionType        types.AuctionType `json:"auction_type,omitempty"`         // default: 0 – first price type, 1 – second price type
+	Accuracy              float64           `json:"accuracy,omitempty"`                // Price accuracy for auction in percentages
+	PriceCorrectionReduce float64           `json:"price_correction_reduce,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	AuctionType           types.AuctionType `json:"auction_type,omitempty"`            // default: 0 – first price type, 1 – second price type
 
 	// Targeting filters
 	Formats         gosql.StringArray             `json:"formats,omitempty"`                       // => Filters
@@ -99,7 +99,9 @@ func (c *RTBSource) SetFlag(flagName string, flagValue int) {
 	c.Flags.Set(flagName, strconv.Itoa(flagValue))
 }
 
-// RevenueShareReduceFactor from 0. to 1.
-func (c *RTBSource) RevenueShareReduceFactor() float64 {
-	return float64(c.RevenueShareReduce) / 10000.0
+// PriceCorrectionReduceFactor which is a potential
+// Returns percent from 0 to 1 for reducing of the value
+// If there is 10% of price correction, it means that 10% of the final price must be ignored
+func (c *RTBSource) PriceCorrectionReduceFactor() float64 {
+	return c.PriceCorrectionReduce / 100.
 }

@@ -97,7 +97,9 @@ func (s *RTBAccessPoint) TestFormat(f *types.Format) bool {
 	return s.Filter.TestFormat(f)
 }
 
-// RevenueShareReduceFactor from 0. to 1.
+// RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy
+// Returns percent from 0 to 1 for reducing of the value
+// If there is 10% of price correction, it means that 10% of the final price must be ignored
 func (s *RTBAccessPoint) RevenueShareReduceFactor() float64 {
-	return s.RevenueShareReduce / 10000.
+	return s.RevenueShareReduce / 100.
 }
