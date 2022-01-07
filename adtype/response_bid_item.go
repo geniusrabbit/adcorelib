@@ -324,9 +324,9 @@ func (it *ResponseBidItem) Price(action admodels.Action) billing.Money {
 // SetCPMPrice update of DSP auction value
 func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
 	if len(includeFactors) > 0 && includeFactors[0] {
-		price += PriceSourceFactors(price, it.Source())
-		price += PriceSystemComission(price, it)
 		price += PriceRevenueShareReduceFactors(price, it.Imp.Target)
+		price += PriceSystemComission(price, it)
+		price += PriceSourceFactors(price, it.Source())
 	}
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price

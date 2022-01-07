@@ -1,7 +1,9 @@
 package adtype
 
 // SourceEmpty abstraction
-type SourceEmpty struct{}
+type SourceEmpty struct {
+	PriceCorrectionReduce float64 // from 0 to 100
+}
 
 // Bid request for standart system filter
 func (*SourceEmpty) Bid(request *BidRequest) Responser { return nil }
@@ -18,7 +20,7 @@ func (*SourceEmpty) Test(request *BidRequest) bool { return false }
 // PriceCorrectionReduceFactor which is a potential
 // Returns percent from 0 to 1 for reducing of the value
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
-func (*SourceEmpty) PriceCorrectionReduceFactor() float64 { return 0 }
+func (s *SourceEmpty) PriceCorrectionReduceFactor() float64 { return s.PriceCorrectionReduce / 100. }
 
 // RequestStrategy description
 func (*SourceEmpty) RequestStrategy() RequestStrategy { return 0 }

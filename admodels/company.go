@@ -39,12 +39,12 @@ func CompanyFromModel(c *models.Company) *Company {
 
 // RevenueShareFactor multipler 0..1
 func (c *Company) RevenueShareFactor() float64 {
-	return c.RevenueShare / 10000.
+	return c.RevenueShare / 100.
 }
 
 // ComissionShareFactor which system get from publisher 0..1
 func (c *Company) ComissionShareFactor() float64 {
-	return 1. - c.RevenueShare/10000.
+	return (100 - c.RevenueShare) / 100.
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -32,14 +32,14 @@ func Test_ItemPricing(t *testing.T) {
 
 		t.Run(prefix+"_bid_price", func(t *testing.T) {
 			if item.Price(admodels.ActionImpression) != billing.MoneyFloat(10) {
-				t.Error("target price must be 10")
+				t.Errorf("target price must be 10, not %.3f", item.Price(admodels.ActionImpression).Float64())
 			}
 		})
 
 		t.Run(prefix+"_revenue_value", func(t *testing.T) {
 			rev := item.RevenueShareFactor() * item.Price(admodels.ActionImpression).Float64()
 			if rev != 9 {
-				t.Errorf("wrong_revenue value: %.3f", rev)
+				t.Errorf("wrong_revenue value: %.9f", rev)
 			}
 		})
 
@@ -68,7 +68,7 @@ func Test_ItemPricing(t *testing.T) {
 func newRTBResponse(comp *admodels.Company, imp Impression) *ResponseBidItem {
 	return &ResponseBidItem{
 		ItemID:      "1",
-		Src:         nil,
+		Src:         &SourceEmpty{PriceCorrectionReduce: 0},
 		Req:         &BidRequest{ID: "xxx", Imps: []Impression{imp}},
 		Imp:         &imp,
 		Bid:         &openrtb.Bid{Price: 60},
@@ -81,7 +81,7 @@ func newRTBResponse(comp *admodels.Company, imp Impression) *ResponseBidItem {
 func newAdResponse(comp *admodels.Company, imp Impression) *ResponseAdItem {
 	return &ResponseAdItem{
 		ItemID: "1",
-		Src:    nil,
+		Src:    &SourceEmpty{PriceCorrectionReduce: 0},
 		Req:    &BidRequest{ID: "xxx", Imps: []Impression{imp}},
 		Imp:    &imp,
 		Ad: &admodels.Ad{
@@ -93,8 +93,9 @@ func newAdResponse(comp *admodels.Company, imp Impression) *ResponseAdItem {
 			Budget:      billing.MoneyFloat(10000),
 			Hours:       nil,
 		},
-		BidPrice: billing.MoneyFloat(10),
-		SecondAd: SecondAd{},
+		BidPrice:    billing.MoneyFloat(10),
+		CPMBidPrice: billing.MoneyFloat(5),
+		SecondAd:    SecondAd{},
 	}
 }
 

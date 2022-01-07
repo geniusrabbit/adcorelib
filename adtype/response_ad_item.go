@@ -327,6 +327,9 @@ func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
 		if !it.PricingModel().IsCPM() {
 			price = 0
 		}
+		if it.BidPrice > 0 {
+			price = it.BidPrice
+		}
 	case admodels.ActionClick:
 		if !it.PricingModel().IsCPC() {
 			price = 0

@@ -7,7 +7,7 @@ type systemComissionFactorer interface {
 	ComissionShareFactor() float64
 }
 
-type revenueSgareReducerFactorer interface {
+type revenueShareReducerFactorer interface {
 	RevenueShareReduceFactor() float64
 }
 
@@ -15,7 +15,7 @@ type revenueSgareReducerFactorer interface {
 func PriceSourceFactors(price billing.Money, src Source) billing.Money {
 	if src != nil {
 		if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
-			return price / 100 * billing.MoneyFloat(reduce)
+			return price / 100 * billing.Money(reduce*100)
 		}
 	}
 	return 0
@@ -25,17 +25,17 @@ func PriceSourceFactors(price billing.Money, src Source) billing.Money {
 func PriceSystemComission(price billing.Money, item systemComissionFactorer) billing.Money {
 	if item != nil {
 		if reduce := item.ComissionShareFactor(); reduce > 0 {
-			return price / 100 * billing.MoneyFloat(reduce)
+			return price / 100 * billing.Money(reduce*100)
 		}
 	}
 	return 0
 }
 
 // PriceRevenueShareReduceFactors cirrection to reduce descreancy
-func PriceRevenueShareReduceFactors(price billing.Money, rs revenueSgareReducerFactorer) billing.Money {
+func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerFactorer) billing.Money {
 	if rs != nil {
 		if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
-			return price / 100 * billing.MoneyFloat(reduce)
+			return price / 100 * billing.Money(reduce*100)
 		}
 	}
 	return 0
