@@ -408,7 +408,7 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action) billing.Money {
 		price -= PriceSourceFactors(price, it.Source())
 		price -= PriceSystemComission(price, it)
 		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
-		return price
+		return price / 1000 // Price per One Impression
 	}
 	return 0
 }
