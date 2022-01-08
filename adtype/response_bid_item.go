@@ -324,7 +324,7 @@ func (it *ResponseBidItem) Price(action admodels.Action) billing.Money {
 // SetCPMPrice update of DSP auction value
 func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
 	for _, fact := range includeFactors {
-		price += fact.Calc(price, it)
+		price += fact.Calc(price, it, false)
 	}
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price
@@ -342,7 +342,7 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...PriceFactor) (price billing
 		price = it.CPMBidPrice
 	}
 	for _, fact := range removeFactors {
-		price -= fact.Calc(price, it)
+		price -= fact.Calc(price, it, true)
 	}
 	return price
 }

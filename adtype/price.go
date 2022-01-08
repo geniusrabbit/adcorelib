@@ -22,16 +22,40 @@ const (
 )
 
 // Calck new price
-func (f PriceFactor) Calc(price billing.Money, it ResponserItem) billing.Money {
+func (f PriceFactor) Calc(price billing.Money, it ResponserItem, remove bool) billing.Money {
 	var newPrice billing.Money
-	if f&SourcePriceFactor == SourcePriceFactor {
-		newPrice = PriceSourceFactors(price, it.Source())
-	}
-	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
-		newPrice += PriceSystemComission(price, it)
-	}
-	if f&TargetReducePriceFactor == TargetReducePriceFactor {
-		newPrice += PriceRevenueShareReduceFactors(price, it.Impression().Target)
+	if remove {
+		if f&TargetReducePriceFactor == TargetReducePriceFactor {
+			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target)
+			newPrice += pValue
+			price -= pValue
+		}
+		if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
+			pValue := PriceSystemComission(price, it)
+			newPrice += pValue
+			price -= pValue
+		}
+		if f&SourcePriceFactor == SourcePriceFactor {
+			pValue := PriceSourceFactors(price, it.Source())
+			newPrice += pValue
+			price -= pValue
+		}
+	} else {
+		if f&SourcePriceFactor == SourcePriceFactor {
+			pValue := PriceSourceFactors(price, it.Source())
+			newPrice += pValue
+			price += pValue
+		}
+		if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
+			pValue := PriceSystemComission(price, it)
+			newPrice += pValue
+			price += pValue
+		}
+		if f&TargetReducePriceFactor == TargetReducePriceFactor {
+			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target)
+			newPrice += pValue
+			price += pValue
+		}
 	}
 	return newPrice
 }

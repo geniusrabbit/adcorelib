@@ -210,9 +210,8 @@ func (r *BidRequest) nativeRTBAssets(imp *Impression, format *types.Format) []op
 					Mimes:     asset.AllowedTypes,
 				},
 			})
-		} else {
-			// TODO add video tag support
 		}
+		// TODO add video tag support
 	}
 
 	for _, field := range format.Config.Fields {

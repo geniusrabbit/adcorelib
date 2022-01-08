@@ -347,7 +347,7 @@ func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
 // SetCPMPrice update of DSP auction value
 func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
 	for _, fact := range includeFactors {
-		price += fact.Calc(price, it)
+		price += fact.Calc(price, it, false)
 	}
 	if price < it.ECPM() || price < it.Ad.BidPrice {
 		it.CPMBidPrice = price
@@ -368,7 +368,7 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.
 
 	// Remove system commision from the price
 	for _, fact := range removeFactors {
-		price -= fact.Calc(price, it)
+		price -= fact.Calc(price, it, true)
 	}
 	return price
 }
