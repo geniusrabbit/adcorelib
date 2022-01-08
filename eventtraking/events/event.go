@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/msgpack"
 
 	// "geniusrabbit.dev/corelib/billing/billingthrift"
@@ -93,17 +92,17 @@ type Event struct {
 	PricingModel uint `thrift:",36" json:"pm,omitempty"` // Display As CPM/CPC/CPA/CPI
 	// Prurchase price from SSP or other TRAFFIC sources (menetisation of income requests)
 	// We are buying the place of advertisement display
-	PurchaseViewPrice  billing.Money `thrift:",37" json:"pvpr,omitempty"`   // Price of the view of source traffic cost
-	PurchaseClickPrice billing.Money `thrift:",38" json:"pcpr,omitempty"`   // Price of the click of source traffic cost
-	PurchaseLeadPrice  billing.Money `thrift:",39" json:"plpr,omitempty"`   // Price of the lead of source traffic cost
-	ViewPrice          billing.Money `thrift:",40" json:"vpr,omitempty"`    // Price per view
-	ClickPrice         billing.Money `thrift:",41" json:"cpr,omitempty"`    // Price per click
-	LeadPrice          billing.Money `thrift:",42" json:"lpr,omitempty"`    // Price per lead
-	Competitor         uint64        `thrift:",43" json:"cmid,omitempty"`   // Competitor compaign ID
-	CompetitorSource   uint64        `thrift:",44" json:"cmsrc,omitempty"`  // Competitor source ID
-	CompetitorECPM     billing.Money `thrift:",45" json:"cmecpm,omitempty"` // Competitor ECPM or auction
-	Revenue            int           `thrift:",46" json:"rev,omitempty"`    // In percents Percent * 100 (three dementions after point)
-	Potential          int           `thrift:",47" json:"ptl,omitempty"`    // Percent of awaited descripancy (three dementions after point)
+	PurchaseViewPrice  int64   `thrift:",37" json:"pvpr,omitempty"`   // Price of the view of source traffic cost
+	PurchaseClickPrice int64   `thrift:",38" json:"pcpr,omitempty"`   // Price of the click of source traffic cost
+	PurchaseLeadPrice  int64   `thrift:",39" json:"plpr,omitempty"`   // Price of the lead of source traffic cost
+	ViewPrice          int64   `thrift:",40" json:"vpr,omitempty"`    // Price per view
+	ClickPrice         int64   `thrift:",41" json:"cpr,omitempty"`    // Price per click
+	LeadPrice          int64   `thrift:",42" json:"lpr,omitempty"`    // Price per lead
+	Competitor         uint64  `thrift:",43" json:"cmid,omitempty"`   // Competitor compaign ID
+	CompetitorSource   uint64  `thrift:",44" json:"cmsrc,omitempty"`  // Competitor source ID
+	CompetitorECPM     float64 `thrift:",45" json:"cmecpm,omitempty"` // Competitor ECPM or auction
+	Revenue            int     `thrift:",46" json:"rev,omitempty"`    // In percents Percent * 100 (three dementions after point)
+	Potential          int     `thrift:",47" json:"ptl,omitempty"`    // Percent of awaited descripancy (three dementions after point)
 	// User IDENTITY
 	UDID        string `thrift:",48" json:"udi,omitempty"` // Unique Device ID (IDFA)
 	UUID        string `thrift:",49" json:"uui,omitempty"` // User
