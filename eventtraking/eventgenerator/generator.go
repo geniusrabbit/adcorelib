@@ -119,8 +119,8 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		Competitor:         it.Second().GetCampaignID(),                         // Competitor compaign ID
 		CompetitorSource:   it.Second().GetSourceID(),                           // Competitor source ID
 		CompetitorECPM:     it.Second().GetECPM().Float64(),                     // Competitor ECPM or auction
-		Revenue:            int(it.Revenue() * 100),                             // Should be percent in money type
-		Potential:          int(it.Potential() * 100),                           // Potential revenue in %s
+		Revenue:            int(it.RevenuePercent() * 100),                      // Should be percent in money type
+		Potential:          int(it.PotentialPercent() * 100),                    // Potential revenue in %s
 		// User IDENTITY
 		UDID:        r.DeviceInfo().IFA,         // Unique Device ID (IDFA)
 		UUID:        r.UserInfo().ID,            // User

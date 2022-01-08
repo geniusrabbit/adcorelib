@@ -56,7 +56,7 @@ func (b *FormatTypeBitset) Unset(types ...FormatType) *FormatTypeBitset {
 
 // Has type in bitset
 func (b *FormatTypeBitset) Has(t FormatType) bool {
-	return b != nil && *b&(1<<FormatTypeBitset(t)) != 0
+	return b != nil && (*b)&(1<<FormatTypeBitset(t)) != 0
 }
 
 // Is type only

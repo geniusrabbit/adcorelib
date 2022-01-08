@@ -95,10 +95,10 @@ func (*ResponseItemEmpty) NetworkName() string { return "" }
 func (*ResponseItemEmpty) Price(action admodels.Action) billing.Money { return 0 }
 
 // SetCPMPrice update of DSP auction value
-func (*ResponseItemEmpty) SetCPMPrice(price billing.Money, includeFactors ...bool) {}
+func (*ResponseItemEmpty) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {}
 
 // CPMPrice value price value for DSP auction
-func (*ResponseItemEmpty) CPMPrice(removeFactors ...bool) billing.Money { return 0 }
+func (*ResponseItemEmpty) CPMPrice(removeFactors ...PriceFactor) billing.Money { return 0 }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
@@ -107,11 +107,11 @@ func (*ResponseItemEmpty) PurchasePrice(action admodels.Action) billing.Money { 
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }
 
-// Revenue money (in percents)
-func (*ResponseItemEmpty) Revenue() float64 { return 0 }
+// RevenuePercent money
+func (*ResponseItemEmpty) RevenuePercent() float64 { return 0 }
 
-// Potential money (in percents)
-func (*ResponseItemEmpty) Potential() float64 { return 0 }
+// PotentialPercent money
+func (*ResponseItemEmpty) PotentialPercent() float64 { return 0 }
 
 // ECPM item value
 func (*ResponseItemEmpty) ECPM() billing.Money { return 0 }

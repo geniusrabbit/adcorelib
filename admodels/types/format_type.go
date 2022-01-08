@@ -8,7 +8,6 @@ package types
 import (
 	"bytes"
 	"database/sql/driver"
-	"math"
 
 	"github.com/geniusrabbit/gosql"
 	"github.com/pkg/errors"
@@ -29,7 +28,7 @@ const (
 	FormatBannerType      FormatType = 4
 	FormatBannerHTML5Type FormatType = 5
 	FormatNativeType      FormatType = 6
-	FormatCustomType      FormatType = math.MaxInt
+	FormatCustomType      FormatType = 31
 )
 
 // FormatTypeList of types

@@ -345,11 +345,9 @@ func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
 }
 
 // SetCPMPrice update of DSP auction value
-func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
-	if len(includeFactors) > 0 && includeFactors[0] {
-		price += PriceSourceFactors(price, it.Source())
-		price += PriceSystemComission(price, it)
-		price += PriceRevenueShareReduceFactors(price, it.Imp.Target)
+func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
+	for _, fact := range includeFactors {
+		price += fact.Calc(price, it)
 	}
 	if price < it.ECPM() || price < it.Ad.BidPrice {
 		it.CPMBidPrice = price
@@ -357,7 +355,7 @@ func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...boo
 }
 
 // CPMPrice value price value for DSP auction
-func (it *ResponseAdItem) CPMPrice(removeFactors ...bool) (price billing.Money) {
+func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.Money) {
 	if it.CPMBidPrice > 0 {
 		price = it.CPMBidPrice
 	} else if it.PricingModel().IsCPM() {
@@ -369,10 +367,8 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...bool) (price billing.Money) 
 	price = it.prepareMaxBidPrice(price, true)
 
 	// Remove system commision from the price
-	if len(removeFactors) > 0 && removeFactors[0] {
-		price -= PriceSourceFactors(price, it.Source())
-		price -= PriceSystemComission(price, it)
-		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
+	for _, fact := range removeFactors {
+		price -= fact.Calc(price, it)
 	}
 	return price
 }
@@ -404,22 +400,18 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action) billing.Money {
 	}
 	switch action {
 	case admodels.ActionImpression:
-		price := it.CPMPrice()
-		price -= PriceSourceFactors(price, it.Source())
-		price -= PriceSystemComission(price, it)
-		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
-		return price / 1000 // Price per One Impression
+		return it.CPMPrice(AllPriceFactors) / 1000 // Price per One Impression
 	}
 	return 0
 }
 
-// Revenue value (in percents)
-func (it *ResponseAdItem) Revenue() float64 {
+// RevenuePercent value
+func (it *ResponseAdItem) RevenuePercent() float64 {
 	return it.ComissionShareFactor() * 100
 }
 
-// Potential money (in percents)
-func (it *ResponseAdItem) Potential() float64 {
+// PotentialPercent money
+func (it *ResponseAdItem) PotentialPercent() float64 {
 	if it.Src != nil {
 		return it.Src.PriceCorrectionReduceFactor() * 100
 	}

@@ -11,6 +11,31 @@ type revenueShareReducerFactorer interface {
 	RevenueShareReduceFactor() float64
 }
 
+// PriceFactor defines action to calculate the factor
+type PriceFactor int
+
+const (
+	AllPriceFactors              PriceFactor = 0xffffffff
+	SourcePriceFactor            PriceFactor = 0x0001
+	SystemComissionPriceFactor   PriceFactor = 0x0002
+	TargetSgareReducePriceFactor PriceFactor = 0x0004
+)
+
+// Calck new price
+func (f PriceFactor) Calc(price billing.Money, it ResponserItem) billing.Money {
+	var newPrice billing.Money
+	if f&SourcePriceFactor == SourcePriceFactor {
+		newPrice = PriceSourceFactors(price, it.Source())
+	}
+	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
+		newPrice += PriceSystemComission(price, it)
+	}
+	if f&TargetSgareReducePriceFactor == TargetSgareReducePriceFactor {
+		newPrice += PriceRevenueShareReduceFactors(price, it.Impression().Target)
+	}
+	return newPrice
+}
+
 // PriceSourceFactors currection to reduce descreancy
 func PriceSourceFactors(price billing.Money, src Source) billing.Money {
 	if src != nil {

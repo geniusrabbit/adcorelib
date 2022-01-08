@@ -322,11 +322,9 @@ func (it *ResponseBidItem) Price(action admodels.Action) billing.Money {
 }
 
 // SetCPMPrice update of DSP auction value
-func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...bool) {
-	if len(includeFactors) > 0 && includeFactors[0] {
-		price += PriceRevenueShareReduceFactors(price, it.Imp.Target)
-		price += PriceSystemComission(price, it)
-		price += PriceSourceFactors(price, it.Source())
+func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
+	for _, fact := range includeFactors {
+		price += fact.Calc(price, it)
 	}
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price
@@ -334,7 +332,7 @@ func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...bo
 }
 
 // CPMPrice value price value for DSP auction
-func (it *ResponseBidItem) CPMPrice(removeFactors ...bool) (price billing.Money) {
+func (it *ResponseBidItem) CPMPrice(removeFactors ...PriceFactor) (price billing.Money) {
 	if it.PricingModel() == types.PricingModelCPM {
 		price = it.Price(admodels.ActionImpression) * 1000
 	} else {
@@ -343,17 +341,15 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...bool) (price billing.Money)
 	if it.CPMBidPrice > 0 && it.CPMBidPrice < price {
 		price = it.CPMBidPrice
 	}
-	if len(removeFactors) > 0 && removeFactors[0] {
-		price -= PriceSourceFactors(price, it.Source())
-		price -= PriceSystemComission(price, it)
-		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
+	for _, fact := range removeFactors {
+		price -= fact.Calc(price, it)
 	}
 	return price
 }
 
 // AuctionCPMBid value price without any comission
 func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice()
+	return it.CPMPrice(AllPriceFactors)
 }
 
 // PurchasePrice gives the price of view from external resource.
@@ -373,11 +369,7 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action) billing.Money {
 	}
 	switch action {
 	case admodels.ActionImpression:
-		price := it.CPMPrice()
-		price -= PriceSourceFactors(price, it.Source())
-		price -= PriceSystemComission(price, it)
-		price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
-		return price / 1000 // Price per One Impression
+		return it.CPMPrice(AllPriceFactors) / 1000 // Price per One Impression
 	}
 	return 0
 }
@@ -387,13 +379,13 @@ func (it *ResponseBidItem) Second() *SecondAd {
 	return &it.SecondAd
 }
 
-// Revenue money (in percents)
-func (it *ResponseBidItem) Revenue() float64 {
+// RevenuePercent money
+func (it *ResponseBidItem) RevenuePercent() float64 {
 	return it.RevenueShareFactor() * 100
 }
 
-// Potential money (in percents)
-func (it *ResponseBidItem) Potential() float64 {
+// PotentialPercent money
+func (it *ResponseBidItem) PotentialPercent() float64 {
 	return it.Source().PriceCorrectionReduceFactor() * 100
 }
 

@@ -108,10 +108,10 @@ type ResponserItem interface {
 	Price(action admodels.Action) billing.Money
 
 	// SetCPMPrice update of DSP auction value
-	SetCPMPrice(price billing.Money, includeFactors ...bool)
+	SetCPMPrice(price billing.Money, includeFactors ...PriceFactor)
 
 	// CPMPrice value price value for DSP auction
-	CPMPrice(removeFactors ...bool) billing.Money
+	CPMPrice(removeFactors ...PriceFactor) billing.Money
 
 	// PurchasePrice gives the price of view from external resource.
 	// The cost of this request.
@@ -120,11 +120,11 @@ type ResponserItem interface {
 	// Second campaigns
 	Second() *SecondAd
 
-	// Revenue money (in percents)
-	Revenue() float64
+	// RevenuePercent money
+	RevenuePercent() float64
 
-	// Potential money (in percents)
-	Potential() float64
+	// PotentialPercent money
+	PotentialPercent() float64
 
 	// ECPM item value
 	ECPM() billing.Money

@@ -51,7 +51,7 @@ func Test_ItemPricing(t *testing.T) {
 		})
 
 		t.Run(prefix+"_potential_value", func(t *testing.T) {
-			pot := item.Potential() * item.Price(admodels.ActionImpression).Float64()
+			pot := item.PotentialPercent() * item.Price(admodels.ActionImpression).Float64()
 			if pot != 0 {
 				t.Errorf("wrong_potential value: %.3f", pot)
 			}
