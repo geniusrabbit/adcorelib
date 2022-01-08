@@ -12,7 +12,7 @@ type revenueShareReducerFactorer interface {
 }
 
 // PriceFactor defines action to calculate the factor
-type PriceFactor int
+type PriceFactor uint
 
 const (
 	AllPriceFactors              PriceFactor = 0xffffffff
