@@ -376,11 +376,7 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.
 // AuctionCPMBid value price without any comission
 // Can be replaced on comission only
 func (it *ResponseAdItem) AuctionCPMBid() billing.Money {
-	price := it.CPMPrice()
-	price -= PriceSourceFactors(price, it.Source())
-	price -= PriceSystemComission(price, it)
-	price -= PriceRevenueShareReduceFactors(price, it.Imp.Target)
-	return price
+	return it.CPMPrice(AllPriceFactors)
 }
 
 // PurchasePrice gives the price of view from external resource.

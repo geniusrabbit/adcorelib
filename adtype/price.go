@@ -1,6 +1,8 @@
 package adtype
 
-import "geniusrabbit.dev/corelib/billing"
+import (
+	"geniusrabbit.dev/corelib/billing"
+)
 
 type systemComissionFactorer interface {
 	// ComissionShareFactor which system get from publisher 0..1
@@ -26,33 +28,33 @@ func (f PriceFactor) Calc(price billing.Money, it ResponserItem, remove bool) bi
 	var newPrice billing.Money
 	if remove {
 		if f&TargetReducePriceFactor == TargetReducePriceFactor {
-			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target)
+			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, true)
 			newPrice += pValue
 			price -= pValue
 		}
 		if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
-			pValue := PriceSystemComission(price, it)
+			pValue := PriceSystemComission(price, it, true)
 			newPrice += pValue
 			price -= pValue
 		}
 		if f&SourcePriceFactor == SourcePriceFactor {
-			pValue := PriceSourceFactors(price, it.Source())
+			pValue := PriceSourceFactors(price, it.Source(), true)
 			newPrice += pValue
 			price -= pValue
 		}
 	} else {
 		if f&SourcePriceFactor == SourcePriceFactor {
-			pValue := PriceSourceFactors(price, it.Source())
+			pValue := PriceSourceFactors(price, it.Source(), false)
 			newPrice += pValue
 			price += pValue
 		}
 		if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
-			pValue := PriceSystemComission(price, it)
+			pValue := PriceSystemComission(price, it, false)
 			newPrice += pValue
 			price += pValue
 		}
 		if f&TargetReducePriceFactor == TargetReducePriceFactor {
-			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target)
+			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, false)
 			newPrice += pValue
 			price += pValue
 		}
@@ -61,9 +63,12 @@ func (f PriceFactor) Calc(price billing.Money, it ResponserItem, remove bool) bi
 }
 
 // PriceSourceFactors currection to reduce descreancy
-func PriceSourceFactors(price billing.Money, src Source) billing.Money {
+func PriceSourceFactors(price billing.Money, src Source, remove bool) billing.Money {
 	if src != nil {
 		if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
+			if remove {
+				return billing.MoneyFloat(price.Float64()/(1-reduce)) - price
+			}
 			return price / 100 * billing.Money(reduce*100)
 		}
 	}
@@ -71,9 +76,12 @@ func PriceSourceFactors(price billing.Money, src Source) billing.Money {
 }
 
 // PriceSystemComission = 1. - `TrafficSourceComission`
-func PriceSystemComission(price billing.Money, item systemComissionFactorer) billing.Money {
+func PriceSystemComission(price billing.Money, item systemComissionFactorer, remove bool) billing.Money {
 	if item != nil {
 		if reduce := item.ComissionShareFactor(); reduce > 0 {
+			if remove {
+				return billing.MoneyFloat(price.Float64()/(1-reduce)) - price
+			}
 			return price / 100 * billing.Money(reduce*100)
 		}
 	}
@@ -81,9 +89,12 @@ func PriceSystemComission(price billing.Money, item systemComissionFactorer) bil
 }
 
 // PriceRevenueShareReduceFactors cirrection to reduce descreancy
-func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerFactorer) billing.Money {
+func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerFactorer, remove bool) billing.Money {
 	if rs != nil {
 		if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
+			if remove {
+				return billing.MoneyFloat(price.Float64()/(1-reduce)) - price
+			}
 			return price / 100 * billing.Money(reduce*100)
 		}
 	}

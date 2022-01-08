@@ -26,8 +26,8 @@ func TestPriceCorrection(t *testing.T) {
 		RevenueShareReduce: 15, // Potential descrepancy
 	}
 	price := billing.MoneyFloat(1.123)
-	price -= PriceSourceFactors(price, &SourceEmpty{PriceCorrectionReduce: 10})
-	price -= PriceSystemComission(price, item)
-	price -= PriceRevenueShareReduceFactors(price, item)
+	price -= PriceSourceFactors(price, &SourceEmpty{PriceCorrectionReduce: 10}, true)
+	price -= PriceSystemComission(price, item, true)
+	price -= PriceRevenueShareReduceFactors(price, item, true)
 	assert.True(t, price > 0 && price < billing.MoneyFloat(1.123))
 }
