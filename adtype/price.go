@@ -15,10 +15,10 @@ type revenueShareReducerFactorer interface {
 type PriceFactor uint32
 
 const (
-	AllPriceFactors              PriceFactor = 0xffffffff
-	SourcePriceFactor            PriceFactor = 0x0001
-	SystemComissionPriceFactor   PriceFactor = 0x0002
-	TargetSgareReducePriceFactor PriceFactor = 0x0004
+	AllPriceFactors            PriceFactor = 0xffffffff
+	SourcePriceFactor          PriceFactor = 0x0001
+	SystemComissionPriceFactor PriceFactor = 0x0002
+	TargetReducePriceFactor    PriceFactor = 0x0004
 )
 
 // Calck new price
@@ -30,7 +30,7 @@ func (f PriceFactor) Calc(price billing.Money, it ResponserItem) billing.Money {
 	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
 		newPrice += PriceSystemComission(price, it)
 	}
-	if f&TargetSgareReducePriceFactor == TargetSgareReducePriceFactor {
+	if f&TargetReducePriceFactor == TargetReducePriceFactor {
 		newPrice += PriceRevenueShareReduceFactors(price, it.Impression().Target)
 	}
 	return newPrice

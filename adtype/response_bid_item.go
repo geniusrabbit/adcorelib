@@ -369,7 +369,10 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action) billing.Money {
 	}
 	switch action {
 	case admodels.ActionImpression:
-		return it.CPMPrice(AllPriceFactors) / 1000 // Price per One Impression
+		// As we buying from some source we can consider that we will loose approximately
+		// target gate reduce factor percent, but anyway price will be higher for X% of that descepancy
+		// to protect system from overspands
+		return it.CPMPrice(^TargetReducePriceFactor) / 1000 // Price per One Impression
 	}
 	return 0
 }
