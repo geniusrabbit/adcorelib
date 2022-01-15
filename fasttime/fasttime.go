@@ -18,6 +18,11 @@ func init() {
 
 var currentTimestamp = uint64(time.Now().UnixNano())
 
+// Now return  current time object
+func Now() time.Time {
+	return time.Unix(0, int64(UnixTimestampNano()))
+}
+
 // UnixTimestampNano returns the current unix timestamp in nanoseconds.
 //
 // It is faster than time.Now().UnixNano()

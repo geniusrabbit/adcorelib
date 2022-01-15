@@ -273,7 +273,7 @@ func (r *BidRequest) AppID() uint {
 
 // GeoID by request
 func (r *BidRequest) GeoID() uint {
-	if r.User == nil || r.User.Geo == nil {
+	if r == nil || r.User == nil || r.User.Geo == nil {
 		return 0
 	}
 	return r.User.Geo.ID
