@@ -2,8 +2,12 @@ package personification
 
 import (
 	"context"
+	"net"
+	"strings"
 	"time"
 
+	"github.com/demdxx/gocast"
+	"github.com/geniusrabbit/gogeo"
 	"github.com/google/uuid"
 	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
@@ -39,6 +43,10 @@ func (sign *Signeture) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 		req.Request.Header.Cookie(sign.SessidName),
 	)
 
+	primaryLanguage, langs := pareseAcceptLanguage(
+		string(req.Request.Header.Peek("Accept-Language")),
+	)
+
 	uuidObj, _ := uuid.Parse(string(uuidCookie.Value()))
 	sessidObj, _ := uuid.Parse(string(sessidCookie.Value()))
 	request := &udetect.Request{
@@ -47,22 +55,43 @@ func (sign *Signeture) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 		IP:              fasthttpext.IPAdressByRequestCF(req),
 		UA:              string(req.UserAgent()),
 		URL:             string(req.Referer()),
-		Ref:             "", // TODO: add additional information
-		DNT:             0,
-		LMT:             0,
-		Adblock:         0,
-		PrivateBrowsing: 0,
-		JS:              0,
-		Languages:       nil,
-		PrimaryLanguage: "",
+		Ref:             string(req.Request.Header.Referer()), // TODO: add additional information
+		DNT:             int8(gocast.ToInt(req.Request.Header.Peek("Dnt"))),
+		LMT:             int8(gocast.ToInt(req.QueryArgs().Peek("lmt"))),
+		Adblock:         int8(gocast.ToInt(req.QueryArgs().Peek("adb"))),
+		PrivateBrowsing: int8(gocast.ToInt(req.QueryArgs().Peek("private"))),
+		JS:              1,
+		Languages:       langs,
+		PrimaryLanguage: primaryLanguage,
 		FlashVer:        "",
 		Width:           0,
 		Height:          0,
 		Extensions:      nil,
 	}
 
-	_, err := sign.Detector.Detect(ctx, request)
-	return &person{request: request}, err
+	response, err := sign.Detector.Detect(ctx, request)
+	// Init additional information
+	if response.Geo == nil || len(response.Geo.IP) == 0 || response.Geo.Country == "" {
+		if response.Geo == nil {
+			response.Geo = &udetect.Geo{}
+		}
+		if len(response.Geo.IP) == 0 {
+			response.Geo.IP = net.IP(request.IP)
+		}
+		if response.Geo.Country == "" {
+			cc := string(req.Request.Header.Peek("Cf-Ipcountry"))
+			country := gogeo.CountryByCode2(cc)
+			response.Geo.ID = uint(country.ID)
+			response.Geo.Country = country.Code2
+		}
+	}
+	return &person{
+		request: request,
+		userInfo: UserInfo{
+			Device: response.Device,
+			Geo:    response.Geo,
+		},
+	}, err
 }
 
 // SignCookie do sign request by traking response
@@ -92,4 +121,20 @@ func (sign *Signeture) SignCookie(resp Person, req *fasthttp.RequestCtx) {
 		c.SetExpire(time.Now().Add(sign.SessidLifetime))
 		req.Response.Header.SetCookie(c)
 	}
+}
+
+func pareseAcceptLanguage(langs string) (primaryLanguage string, langArr []string) {
+	arr := strings.Split(langs, ",")
+	for _, lang := range arr {
+		lang = strings.TrimSpace(lang)
+		if len(lang) < 2 {
+			continue
+		}
+		if primaryLanguage == "" {
+			primaryLanguage = lang[:2]
+		} else {
+			langArr = append(langArr, lang[:2])
+		}
+	}
+	return primaryLanguage, langArr
 }
