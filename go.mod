@@ -14,7 +14,6 @@ require (
 	github.com/geniusrabbit/notificationcenter v1.5.0
 	github.com/google/uuid v1.3.0
 	github.com/guregu/null v4.0.0+incompatible
-	github.com/hashicorp/hcl v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pierrec/lz4 v2.6.1+incompatible
 	github.com/pkg/errors v0.9.1
@@ -26,7 +25,6 @@ require (
 	github.com/valyala/fasthttp v1.31.0
 	go.uber.org/zap v1.11.0
 	golang.org/x/net v0.0.0-20211209124913-491a49abca63
-	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/gorm v1.22.4
 )
 

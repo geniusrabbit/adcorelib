@@ -9,6 +9,7 @@ import (
 	"errors"
 	"log"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/geniusrabbit/gogeo"
@@ -108,8 +109,23 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 
 	// Countries filter
 	if camp.Geos.Len() > 0 {
+		seted := map[string]bool{}
 		for _, cc := range camp.Geos {
-			countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
+			cc = strings.ToUpper(cc)
+			if !seted[cc] {
+				seted[cc] = true
+				switch cc {
+				case "EU", "AS", "AF", "OC", "SA", "NA", "AN":
+					for _, country := range gogeo.Countries {
+						if country.Continent == cc {
+							seted[country.Code2] = true
+							countriesArr = append(countriesArr, uint(country.ID))
+						}
+					}
+				default: // ** - as undefined
+					countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
+				}
+			}
 		}
 		countriesArr.Sort()
 	}

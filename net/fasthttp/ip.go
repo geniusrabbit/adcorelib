@@ -73,7 +73,7 @@ func isPrivateSubnet(ipAddress net.IP) bool {
 
 // IPAdressByRequest conext
 func IPAdressByRequest(ctx *fasthttp.RequestCtx) string {
-	for _, h := range []string{"X-Forwarded-For", "X-Real-Ip"} {
+	for _, h := range []string{"X-Original-Forwarded-For", "X-Forwarded-For", "X-Real-Ip"} {
 		if ip := getIPAdress(string(ctx.Request.Header.Peek(h))); ip != "" {
 			return ip
 		}
