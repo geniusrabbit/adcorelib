@@ -76,7 +76,7 @@ func (sign *Signeture) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 			response.Geo = &udetect.Geo{}
 		}
 		if len(response.Geo.IP) == 0 {
-			response.Geo.IP = net.IP(request.IP)
+			response.Geo.IP = net.ParseIP(request.IP)
 		}
 		if response.Geo.Country == "" {
 			cc := string(req.Request.Header.Peek("Cf-Ipcountry"))
