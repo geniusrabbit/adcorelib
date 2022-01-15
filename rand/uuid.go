@@ -1,19 +1,13 @@
 //
-// @project trafficstars corelib 2016 – 2017
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2017
+// @project trafficstars corelib 2016 – 2017, 2022
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2017, 2022
 //
 
 package rand
 
-import (
-	"github.com/twinj/uuid"
-)
-
-func init() {
-	uuid.SwitchFormat(uuid.FormatCanonical)
-}
+import "github.com/google/uuid"
 
 // UUID generated
 func UUID() string {
-	return uuid.NewV4().String()
+	return uuid.New().String()
 }
