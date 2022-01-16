@@ -312,16 +312,15 @@ func (it *ResponseAdItem) ECPM() billing.Money {
 	return it.BidECPM
 }
 
-// Price summ
-func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
+// Price for specific action if supported `click`, `lead`, `view`
+// returns total price of the action
+func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...PriceFactor) (price billing.Money) {
 	if it == nil || it.Ad == nil {
 		return 0
 	}
-
 	if price = it.AdPrice; price <= 0 {
 		price = it.Ad.Price
 	}
-
 	switch action {
 	case admodels.ActionImpression:
 		if !it.PricingModel().IsCPM() {
@@ -341,14 +340,13 @@ func (it *ResponseAdItem) Price(action admodels.Action) (price billing.Money) {
 			price = it.Ad.LeadPrice
 		}
 	}
+	price -= PriceFactorList(removeFactors).Calc(price, it, true)
 	return price
 }
 
 // SetCPMPrice update of DSP auction value
 func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
-	for _, fact := range includeFactors {
-		price += fact.Calc(price, it, false)
-	}
+	price += PriceFactorList(includeFactors).Calc(price, it, false)
 	if price < it.ECPM() || price < it.Ad.BidPrice {
 		it.CPMBidPrice = price
 	}
@@ -367,9 +365,7 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.
 	price = it.prepareMaxBidPrice(price, true)
 
 	// Remove system commision from the price
-	for _, fact := range removeFactors {
-		price -= fact.Calc(price, it, true)
-	}
+	price -= PriceFactorList(removeFactors).Calc(price, it, true)
 	return price
 }
 
@@ -381,13 +377,16 @@ func (it *ResponseAdItem) AuctionCPMBid() billing.Money {
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
-func (it *ResponseAdItem) PurchasePrice(action admodels.Action) billing.Money {
+func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
 	if it == nil {
 		return 0
 	}
+	if len(removeFactors) == 0 {
+		removeFactors = []PriceFactor{^TargetReducePriceFactor}
+	}
 	// Some sources can have the fixed price of buying
-	if action.IsImpression() && it.Imp.SourcePrice > 0 {
-		return it.Imp.SourcePrice
+	if action.IsImpression() && it.Imp.PurchaseViewPrice > 0 {
+		return it.Imp.PurchaseViewPrice
 	}
 	if it.Imp.Target != nil {
 		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
@@ -399,7 +398,17 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action) billing.Money {
 		// As we buying from some source we can consider that we will loose approximately
 		// target gate reduce factor percent, but anyway price will be higher for X% of that descepancy
 		// to protect system from overspands
-		return it.CPMPrice(^TargetReducePriceFactor) / 1000 // Price per One Impression
+		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPM() {
+			return it.CPMPrice(removeFactors...) / 1000 // Price per One Impression
+		}
+	case admodels.ActionClick:
+		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPC() {
+			return it.Price(action, removeFactors...)
+		}
+	case admodels.ActionLead:
+		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPA() {
+			return it.Price(action, removeFactors...)
+		}
 	}
 	return 0
 }
@@ -459,29 +468,6 @@ func (it *ResponseAdItem) prepareMaxBidPrice(price billing.Money, maxIfZero bool
 		return it.Ad.BidPrice
 	}
 	return price
-}
-
-// PriceByAction of response item
-// Used for withdrawals from the account or Advertisement balances
-func (it *ResponseAdItem) PriceByAction(action admodels.Action) (amount billing.Money) {
-	// Update action counters
-	switch admodels.Action(action) {
-	case admodels.ActionImpression:
-		if it.Ad.PricingModel.IsCPM() {
-			amount = it.Price(admodels.ActionImpression)
-		} else {
-			amount = it.CPMPrice() / 1000
-		}
-	case admodels.ActionClick:
-		if it.Ad.PricingModel.IsCPC() {
-			amount = it.Price(admodels.ActionClick)
-		}
-	case admodels.ActionLead:
-		if it.Ad.PricingModel.IsCPA() {
-			amount = it.Price(admodels.ActionLead) / billing.Money(admodels.LeadAcceptCoef)
-		}
-	}
-	return
 }
 
 func (it *ResponseAdItem) reset() {

@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2018 - 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2018 - 2019
+// @project GeniusRabbit corelib 2018 - 2019, 2022
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2018 - 2019, 2022
 //
 
 package types
@@ -40,6 +40,14 @@ func PricingModelByName(model string) PricingModel {
 
 func (pm PricingModel) String() string {
 	return pm.Name()
+}
+
+// Or returns current value if not undefined or alternative value
+func (pm PricingModel) Or(npm PricingModel) PricingModel {
+	if pm == PricingModelUndefined {
+		return npm
+	}
+	return pm
 }
 
 // Name value

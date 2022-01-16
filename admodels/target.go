@@ -6,6 +6,7 @@
 package admodels
 
 import (
+	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/models"
 )
@@ -17,6 +18,10 @@ type Target interface {
 
 	// Codename of the target (equal to tagid)
 	Codename() string
+
+	// PricingModel of the target
+	// Undefined as any priceing model type
+	PricingModel() types.PricingModel
 
 	// AlternativeAdCode returns URL or any code (HTML, XML, etc)
 	AlternativeAdCode(key string) string

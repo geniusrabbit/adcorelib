@@ -307,18 +307,21 @@ func (it *ResponseBidItem) ECPM() billing.Money {
 	return billing.MoneyFloat(it.Bid.Price)
 }
 
-// Price summ
-func (it *ResponseBidItem) Price(action admodels.Action) billing.Money {
+// Price for specific action if supported `click`, `lead`, `view`
+// returns total price of the action
+func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...PriceFactor) (price billing.Money) {
 	if it == nil || it.Bid == nil {
 		return 0
 	}
 	if action.IsImpression() {
 		if it.BidPrice > 0 {
-			return it.BidPrice
+			price = it.BidPrice
+		} else {
+			price = billing.MoneyFloat(it.Bid.Price / 1000)
 		}
-		return billing.MoneyFloat(it.Bid.Price / 1000)
 	}
-	return 0
+	price -= PriceFactorList(removeFactors).Calc(price, it, true)
+	return price
 }
 
 // SetCPMPrice update of DSP auction value
@@ -341,9 +344,7 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...PriceFactor) (price billing
 	if it.CPMBidPrice > 0 && it.CPMBidPrice < price {
 		price = it.CPMBidPrice
 	}
-	for _, fact := range removeFactors {
-		price -= fact.Calc(price, it, true)
-	}
+	price -= PriceFactorList(removeFactors).Calc(price, it, true)
 	return price
 }
 
@@ -354,13 +355,16 @@ func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
-func (it *ResponseBidItem) PurchasePrice(action admodels.Action) billing.Money {
+func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
 	if it == nil {
 		return 0
 	}
+	if len(removeFactors) == 0 {
+		removeFactors = []PriceFactor{^TargetReducePriceFactor}
+	}
 	// Some sources can have the fixed price of buying
-	if action.IsImpression() && it.Imp.SourcePrice > 0 {
-		return it.Imp.SourcePrice
+	if action.IsImpression() && it.Imp.PurchaseViewPrice > 0 {
+		return it.Imp.PurchaseViewPrice
 	}
 	if it.Imp.Target != nil {
 		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
@@ -372,7 +376,17 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action) billing.Money {
 		// As we buying from some source we can consider that we will loose approximately
 		// target gate reduce factor percent, but anyway price will be higher for X% of that descepancy
 		// to protect system from overspands
-		return it.CPMPrice(^TargetReducePriceFactor) / 1000 // Price per One Impression
+		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPM() {
+			return it.CPMPrice(removeFactors...) / 1000 // Price per One Impression
+		}
+	case admodels.ActionClick:
+		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPC() {
+			return it.Price(action, removeFactors...)
+		}
+	case admodels.ActionLead:
+		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPA() {
+			return it.Price(action, removeFactors...)
+		}
 	}
 	return 0
 }

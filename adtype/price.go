@@ -23,43 +23,57 @@ const (
 	TargetReducePriceFactor    PriceFactor = 0x0004
 )
 
-// Calck new price
-func (f PriceFactor) Calc(price billing.Money, it ResponserItem, remove bool) billing.Money {
-	var newPrice billing.Money
+// Calc remove or additiona comissions
+func (f PriceFactor) Calc(price billing.Money, it ResponserItem, remove bool) (comissions billing.Money) {
 	if remove {
 		if f&TargetReducePriceFactor == TargetReducePriceFactor {
 			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, true)
-			newPrice += pValue
+			comissions += pValue
 			price -= pValue
 		}
 		if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
 			pValue := PriceSystemComission(price, it, true)
-			newPrice += pValue
+			comissions += pValue
 			price -= pValue
 		}
 		if f&SourcePriceFactor == SourcePriceFactor {
 			pValue := PriceSourceFactors(price, it.Source(), true)
-			newPrice += pValue
+			comissions += pValue
 			price -= pValue
 		}
 	} else {
 		if f&SourcePriceFactor == SourcePriceFactor {
 			pValue := PriceSourceFactors(price, it.Source(), false)
-			newPrice += pValue
+			comissions += pValue
 			price += pValue
 		}
 		if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
 			pValue := PriceSystemComission(price, it, false)
-			newPrice += pValue
+			comissions += pValue
 			price += pValue
 		}
 		if f&TargetReducePriceFactor == TargetReducePriceFactor {
 			pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, false)
-			newPrice += pValue
+			comissions += pValue
 			price += pValue
 		}
 	}
-	return newPrice
+	return comissions
+}
+
+// PriceFactorList defines list of factors before calck
+type PriceFactorList []PriceFactor
+
+// Calc list of factors
+func (l PriceFactorList) Calc(price billing.Money, it ResponserItem, remove bool) (comissions billing.Money) {
+	if len(l) == 0 {
+		return 0
+	}
+	var factors PriceFactor
+	for _, f := range l {
+		factors |= f
+	}
+	return factors.Calc(price, it, remove)
 }
 
 // PriceSourceFactors currection to reduce descreancy

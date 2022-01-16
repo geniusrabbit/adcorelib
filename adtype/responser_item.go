@@ -71,7 +71,7 @@ type ResponserItem interface {
 	// Format object
 	Format() *types.Format
 
-	// PricingModel of advertisement
+	// PricingModel of the response advertisement
 	PricingModel() types.PricingModel
 
 	// ContentItem returns the ad response data
@@ -105,7 +105,8 @@ type ResponserItem interface {
 	NetworkName() string
 
 	// Price for specific action if supported `click`, `lead`, `view`
-	Price(action admodels.Action) billing.Money
+	// returns total price of the action
+	Price(action admodels.Action, removeFactors ...PriceFactor) billing.Money
 
 	// SetCPMPrice update of DSP auction value
 	SetCPMPrice(price billing.Money, includeFactors ...PriceFactor)
@@ -115,7 +116,7 @@ type ResponserItem interface {
 
 	// PurchasePrice gives the price of view from external resource.
 	// The cost of this request.
-	PurchasePrice(action admodels.Action) billing.Money
+	PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money
 
 	// Second campaigns
 	Second() *SecondAd

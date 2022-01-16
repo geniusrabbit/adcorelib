@@ -10,6 +10,7 @@ import (
 
 	"github.com/geniusrabbit/gosql"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/models"
 )
@@ -55,6 +56,11 @@ func (l *Smartlink) ID() uint64 {
 // Codename of the target (equal to tagid)
 func (l *Smartlink) Codename() string {
 	return l.StringID
+}
+
+// PricingModel of the target
+func (l *Smartlink) PricingModel() types.PricingModel {
+	return types.PricingModelUndefined
 }
 
 // AlternativeAdCode returns URL or any code (HTML, XML, etc)

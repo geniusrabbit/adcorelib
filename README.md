@@ -26,3 +26,10 @@ RevenueShareReduce = 10%
 So we have two commissions:
   1 - from source to reduce descrepancy between buyer(DSP) and saller
   2 - from target
+
+![Price](docs/assets/price.svg)
+
+* CorrectedSourcePrice = OriginalSourcePrice - Discrepancy
+* CorrectedPrice = CorrectedSourcePrice - TargetShareReduce
+* ComissionPrice = CorrectedPrice % (1-RevShare)
+* PurchasePrice = CorrectedPrice - ComissionPrice

@@ -10,6 +10,7 @@ import (
 
 	"github.com/geniusrabbit/gosql"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/models"
 )
@@ -57,6 +58,11 @@ func (z *Zone) ID() uint64 {
 // Codename of the target (equal to tagid)
 func (z *Zone) Codename() string {
 	return z.StringID
+}
+
+// PricingModel of the target
+func (z *Zone) PricingModel() types.PricingModel {
+	return types.PricingModelUndefined
 }
 
 // AlternativeAdCode returns URL or any code (HTML, XML, etc)
