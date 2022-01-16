@@ -413,6 +413,11 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 	return 0
 }
 
+// PotentialPrice wich can be received from source but was marked as descrepancy
+func (it *ResponseAdItem) PotentialPrice(action admodels.Action) billing.Money {
+	return SourcePriceFactor.Calc(it.Price(action), it, true)
+}
+
 // RevenuePercent value
 func (it *ResponseAdItem) RevenuePercent() float64 {
 	return it.ComissionShareFactor() * 100

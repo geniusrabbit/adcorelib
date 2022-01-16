@@ -43,6 +43,7 @@ func (a Action) IsLead() bool {
 // Campaign actions
 const (
 	ActionImpression Action = 1
+	ActionView       Action = 1
 	ActionClick      Action = 2
 	ActionLead       Action = 3
 )

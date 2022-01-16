@@ -118,6 +118,9 @@ type ResponserItem interface {
 	// The cost of this request.
 	PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money
 
+	// PotentialPrice wich can be received from source but was marked as descrepancy
+	PotentialPrice(action admodels.Action) billing.Money
+
 	// Second campaigns
 	Second() *SecondAd
 

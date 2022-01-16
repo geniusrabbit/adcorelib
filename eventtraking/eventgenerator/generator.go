@@ -109,18 +109,19 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		URL:         it.ActionURL(),    // Non modified target URL
 		Jumper:      0,                 // Jumper Page ID
 		// Money
-		PricingModel:       it.PricingModel().UInt(),                            // Display As CPM/CPC/CPA/CPI
-		PurchaseViewPrice:  it.PurchasePrice(admodels.ActionImpression).Int64(), // Price of of the view of source traffic cost
-		PurchaseClickPrice: it.PurchasePrice(admodels.ActionClick).Int64(),      // Price of of the click of source traffic cost
-		PurchaseLeadPrice:  it.PurchasePrice(admodels.ActionLead).Int64(),       // Price of of the lead of source traffic cost
-		ViewPrice:          it.Price(admodels.ActionImpression).Int64(),         // Price per view
-		ClickPrice:         it.Price(admodels.ActionClick).Int64(),              // Price per click
-		LeadPrice:          it.Price(admodels.ActionLead).Int64(),               // Price per lead
-		Competitor:         it.Second().GetCampaignID(),                         // Competitor compaign ID
-		CompetitorSource:   it.Second().GetSourceID(),                           // Competitor source ID
-		CompetitorECPM:     it.Second().GetECPM().Float64(),                     // Competitor ECPM or auction
-		Revenue:            int(it.RevenuePercent() * 100),                      // Should be percent in money type
-		Potential:          int(it.PotentialPercent() * 100),                    // Potential revenue in %s
+		PricingModel:        it.PricingModel().UInt(),                        // Display As CPM/CPC/CPA/CPI
+		PurchaseViewPrice:   it.PurchasePrice(admodels.ActionView).Int64(),   // Price of of the view of source traffic cost
+		PurchaseClickPrice:  it.PurchasePrice(admodels.ActionClick).Int64(),  // Price of of the click of source traffic cost
+		PurchaseLeadPrice:   it.PurchasePrice(admodels.ActionLead).Int64(),   // Price of of the lead of source traffic cost
+		PotentialViewPrice:  it.PotentialPrice(admodels.ActionView).Int64(),  // Price of of the view of source traffic cost
+		PotentialClickPrice: it.PotentialPrice(admodels.ActionClick).Int64(), // Price of of the click of source traffic cost
+		PotentialLeadPrice:  it.PotentialPrice(admodels.ActionLead).Int64(),  // Price of of the lead of source traffic cost
+		ViewPrice:           it.Price(admodels.ActionView).Int64(),           // Price per view
+		ClickPrice:          it.Price(admodels.ActionClick).Int64(),          // Price per click
+		LeadPrice:           it.Price(admodels.ActionLead).Int64(),           // Price per lead
+		Competitor:          it.Second().GetCampaignID(),                     // Competitor compaign ID
+		CompetitorSource:    it.Second().GetSourceID(),                       // Competitor source ID
+		CompetitorECPM:      it.Second().GetECPM().Float64(),                 // Competitor ECPM or auction
 		// User IDENTITY
 		UDID:        r.DeviceInfo().IFA,         // Unique Device ID (IDFA)
 		UUID:        r.UserInfo().ID,            // User

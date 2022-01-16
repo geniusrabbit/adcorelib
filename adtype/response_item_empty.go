@@ -108,6 +108,11 @@ func (*ResponseItemEmpty) PurchasePrice(action admodels.Action, removeFactors ..
 	return 0
 }
 
+// PotentialPrice wich can be received from source but was marked as descrepancy
+func (*ResponseItemEmpty) PotentialPrice(action admodels.Action) billing.Money {
+	return 0
+}
+
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }
 

@@ -132,8 +132,6 @@ func newEvent() Event {
 		Competitor:         100,
 		CompetitorSource:   1000,
 		CompetitorECPM:     1000000,
-		Revenue:            1000,
-		Potential:          2000,
 		// User IDENTITY
 		UDID:        "1234-123456-123456-1234",
 		UUID:        "1234-123456-123456-1234",
