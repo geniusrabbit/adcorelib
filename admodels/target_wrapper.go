@@ -1,6 +1,9 @@
 package admodels
 
-import "geniusrabbit.dev/corelib/billing"
+import (
+	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/corelib/billing"
+)
 
 // VirtualTarget it's a wrapper which don't have ID
 type VirtualTarget struct {
@@ -20,6 +23,10 @@ func (tw VirtualTarget) ID() uint64 { return 0 }
 
 // Codename of the target (equal to tagid)
 func (tw VirtualTarget) Codename() string { return "" }
+
+// PricingModel of the target
+// Undefined as any priceing model type
+func (tw VirtualTarget) PricingModel() types.PricingModel { return tw.trg.PricingModel() }
 
 // PurchasePrice gives the price of view from external resource
 func (tw VirtualTarget) PurchasePrice(a Action) billing.Money { return tw.trg.PurchasePrice(a) }
