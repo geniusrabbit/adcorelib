@@ -48,6 +48,11 @@ func (u *User) TableName() string {
 	return "usr"
 }
 
+// DisplayName in admin panel
+func (u *User) DisplayName() string {
+	return u.Username
+}
+
 // IsAuth user
 func (u *User) IsAuth() bool {
 	return u != nil && u.ID > 0
