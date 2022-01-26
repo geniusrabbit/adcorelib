@@ -30,8 +30,8 @@ type Zone struct {
 	DefaultCode       gosql.NullableJSON            `gorm:"type:JSONB" json:"default_code,omitempty"`
 	Context           gosql.NullableJSON            `gorm:"type:JSONB" json:"context,omitempty"`            //
 	MinECPM           float64                       `json:"min_ecpm,omitempty"`                             // Default
-	MinECPMByGeo      gosql.NullableJSON            `json:"min_ecpm_by_geo,omitempty"`                      // {"CODE": <ecpm>, ...}
-	Price             billing.Money                 `json:"price,omitempty"`                                // The cost of single view
+	MinECPMByGeo      gosql.NullableJSON            `gorm:"type:JSONB" json:"min_ecpm_by_geo,omitempty"`    // {"CODE": <ecpm>, ...}
+	Price             billing.Money                 `gorm:"type:NUMERIC(10,10)" json:"price,omitempty"`     // The cost of single view
 	AllowedFormats    gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
 	AllowedTypes      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
 	AllowedSources    gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
