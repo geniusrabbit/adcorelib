@@ -44,8 +44,8 @@ type AdFile struct {
 	Path        string             `json:"path"`
 	Name        null.String        `json:"name,omitempty"` // Internal file name
 	ContentType string             `json:"content_type"`
-	Type        ObjectType         `json:"type"`
-	Meta        gosql.NullableJSON `json:"meta,omitempty"`
+	Type        ObjectType         `gorm:"type:INT" json:"type"`
+	Meta        gosql.NullableJSON `gorm:"type:JSONB" json:"meta,omitempty"`
 	Size        int64              `json:"size,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`

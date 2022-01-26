@@ -40,13 +40,13 @@ type Ad struct {
 	CampaignID uint64    `json:"campaign_id"`
 
 	// Extended bid information from []AdBid - [{"cc":"GB","bid":1000}]
-	Bids gosql.NullableJSON `json:"bids,omitempty"`
+	Bids gosql.NullableJSON `gorm:"type:JSONB" json:"bids,omitempty"`
 
 	// Status of the approvements
-	Status types.ApproveStatus `json:"status,omitempty"`
+	Status types.ApproveStatus `gorm:"type:INT" json:"status,omitempty"`
 
 	// Is Active advertisement
-	Active types.ActiveStatus `json:"active,omitempty"`
+	Active types.ActiveStatus `gorm:"type:INT" json:"active,omitempty"`
 
 	// Format of the advertisement with structure of allowed items
 	Format   *Format `json:"format,omitempty" gorm:"association_autoupdate:false"`
@@ -62,16 +62,16 @@ type Ad struct {
 	PricingModel PricingModel `json:"pricing_model"`
 
 	// Money limit counters
-	BidPrice        billing.Money `json:"bid_price,omitempty"`         // Maximal bid for RTB
-	Price           billing.Money `json:"price,omitempty"`             // Price per pricing_model
-	LeadPrice       billing.Money `json:"lead_bid,omitempty"`          // Price of lead to calculate effectivity
-	DailyBudget     billing.Money `json:"daily_budget,omitempty"`      // Max daily budget spent
-	Budget          billing.Money `json:"budget,omitempty"`            // Money budget for whole time
-	DailyTestBudget billing.Money `json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
-	TestBudget      billing.Money `json:"test_budget,omitempty"`       // Total test budget of whole time
+	BidPrice        billing.Money `gorm:"type:NUMERIC(10,10)" json:"bid_price,omitempty"`         // Maximal bid for RTB
+	Price           billing.Money `gorm:"type:NUMERIC(10,10)" json:"price,omitempty"`             // Price per pricing_model
+	LeadPrice       billing.Money `gorm:"type:NUMERIC(10,10)" json:"lead_bid,omitempty"`          // Price of lead to calculate effectivity
+	DailyBudget     billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent
+	Budget          billing.Money `gorm:"type:NUMERIC(10,10)" json:"budget,omitempty"`            // Money budget for whole time
+	DailyTestBudget billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
+	TestBudget      billing.Money `gorm:"type:NUMERIC(10,10)" json:"test_budget,omitempty"`       // Total test budget of whole time
 
 	// Context contains the most improtant information about Ad
-	Context gosql.NullableJSON `json:"context,omitempty"`
+	Context gosql.NullableJSON `gorm:"type:JSONB" json:"context,omitempty"`
 
 	// Weight of the Ad in rotation
 	Weight int `json:"weight,omitempty"`

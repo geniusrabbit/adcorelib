@@ -20,10 +20,10 @@ type AdLink struct {
 	CampaignID uint64 `json:"campaign_id"`
 
 	// Status of the approvements
-	Status types.ApproveStatus `json:"status,omitempty"`
+	Status types.ApproveStatus `gorm:"type:INT" json:"status,omitempty"`
 
 	// Is Active advertisement
-	Active types.ActiveStatus `json:"active,omitempty"`
+	Active types.ActiveStatus `gorm:"type:INT" json:"active,omitempty"`
 
 	// Time marks
 	CreatedAt time.Time `json:"created_at"`

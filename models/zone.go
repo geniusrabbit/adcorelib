@@ -23,20 +23,20 @@ type Zone struct {
 	Company   *Company `json:"company,omitempty"`
 	CompanyID uint64   `json:"company_id,omitempty"`
 
-	Type   types.ZoneType      `json:"type,omitempty"`
-	Status types.ApproveStatus `json:"status"`
-	Active types.ActiveStatus  `json:"active"`
+	Type   types.ZoneType      `gorm:"type:INT" json:"type,omitempty"`
+	Status types.ApproveStatus `gorm:"type:INT" json:"status"`
+	Active types.ActiveStatus  `gorm:"type:INT" json:"active"`
 
-	DefaultCode       gosql.NullableJSON            `json:"default_code,omitempty"`
-	Context           gosql.NullableJSON            `json:"context,omitempty"`            //
-	MinECPM           float64                       `json:"min_ecpm,omitempty"`           // Default
-	MinECPMByGeo      gosql.NullableJSON            `json:"min_ecpm_by_geo,omitempty"`    // {"CODE": <ecpm>, ...}
-	Price             billing.Money                 `json:"price,omitempty"`              // The cost of single view
-	AllowedFormats    gosql.NullableOrderedIntArray `json:"allowed_formats,omitempty"`    //
-	AllowedTypes      gosql.NullableOrderedIntArray `json:"allowed_types,omitempty"`      //
-	AllowedSources    gosql.NullableOrderedIntArray `json:"allowed_sources,omitempty"`    //
-	DisallowedSources gosql.NullableOrderedIntArray `json:"disallowed_sources,omitempty"` //
-	Campaigns         gosql.NullableOrderedIntArray `json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
+	DefaultCode       gosql.NullableJSON            `gorm:"type:JSONB" json:"default_code,omitempty"`
+	Context           gosql.NullableJSON            `gorm:"type:JSONB" json:"context,omitempty"`            //
+	MinECPM           float64                       `json:"min_ecpm,omitempty"`                             // Default
+	MinECPMByGeo      gosql.NullableJSON            `json:"min_ecpm_by_geo,omitempty"`                      // {"CODE": <ecpm>, ...}
+	Price             billing.Money                 `json:"price,omitempty"`                                // The cost of single view
+	AllowedFormats    gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
+	AllowedTypes      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
+	AllowedSources    gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
+	DisallowedSources gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"disallowed_sources,omitempty"` //
+	Campaigns         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
