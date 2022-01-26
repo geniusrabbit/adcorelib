@@ -44,43 +44,43 @@ type Campaign struct {
 	ModeratorID uint64   `json:"moderator_id"`
 
 	// Status of the campaign
-	Status types.ApproveStatus `json:"status"`
+	Status types.ApproveStatus `gorm:"type:INT" json:"status"`
 
 	// Is Active campaign
-	Active types.ActiveStatus `json:"active"`
+	Active types.ActiveStatus `gorm:"type:INT" json:"active"`
 
 	// Is private campaign type
-	Private types.PrivateStatus `json:"private"`
+	Private types.PrivateStatus `gorm:"type:INT" json:"private"`
 
 	// Money limit counters
-	DailyBudget     billing.Money `json:"daily_budget,omitempty"`      // Max daily budget spent
-	Budget          billing.Money `json:"budget,omitempty"`            // Money budget for whole time
-	DailyTestBudget billing.Money `json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
-	TestBudget      billing.Money `json:"test_budget,omitempty"`       // Total test budget of whole time
+	DailyBudget     billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent
+	Budget          billing.Money `gorm:"type:NUMERIC(10,10)" json:"budget,omitempty"`            // Money budget for whole time
+	DailyTestBudget billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
+	TestBudget      billing.Money `gorm:"type:NUMERIC(10,10)" json:"test_budget,omitempty"`       // Total test budget of whole time
 
-	Context gosql.NullableJSON `json:"context,omitempty"`
+	Context gosql.NullableJSON `gorm:"type:JSONB" json:"context,omitempty"`
 
 	// Targeting scope incofrmation
-	Zones       gosql.NullableUintArray   `json:"zones,omitempty"`
-	Domains     gosql.NullableStringArray `json:"domains,omitempty"` // site domains or application bundels
-	Categories  gosql.NullableUintArray   `json:"categories,omitempty"`
-	Geos        gosql.NullableStringArray `json:"geos,omitempty"`
-	Languages   gosql.NullableStringArray `json:"languages,omitempty"`
-	Browsers    gosql.NullableUintArray   `json:"browsers,omitempty"`
-	Os          gosql.NullableUintArray   `json:"os,omitempty"`
-	DeviceTypes gosql.NullableUintArray   `json:"device_types,omitempty"`
-	Devices     gosql.NullableUintArray   `json:"devices,omitempty"`
+	Zones       gosql.NullableUintArray   `gorm:"type:INT[]" json:"zones,omitempty"`
+	Domains     gosql.NullableStringArray `gorm:"type:TEXT[]" json:"domains,omitempty"` // site domains or application bundels
+	Categories  gosql.NullableUintArray   `gorm:"type:INT[]" json:"categories,omitempty"`
+	Geos        gosql.NullableStringArray `gorm:"type:TEXT[]" json:"geos,omitempty"`
+	Languages   gosql.NullableStringArray `gorm:"type:TEXT[]" json:"languages,omitempty"`
+	Browsers    gosql.NullableUintArray   `gorm:"type:INT[]" json:"browsers,omitempty"`
+	Os          gosql.NullableUintArray   `gorm:"type:INT[]" json:"os,omitempty"`
+	DeviceTypes gosql.NullableUintArray   `gorm:"type:INT[]" json:"device_types,omitempty"`
+	Devices     gosql.NullableUintArray   `gorm:"type:INT[]" json:"devices,omitempty"`
 	DateStart   null.Time                 `json:"date_start,omitempty"`
 	DateEnd     null.Time                 `json:"date_end,omitempty"`
 	Hours       null.String               `json:"hours,omitempty"`
-	Sex         gosql.NullableUintArray   `json:"sex,omitempty"`
-	Age         gosql.NullableUintArray   `json:"age,omitempty"`
+	Sex         gosql.NullableUintArray   `gorm:"type:INT[]" json:"sex,omitempty"`
+	Age         gosql.NullableUintArray   `gorm:"type:INT[]" json:"age,omitempty"`
 
 	// Advertisement list
 	Ads   []*Ad     `json:"ads,omitempty" gorm:"ForeignKey:CampaignID"`
 	Links []*AdLink `json:"links,omitempty" gorm:"ForeignKey:CampaignID"`
 
-	Trace        gosql.NullableStringArray `json:"trace,omitempty"`
+	Trace        gosql.NullableStringArray `gorm:"type:TEXT[]" json:"trace,omitempty"`
 	TracePercent int                       `json:"trace_percent,omitempty"`
 
 	// Time marks
