@@ -43,10 +43,10 @@ type Ad struct {
 	Bids gosql.NullableJSON `gorm:"type:JSONB" json:"bids,omitempty"`
 
 	// Status of the approvements
-	Status types.ApproveStatus `gorm:"type:INT" json:"status,omitempty"`
+	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
 
 	// Is Active advertisement
-	Active types.ActiveStatus `gorm:"type:INT" json:"active,omitempty"`
+	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
 	// Format of the advertisement with structure of allowed items
 	Format   *Format `json:"format,omitempty" gorm:"association_autoupdate:false"`

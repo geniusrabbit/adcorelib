@@ -44,13 +44,13 @@ type Campaign struct {
 	ModeratorID uint64   `json:"moderator_id"`
 
 	// Status of the campaign
-	Status types.ApproveStatus `gorm:"type:INT" json:"status"`
+	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`
 
 	// Is Active campaign
-	Active types.ActiveStatus `gorm:"type:INT" json:"active"`
+	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active"`
 
 	// Is private campaign type
-	Private types.PrivateStatus `gorm:"type:INT" json:"private"`
+	Private types.PrivateStatus `gorm:"type:PrivateStatus" json:"private"`
 
 	// Money limit counters
 	DailyBudget     billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent

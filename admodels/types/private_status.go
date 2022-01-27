@@ -12,6 +12,7 @@ import (
 )
 
 // PrivateStatus of the object
+// CREATE TYPE PrivateStatus AS ENUM ('public', 'private')
 type PrivateStatus uint
 
 // Status private
@@ -44,12 +45,8 @@ func (st PrivateStatus) IsPrivate() bool {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (st PrivateStatus) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := st.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (st PrivateStatus) Value() (driver.Value, error) {
+	return []byte(st.Name()), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

@@ -9,6 +9,7 @@ import (
 )
 
 // AuctionType data
+// CREATE TYPE AuctionType AS ENUM ('undefined', 'first_price', 'second_price')
 type AuctionType uint8
 
 // Auction types
@@ -51,12 +52,8 @@ func AuctionTypeNameToType(name string) AuctionType {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (at AuctionType) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := at.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (at AuctionType) Value() (driver.Value, error) {
+	return []byte(at.Name()), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

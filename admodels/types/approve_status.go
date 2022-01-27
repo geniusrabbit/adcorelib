@@ -9,6 +9,7 @@ import (
 )
 
 // ApproveStatus type
+// CREATE TYPE ApproveStatus AS ENUM ('pending', 'approved', 'rejected')
 type ApproveStatus uint
 
 // Status approve
@@ -49,12 +50,8 @@ func ApproveNameToStatus(name string) ApproveStatus {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (st ApproveStatus) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := st.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (st ApproveStatus) Value() (driver.Value, error) {
+	return []byte(st.Name()), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

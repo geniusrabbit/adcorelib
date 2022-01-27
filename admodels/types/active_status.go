@@ -14,6 +14,7 @@ import (
 )
 
 // ActiveStatus of the object
+// CREATE TYPE ActiveStatus AS ENUM ('active', 'pause')
 type ActiveStatus uint
 
 // Status active
@@ -46,12 +47,8 @@ func (st ActiveStatus) IsActive() bool {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (st ActiveStatus) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := st.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (st ActiveStatus) Value() (driver.Value, error) {
+	return []byte(st.Name()), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
