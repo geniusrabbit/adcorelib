@@ -16,6 +16,7 @@ import (
 var errInvalidUnmarshalValue = errors.New("invalid unmarshal value")
 
 // FormatType value
+// CREATE TYPE FormatType AS ENUM ('invalid', 'undefined', 'direct', 'proxy', 'video', 'banner', 'html5', 'native', 'custom')
 type FormatType int
 
 // Format types
@@ -106,12 +107,8 @@ func (t FormatType) IsProxy() bool {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (t FormatType) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := t.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (t FormatType) Value() (driver.Value, error) {
+	return t.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

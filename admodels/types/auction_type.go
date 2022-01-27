@@ -53,7 +53,7 @@ func AuctionTypeNameToType(name string) AuctionType {
 
 // Value implements the driver.Valuer interface, json field interface
 func (at AuctionType) Value() (driver.Value, error) {
-	return []byte(at.Name()), nil
+	return at.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

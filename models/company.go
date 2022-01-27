@@ -37,7 +37,7 @@ type Company struct {
 	Name        string              `json:"name"`                                         // Unique project name. Like login
 	Title       string              `json:"title"`                                        //
 	Description string              `json:"description"`                                  //
-	Status      types.ApproveStatus `json:"status"`                                       //
+	Status      types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`             //
 	Members     []*User             `gorm:"many2many:company_m2m_member;" json:"members"` // Members of project
 	CompanyName string              `json:"company_name"`                                 // Company info
 	Country     string              `json:"country"`                                      // - // -

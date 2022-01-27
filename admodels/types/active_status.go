@@ -48,7 +48,7 @@ func (st ActiveStatus) IsActive() bool {
 
 // Value implements the driver.Valuer interface, json field interface
 func (st ActiveStatus) Value() (driver.Value, error) {
-	return []byte(st.Name()), nil
+	return st.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
