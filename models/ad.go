@@ -12,7 +12,6 @@ import (
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
 )
 
 //
@@ -62,13 +61,13 @@ type Ad struct {
 	PricingModel PricingModel `json:"pricing_model"`
 
 	// Money limit counters
-	BidPrice        billing.Money `gorm:"type:NUMERIC(10,10)" json:"bid_price,omitempty"`         // Maximal bid for RTB
-	Price           billing.Money `gorm:"type:NUMERIC(10,10)" json:"price,omitempty"`             // Price per pricing_model
-	LeadPrice       billing.Money `gorm:"type:NUMERIC(10,10)" json:"lead_bid,omitempty"`          // Price of lead to calculate effectivity
-	DailyBudget     billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent
-	Budget          billing.Money `gorm:"type:NUMERIC(10,10)" json:"budget,omitempty"`            // Money budget for whole time
-	DailyTestBudget billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
-	TestBudget      billing.Money `gorm:"type:NUMERIC(10,10)" json:"test_budget,omitempty"`       // Total test budget of whole time
+	BidPrice        float64 `gorm:"type:NUMERIC(10,10)" json:"bid_price,omitempty"`         // Maximal bid for RTB
+	Price           float64 `gorm:"type:NUMERIC(10,10)" json:"price,omitempty"`             // Price per pricing_model
+	LeadPrice       float64 `gorm:"type:NUMERIC(10,10)" json:"lead_bid,omitempty"`          // Price of lead to calculate effectivity
+	DailyBudget     float64 `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent
+	Budget          float64 `gorm:"type:NUMERIC(10,10)" json:"budget,omitempty"`            // Money budget for whole time
+	DailyTestBudget float64 `gorm:"type:NUMERIC(10,10)" json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
+	TestBudget      float64 `gorm:"type:NUMERIC(10,10)" json:"test_budget,omitempty"`       // Total test budget of whole time
 
 	// Context contains the most improtant information about Ad
 	Context gosql.NullableJSON `gorm:"type:JSONB" json:"context,omitempty"`

@@ -31,7 +31,7 @@ func CompanyFromModel(c *models.Company) *Company {
 	return &Company{
 		ID:           c.ID,
 		Balance:      0,
-		MaxDaily:     c.MaxDaily,
+		MaxDaily:     billing.MoneyFloat(c.MaxDaily),
 		Spent:        0,
 		RevenueShare: c.RevenueShare,
 	}

@@ -14,7 +14,6 @@ import (
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
 )
 
 // Device set of types
@@ -53,10 +52,10 @@ type Campaign struct {
 	Private types.PrivateStatus `gorm:"type:PrivateStatus" json:"private"`
 
 	// Money limit counters
-	DailyBudget     billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent
-	Budget          billing.Money `gorm:"type:NUMERIC(10,10)" json:"budget,omitempty"`            // Money budget for whole time
-	DailyTestBudget billing.Money `gorm:"type:NUMERIC(10,10)" json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
-	TestBudget      billing.Money `gorm:"type:NUMERIC(10,10)" json:"test_budget,omitempty"`       // Total test budget of whole time
+	DailyBudget     float64 `gorm:"type:NUMERIC(10,10)" json:"daily_budget,omitempty"`      // Max daily budget spent
+	Budget          float64 `gorm:"type:NUMERIC(10,10)" json:"budget,omitempty"`            // Money budget for whole time
+	DailyTestBudget float64 `gorm:"type:NUMERIC(10,10)" json:"daily_test_budget,omitempty"` // Test money amount a day (it stops automaticaly if not profit for this amount)
+	TestBudget      float64 `gorm:"type:NUMERIC(10,10)" json:"test_budget,omitempty"`       // Total test budget of whole time
 
 	Context gosql.NullableJSON `gorm:"type:JSONB" json:"context,omitempty"`
 

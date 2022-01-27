@@ -11,7 +11,6 @@ import (
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
 )
 
 // ```pg
@@ -47,7 +46,7 @@ type Company struct {
 	Email       string              `json:"email"`                                        // - // -
 	Messanger   string              `json:"messanger"`                                    // - // -
 
-	MaxDaily billing.Money `gorm:"type:NUMERIC(10,10)" json:"max_daily,omitempty"`
+	MaxDaily float64 `gorm:"type:NUMERIC(10,10)" json:"max_daily,omitempty"`
 	// RevenueShare it's amount of percent of the raw incode which will be shared with the publisher company
 	// For example:
 	//   Displayed ads for 100$

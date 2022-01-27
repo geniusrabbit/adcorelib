@@ -81,6 +81,11 @@ func (t FormatType) Name() string {
 	return `undefined`
 }
 
+// DisplayName of the format type
+func (t FormatType) DisplayName() string {
+	return t.Name()
+}
+
 // IsInvalid type of format
 func (t FormatType) IsInvalid() bool {
 	return t == FormatInvalidType
@@ -115,9 +120,9 @@ func (t FormatType) Value() (driver.Value, error) {
 func (t *FormatType) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case string:
-		*t = FormatMapping[v[1:len(v)-1]]
+		return t.UnmarshalJSON([]byte(v))
 	case []byte:
-		*t = FormatMapping[string(v[1:len(v)-1])]
+		return t.UnmarshalJSON(v)
 	case nil:
 		*t = FormatUndefinedType
 	default:

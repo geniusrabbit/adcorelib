@@ -148,10 +148,10 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 		Weight:    0, // camp.Weight,
 		Flags:     flags,
 
-		DailyBudget:     camp.DailyBudget,
-		Budget:          camp.Budget,
-		DailyTestBudget: camp.DailyTestBudget,
-		TestBudget:      camp.TestBudget,
+		DailyBudget:     billing.MoneyFloat(camp.DailyBudget),
+		Budget:          billing.MoneyFloat(camp.Budget),
+		DailyTestBudget: billing.MoneyFloat(camp.DailyTestBudget),
+		TestBudget:      billing.MoneyFloat(camp.TestBudget),
 
 		Ads:   nil,
 		Links: nil,

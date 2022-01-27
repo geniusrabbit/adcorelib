@@ -37,7 +37,7 @@ func SmartlinkFromModel(zone models.Zone) *Smartlink {
 	return &Smartlink{
 		id:                zone.ID,
 		StringID:          strconv.FormatUint(zone.ID, 10),
-		Price:             zone.Price,
+		Price:             billing.MoneyFloat(zone.Price),
 		Comp:              nil,
 		CompID:            zone.CompanyID,
 		AllowedTypes:      zone.AllowedTypes,

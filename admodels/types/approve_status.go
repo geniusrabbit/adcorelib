@@ -33,6 +33,11 @@ func (st ApproveStatus) Name() string {
 	return StatusPendingName
 }
 
+// DisplayName of the status
+func (st ApproveStatus) DisplayName() string {
+	return st.Name()
+}
+
 // IsApproved status of the object
 func (st ApproveStatus) IsApproved() bool {
 	return st == StatusApproved
@@ -58,9 +63,9 @@ func (st ApproveStatus) Value() (driver.Value, error) {
 func (st *ApproveStatus) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case string:
-		*st = ApproveNameToStatus(v[1 : len(v)-1])
+		return st.UnmarshalJSON([]byte(v))
 	case []byte:
-		*st = ApproveNameToStatus(string(v[1 : len(v)-1]))
+		return st.UnmarshalJSON(v)
 	case nil:
 		*st = StatusPending
 	default:

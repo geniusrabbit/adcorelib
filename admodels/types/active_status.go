@@ -41,6 +41,11 @@ func (st ActiveStatus) Name() string {
 	return `pause`
 }
 
+// DisplayName of the status
+func (st ActiveStatus) DisplayName() string {
+	return st.Name()
+}
+
 // IsActive status of the object
 func (st ActiveStatus) IsActive() bool {
 	return st == StatusActive
@@ -55,9 +60,9 @@ func (st ActiveStatus) Value() (driver.Value, error) {
 func (st *ActiveStatus) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case string:
-		*st = ActiveNameToStatus(v[1 : len(v)-1])
+		return st.UnmarshalJSON([]byte(v))
 	case []byte:
-		*st = ActiveNameToStatus(string(v[1 : len(v)-1]))
+		return st.UnmarshalJSON(v)
 	case nil:
 		*st = StatusPause
 	default:

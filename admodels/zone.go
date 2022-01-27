@@ -38,7 +38,7 @@ func ZoneFromModel(zone models.Zone) *Zone {
 	return &Zone{
 		id:                zone.ID,
 		StringID:          strconv.FormatUint(zone.ID, 10),
-		Price:             zone.Price,
+		Price:             billing.MoneyFloat(zone.Price),
 		Comp:              nil,
 		CompID:            zone.CompanyID,
 		MinECPM:           zone.MinECPM,

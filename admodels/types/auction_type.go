@@ -40,6 +40,11 @@ func (at AuctionType) Name() string {
 	return `undefined`
 }
 
+// DisplayName of the auction
+func (at AuctionType) DisplayName() string {
+	return at.Name()
+}
+
 // AuctionTypeNameToType name to const
 func AuctionTypeNameToType(name string) AuctionType {
 	switch name {
@@ -60,9 +65,9 @@ func (at AuctionType) Value() (driver.Value, error) {
 func (at *AuctionType) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case string:
-		*at = AuctionTypeNameToType(v[1 : len(v)-1])
+		return at.UnmarshalJSON([]byte(v))
 	case []byte:
-		*at = AuctionTypeNameToType(string(v[1 : len(v)-1]))
+		return at.UnmarshalJSON(v)
 	case nil:
 		*at = UndefinedAuctionType
 	default:
