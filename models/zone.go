@@ -22,9 +22,9 @@ type Zone struct {
 	Company   *Company `json:"company,omitempty"`
 	CompanyID uint64   `json:"company_id,omitempty"`
 
-	Type   types.ZoneType      `gorm:"type:INT" json:"type,omitempty"`
-	Status types.ApproveStatus `gorm:"type:INT" json:"status"`
-	Active types.ActiveStatus  `gorm:"type:INT" json:"active"`
+	Type   types.ZoneType      `gorm:"type:ZoneType" json:"type,omitempty"`
+	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`
+	Active types.ActiveStatus  `gorm:"type:ActiveStatus" json:"active"`
 
 	DefaultCode       gosql.NullableJSON            `gorm:"type:JSONB" json:"default_code,omitempty"`
 	Context           gosql.NullableJSON            `gorm:"type:JSONB" json:"context,omitempty"`            //

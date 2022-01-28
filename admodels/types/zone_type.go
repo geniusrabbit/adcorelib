@@ -14,6 +14,7 @@ import (
 )
 
 // PrivateStatus of the object
+// CREATE TYPE ZoneType AS ENUM ('zone', 'smartlink')
 type ZoneType uint
 
 // Zone Types enum
@@ -46,12 +47,8 @@ func (tp ZoneType) IsSmartlink() bool {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (st ZoneType) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := st.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (st ZoneType) Value() (driver.Value, error) {
+	return st.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
