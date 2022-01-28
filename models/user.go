@@ -23,6 +23,16 @@ const (
 	UserStatusClauseForFraud UserStatus = 2 // 2
 )
 
+func (st UserStatus) Name() string {
+	switch st {
+	case UserStatusActive:
+		return "active"
+	case UserStatusClauseForFraud:
+		return "clause_for_fraud"
+	}
+	return "inactive"
+}
+
 const (
 	userPasswordSalt = "ad6eithae6AehaefooghaishieCegahv"
 )
@@ -50,6 +60,9 @@ func (u *User) TableName() string {
 
 // DisplayName in admin panel
 func (u *User) DisplayName() string {
+	if u.Username == "" {
+		return "<undefined>"
+	}
 	return u.Username
 }
 
