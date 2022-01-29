@@ -47,23 +47,23 @@ type RTBAccessPoint struct {
 	Headers       gosql.NullableJSON `gorm:"type:JSONB" json:"headers,omitempty"`
 
 	// Targeting filters
-	Formats         gosql.StringArray             `gorm:"type:TEXT[]" json:"formats,omitempty"`                        // => Filters [direct,banner_250x300]
-	DeviceTypes     gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"device_types,omitempty"`       //
-	Devices         gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"devices,omitempty"`            //
-	OS              gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"os,omitempty"`                 //
-	Browsers        gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"browsers,omitempty"`           //
-	Categories      gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"categories,omitempty"`         //
-	Carriers        gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"carriers,omitempty"`           //
-	Countries       gosql.StringArray             `gorm:"type:TEXT[]" json:"countries,omitempty"`                      //
-	Languages       gosql.StringArray             `gorm:"type:TEXT[]" json:"languages,omitempty"`                      //
-	Applications    gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL;column:apps" json:"apps,omitempty"`   //
-	Zones           gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL;column:zones" json:"zones,omitempty"` //
-	Domains         gosql.StringArray             `gorm:"type:TEXT[]" json:"domains,omitempty"`                        //
-	Sources         gosql.NullableOrderedIntArray `gorm:"type:INT[] DEFAULT NULL" json:"rtb_sources,omitempty"`        //
-	Secure          int                           `json:"secure,omitempty"`                                            // 0 - any, 1 - only, 2 - exclude
-	AdBlock         int                           `json:"adblock,omitempty" gorm:"column:adblock"`                     // 0 - any, 1 - only, 2 - exclude
-	PrivateBrowsing int                           `json:"private_browsing,omitempty"`                                  // 0 - any, 1 - only, 2 - exclude
-	IP              int                           `json:"ip,omitempty"`                                                // 0 - any, 1 - IPv4, 2 - IPv6
+	Formats         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"formats,omitempty"`            // => Filters [direct,banner_250x300]
+	DeviceTypes     gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"device_types,omitempty"`        //
+	Devices         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"devices,omitempty"`             //
+	OS              gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"os,omitempty"`                  //
+	Browsers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"browsers,omitempty"`            //
+	Categories      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"categories,omitempty"`          //
+	Carriers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"carriers,omitempty"`            //
+	Countries       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"countries,omitempty"`          //
+	Languages       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"languages,omitempty"`          //
+	Applications    gosql.NullableOrderedIntArray `gorm:"type:INT[];column:apps" json:"apps,omitempty"`    //
+	Zones           gosql.NullableOrderedIntArray `gorm:"type:INT[];column:zones" json:"zones,omitempty"`  //
+	Domains         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"domains,omitempty"`            //
+	Sources         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"rtb_sources,omitempty"`         //
+	Secure          int                           `gorm:"notnull" json:"secure,omitempty"`                 // 0 - any, 1 - only, 2 - exclude
+	AdBlock         int                           `gorm:"column:adblock;notnull" json:"adblock,omitempty"` // 0 - any, 1 - only, 2 - exclude
+	PrivateBrowsing int                           `gorm:"notnull" json:"private_browsing,omitempty"`       // 0 - any, 1 - only, 2 - exclude
+	IP              int                           `gorm:"notnull" json:"ip,omitempty"`                     // 0 - any, 1 - IPv4, 2 - IPv6
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

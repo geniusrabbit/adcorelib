@@ -84,7 +84,7 @@ func (at AuctionType) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the json.Unmarshaller
 func (at *AuctionType) UnmarshalJSON(b []byte) error {
 	if len(b) == 0 {
-		return errors.Wrap(errInvalidUnmarshalValue, "`"+string(b)+"`")
+		return errors.Wrap(errInvalidUnmarshalValue, "<empty>")
 	}
 	if bytes.HasPrefix(b, []byte(`"`)) {
 		*at = AuctionTypeNameToType(string(b[1 : len(b)-1]))
