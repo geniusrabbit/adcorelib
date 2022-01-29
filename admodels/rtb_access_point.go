@@ -8,8 +8,6 @@ package admodels
 import (
 	"strings"
 
-	"github.com/geniusrabbit/gosql/pgtype"
-
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/models"
@@ -24,7 +22,7 @@ type RTBAccessPoint struct {
 	Company *Company
 
 	Codename string // Unical name of the access point
-	Headers  pgtype.Hstore
+	Headers  map[string]string
 
 	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
 
@@ -42,7 +40,7 @@ type RTBAccessPoint struct {
 
 	Filter types.BaseFilter
 
-	Flags pgtype.Hstore
+	Flags map[string]int
 }
 
 // RTBAccessPoint create new DSP connect.
@@ -52,7 +50,11 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 	}
 
 	var (
-		filter = types.BaseFilter{
+		headers map[string]string
+		flags   map[string]int
+		_       = cl.Headers.UnmarshalTo(&headers)
+		_       = cl.Headers.UnmarshalTo(&flags)
+		filter  = types.BaseFilter{
 			Secure:          cl.Secure,
 			Adblock:         cl.AdBlock,
 			PrivateBrowsing: cl.PrivateBrowsing,
@@ -76,14 +78,14 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 		Company:            comp,
 		Codename:           cl.Codename,
 		Protocol:           strings.ToLower(cl.Protocol),
-		Headers:            cl.Headers,
+		Headers:            headers,
 		AuctionType:        cl.AuctionType,
 		RPS:                cl.RPS,
 		Timeout:            cl.Timeout,
 		MaxBid:             cl.MaxBid,
 		Filter:             filter,
 		RevenueShareReduce: cl.RevenueShareReduce,
-		Flags:              cl.Flags,
+		Flags:              flags,
 	}
 }
 
