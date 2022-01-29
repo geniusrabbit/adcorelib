@@ -6,11 +6,10 @@
 package models
 
 import (
-	"strconv"
 	"time"
 
+	"github.com/demdxx/gocast"
 	"github.com/geniusrabbit/gosql"
-	"github.com/geniusrabbit/gosql/pgtype"
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
@@ -37,15 +36,15 @@ type RTBAccessPoint struct {
 
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
 	Active types.ActiveStatus  `gorm:"type:ActiveStatus" json:"active,omitempty"`
-	Flags  pgtype.Hstore       `gorm:"type:HSTORE" json:"flags,omitempty"`
+	Flags  gosql.NullableJSON  `gorm:"type:JSONB" json:"flags,omitempty"`
 
 	// Protocol configs
-	Protocol      string        `json:"protocol,omitempty"`
-	Timeout       int           `json:"timeout,omitempty"`
-	RPS           int           `json:"rps,omitempty"`
-	MaxBid        billing.Money `json:"max_bid,omitempty"`
-	DomainDefault string        `json:"domain_default,omitempty"`
-	Headers       pgtype.Hstore `gorm:"type:HSTORE" json:"headers,omitempty"`
+	Protocol      string             `json:"protocol,omitempty"`
+	Timeout       int                `json:"timeout,omitempty"`
+	RPS           int                `json:"rps,omitempty"`
+	MaxBid        billing.Money      `json:"max_bid,omitempty"`
+	DomainDefault string             `json:"domain_default,omitempty"`
+	Headers       gosql.NullableJSON `gorm:"type:JSONB" json:"headers,omitempty"`
 
 	// Targeting filters
 	Formats         gosql.StringArray             `gorm:"type:TEXT[]" json:"formats,omitempty"`           // => Filters [direct,banner_250x300]
@@ -78,14 +77,20 @@ func (s *RTBAccessPoint) TableName() string {
 
 // Flag get by key
 func (s *RTBAccessPoint) Flag(flagName string) int {
-	if val, ok := s.Flags.Get(flagName); ok {
-		i, _ := strconv.Atoi(val)
-		return i
+	var m map[string]int
+	if err := s.Flags.UnmarshalTo(&m); err == nil {
+		return gocast.ToInt(m[flagName])
 	}
 	return -1
 }
 
 // SetFlag for object
 func (s *RTBAccessPoint) SetFlag(flagName string, flagValue int) {
-	s.Flags.Set(flagName, strconv.Itoa(flagValue))
+	var m map[string]int
+	_ = s.Flags.UnmarshalTo(&m)
+	if m == nil {
+		m = map[string]int{}
+	}
+	m[flagName] = flagValue
+	_ = s.Flags.SetValue(m)
 }
