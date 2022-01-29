@@ -41,7 +41,7 @@ type Format struct {
 	ID       uint64             `json:"id"`
 	Codename string             `json:"codename"`
 	Title    string             `json:"title"`
-	Active   types.ActiveStatus `json:"active,omitempty"`
+	Active   types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
 	Width     int `json:"width,omitempty"`
 	Height    int `json:"height,omitempty"`
