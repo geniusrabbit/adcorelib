@@ -48,7 +48,7 @@ type Format struct {
 	MinWidth  int `json:"min_width,omitempty"`
 	MinHeight int `json:"min_height,omitempty"`
 
-	Config gosql.NullableJSON `json:"config,omitempty"`
+	Config gosql.NullableJSON `gorm:"type:JSONB" json:"config,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
