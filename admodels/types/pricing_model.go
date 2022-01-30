@@ -84,12 +84,8 @@ func (pm PricingModel) UInt() uint {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (pm PricingModel) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := pm.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (pm PricingModel) Value() (driver.Value, error) {
+	return pm.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

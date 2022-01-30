@@ -7,7 +7,7 @@ require (
 	github.com/bkaradzic/go-lz4 v1.0.0
 	github.com/bsm/openrtb v2.1.2+incompatible
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8
-	github.com/demdxx/gocast v1.1.2
+	github.com/demdxx/gocast v1.2.0
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
 	github.com/geniusrabbit/gosql v0.1.1
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
