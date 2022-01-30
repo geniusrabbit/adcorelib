@@ -14,29 +14,26 @@ import (
 )
 
 // ApplicationType type
-// CREATE TYPE ApplicationType AS ENUM ('site', 'mobile.app', 'desktop.app', 'game')
+// CREATE TYPE ApplicationType AS ENUM ('site', 'application', 'game')
 type ApplicationType uint
 
 // Status approve
 const (
-	ApplicationUndefined      ApplicationType = 0
-	ApplicationSite           ApplicationType = 1
-	ApplicationMobileApp      ApplicationType = 2
-	ApplicationDesktopApp     ApplicationType = 3
-	ApplicationGame           ApplicationType = 4
-	ApplicationUndefinedName                  = `undefined`
-	ApplicationSiteName                       = `site`
-	ApplicationMobileAppName                  = `mobile.app`
-	ApplicationDesktopAppName                 = `desktop.app`
-	ApplicationGameName                       = `game`
+	ApplicationUndefined     ApplicationType = 0
+	ApplicationSite          ApplicationType = 1
+	ApplicationApp           ApplicationType = 2
+	ApplicationGame          ApplicationType = 3
+	ApplicationUndefinedName                 = `undefined`
+	ApplicationSiteName                      = `site`
+	ApplicationAppName                       = `application`
+	ApplicationGameName                      = `game`
 )
 
 // ApplicationTypeNameList contains list of posible platform name
 var ApplicationTypeNameList = []string{
 	ApplicationUndefinedName,
 	ApplicationSiteName,
-	ApplicationMobileAppName,
-	ApplicationDesktopAppName,
+	ApplicationAppName,
 	ApplicationGameName,
 }
 
@@ -47,10 +44,8 @@ func (tp ApplicationType) Name() string {
 		return ApplicationUndefinedName
 	case ApplicationSite:
 		return ApplicationSiteName
-	case ApplicationMobileApp:
-		return ApplicationMobileAppName
-	case ApplicationDesktopApp:
-		return ApplicationDesktopAppName
+	case ApplicationApp:
+		return ApplicationAppName
 	case ApplicationGame:
 		return ApplicationGameName
 	}
@@ -67,11 +62,9 @@ func ApplicationTypeNameToType(name string) ApplicationType {
 	switch name {
 	case ApplicationSiteName, `1`:
 		return ApplicationSite
-	case ApplicationMobileAppName, `2`:
-		return ApplicationMobileApp
-	case ApplicationDesktopAppName, `3`:
-		return ApplicationDesktopApp
-	case ApplicationGameName, `4`:
+	case ApplicationAppName, `2`:
+		return ApplicationApp
+	case ApplicationGameName, `3`:
 		return ApplicationGame
 	}
 	return ApplicationUndefined
