@@ -29,11 +29,11 @@ const (
 // PricingModelByName string
 func PricingModelByName(model string) PricingModel {
 	switch strings.ToUpper(model) {
-	case `CPM`:
+	case `CPM`, `1`:
 		return PricingModelCPM
-	case `CPC`:
+	case `CPC`, `2`:
 		return PricingModelCPC
-	case `CPA`:
+	case `CPA`, `3`:
 		return PricingModelCPA
 	}
 	return PricingModelUndefined
@@ -93,9 +93,9 @@ func (pm PricingModel) Value() (driver.Value, error) {
 func (pm *PricingModel) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case string:
-		*pm = PricingModelByName(v[1 : len(v)-1])
+		*pm = PricingModelByName(v)
 	case []byte:
-		*pm = PricingModelByName(string(v[1 : len(v)-1]))
+		*pm = PricingModelByName(string(v))
 	case nil:
 		*pm = PricingModelUndefined
 	default:
