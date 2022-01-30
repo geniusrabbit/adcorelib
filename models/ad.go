@@ -58,7 +58,7 @@ type Ad struct {
 	MaxHeight int `json:"max_height,omitempty"`
 
 	// Pricing model of the Ad (CPM/CPC/CPA/etc.)
-	PricingModel PricingModel `json:"pricing_model"`
+	PricingModel PricingModel `gorm:"type:PricingModel" json:"pricing_model"`
 
 	// Money limit counters
 	BidPrice        float64 `json:"bid_price,omitempty"`         // Maximal bid for RTB

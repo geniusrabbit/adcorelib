@@ -15,6 +15,7 @@ import (
 )
 
 // PricingModel value
+// CREATE TYPE PricingModel AS ENUM ('undefined', 'CPM', 'CPC', 'CPA')
 type PricingModel uint8
 
 // PricingModel consts
