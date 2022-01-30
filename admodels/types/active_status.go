@@ -23,6 +23,12 @@ const (
 	StatusActive ActiveStatus = 1
 )
 
+// ActiveStatusNameList contains posible active status names
+var ActiveStatusNameList = []string{
+	`pause`,
+	`active`,
+}
+
 // ActiveNameToStatus converts avtivity status name to status
 func ActiveNameToStatus(name string) ActiveStatus {
 	switch name {
@@ -39,11 +45,6 @@ func (st ActiveStatus) Name() string {
 		return `active`
 	}
 	return `pause`
-}
-
-// DisplayName of the status
-func (st ActiveStatus) DisplayName() string {
-	return st.Name()
 }
 
 // IsActive status of the object

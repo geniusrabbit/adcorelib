@@ -1,3 +1,8 @@
+//
+// @project GeniusRabbit::corelib 2022
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2022
+//
+
 package types
 
 import (
@@ -21,6 +26,13 @@ const (
 	StatusApprovedName               = `approved`
 	StatusRejectedName               = `rejected`
 )
+
+// ApproveStatusNameList contains available names list
+var ApproveStatusNameList = []string{
+	StatusPendingName,
+	StatusApprovedName,
+	StatusRejectedName,
+}
 
 // Name of the status
 func (st ApproveStatus) Name() string {

@@ -1,9 +1,11 @@
 //
-// @project GeniusRabbit rotator 2016
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016
+// @project GeniusRabbit rotator 2016, 2022
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016, 2022
 //
 
 package admodels
+
+import "geniusrabbit.dev/corelib/models"
 
 // Application model
 type Application struct {
@@ -11,17 +13,19 @@ type Application struct {
 	Company      *Company // Who have this company
 	CompanyID    uint64   //
 	Opt          [8]uint8 // Platform, Premium, Type
-	Categories   []int32  //
+	Categories   []uint   //
 	RevenueShare float64  // From 0 to 100 percents
 }
 
-// // ApplicationFromModel convert database model to specified model
-// func ApplicationFromModel(app models.Application) Application {
-// 	return Application{
-// 		ID:        app.ID,
-// 		CompanyID: app.CompanyID,
-// 	}
-// }
+// ApplicationFromModel convert database model to specified model
+func ApplicationFromModel(app *models.Application) Application {
+	return Application{
+		ID:           app.ID,
+		CompanyID:    app.CompanyID,
+		Categories:   app.Categories,
+		RevenueShare: app.RevenueShare,
+	}
+}
 
 // RevenueShareFactor amount %
 func (a *Application) RevenueShareFactor() float64 {
