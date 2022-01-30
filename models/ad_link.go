@@ -17,7 +17,8 @@ type AdLink struct {
 	Link string `json:"link"`
 
 	// Target campaign
-	CampaignID uint64 `json:"campaign_id"`
+	Campaign   *Campaign `json:"campaign,omitempty"`
+	CampaignID uint64    `json:"campaign_id"`
 
 	// Status of the approvements
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
