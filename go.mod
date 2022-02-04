@@ -11,7 +11,7 @@ require (
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
 	github.com/geniusrabbit/gosql v0.1.1
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
-	github.com/geniusrabbit/notificationcenter v1.5.0
+	github.com/geniusrabbit/notificationcenter v0.1.0
 	github.com/google/uuid v1.3.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.2.0
@@ -40,7 +40,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
-	github.com/lib/pq v1.10.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.18.0 // indirect

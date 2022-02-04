@@ -50,12 +50,8 @@ func (rt RTBRequestType) Name() string {
 }
 
 // Value implements the driver.Valuer interface, json field interface
-func (rt RTBRequestType) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := rt.MarshalJSON(); err == nil && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (rt RTBRequestType) Value() (driver.Value, error) {
+	return rt.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
