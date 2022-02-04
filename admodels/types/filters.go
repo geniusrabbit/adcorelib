@@ -41,7 +41,7 @@ func IDArrayFilter(arr gosql.NullableOrderedIntArray) (narr gosql.NullableOrdere
 }
 
 // StringArrayFilter array
-func StringArrayFilter(arr gosql.StringArray) (gosql.StringArray, bool) {
+func StringArrayFilter(arr gosql.NullableStringArray) (gosql.StringArray, bool) {
 	if arr.Len() < 1 {
 		return nil, false
 	}
@@ -65,7 +65,7 @@ func StringArrayFilter(arr gosql.StringArray) (gosql.StringArray, bool) {
 }
 
 // CountryFilter array which could be or positive (include) or negative (exclude)
-func CountryFilter(arr gosql.StringArray) (narr gosql.NullableOrderedUintArray, executed bool) {
+func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedUintArray, executed bool) {
 	var sarr gosql.StringArray
 	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
 		return narr, executed
@@ -80,7 +80,7 @@ func CountryFilter(arr gosql.StringArray) (narr gosql.NullableOrderedUintArray, 
 }
 
 // LanguageFilter array which could be or positive (include) or negative (exclude)
-func LanguageFilter(arr gosql.StringArray) (narr gosql.NullableOrderedUintArray, executed bool) {
+func LanguageFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedUintArray, executed bool) {
 	var sarr gosql.StringArray
 	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
 		return narr, executed

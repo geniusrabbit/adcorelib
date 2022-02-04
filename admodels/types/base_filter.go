@@ -61,6 +61,8 @@ func (fl *BaseFilter) Set(field uint64, data interface{}) {
 		case gosql.NullableOrderedIntArray:
 			fl.Countries, positive = IDArrayFilter(vl)
 		case gosql.StringArray:
+			fl.Countries, positive = CountryFilter(gosql.NullableStringArray(vl))
+		case gosql.NullableStringArray:
 			fl.Countries, positive = CountryFilter(vl)
 		}
 	case FieldLanguages:
@@ -68,12 +70,19 @@ func (fl *BaseFilter) Set(field uint64, data interface{}) {
 		case gosql.NullableOrderedIntArray:
 			fl.Languages, positive = IDArrayFilter(vl)
 		case gosql.StringArray:
+			fl.Languages, positive = LanguageFilter(gosql.NullableStringArray(vl))
+		case gosql.NullableStringArray:
 			fl.Languages, positive = LanguageFilter(vl)
 		}
 	case FieldZones:
 		fl.Zones, positive = IDArrayFilter(data.(gosql.NullableOrderedIntArray))
 	case FieldDomains:
-		fl.Domains, positive = StringArrayFilter(data.(gosql.StringArray))
+		switch arr := data.(type) {
+		case gosql.StringArray:
+			fl.Domains, positive = StringArrayFilter(gosql.NullableStringArray(arr))
+		case gosql.NullableStringArray:
+			fl.Domains, positive = StringArrayFilter(arr)
+		}
 	}
 	fl.SetPositive(field, positive)
 }
