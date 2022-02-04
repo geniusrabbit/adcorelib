@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/geniusrabbit/gosql"
-	"github.com/geniusrabbit/gosql/pgtype"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/models"
@@ -44,7 +43,7 @@ type RTBSource struct {
 	URL         string         // RTB client request URL
 	Method      string         // HTTP method GET, POST, ect; Default POST
 	RequestType RTBRequestType // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - MultipleFormaData, 5 - PLAINTEXT
-	Headers     pgtype.Hstore
+	Headers     gosql.NullableJSON
 
 	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
 	RPS         int               // 0 – unlimit
@@ -56,7 +55,7 @@ type RTBSource struct {
 	PriceCorrectionReduce float64 // % 100, 80%, 65.5%
 	MinimalWeight         float64
 
-	Flags  pgtype.Hstore
+	Flags  gosql.NullableJSON
 	Config gosql.NullableJSON
 }
 
@@ -68,8 +67,8 @@ func RTBSourceFromModel(cl *models.RTBSource, comp *Company) (src *RTBSource) {
 
 	var (
 		opt = RTBSourceOptions{
-			ErrorsIgnore: cl.Flags.GetBool("errors_ignore"),
-			Trace:        cl.Flags.GetBool("trace"),
+			ErrorsIgnore: cl.Flag("errors_ignore") == 1,
+			Trace:        cl.Flag("trace") == 1,
 		}
 		filter = types.BaseFilter{
 			Secure:          cl.Secure,
