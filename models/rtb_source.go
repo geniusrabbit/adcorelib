@@ -6,12 +6,11 @@
 package models
 
 import (
-	"strconv"
 	"time"
 
 	"geniusrabbit.dev/corelib/admodels/types"
+	"github.com/demdxx/gocast"
 	"github.com/geniusrabbit/gosql"
-	"github.com/geniusrabbit/gosql/pgtype"
 	"github.com/guregu/null"
 )
 
@@ -30,14 +29,14 @@ type RTBSource struct {
 
 	Status types.ApproveStatus `json:"status,omitempty"`
 	Active types.ActiveStatus  `json:"active,omitempty"`
-	Flags  pgtype.Hstore       `json:"flags,omitempty"`
+	Flags  gosql.NullableJSON  `json:"flags,omitempty"`
 
 	Protocol      string               `json:"protocol"`          // rtb as default
 	MinimalWeight float64              `json:"minimal_weight"`    //
 	URL           string               `json:"url"`               // RTB client request URL
 	Method        string               `json:"method"`            // HTTP method GET, POST, ect; Default POST
 	RequestType   types.RTBRequestType `json:"request_type"`      // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - PLAINTEXT
-	Headers       pgtype.Hstore        `json:"headers,omitempty"` //
+	Headers       gosql.NullableJSON   `json:"headers,omitempty"` //
 	RPS           int                  `json:"rps"`               // 0 – unlimit
 	Timeout       int                  `json:"timeout"`           // In milliseconds
 
@@ -87,16 +86,22 @@ func (c *RTBSource) ProtocolCode() string {
 
 // Flag get by key
 func (c *RTBSource) Flag(flagName string) int {
-	if val, ok := c.Flags.Get(flagName); ok {
-		i, _ := strconv.Atoi(val)
-		return i
+	var m map[string]int
+	if err := c.Flags.UnmarshalTo(&m); err == nil {
+		return gocast.ToInt(m[flagName])
 	}
 	return -1
 }
 
 // SetFlag for object
 func (c *RTBSource) SetFlag(flagName string, flagValue int) {
-	c.Flags.Set(flagName, strconv.Itoa(flagValue))
+	var m map[string]int
+	_ = c.Flags.UnmarshalTo(&m)
+	if m == nil {
+		m = map[string]int{}
+	}
+	m[flagName] = flagValue
+	_ = c.Flags.SetValue(m)
 }
 
 // PriceCorrectionReduceFactor which is a potential
