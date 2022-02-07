@@ -11,7 +11,7 @@ require (
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
 	github.com/geniusrabbit/gosql v0.1.1
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
-	github.com/geniusrabbit/notificationcenter v0.1.0
+	github.com/geniusrabbit/notificationcenter v1.5.0
 	github.com/google/uuid v1.3.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.2.0

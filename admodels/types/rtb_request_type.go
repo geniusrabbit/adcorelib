@@ -9,6 +9,7 @@ import (
 )
 
 // RTBRequestType contains type of representation of request information
+// CREATE TYPE RTBRequestType AS ENUM ('undefined','json','xml','protobuff','postformencoded','plain')
 type RTBRequestType int
 
 // Request types

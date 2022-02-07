@@ -46,17 +46,17 @@ type RTBSource struct {
 	AuctionType           types.AuctionType `gorm:"type:AuctionType" json:"auction_type,omitempty"` // default: 0 – first price type, 1 – second price type
 
 	// Targeting filters
-	Formats         gosql.StringArray             `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters
+	Formats         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters
 	DeviceTypes     gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"device_types,omitempty"`     //
 	Devices         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"devices,omitempty"`          //
 	OS              gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"os,omitempty"`               //
 	Browsers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"browsers,omitempty"`         //
 	Carriers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"carriers,omitempty"`         //
 	Categories      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"categories,omitempty"`       //
-	Countries       gosql.StringArray             `gorm:"type:TEXT[]" json:"countries,omitempty"`       //
-	Languages       gosql.StringArray             `gorm:"type:TEXT[]" json:"languages,omitempty"`       //
+	Countries       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"countries,omitempty"`       //
+	Languages       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"languages,omitempty"`       //
 	Applications    gosql.NullableOrderedIntArray `gorm:"column:apps;type:INT[]" json:"apps,omitempty"` //
-	Domains         gosql.StringArray             `gorm:"type:TEXT[]" json:"domains,omitempty"`         //
+	Domains         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"domains,omitempty"`         //
 	Zones           gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"zones,omitempty"`            //
 	ExternalZones   gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"external_zones,omitempty"`   //
 	Secure          int                           `json:"secure,omitempty"`                             // 0 - any, 1 - only, 2 - exclude
