@@ -8,6 +8,7 @@ package admodels
 import (
 	"geniusrabbit.dev/corelib/billing"
 	"geniusrabbit.dev/corelib/models"
+	"go.uber.org/zap"
 )
 
 // Company model
@@ -39,11 +40,19 @@ func CompanyFromModel(c *models.Company) *Company {
 
 // RevenueShareFactor multipler 0..1
 func (c *Company) RevenueShareFactor() float64 {
+	if c == nil {
+		zap.L().Error("company is not inited")
+		return 0
+	}
 	return c.RevenueShare / 100.
 }
 
 // ComissionShareFactor which system get from publisher 0..1
 func (c *Company) ComissionShareFactor() float64 {
+	if c == nil {
+		zap.L().Error("company is not inited")
+		return 0
+	}
 	return (100 - c.RevenueShare) / 100.
 }
 
