@@ -51,7 +51,7 @@ func (c *Company) RevenueShareFactor() float64 {
 func (c *Company) ComissionShareFactor() float64 {
 	if c == nil {
 		zap.L().Error("company is not inited")
-		return 0
+		return 1
 	}
 	return (100 - c.RevenueShare) / 100.
 }
