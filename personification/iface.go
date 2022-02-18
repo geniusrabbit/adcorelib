@@ -1,6 +1,9 @@
 package personification
 
-import "github.com/sspserver/udetect"
+import (
+	"github.com/google/uuid"
+	"github.com/sspserver/udetect"
+)
 
 type (
 	// UserInfo value
@@ -25,7 +28,7 @@ type (
 
 // UUID of the user
 func (i *UserInfo) UUID() string {
-	if i == nil || i.User == nil {
+	if i == nil || i.User == nil || isEmptyUUID(&i.User.UUID) {
 		return ""
 	}
 	return i.User.UUID.String()
@@ -145,4 +148,15 @@ type Properties interface {
 
 	// Synchronise properties
 	Synchronise() error
+}
+
+func isEmptyUUID(uuid *uuid.UUID) bool {
+	if uuid != nil {
+		for i := 0; i < len(*uuid); i++ {
+			if (*uuid)[i] != 0 {
+				return false
+			}
+		}
+	}
+	return true
 }

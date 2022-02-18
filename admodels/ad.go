@@ -440,6 +440,8 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 		}
 	}
 
+	adBase.Context.UnmarshalTo(&ad.Content)
+
 	// Up secure flag by iframe URL or content
 	urlFields := []string{proxyIFrameURL, "url"}
 	for _, key := range urlFields {
@@ -452,8 +454,6 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 			break
 		}
 	}
-
-	adBase.Context.UnmarshalTo(&ad.Content)
 
 	return ad, err
 }

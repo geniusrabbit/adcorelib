@@ -54,7 +54,8 @@ func (fa *SimpleFormatAccessor) Formats() []*Format {
 }
 
 // FormatsBySize returns the list of acceptable formats
-func (fa *SimpleFormatAccessor) FormatsBySize(w, h, minWidth, minHeight int, fmtTypes ...FormatTypeBitset) (list []*Format) {
+func (fa *SimpleFormatAccessor) FormatsBySize(w, h, minWidth, minHeight int, fmtTypes ...FormatTypeBitset) []*Format {
+	list := make([]*Format, 0, len(fa.formatList))
 	for _, frmt := range fa.formatList {
 		if len(fmtTypes) > 0 && !fmtTypes[0].IsEmpty() && !fmtTypes[0].IsIntersec(frmt.Types) {
 			continue
@@ -76,7 +77,7 @@ func (fa *SimpleFormatAccessor) FormatsBySize(w, h, minWidth, minHeight int, fmt
 			list = append(list, frmt)
 		}
 	}
-	return
+	return list
 }
 
 // FormatByID of the model
