@@ -131,6 +131,7 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		// Targeting
 		Carrier:         r.CarrierInfo().ID,
 		Country:         r.GeoInfo().Country,
+		City:            r.GeoInfo().City,
 		Language:        r.BrowserInfo().PrimaryLanguage,
 		Referer:         r.BrowserInfo().Ref,
 		IPString:        r.GeoInfo().IP.String(),

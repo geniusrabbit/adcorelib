@@ -1,16 +1,16 @@
 package urlgenerator
 
 import (
-	"net/url"
 	"strings"
+
+	"github.com/demdxx/gocast"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/eventtraking/events"
-	"github.com/demdxx/gocast"
 )
 
 // PrepareURL by event
-func PrepareURL(url string, event *events.Event, params url.Values) string {
+func PrepareURL(url string, event *events.Event) string {
 	replacer := strings.NewReplacer(
 		"{country}", event.Country,
 		"{city}", event.City,
@@ -18,6 +18,7 @@ func PrepareURL(url string, event *events.Event, params url.Values) string {
 		"{domain}", event.Domain,
 		"{impid}", event.ImpID,
 		"{aucid}", event.AuctionID,
+		"{auctype}", types.AuctionType(event.AuctionType).Name(),
 		"{platform}", types.PlatformType(event.Platform).Name(),
 		"{zone_id}", gocast.ToString(event.Zone),
 		"{jumper_id}", gocast.ToString(event.Jumper),
@@ -31,9 +32,8 @@ func PrepareURL(url string, event *events.Event, params url.Values) string {
 		"{carrier_id}", gocast.ToString(event.Carrier),
 		"{latitude}", event.Latitude,
 		"{longitude}", event.Longitude,
-		"{longitude}", event.Longitude,
 		"{device_type}", types.PlatformType(event.DeviceType).Name(),
-		"{device}", gocast.ToString(event.Device),
+		"{device_id}", gocast.ToString(event.Device),
 		"{os_id}", gocast.ToString(event.OS),
 		"{browser_id}", gocast.ToString(event.Browser),
 	)
