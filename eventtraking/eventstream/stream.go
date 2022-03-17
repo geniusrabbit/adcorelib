@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit rotator 2018 - 2019
+// @project GeniusRabbit rotator 2018 - 2019, 2022
 // @author Dmitry Ponomarev <demdxx@gmail.com>
 //
 
@@ -9,7 +9,7 @@ import (
 	"context"
 	"errors"
 
-	nc "github.com/geniusrabbit/notificationcenter"
+	nc "github.com/geniusrabbit/notificationcenter/v2"
 
 	"geniusrabbit.dev/corelib/adtype"
 	"geniusrabbit.dev/corelib/eventtraking/eventgenerator"

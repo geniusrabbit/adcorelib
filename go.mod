@@ -1,6 +1,6 @@
 module geniusrabbit.dev/corelib
 
-go 1.17
+go 1.18
 
 require (
 	github.com/aeden/traceroute v0.0.0-20210211061815-03f5f7cb7908
@@ -11,7 +11,7 @@ require (
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
 	github.com/geniusrabbit/gosql v0.1.1
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
-	github.com/geniusrabbit/notificationcenter v1.5.0
+	github.com/geniusrabbit/notificationcenter/v2 v2.0.0
 	github.com/google/uuid v1.3.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.2.0
@@ -39,10 +39,8 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
-	github.com/klauspost/compress v1.14.2 // indirect
+	github.com/klauspost/compress v1.14.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.18.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect

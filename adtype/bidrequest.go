@@ -104,6 +104,11 @@ func (r *BidRequest) HTTPRequest() *fasthttp.RequestCtx {
 	return r.RequestCtx
 }
 
+// ServiceDomain name
+func (r *BidRequest) ServiceDomain() string {
+	return string(r.RequestCtx.URI().Host())
+}
+
 // SetSourceFilter by IDs
 func (r *BidRequest) SetSourceFilter(ids ...uint64) {
 	if len(r.sourceIDs) > 0 {

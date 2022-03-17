@@ -5,16 +5,16 @@ import (
 	"time"
 
 	"geniusrabbit.dev/corelib/adtype"
-	"github.com/geniusrabbit/notificationcenter"
+	nc "github.com/geniusrabbit/notificationcenter/v2"
 )
 
 // WinNotifier redeclared type
 type WinNotifier struct {
-	p notificationcenter.Publisher
+	p nc.Publisher
 }
 
 // WinNotifications returns win notifier wrapper
-func WinNotifications(p notificationcenter.Publisher) *WinNotifier {
+func WinNotifications(p nc.Publisher) *WinNotifier {
 	return &WinNotifier{p: p}
 }
 
