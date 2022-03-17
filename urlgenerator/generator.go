@@ -22,6 +22,7 @@ type Generator struct {
 	EventGenerator eventgenerator.Generator
 	PixelGenerator pixelgenerator.PixelGenerator
 	CDNDomain      string
+	LibDomain      string
 	ClickPattern   string
 	DirectPattern  string
 	WinPattern     string
@@ -36,6 +37,17 @@ func (g *Generator) CDNURL(path string) string {
 		return "//" + g.CDNDomain + path
 	}
 	return "//" + g.CDNDomain + "/" + path
+}
+
+// LibURL returns full URL to lib file path
+func (g *Generator) LibURL(path string) string {
+	if path == "" {
+		return ""
+	}
+	if path[0] == '/' {
+		return "//" + g.LibDomain + path
+	}
+	return "//" + g.LibDomain + "/" + path
 }
 
 // PixelURL generator from response of item
