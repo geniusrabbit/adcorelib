@@ -102,8 +102,8 @@ github.com/geniusrabbit/gosql v0.1.1 h1:trylOViT5NoCVWKppehLmrxxZhTu4Gcr1nimhD7R
 github.com/geniusrabbit/gosql v0.1.1/go.mod h1:wd03YXJNYiU2taU5pIQfEw8BgpKI047CCLEDhgj+UR0=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f h1:mbMOz/gyI+tRNdyct8MZPYug5V5QAApwakSJNVCIFiY=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f/go.mod h1:cHgmYvQ2zN/4FrkDwWNvGkSHkfKUeFqfLI+DYPTM420=
-github.com/geniusrabbit/notificationcenter/v2 v2.0.0 h1:R9pgzNZnMAsJE4JLm7XGRINGLcnAAMKK1WBwSyniB9M=
-github.com/geniusrabbit/notificationcenter/v2 v2.0.0/go.mod h1:oXTOZi0InpLvUpBoorS4BTaQ+ayOSNhS6QI6+wt6JUw=
+github.com/geniusrabbit/notificationcenter/v2 v2.0.1 h1:XNT4sSEIavoAlF+8kh6Xb6KNSqwU3JL4bsd0rrv6xs8=
+github.com/geniusrabbit/notificationcenter/v2 v2.0.1/go.mod h1:DcnEPrJmauPWT9C2lciDqYx8A4fUZwX630fnHdw6tt8=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
