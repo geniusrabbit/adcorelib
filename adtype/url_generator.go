@@ -12,6 +12,9 @@ type URLGenerator interface {
 	// CDNURL returns full URL to path
 	CDNURL(path string) string
 
+	// LibURL returns full URL to lib file path
+	LibURL(path string) string
+
 	// PixelURL generator from response of item
 	// @param js generates the JavaScript pixel type
 	PixelURL(event events.Type, status uint8, item ResponserItem, response Responser, js bool) (string, error)
