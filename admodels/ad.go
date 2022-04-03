@@ -430,7 +430,16 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 	}
 
 	for _, as := range adBase.Assets {
-		ad.Assets = append(ad.Assets, AdFile{ID: as.ID, Name: as.Name.String, Path: as.Path})
+		ad.Assets = append(ad.Assets, AdFile{
+			ID:          as.ID,
+			Name:        as.Name.String,
+			Path:        as.Path,
+			Type:        AdFileType(as.Type),
+			ContentType: as.ContentType,
+			Width:       0,
+			Height:      0,
+			Thumbs:      nil,
+		})
 	}
 
 	// Add restriction of minimal-maximal dementions

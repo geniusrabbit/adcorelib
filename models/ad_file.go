@@ -12,7 +12,19 @@ import (
 	"github.com/guregu/null"
 )
 
-type Meta struct{}
+// AdFileThumb of the file
+type AdFileThumb struct {
+	Path        string // Path to image or video
+	Type        int
+	Width       int
+	Height      int
+	ContentType string
+}
+
+// Meta AdFile info
+type Meta struct {
+	Thumbs []AdFileThumb `json:"thumbs"`
+}
 type ObjectType int
 
 // -- ad & file Many2many
