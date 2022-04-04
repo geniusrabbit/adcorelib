@@ -175,14 +175,16 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 	}
 
 	campaign.Ads = parseAds(campaign, camp, formats)
-	campaign.Links = make([]AdLink, 0, len(camp.Links))
+	if len(camp.Links) > 0 {
+		campaign.Links = make([]AdLink, 0, len(camp.Links))
 
-	// Assign links
-	for _, link := range camp.Links {
-		campaign.Links = append(campaign.Links, AdLink{
-			ID:   link.ID,
-			Link: link.Link,
-		})
+		// Assign links
+		for _, link := range camp.Links {
+			campaign.Links = append(campaign.Links, AdLink{
+				ID:   link.ID,
+				Link: link.Link,
+			})
+		}
 	}
 
 	// supported types

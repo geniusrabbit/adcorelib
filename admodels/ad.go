@@ -68,6 +68,7 @@ type Ad struct {
 	Budget          billing.Money //
 	DailyTestBudget billing.Money // Test money amount a day (it stops automaticaly if not profit for this amount)
 	TestBudget      billing.Money // Test money amount for the whole period
+	DefaultLink     string
 
 	// Targeting
 	Hours types.Hours // len(24) * bitmask in week days
@@ -111,6 +112,9 @@ func (a *Ad) Asset(name string) *AdFile {
 
 // RandomAdLink from ad model
 func (a *Ad) RandomAdLink() AdLink {
+	if a.DefaultLink != "" {
+		return AdLink{Link: a.DefaultLink}
+	}
 	if a.Campaign != nil {
 		if count := len(a.Campaign.Links); count > 0 {
 			return a.Campaign.Links[rand.Int()%count]
@@ -381,7 +385,7 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 	// Preprocess info
 	{
 		if hours, err = types.HoursByString(adBase.Hours); err != nil {
-			return
+			return ad, err
 		}
 
 		if adBase.Bids.Length() > 0 {
@@ -449,7 +453,8 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 		}
 	}
 
-	adBase.Context.UnmarshalTo(&ad.Content)
+	_ = adBase.Context.UnmarshalTo(&ad.Content)
+	ad.DefaultLink = ad.ContentItemString("default_link")
 
 	// Up secure flag by iframe URL or content
 	urlFields := []string{proxyIFrameURL, "url"}
