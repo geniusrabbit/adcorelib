@@ -9,7 +9,7 @@ import (
 	"bytes"
 	"database/sql/driver"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/pkg/errors"
 )
 

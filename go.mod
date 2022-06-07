@@ -10,6 +10,7 @@ require (
 	github.com/demdxx/gocast v1.2.0
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
 	github.com/geniusrabbit/gosql v0.1.1
+	github.com/geniusrabbit/gosql/v2 v2.0.0-beta.3
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
 	github.com/geniusrabbit/notificationcenter/v2 v2.0.1
 	github.com/google/uuid v1.3.0

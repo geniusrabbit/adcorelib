@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
@@ -26,16 +26,16 @@ type Zone struct {
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`
 	Active types.ActiveStatus  `gorm:"type:ActiveStatus" json:"active"`
 
-	DefaultCode       gosql.NullableJSON            `gorm:"type:JSONB" json:"default_code,omitempty"`
-	Context           gosql.NullableJSON            `gorm:"type:JSONB" json:"context,omitempty"`            //
-	MinECPM           float64                       `json:"min_ecpm,omitempty"`                             // Default
-	MinECPMByGeo      gosql.NullableJSON            `gorm:"type:JSONB" json:"min_ecpm_by_geo,omitempty"`    // {"CODE": <ecpm>, ...}
-	Price             float64                       `json:"price,omitempty"`                                // The cost of single view
-	AllowedFormats    gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
-	AllowedTypes      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
-	AllowedSources    gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
-	DisallowedSources gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"disallowed_sources,omitempty"` //
-	Campaigns         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
+	DefaultCode       gosql.NullableJSON[map[string]string] `gorm:"type:JSONB" json:"default_code,omitempty"`
+	Context           gosql.NullableJSON[map[string]any]    `gorm:"type:JSONB" json:"context,omitempty"`            //
+	MinECPM           float64                               `json:"min_ecpm,omitempty"`                             // Default
+	MinECPMByGeo      gosql.NullableJSON[map[string]any]    `gorm:"type:JSONB" json:"min_ecpm_by_geo,omitempty"`    // {"CODE": <ecpm>, ...}
+	Price             float64                               `json:"price,omitempty"`                                // The cost of single view
+	AllowedFormats    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
+	AllowedTypes      gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
+	AllowedSources    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
+	DisallowedSources gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"disallowed_sources,omitempty"` //
+	Campaigns         gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

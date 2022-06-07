@@ -6,11 +6,33 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 )
+
+type AdFileProcessingStatus int
+
+const (
+	AdFileProcessingUndefined AdFileProcessingStatus = 0
+	AdFileProcessingProcessed                        = 1
+	AdFileProcessingError                            = 2
+	AdFileProcessingDeleted                          = 3
+)
+
+func (st AdFileProcessingStatus) Name() string {
+	switch st {
+	case AdFileProcessingProcessed:
+		return "Processed"
+	case AdFileProcessingError:
+		return "Error"
+	case AdFileProcessingDeleted:
+		return "Deleted"
+	}
+	return "Undefined"
+}
 
 // AdFileThumb of the file
 type AdFileThumb struct {
@@ -23,6 +45,7 @@ type AdFileThumb struct {
 
 // Meta AdFile info
 type Meta struct {
+	Main   AdFileThumb   `json:"main"`
 	Thumbs []AdFileThumb `json:"thumbs"`
 }
 type ObjectType int
@@ -37,7 +60,7 @@ type ObjectType int
 //                                                       ON UPDATE NO ACTION
 //                                                       ON DELETE CASCADE
 //
-// , created_at            TIMESTAMPTZ       NOT NULL  DEFAULT NOW()
+// , created_at            TIMESTAMPTZ     NOT NULL  DEFAULT NOW()
 //
 // , PRIMARY KEY (file_id, ad_id)
 // );
@@ -53,12 +76,16 @@ type AdFile struct {
 	Company   *Company `json:"company,omitempty"`           // Owner Project
 	CompanyID uint64   `json:"company_id"`
 
-	Path        string             `json:"path"`
-	Name        null.String        `json:"name,omitempty"` // Internal file name
-	ContentType string             `json:"content_type"`
-	Type        ObjectType         `gorm:"type:INT" json:"type"`
-	Meta        gosql.NullableJSON `gorm:"type:JSONB" json:"meta,omitempty"`
-	Size        int64              `json:"size,omitempty"`
+	ProcessingStatus AdFileProcessingStatus `json:"processing_status"`
+
+	Path        string                              `json:"path"`
+	ObjectID    string                              `json:"object_id"`
+	FileInfo    gosql.NullableJSON[json.RawMessage] `json:"file_info"`
+	Name        null.String                         `json:"name,omitempty"` // Internal file name
+	ContentType string                              `json:"content_type"`
+	Type        ObjectType                          `gorm:"type:INT" json:"type"`
+	Meta        gosql.NullableJSON[Meta]            `gorm:"type:JSONB" json:"meta,omitempty"`
+	Size        int64                               `json:"size,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -68,11 +95,4 @@ type AdFile struct {
 // TableName in database
 func (fl *AdFile) TableName() string {
 	return "adv_ad_file"
-}
-
-// ObjectMeta information of file object
-func (fl AdFile) ObjectMeta() (meta *Meta) {
-	meta = new(Meta)
-	fl.Meta.UnmarshalTo(meta)
-	return meta
 }

@@ -8,7 +8,7 @@ package admodels
 import (
 	"strconv"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
@@ -22,18 +22,15 @@ type Smartlink struct {
 	Price             billing.Money // The cost of single view
 	Comp              *Company
 	CompID            uint64
-	AllowedTypes      gosql.NullableOrderedIntArray
-	AllowedSources    gosql.NullableOrderedIntArray
-	DisallowedSources gosql.NullableOrderedIntArray
-	Campaigns         gosql.NullableOrderedIntArray
+	AllowedTypes      gosql.NullableOrderedNumberArray[int]
+	AllowedSources    gosql.NullableOrderedNumberArray[int]
+	DisallowedSources gosql.NullableOrderedNumberArray[int]
+	Campaigns         gosql.NullableOrderedNumberArray[int]
 	DefaultCode       map[string]string
 }
 
 // SmartlinkFromModel convert database model to specified model
 func SmartlinkFromModel(zone models.Zone) *Smartlink {
-	var code map[string]string
-	_ = zone.DefaultCode.UnmarshalTo(&code)
-
 	return &Smartlink{
 		id:                zone.ID,
 		StringID:          strconv.FormatUint(zone.ID, 10),
@@ -44,7 +41,7 @@ func SmartlinkFromModel(zone models.Zone) *Smartlink {
 		AllowedSources:    zone.AllowedSources,
 		DisallowedSources: zone.DisallowedSources,
 		Campaigns:         zone.Campaigns,
-		DefaultCode:       code,
+		DefaultCode:       *zone.DefaultCode.Data,
 	}
 }
 

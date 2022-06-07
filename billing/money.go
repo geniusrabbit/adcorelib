@@ -13,7 +13,7 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 )
 
 const (

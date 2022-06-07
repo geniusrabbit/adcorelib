@@ -100,6 +100,8 @@ github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92 h1:4zzWLdGtzQxD
 github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92/go.mod h1:z4vtbN4gpN4C/6fEN0gtAc9RBkqU94Y5SrVdk3xMplM=
 github.com/geniusrabbit/gosql v0.1.1 h1:trylOViT5NoCVWKppehLmrxxZhTu4Gcr1nimhD7RScg=
 github.com/geniusrabbit/gosql v0.1.1/go.mod h1:wd03YXJNYiU2taU5pIQfEw8BgpKI047CCLEDhgj+UR0=
+github.com/geniusrabbit/gosql/v2 v2.0.0-beta.3 h1:L1RyD3CwBEgHkwk8/hRmVfXwsT4XNBjDvsdCMkOB5Ds=
+github.com/geniusrabbit/gosql/v2 v2.0.0-beta.3/go.mod h1:r5qPALaKbqkrpsM3ffC+yXZwXN/TITC26vBjSyLQZws=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f h1:mbMOz/gyI+tRNdyct8MZPYug5V5QAApwakSJNVCIFiY=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f/go.mod h1:cHgmYvQ2zN/4FrkDwWNvGkSHkfKUeFqfLI+DYPTM420=
 github.com/geniusrabbit/notificationcenter/v2 v2.0.1 h1:XNT4sSEIavoAlF+8kh6Xb6KNSqwU3JL4bsd0rrv6xs8=

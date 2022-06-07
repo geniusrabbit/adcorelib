@@ -8,7 +8,7 @@ package admodels
 import (
 	"strconv"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
@@ -24,17 +24,14 @@ type Zone struct {
 	Price             billing.Money // CPM of source
 	Comp              *Company
 	CompID            uint64
-	AllowedTypes      gosql.NullableOrderedIntArray
-	AllowedSources    gosql.NullableOrderedIntArray
-	DisallowedSources gosql.NullableOrderedIntArray
+	AllowedTypes      gosql.NullableOrderedNumberArray[int]
+	AllowedSources    gosql.NullableOrderedNumberArray[int]
+	DisallowedSources gosql.NullableOrderedNumberArray[int]
 	DefaultCode       map[string]string
 }
 
 // ZoneFromModel convert database model to specified model
 func ZoneFromModel(zone models.Zone) *Zone {
-	var code map[string]string
-	_ = zone.DefaultCode.UnmarshalTo(&code)
-
 	return &Zone{
 		id:                zone.ID,
 		StringID:          strconv.FormatUint(zone.ID, 10),
@@ -46,7 +43,7 @@ func ZoneFromModel(zone models.Zone) *Zone {
 		AllowedTypes:      zone.AllowedTypes,
 		AllowedSources:    zone.AllowedSources,
 		DisallowedSources: zone.DisallowedSources,
-		DefaultCode:       code,
+		DefaultCode:       *zone.DefaultCode.Data,
 	}
 }
 

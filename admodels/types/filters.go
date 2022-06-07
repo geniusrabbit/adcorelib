@@ -7,13 +7,13 @@ package types
 
 import (
 	"github.com/geniusrabbit/gogeo"
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 
 	"geniusrabbit.dev/corelib/i18n/languages"
 )
 
 // IntArrayToUint array type
-func IntArrayToUint(arr []int) (res gosql.NullableOrderedUintArray) {
+func IntArrayToUint(arr []int) (res gosql.NullableOrderedNumberArray[uint]) {
 	if len(arr) < 1 {
 		return
 	}
@@ -25,14 +25,14 @@ func IntArrayToUint(arr []int) (res gosql.NullableOrderedUintArray) {
 }
 
 // IDArrayFilter array which could be or positive (include) or negative (exclude)
-func IDArrayFilter(arr gosql.NullableOrderedIntArray) (narr gosql.NullableOrderedUintArray, executed bool) {
+func IDArrayFilter(arr gosql.NullableOrderedNumberArray[int]) (narr gosql.NullableOrderedNumberArray[uint], executed bool) {
 	if arr.Len() < 1 {
 		return
 	}
 
-	subarr := arr.Filter(func(v int) (int, bool) { return v, v > 0 })
+	subarr := arr.Map(func(v int) (int, bool) { return v, v > 0 })
 	if subarr.Len() < 1 {
-		subarr = arr.Filter(func(v int) (int, bool) { return -v, v < 0 })
+		subarr = arr.Map(func(v int) (int, bool) { return -v, v < 0 })
 		executed = true
 	}
 
@@ -65,7 +65,7 @@ func StringArrayFilter(arr gosql.NullableStringArray) (gosql.StringArray, bool) 
 }
 
 // CountryFilter array which could be or positive (include) or negative (exclude)
-func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedUintArray, executed bool) {
+func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint], executed bool) {
 	var sarr gosql.StringArray
 	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
 		return narr, executed
@@ -80,7 +80,7 @@ func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedUin
 }
 
 // LanguageFilter array which could be or positive (include) or negative (exclude)
-func LanguageFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedUintArray, executed bool) {
+func LanguageFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint], executed bool) {
 	var sarr gosql.StringArray
 	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
 		return narr, executed

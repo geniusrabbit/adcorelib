@@ -10,7 +10,7 @@ import (
 	"database/sql/driver"
 	"strings"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/pkg/errors"
 )
 

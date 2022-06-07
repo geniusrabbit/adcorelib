@@ -6,7 +6,7 @@
 package admodels
 
 import (
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
@@ -28,23 +28,23 @@ func (t TargetBid) Less(tb TargetBid) bool {
 
 // AdBid submodel
 type AdBid struct {
-	BidPrice    billing.Money             `json:"bid_price"`
-	Price       billing.Money             `json:"Price" validate:"notempty"`
-	LeadPrice   billing.Money             `json:"lead_price"`
-	Tags        gosql.NullableStringArray `json:"tags,omitempty"`
-	Zones       gosql.NullableUintArray   `json:"zones,omitempty"`
-	Domains     gosql.NullableStringArray `json:"domains,omitempty"` // site domains or application bundels
-	Sex         gosql.NullableUintArray   `json:"sex,omitempty"`
-	Age         uint                      `json:"age,omitempty"`
-	Categories  gosql.NullableUintArray   `json:"categories,omitempty"`
-	Countries   gosql.NullableUintArray   `json:"countries,omitempty"`
-	Cities      gosql.NullableStringArray `json:"cities,omitempty"`
-	Languages   gosql.NullableUintArray   `json:"languages,omitempty"`
-	DeviceTypes gosql.NullableUintArray   `json:"device_types,omitempty"`
-	Devices     gosql.NullableUintArray   `json:"devices,omitempty"`
-	Os          gosql.NullableUintArray   `json:"os,omitempty"`
-	Browsers    gosql.NullableUintArray   `json:"browsers,omitempty"`
-	Hours       types.Hours               `json:"hours,omitempty"`
+	BidPrice    billing.Money                   `json:"bid_price"`
+	Price       billing.Money                   `json:"price" validate:"notempty"`
+	LeadPrice   billing.Money                   `json:"lead_price"`
+	Tags        gosql.NullableStringArray       `json:"tags,omitempty"`
+	Zones       gosql.NullableNumberArray[uint] `json:"zones,omitempty"`
+	Domains     gosql.NullableStringArray       `json:"domains,omitempty"` // site domains or application bundels
+	Sex         gosql.NullableNumberArray[uint] `json:"sex,omitempty"`
+	Age         uint                            `json:"age,omitempty"`
+	Categories  gosql.NullableNumberArray[uint] `json:"categories,omitempty"`
+	Countries   gosql.NullableNumberArray[uint] `json:"countries,omitempty"`
+	Cities      gosql.NullableStringArray       `json:"cities,omitempty"`
+	Languages   gosql.NullableNumberArray[uint] `json:"languages,omitempty"`
+	DeviceTypes gosql.NullableNumberArray[uint] `json:"device_types,omitempty"`
+	Devices     gosql.NullableNumberArray[uint] `json:"devices,omitempty"`
+	Os          gosql.NullableNumberArray[uint] `json:"os,omitempty"`
+	Browsers    gosql.NullableNumberArray[uint] `json:"browsers,omitempty"`
+	Hours       types.Hours                     `json:"hours,omitempty"`
 }
 
 // Test is it suites by pointer

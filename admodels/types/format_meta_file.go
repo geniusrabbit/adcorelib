@@ -9,8 +9,9 @@ import "strings"
 
 // Format asset defaults
 const (
-	FormatAssetMain = "main"
-	FormatAssetIcon = "icon"
+	FormatAssetBanner = "banner"
+	FormatAssetMain   = "main"
+	FormatAssetIcon   = "icon"
 )
 
 // FormatFileRequirement rule

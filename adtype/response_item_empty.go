@@ -77,7 +77,7 @@ func (*ResponseItemEmpty) MainAsset() *admodels.AdFile { return nil }
 func (*ResponseItemEmpty) Asset(name string) *admodels.AdFile { return nil }
 
 // Assets list
-func (*ResponseItemEmpty) Assets() []admodels.AdFile { return nil }
+func (*ResponseItemEmpty) Assets() admodels.AdFileAssets { return nil }
 
 // Source of response
 func (*ResponseItemEmpty) Source() Source { return nil }

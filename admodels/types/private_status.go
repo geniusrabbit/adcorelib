@@ -8,7 +8,7 @@ package types
 import (
 	"database/sql/driver"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 )
 
 // PrivateStatus of the object

@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/geniusrabbit/gogeo"
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 
 	"geniusrabbit.dev/corelib/admodels/types"
 	"geniusrabbit.dev/corelib/billing"
@@ -60,22 +60,22 @@ type Campaign struct {
 	Links []AdLink
 
 	// Targeting
-	FormatSet   searchtypes.UIntBitset         //
-	Context     gosql.NullableJSON             //
-	Keywords    gosql.NullableStringArray      //
-	Zones       gosql.NullableOrderedUintArray //
-	Domains     gosql.NullableStringArray      // site domains or application bundels
-	Sex         gosql.NullableOrderedUintArray //
-	Age         gosql.NullableOrderedUintArray //
-	Categories  gosql.NullableOrderedUintArray //
-	Countries   gosql.NullableOrderedUintArray //
-	Cities      gosql.NullableStringArray      //
-	Languages   gosql.NullableOrderedUintArray //
-	Browsers    gosql.NullableOrderedUintArray //
-	Os          gosql.NullableOrderedUintArray //
-	DeviceTypes gosql.NullableOrderedUintArray //
-	Devices     gosql.NullableOrderedUintArray //
-	Hours       types.Hours                    // len(24) * bitmask in week days
+	FormatSet   searchtypes.UIntBitset                 //
+	Context     gosql.NullableJSON[map[string]any]     //
+	Keywords    gosql.NullableStringArray              //
+	Zones       gosql.NullableOrderedNumberArray[uint] //
+	Domains     gosql.NullableStringArray              // site domains or application bundels
+	Sex         gosql.NullableOrderedNumberArray[uint] //
+	Age         gosql.NullableOrderedNumberArray[uint] //
+	Categories  gosql.NullableOrderedNumberArray[uint] //
+	Countries   gosql.NullableOrderedNumberArray[uint] //
+	Cities      gosql.NullableStringArray              //
+	Languages   gosql.NullableOrderedNumberArray[uint] //
+	Browsers    gosql.NullableOrderedNumberArray[uint] //
+	Os          gosql.NullableOrderedNumberArray[uint] //
+	DeviceTypes gosql.NullableOrderedNumberArray[uint] //
+	Devices     gosql.NullableOrderedNumberArray[uint] //
+	Hours       types.Hours                            // len(24) * bitmask in week days
 
 	// DEBUG
 	Trace        gosql.NullableStringArray
@@ -85,8 +85,8 @@ type Campaign struct {
 // CampaignFromModel convert database model to specified model
 func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Campaign {
 	var (
-		countriesArr gosql.NullableOrderedUintArray
-		languagesArr gosql.NullableOrderedUintArray
+		countriesArr gosql.NullableOrderedNumberArray[uint]
+		languagesArr gosql.NullableOrderedNumberArray[uint]
 		// bids, _      = gocast.ToSiMap(camp.Bids.GetValue(), "", false)
 		// geoBids      = parseGeoBids(billing.Money(camp.MaxBid), gocast.ToInterfaceSlice(mapDef(bids, "geo", nil)))
 		hours, err = types.HoursByString(camp.Hours.String)

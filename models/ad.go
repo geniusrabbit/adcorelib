@@ -8,7 +8,7 @@ package models
 import (
 	"time"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
@@ -39,7 +39,7 @@ type Ad struct {
 	CampaignID uint64    `json:"campaign_id"`
 
 	// Extended bid information from []AdBid - [{"cc":"GB","bid":1000}]
-	Bids gosql.NullableJSON `gorm:"type:JSONB" json:"bids,omitempty"`
+	Bids gosql.NullableJSON[[]AdBid] `gorm:"type:JSONB" json:"bids,omitempty"`
 
 	// Status of the approvements
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
@@ -70,7 +70,7 @@ type Ad struct {
 	TestBudget      float64 `json:"test_budget,omitempty"`       // Total test budget of whole time
 
 	// Context contains the most improtant information about Ad
-	Context gosql.NullableJSON `gorm:"type:JSONB" json:"context,omitempty"`
+	Context gosql.NullableJSON[map[string]any] `gorm:"type:JSONB" json:"context,omitempty"`
 
 	// Weight of the Ad in rotation
 	Weight int `json:"weight,omitempty"`

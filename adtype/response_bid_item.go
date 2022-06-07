@@ -37,7 +37,7 @@ type ResponseBidItem struct {
 	BidPrice    billing.Money
 	CPMBidPrice billing.Money // This param can update only price predictor
 	SecondAd    SecondAd
-	assets      []admodels.AdFile
+	assets      admodels.AdFileAssets
 	context     context.Context
 }
 
@@ -124,7 +124,7 @@ func (it *ResponseBidItem) ContentItem(name string) interface{} {
 }
 
 // ContentFields from advertisement object
-func (it *ResponseBidItem) ContentFields() map[string]interface{} {
+func (it *ResponseBidItem) ContentFields() map[string]any {
 	fields := map[string]interface{}{}
 	config := it.Format().Config
 	for _, field := range config.Fields {
@@ -170,7 +170,7 @@ func (it *ResponseBidItem) MainAsset() *admodels.AdFile {
 	}
 	for _, asset := range it.Assets() {
 		if int(asset.ID) == mainAsset.ID {
-			return &asset
+			return asset
 		}
 	}
 	return nil
@@ -178,16 +178,11 @@ func (it *ResponseBidItem) MainAsset() *admodels.AdFile {
 
 // Asset by name
 func (it *ResponseBidItem) Asset(name string) *admodels.AdFile {
-	for _, asset := range it.Assets() {
-		if asset.Name == name {
-			return &asset
-		}
-	}
-	return nil
+	return it.Assets().Asset(name)
 }
 
 // Assets list
-func (it *ResponseBidItem) Assets() (assets []admodels.AdFile) {
+func (it *ResponseBidItem) Assets() (assets admodels.AdFileAssets) {
 	if it.assets != nil {
 		return it.assets
 	}
@@ -198,7 +193,7 @@ func (it *ResponseBidItem) Assets() (assets []admodels.AdFile) {
 			if asset.ID != configAsset.ID {
 				continue
 			}
-			newAsset := admodels.AdFile{
+			newAsset := &admodels.AdFile{
 				ID:   uint64(asset.ID),
 				Name: configAsset.GetName(),
 			}

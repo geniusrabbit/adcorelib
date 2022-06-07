@@ -45,8 +45,8 @@ type Ad struct {
 	ID uint64 // Ad ID
 
 	// Data
-	Content map[string]interface{} // Extend data
-	Assets  []AdFile               //
+	Content map[string]any // Extend data
+	Assets  AdFileAssets
 
 	PricingModel     types.PricingModel
 	Weight           uint8
@@ -101,13 +101,7 @@ func (a *Ad) MainAsset() *AdFile {
 
 // Asset by name
 func (a *Ad) Asset(name string) *AdFile {
-	isMain := name == types.FormatAssetMain
-	for i, it := range a.Assets {
-		if (isMain && (it.Name == "" || it.Name == types.FormatAssetMain)) || it.Name == name {
-			return &a.Assets[i]
-		}
-	}
-	return nil
+	return a.Assets.Asset(name)
 }
 
 // RandomAdLink from ad model
@@ -388,9 +382,27 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 			return ad, err
 		}
 
-		if adBase.Bids.Length() > 0 {
-			if err = adBase.Bids.UnmarshalTo(&bids); err != nil {
-				return nil, fmt.Errorf("AD bids decode: %s", err.Error())
+		if _bids := adBase.Bids.Data; _bids != nil && len(*_bids) > 0 {
+			for _, bid := range *_bids {
+				bids = append(bids, AdBid{
+					BidPrice:    bid.BidPrice,
+					Price:       bid.Price,
+					LeadPrice:   bid.LeadPrice,
+					Tags:        bid.Tags,
+					Zones:       bid.Zones,
+					Domains:     bid.Domains,
+					Sex:         bid.Sex,
+					Age:         0, //bid.Age,
+					Categories:  bid.Categories,
+					Countries:   nil, // bid.Countries,
+					Cities:      bid.Cities,
+					Languages:   nil, // bid.Languages,
+					DeviceTypes: bid.DeviceTypes,
+					Devices:     bid.Devices,
+					Os:          bid.Os,
+					Browsers:    bid.Browsers,
+					Hours:       bid.Hours,
+				})
 			}
 		}
 	}
@@ -434,14 +446,14 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 	}
 
 	for _, as := range adBase.Assets {
-		ad.Assets = append(ad.Assets, AdFile{
+		ad.Assets = append(ad.Assets, &AdFile{
 			ID:          as.ID,
 			Name:        as.Name.String,
 			Path:        as.Path,
 			Type:        AdFileType(as.Type),
 			ContentType: as.ContentType,
-			Width:       0,
-			Height:      0,
+			Width:       as.Meta.Data.Main.Width,
+			Height:      as.Meta.Data.Main.Height,
 			Thumbs:      nil,
 		})
 	}
@@ -453,8 +465,10 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 		}
 	}
 
-	_ = adBase.Context.UnmarshalTo(&ad.Content)
-	ad.DefaultLink = ad.ContentItemString("default_link")
+	if adBase.Context.Data != nil {
+		ad.Content = *adBase.Context.Data
+		ad.DefaultLink = ad.ContentItemString("default_link")
+	}
 
 	// Up secure flag by iframe URL or content
 	urlFields := []string{proxyIFrameURL, "url"}

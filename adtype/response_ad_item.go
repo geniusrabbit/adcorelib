@@ -177,7 +177,7 @@ func (it *ResponseAdItem) Asset(name string) *admodels.AdFile {
 }
 
 // Assets list
-func (it *ResponseAdItem) Assets() []admodels.AdFile {
+func (it *ResponseAdItem) Assets() admodels.AdFileAssets {
 	return it.Ad.Assets
 }
 

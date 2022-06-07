@@ -90,7 +90,7 @@ type ResponserItem interface {
 	Asset(name string) *admodels.AdFile
 
 	// Assets list
-	Assets() []admodels.AdFile
+	Assets() admodels.AdFileAssets
 
 	// Source of response
 	Source() Source
