@@ -20,6 +20,19 @@ const (
 	AdFileHTML5Type     AdFileType = 3
 )
 
+// AdFileTypeByName returns adfile value type
+func AdFileTypeByName(name string) AdFileType {
+	switch name {
+	case "image", "img":
+		return AdFileImageType
+	case "video":
+		return AdFileVideoType
+	case "html5":
+		return AdFileHTML5Type
+	}
+	return AdFileUndefinedType
+}
+
 // // AdFileTypeByObjectType value
 // func AdFileTypeByObjectType(tp diskmodels.ObjectType) AdFileType {
 // 	switch tp {

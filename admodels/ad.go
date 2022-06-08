@@ -446,16 +446,27 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 	}
 
 	for _, as := range adBase.Assets {
-		ad.Assets = append(ad.Assets, &AdFile{
+		adFile := &AdFile{
 			ID:          as.ID,
 			Name:        as.Name.String,
-			Path:        as.Path,
+			Path:        as.ObjectID,
 			Type:        AdFileType(as.Type),
 			ContentType: as.ContentType,
 			Width:       as.Meta.Data.Main.Width,
 			Height:      as.Meta.Data.Main.Height,
-			Thumbs:      nil,
-		})
+			Thumbs:      make([]AdFileThumb, 0, len(as.Meta.Data.Thumbs)),
+		}
+		for _, thmb := range as.Meta.Data.Thumbs {
+			adFile.Thumbs = append(adFile.Thumbs, AdFileThumb{
+				Path:        thmb.Name,
+				Type:        AdFileType(thmb.Type),
+				Width:       thmb.Width,
+				Height:      thmb.Height,
+				ContentType: thmb.ContentType,
+				Ext:         thmb.Ext,
+			})
+		}
+		ad.Assets = append(ad.Assets, adFile)
 	}
 
 	// Add restriction of minimal-maximal dementions

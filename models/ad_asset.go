@@ -36,11 +36,12 @@ func (st AdFileProcessingStatus) Name() string {
 
 // AdFileThumb of the file
 type AdFileThumb struct {
-	Path        string // Path to image or video
-	Type        int
-	Width       int
-	Height      int
-	ContentType string
+	Name        string         `json:"name"` // Path to image or video
+	Type        int            `json:"type"`
+	Width       int            `json:"width"`
+	Height      int            `json:"height"`
+	ContentType string         `json:"content_type"`
+	Ext         map[string]any `json:"ext,omitempty"`
 }
 
 // Meta AdFile info
@@ -78,7 +79,6 @@ type AdFile struct {
 
 	ProcessingStatus AdFileProcessingStatus `json:"processing_status"`
 
-	Path        string                              `json:"path"`
 	ObjectID    string                              `json:"object_id"`
 	FileInfo    gosql.NullableJSON[json.RawMessage] `json:"file_info"`
 	Name        null.String                         `json:"name,omitempty"` // Internal file name

@@ -12,6 +12,7 @@ type AdFileThumb struct {
 	Width       int
 	Height      int
 	ContentType string
+	Ext         map[string]any
 }
 
 // IsSuits thumb by size
