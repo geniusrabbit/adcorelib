@@ -38,16 +38,16 @@ func (st AdFileProcessingStatus) Name() string {
 type AdFileThumb struct {
 	Name        string         `json:"name"` // Path to image or video
 	Type        int            `json:"type"`
-	Width       int            `json:"width"`
-	Height      int            `json:"height"`
-	ContentType string         `json:"content_type"`
+	Width       int            `json:"width,omitempty"`
+	Height      int            `json:"height,omitempty"`
+	ContentType string         `json:"content_type,omitempty"`
 	Ext         map[string]any `json:"ext,omitempty"`
 }
 
 // Meta AdFile info
-type Meta struct {
-	Main   AdFileThumb   `json:"main"`
-	Thumbs []AdFileThumb `json:"thumbs"`
+type AdAssetMeta struct {
+	Main  AdFileThumb   `json:"main"`
+	Items []AdFileThumb `json:"items,omitempty"`
 }
 type ObjectType int
 
@@ -84,7 +84,7 @@ type AdFile struct {
 	Name        null.String                         `json:"name,omitempty"` // Internal file name
 	ContentType string                              `json:"content_type"`
 	Type        ObjectType                          `gorm:"type:INT" json:"type"`
-	Meta        gosql.NullableJSON[Meta]            `gorm:"type:JSONB" json:"meta,omitempty"`
+	Meta        gosql.NullableJSON[AdAssetMeta]     `gorm:"type:JSONB" json:"meta,omitempty"`
 	Size        int64                               `json:"size,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
