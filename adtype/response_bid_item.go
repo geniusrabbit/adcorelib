@@ -200,7 +200,7 @@ func (it *ResponseBidItem) Assets() (assets admodels.AdFileAssets) {
 			switch {
 			case asset.Image != nil:
 				newAsset.Path = asset.Image.URL
-				newAsset.Type = admodels.AdFileImageType
+				newAsset.Type = types.AdAssetImageType
 				newAsset.ContentType = ""
 				newAsset.Width = asset.Image.Width
 				newAsset.Height = asset.Image.Height

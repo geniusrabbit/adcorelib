@@ -5,10 +5,12 @@
 
 package admodels
 
+import "geniusrabbit.dev/corelib/admodels/types"
+
 // AdFileThumb of the file
 type AdFileThumb struct {
 	Path        string // Path to image or video
-	Type        AdFileType
+	Type        types.AdAssetType
 	Width       int
 	Height      int
 	ContentType string
@@ -35,7 +37,7 @@ type AdFile struct {
 	ID          uint64
 	Name        string
 	Path        string // In case of HTML5, hare must be the path to directory on CDN
-	Type        AdFileType
+	Type        types.AdAssetType
 	ContentType string
 	Width       int
 	Height      int
@@ -73,7 +75,7 @@ type AdFile struct {
 // }
 
 // ThumbBy size borders and specific type
-func (f *AdFile) ThumbBy(w, h, wmin, hmin int, adType AdFileType) (th *AdFileThumb) {
+func (f *AdFile) ThumbBy(w, h, wmin, hmin int, adType types.AdAssetType) (th *AdFileThumb) {
 	for i := 0; i < len(f.Thumbs); i++ {
 		if f.Thumbs[i].Type == adType && f.Thumbs[i].IsSuits(w, h, wmin, hmin) {
 			return &f.Thumbs[i]

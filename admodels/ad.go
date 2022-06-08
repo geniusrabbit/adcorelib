@@ -450,7 +450,7 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 			ID:          as.ID,
 			Name:        as.Name.String,
 			Path:        as.ObjectID,
-			Type:        AdFileType(as.Type),
+			Type:        types.AdAssetType(as.Type),
 			ContentType: as.ContentType,
 			Width:       as.Meta.Data.Main.Width,
 			Height:      as.Meta.Data.Main.Height,
@@ -459,7 +459,7 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 		for _, thmb := range as.Meta.Data.Items {
 			adFile.Thumbs = append(adFile.Thumbs, AdFileThumb{
 				Path:        thmb.Name,
-				Type:        AdFileType(thmb.Type),
+				Type:        types.AdAssetType(thmb.Type),
 				Width:       thmb.Width,
 				Height:      thmb.Height,
 				ContentType: thmb.ContentType,
