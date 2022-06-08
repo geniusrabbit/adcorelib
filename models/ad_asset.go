@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"geniusrabbit.dev/corelib/admodels/types"
 	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 )
@@ -36,12 +37,12 @@ func (st AdFileProcessingStatus) Name() string {
 
 // AdFileThumb of the file
 type AdFileThumb struct {
-	Name        string         `json:"name"` // Path to image or video
-	Type        int            `json:"type"`
-	Width       int            `json:"width,omitempty"`
-	Height      int            `json:"height,omitempty"`
-	ContentType string         `json:"content_type,omitempty"`
-	Ext         map[string]any `json:"ext,omitempty"`
+	Name        string            `json:"name"` // Path to image or video
+	Type        types.AdAssetType `json:"type"`
+	Width       int               `json:"width,omitempty"`
+	Height      int               `json:"height,omitempty"`
+	ContentType string            `json:"content_type,omitempty"`
+	Ext         map[string]any    `json:"ext,omitempty"`
 }
 
 // Meta AdFile info
