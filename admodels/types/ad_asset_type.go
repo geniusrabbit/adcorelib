@@ -30,11 +30,11 @@ const (
 // AdAssetTypeByName returns adfile value type
 func AdAssetTypeByName(name string) AdAssetType {
 	switch name {
-	case "image", "img":
+	case "image", "img", "1":
 		return AdAssetImageType
-	case "video":
+	case "video", "2":
 		return AdAssetVideoType
-	case "html5":
+	case "html5", "3":
 		return AdAssetHTML5Type
 	}
 	return AdAssetUndefinedType
