@@ -100,6 +100,9 @@ func (a *Ad) TableName() string {
 
 // Stringify object as the name
 func (a *Ad) Stringify() string {
+	if a == nil {
+		return "[Undefined]"
+	}
 	if a.Campaign != nil {
 		return fmt.Sprintf("%d - %s - %s", a.ID, a.PricingModel.Name(), a.Campaign.Title)
 	}
