@@ -6,6 +6,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
@@ -95,4 +96,12 @@ type Ad struct {
 // TableName in database
 func (a *Ad) TableName() string {
 	return "adv_ad"
+}
+
+// Stringify object as the name
+func (a *Ad) Stringify() string {
+	if a.Campaign != nil {
+		return fmt.Sprintf("%d - %s - %s", a.ID, a.PricingModel.Name(), a.Campaign.Title)
+	}
+	return fmt.Sprintf("%d - %s - Campaign: %d", a.ID, a.PricingModel.Name(), a.CampaignID)
 }
