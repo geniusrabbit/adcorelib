@@ -7,6 +7,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"geniusrabbit.dev/corelib/admodels/types"
@@ -96,4 +97,12 @@ type AdAsset struct {
 // TableName in database
 func (fl *AdAsset) TableName() string {
 	return "adv_ad_file"
+}
+
+// Stringify object as the name
+func (fl *AdAsset) Stringify() string {
+	if fl == nil {
+		return "[Undefined]"
+	}
+	return fmt.Sprintf("%d - %s", fl.ID, fl.ObjectID)
 }
