@@ -9,7 +9,7 @@ import (
 // -- collection & file Many2many
 //
 // CREATE TABLE m2m_adv_ad_file_collection
-// ( file_id               BIGINT          NOT NULL    REFERENCES  adv_ad_file(id) MATCH SIMPLE
+// ( asset_id              BIGINT          NOT NULL    REFERENCES  adv_ad_file(id) MATCH SIMPLE
 //                                                       ON UPDATE NO ACTION
 //                                                       ON DELETE CASCADE
 // , collection_id         BIGINT          NOT NULL    REFERENCES  adv_ad_asset_collection(id) MATCH SIMPLE
@@ -28,7 +28,7 @@ type AdAssetCollection struct {
 	CompanyID uint64   `json:"company_id"`
 
 	// Assets related to advertisement
-	Assets []*AdFile `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_collection;association_autoupdate:false"`
+	Assets []*AdAsset `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_collection;foreignKey:collection_id;association_autoupdate:false"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
