@@ -82,7 +82,7 @@ type AdAsset struct {
 	ProcessingStatus AdAssetProcessingStatus `json:"processing_status"`
 
 	ObjectID    string                              `json:"object_id"`
-	FileInfo    gosql.NullableJSON[json.RawMessage] `json:"file_info"`
+	FileInfo    gosql.NullableJSON[json.RawMessage] `gorm:"type:JSONB" json:"file_info"`
 	Name        null.String                         `json:"name,omitempty"` // Internal file name
 	ContentType string                              `json:"content_type"`
 	Type        ObjectType                          `gorm:"type:INT" json:"type"`
