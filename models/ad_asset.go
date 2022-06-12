@@ -15,29 +15,29 @@ import (
 	"github.com/guregu/null"
 )
 
-type AdFileProcessingStatus int
+type AdAssetProcessingStatus int
 
 const (
-	AdFileProcessingUndefined AdFileProcessingStatus = 0
-	AdFileProcessingProcessed                        = 1
-	AdFileProcessingError                            = 2
-	AdFileProcessingDeleted                          = 3
+	AdAssetProcessingUndefined AdAssetProcessingStatus = 0
+	AdAssetProcessingProcessed                         = 1
+	AdAssetProcessingError                             = 2
+	AdAssetProcessingDeleted                           = 3
 )
 
-func (st AdFileProcessingStatus) Name() string {
+func (st AdAssetProcessingStatus) Name() string {
 	switch st {
-	case AdFileProcessingProcessed:
+	case AdAssetProcessingProcessed:
 		return "Processed"
-	case AdFileProcessingError:
+	case AdAssetProcessingError:
 		return "Error"
-	case AdFileProcessingDeleted:
+	case AdAssetProcessingDeleted:
 		return "Deleted"
 	}
 	return "Undefined"
 }
 
-// AdFileThumb of the file
-type AdFileThumb struct {
+// AdAssetThumb of the file
+type AdAssetThumb struct {
 	Name        string            `json:"name"` // Path to image or video
 	Type        types.AdAssetType `json:"type"`
 	Width       int               `json:"width,omitempty"`
@@ -46,10 +46,10 @@ type AdFileThumb struct {
 	Ext         map[string]any    `json:"ext,omitempty"`
 }
 
-// Meta AdFile info
+// Meta AdAsset info
 type AdAssetMeta struct {
-	Main  AdFileThumb   `json:"main"`
-	Items []AdFileThumb `json:"items,omitempty"`
+	Main  AdAssetThumb   `json:"main"`
+	Items []AdAssetThumb `json:"items,omitempty"`
 }
 type ObjectType int
 
@@ -68,7 +68,7 @@ type ObjectType int
 // , PRIMARY KEY (file_id, ad_id)
 // );
 
-// AdFile structure which describes the paticular file attached to advertisement
+// AdAsset structure which describes the paticular file attached to advertisement
 // Image advertisement: Title=Image title, Description=My description
 //         ID,             HashID,                     path,  size, name,  type, content_type,                          meta
 //   File:  1, dhg321h3ndp43u2hfc, 'images/a/c/banner1.jpg', 64322, NULL, image,   image/jpeg, {"main": {...}, "items": [{...}]}
@@ -79,7 +79,7 @@ type AdAsset struct {
 	Company   *Company `json:"company,omitempty"`           // Owner Project
 	CompanyID uint64   `json:"company_id"`
 
-	ProcessingStatus AdFileProcessingStatus `json:"processing_status"`
+	ProcessingStatus AdAssetProcessingStatus `json:"processing_status"`
 
 	ObjectID    string                              `json:"object_id"`
 	FileInfo    gosql.NullableJSON[json.RawMessage] `json:"file_info"`

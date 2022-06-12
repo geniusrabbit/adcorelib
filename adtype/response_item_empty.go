@@ -71,13 +71,13 @@ func (*ResponseItemEmpty) ContentItemString(name string) string { return "" }
 func (*ResponseItemEmpty) ContentFields() map[string]interface{} { return nil }
 
 // MainAsset from response
-func (*ResponseItemEmpty) MainAsset() *admodels.AdFile { return nil }
+func (*ResponseItemEmpty) MainAsset() *admodels.AdAsset { return nil }
 
 // Asset by name
-func (*ResponseItemEmpty) Asset(name string) *admodels.AdFile { return nil }
+func (*ResponseItemEmpty) Asset(name string) *admodels.AdAsset { return nil }
 
 // Assets list
-func (*ResponseItemEmpty) Assets() admodels.AdFileAssets { return nil }
+func (*ResponseItemEmpty) Assets() admodels.AdAssets { return nil }
 
 // Source of response
 func (*ResponseItemEmpty) Source() Source { return nil }

@@ -37,7 +37,7 @@ type ResponseBidItem struct {
 	BidPrice    billing.Money
 	CPMBidPrice billing.Money // This param can update only price predictor
 	SecondAd    SecondAd
-	assets      admodels.AdFileAssets
+	assets      admodels.AdAssets
 	context     context.Context
 }
 
@@ -163,7 +163,7 @@ func (it *ResponseBidItem) ClickTrackerLinks() []string {
 }
 
 // MainAsset from response
-func (it *ResponseBidItem) MainAsset() *admodels.AdFile {
+func (it *ResponseBidItem) MainAsset() *admodels.AdAsset {
 	mainAsset := it.Format().Config.MainAsset()
 	if mainAsset == nil {
 		return nil
@@ -177,12 +177,12 @@ func (it *ResponseBidItem) MainAsset() *admodels.AdFile {
 }
 
 // Asset by name
-func (it *ResponseBidItem) Asset(name string) *admodels.AdFile {
+func (it *ResponseBidItem) Asset(name string) *admodels.AdAsset {
 	return it.Assets().Asset(name)
 }
 
 // Assets list
-func (it *ResponseBidItem) Assets() (assets admodels.AdFileAssets) {
+func (it *ResponseBidItem) Assets() (assets admodels.AdAssets) {
 	if it.assets != nil {
 		return it.assets
 	}
@@ -193,7 +193,7 @@ func (it *ResponseBidItem) Assets() (assets admodels.AdFileAssets) {
 			if asset.ID != configAsset.ID {
 				continue
 			}
-			newAsset := &admodels.AdFile{
+			newAsset := &admodels.AdAsset{
 				ID:   uint64(asset.ID),
 				Name: configAsset.GetName(),
 			}
@@ -206,7 +206,7 @@ func (it *ResponseBidItem) Assets() (assets admodels.AdFileAssets) {
 				newAsset.Height = asset.Image.Height
 			// case asset.Video != nil:
 			// 	newAsset.Path = asset.Video.URL
-			// 	newAsset.Type = models.AdFileVideoType
+			// 	newAsset.Type = models.AdAssetVideoType
 			default:
 				// TODO error generation
 			}

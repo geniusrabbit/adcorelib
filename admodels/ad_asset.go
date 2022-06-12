@@ -7,8 +7,8 @@ package admodels
 
 import "geniusrabbit.dev/corelib/admodels/types"
 
-// AdFileThumb of the file
-type AdFileThumb struct {
+// AdAssetThumb of the file
+type AdAssetThumb struct {
 	Path        string // Path to image or video
 	Type        types.AdAssetType
 	Width       int
@@ -18,22 +18,22 @@ type AdFileThumb struct {
 }
 
 // IsSuits thumb by size
-func (th AdFileThumb) IsSuits(w, h, wmin, hmin int) bool {
+func (th AdAssetThumb) IsSuits(w, h, wmin, hmin int) bool {
 	return th.Width <= w && th.Width >= wmin && th.Height <= h && th.Height >= hmin
 }
 
 // IsImage file type
-func (th AdFileThumb) IsImage() bool {
+func (th AdAssetThumb) IsImage() bool {
 	return th.Type.IsImage()
 }
 
 // IsVideo file type
-func (th AdFileThumb) IsVideo() bool {
+func (th AdAssetThumb) IsVideo() bool {
 	return th.Type.IsVideo()
 }
 
-// AdFile information
-type AdFile struct {
+// AdAsset information
+type AdAsset struct {
 	ID          uint64
 	Name        string
 	Path        string // In case of HTML5, hare must be the path to directory on CDN
@@ -41,32 +41,32 @@ type AdFile struct {
 	ContentType string
 	Width       int
 	Height      int
-	Thumbs      []AdFileThumb
+	Thumbs      []AdAssetThumb
 }
 
-// // AdFileByModel original
-// func AdFileByModel(file *models.AdFile) *AdFile {
+// // AdAssetByModel original
+// func AdAssetByModel(file *models.AdAsset) *AdAsset {
 // 	var (
-// 		newThumbs []AdFileThumb
+// 		newThumbs []AdAssetThumb
 // 		meta      = file.ObjectMeta()
 // 	)
 
 // 	// Prepare thumb list
 // 	for _, thumb := range meta.Items {
-// 		newThumbs = append(newThumbs, AdFileThumb{
+// 		newThumbs = append(newThumbs, AdAssetThumb{
 // 			Path:        urlPathJoin(file.Path, thumb.Name),
-// 			Type:        AdFileTypeByObjectType(thumb.Type),
+// 			Type:        AdAssetTypeByObjectType(thumb.Type),
 // 			Width:       thumb.Width,
 // 			Height:      thumb.Height,
 // 			ContentType: thumb.ContentType,
 // 		})
 // 	}
 
-// 	return &AdFile{
+// 	return &AdAsset{
 // 		ID:          file.ID,
 // 		Name:        file.Name.String,
 // 		Path:        urlPathJoin(file.Path, meta.Main.Name),
-// 		Type:        AdFileTypeByObjectType(file.Type),
+// 		Type:        AdAssetTypeByObjectType(file.Type),
 // 		ContentType: file.ContentType,
 // 		Width:       meta.Main.Width,
 // 		Height:      meta.Main.Height,
@@ -75,7 +75,7 @@ type AdFile struct {
 // }
 
 // ThumbBy size borders and specific type
-func (f *AdFile) ThumbBy(w, h, wmin, hmin int, adType types.AdAssetType) (th *AdFileThumb) {
+func (f *AdAsset) ThumbBy(w, h, wmin, hmin int, adType types.AdAssetType) (th *AdAssetThumb) {
 	for i := 0; i < len(f.Thumbs); i++ {
 		if f.Thumbs[i].Type == adType && f.Thumbs[i].IsSuits(w, h, wmin, hmin) {
 			return &f.Thumbs[i]
@@ -85,12 +85,12 @@ func (f *AdFile) ThumbBy(w, h, wmin, hmin int, adType types.AdAssetType) (th *Ad
 }
 
 // IsImage file type
-func (f *AdFile) IsImage() bool {
+func (f *AdAsset) IsImage() bool {
 	return f.Type.IsImage()
 }
 
 // IsVideo file type
-func (f *AdFile) IsVideo() bool {
+func (f *AdAsset) IsVideo() bool {
 	return f.Type.IsVideo()
 }
 

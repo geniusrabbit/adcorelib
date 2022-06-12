@@ -167,17 +167,17 @@ func (it *ResponseAdItem) ClickTrackerLinks() []string {
 }
 
 // MainAsset from response
-func (it *ResponseAdItem) MainAsset() *admodels.AdFile {
+func (it *ResponseAdItem) MainAsset() *admodels.AdAsset {
 	return it.Ad.MainAsset()
 }
 
 // Asset by name
-func (it *ResponseAdItem) Asset(name string) *admodels.AdFile {
+func (it *ResponseAdItem) Asset(name string) *admodels.AdAsset {
 	return it.Ad.Asset(name)
 }
 
 // Assets list
-func (it *ResponseAdItem) Assets() admodels.AdFileAssets {
+func (it *ResponseAdItem) Assets() admodels.AdAssets {
 	return it.Ad.Assets
 }
 

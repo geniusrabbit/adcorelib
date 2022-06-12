@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"path/filepath"
 	"strings"
 
 	"github.com/demdxx/gocast"
@@ -46,7 +47,7 @@ type Ad struct {
 
 	// Data
 	Content map[string]any // Extend data
-	Assets  AdFileAssets
+	Assets  AdAssets
 
 	PricingModel     types.PricingModel
 	Weight           uint8
@@ -95,12 +96,12 @@ func (a *Ad) ContentItemString(name string) string {
 }
 
 // MainAsset field
-func (a *Ad) MainAsset() *AdFile {
+func (a *Ad) MainAsset() *AdAsset {
 	return a.Asset(types.FormatAssetMain)
 }
 
 // Asset by name
-func (a *Ad) Asset(name string) *AdFile {
+func (a *Ad) Asset(name string) *AdAsset {
 	return a.Assets.Asset(name)
 }
 
@@ -446,7 +447,7 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 	}
 
 	for _, as := range adBase.Assets {
-		adFile := &AdFile{
+		adFile := &AdAsset{
 			ID:          as.ID,
 			Name:        as.Name.String,
 			Path:        as.ObjectID,
@@ -454,11 +455,11 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 			ContentType: as.ContentType,
 			Width:       as.Meta.Data.Main.Width,
 			Height:      as.Meta.Data.Main.Height,
-			Thumbs:      make([]AdFileThumb, 0, len(as.Meta.Data.Items)),
+			Thumbs:      make([]AdAssetThumb, 0, len(as.Meta.Data.Items)),
 		}
 		for _, thmb := range as.Meta.Data.Items {
-			adFile.Thumbs = append(adFile.Thumbs, AdFileThumb{
-				Path:        thmb.Name,
+			adFile.Thumbs = append(adFile.Thumbs, AdAssetThumb{
+				Path:        filepath.Join(as.ObjectID, thmb.Name),
 				Type:        types.AdAssetType(thmb.Type),
 				Width:       thmb.Width,
 				Height:      thmb.Height,

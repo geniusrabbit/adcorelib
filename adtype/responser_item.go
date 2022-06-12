@@ -84,13 +84,13 @@ type ResponserItem interface {
 	ContentFields() map[string]interface{}
 
 	// MainAsset from response
-	MainAsset() *admodels.AdFile
+	MainAsset() *admodels.AdAsset
 
 	// Asset by name
-	Asset(name string) *admodels.AdFile
+	Asset(name string) *admodels.AdAsset
 
 	// Assets list
-	Assets() admodels.AdFileAssets
+	Assets() admodels.AdAssets
 
 	// Source of response
 	Source() Source
