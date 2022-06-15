@@ -15,27 +15,6 @@ import (
 	"github.com/guregu/null"
 )
 
-type AdAssetProcessingStatus int
-
-const (
-	AdAssetProcessingUndefined AdAssetProcessingStatus = 0
-	AdAssetProcessingProcessed                         = 1
-	AdAssetProcessingError                             = 2
-	AdAssetProcessingDeleted                           = 3
-)
-
-func (st AdAssetProcessingStatus) Name() string {
-	switch st {
-	case AdAssetProcessingProcessed:
-		return "Processed"
-	case AdAssetProcessingError:
-		return "Error"
-	case AdAssetProcessingDeleted:
-		return "Deleted"
-	}
-	return "Undefined"
-}
-
 // AdAssetThumb of the file
 type AdAssetThumb struct {
 	Name        string            `json:"name"` // Path to image or video
@@ -51,7 +30,6 @@ type AdAssetMeta struct {
 	Main  AdAssetThumb   `json:"main"`
 	Items []AdAssetThumb `json:"items,omitempty"`
 }
-type ObjectType int
 
 // -- ad & file Many2many
 //
@@ -79,13 +57,13 @@ type AdAsset struct {
 	Company   *Company `json:"company,omitempty"`           // Owner Project
 	CompanyID uint64   `json:"company_id"`
 
-	ProcessingStatus AdAssetProcessingStatus `json:"processing_status"`
+	ProcessingStatus types.ProcessingStatus `gorm:"type:ProcessingStatus" json:"processing_status"`
 
 	ObjectID    string                              `json:"object_id"`
 	FileInfo    gosql.NullableJSON[json.RawMessage] `gorm:"type:JSONB" json:"file_info"`
 	Name        null.String                         `json:"name,omitempty"` // Internal file name
 	ContentType string                              `json:"content_type"`
-	Type        ObjectType                          `gorm:"type:INT" json:"type"`
+	Type        types.AdAssetType                   `gorm:"type:AdAssetType" json:"type"`
 	Meta        gosql.NullableJSON[AdAssetMeta]     `gorm:"type:JSONB" json:"meta,omitempty"`
 	Size        int64                               `json:"size,omitempty"`
 
