@@ -13,10 +13,10 @@ type ProcessingStatus int
 // ProcessingStatus values
 const (
 	ProcessingUndefined ProcessingStatus = 0
-	ProcessingProgress                   = 1
-	ProcessingProcessed                  = 2
-	ProcessingError                      = 3
-	ProcessingDeleted                    = 4
+	ProcessingProgress  ProcessingStatus = 1
+	ProcessingProcessed ProcessingStatus = 2
+	ProcessingError     ProcessingStatus = 3
+	ProcessingDeleted   ProcessingStatus = 4
 )
 
 func ProcessingStatusByName(name string) ProcessingStatus {
