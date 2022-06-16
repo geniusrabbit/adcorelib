@@ -40,29 +40,35 @@ func AdAssetTypeByName(name string) AdAssetType {
 	return AdAssetUndefinedType
 }
 
-// // AdAssetTypeByObjectType value
-// func AdAssetTypeByObjectType(tp diskmodels.ObjectType) AdAssetType {
-// 	switch tp {
-// 	case diskmodels.TypeImage:
-// 		return AdAssetImageType
-// 	case diskmodels.TypeVideo:
-// 		return AdAssetVideoType
-// 	case diskmodels.TypeHTMLArchType:
-// 		return AdAssetHTML5Type
-// 	}
-// 	return AdAssetUndefinedType
-// }
+// Name of the asset
+func (ft AdAssetType) Name() string {
+	return ft.Code()
+}
 
-func (ft AdAssetType) String() string {
+// Code of the option
+func (ft AdAssetType) Code() string {
 	switch ft {
 	case AdAssetImageType:
-		return "image" // diskmodels.TypeImage.String()
+		return "image"
 	case AdAssetVideoType:
-		return "video" //diskmodels.TypeVideo.String()
+		return "video"
 	case AdAssetHTML5Type:
-		return "html5" //diskmodels.TypeHTMLArchType.String()
+		return "html5"
 	}
-	return "undefined" //diskmodels.TypeUndefined.String()
+	return "undefined"
+}
+
+// Num of the option
+func (ft AdAssetType) Num() int {
+	switch ft {
+	case AdAssetImageType:
+		return 1
+	case AdAssetVideoType:
+		return 2
+	case AdAssetHTML5Type:
+		return 3
+	}
+	return 0
 }
 
 // IsImage file type
@@ -77,7 +83,7 @@ func (ft AdAssetType) IsVideo() bool {
 
 // Value implements the driver.Valuer interface, json field interface
 func (ft AdAssetType) Value() (driver.Value, error) {
-	return []byte(ft.String()), nil
+	return []byte(ft.Code()), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
@@ -97,7 +103,7 @@ func (ft *AdAssetType) Scan(value any) error {
 
 // MarshalJSON implements the json.Marshaler
 func (ft AdAssetType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + ft.String() + `"`), nil
+	return []byte(`"` + ft.Code() + `"`), nil
 }
 
 // UnmarshalJSON implements the json.Unmarshaller
