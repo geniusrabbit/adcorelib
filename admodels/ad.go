@@ -450,7 +450,7 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 		adFile := &AdAsset{
 			ID:          as.ID,
 			Name:        as.Name.String,
-			Path:        as.ObjectID,
+			Path:        filepath.Join(as.ObjectID, as.Meta.Data.Main.Name),
 			Type:        types.AdAssetType(as.Type),
 			ContentType: as.ContentType,
 			Width:       as.Meta.Data.Main.Width,
