@@ -52,8 +52,6 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 	var (
 		headers map[string]string
 		flags   map[string]int
-		_       = cl.Headers.UnmarshalTo(&headers)
-		_       = cl.Headers.UnmarshalTo(&flags)
 		filter  = types.BaseFilter{
 			Secure:          cl.Secure,
 			Adblock:         cl.AdBlock,
@@ -61,6 +59,13 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 			IP:              cl.IP,
 		}
 	)
+
+	if cl.Headers.Data != nil {
+		headers = *cl.Headers.Data
+	}
+	if cl.Flags.Data != nil {
+		flags = *cl.Flags.Data
+	}
 
 	filter.Set(types.FieldFormat, cl.Formats)
 	filter.Set(types.FieldDeviceTypes, cl.DeviceTypes)

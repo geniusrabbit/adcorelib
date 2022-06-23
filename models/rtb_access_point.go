@@ -8,8 +8,7 @@ package models
 import (
 	"time"
 
-	"github.com/demdxx/gocast"
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 
 	"geniusrabbit.dev/corelib/admodels/types"
@@ -34,36 +33,36 @@ type RTBAccessPoint struct {
 	RevenueShareReduce float64           `json:"revenue_share_reduce,omitempty"`                 // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 	AuctionType        types.AuctionType `gorm:"type:AuctionType" json:"auction_type,omitempty"` // default: 0 – first price type, 1 – second price type
 
-	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
-	Active types.ActiveStatus  `gorm:"type:ActiveStatus" json:"active,omitempty"`
-	Flags  gosql.NullableJSON  `gorm:"type:JSONB" json:"flags,omitempty"`
+	Status types.ApproveStatus                `gorm:"type:ApproveStatus" json:"status,omitempty"`
+	Active types.ActiveStatus                 `gorm:"type:ActiveStatus" json:"active,omitempty"`
+	Flags  gosql.NullableJSON[map[string]int] `gorm:"type:JSONB" json:"flags,omitempty"`
 
 	// Protocol configs
-	Protocol      string             `json:"protocol,omitempty"`
-	Timeout       int                `json:"timeout,omitempty"`
-	RPS           int                `json:"rps,omitempty"`
-	MaxBid        billing.Money      `json:"max_bid,omitempty"`
-	DomainDefault string             `json:"domain_default,omitempty"`
-	Headers       gosql.NullableJSON `gorm:"type:JSONB" json:"headers,omitempty"`
+	Protocol      string                                `json:"protocol,omitempty"`
+	Timeout       int                                   `json:"timeout,omitempty"`
+	RPS           int                                   `json:"rps,omitempty"`
+	MaxBid        billing.Money                         `json:"max_bid,omitempty"`
+	DomainDefault string                                `json:"domain_default,omitempty"`
+	Headers       gosql.NullableJSON[map[string]string] `gorm:"type:JSONB" json:"headers,omitempty"`
 
 	// Targeting filters
-	Formats         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"formats,omitempty"`            // => Filters [direct,banner_250x300]
-	DeviceTypes     gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"device_types,omitempty"`        //
-	Devices         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"devices,omitempty"`             //
-	OS              gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"os,omitempty"`                  //
-	Browsers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"browsers,omitempty"`            //
-	Categories      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"categories,omitempty"`          //
-	Carriers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"carriers,omitempty"`            //
-	Countries       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"countries,omitempty"`          //
-	Languages       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"languages,omitempty"`          //
-	Applications    gosql.NullableOrderedIntArray `gorm:"type:INT[];column:apps" json:"apps,omitempty"`    //
-	Zones           gosql.NullableOrderedIntArray `gorm:"type:INT[];column:zones" json:"zones,omitempty"`  //
-	Domains         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"domains,omitempty"`            //
-	Sources         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"rtb_sources,omitempty"`         //
-	Secure          int                           `gorm:"notnull" json:"secure,omitempty"`                 // 0 - any, 1 - only, 2 - exclude
-	AdBlock         int                           `gorm:"column:adblock;notnull" json:"adblock,omitempty"` // 0 - any, 1 - only, 2 - exclude
-	PrivateBrowsing int                           `gorm:"notnull" json:"private_browsing,omitempty"`       // 0 - any, 1 - only, 2 - exclude
-	IP              int                           `gorm:"notnull" json:"ip,omitempty"`                     // 0 - any, 1 - IPv4, 2 - IPv6
+	Formats         gosql.NullableStringArray             `gorm:"type:TEXT[]" json:"formats,omitempty"`            // => Filters [direct,banner_250x300]
+	DeviceTypes     gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"device_types,omitempty"`        //
+	Devices         gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"devices,omitempty"`             //
+	OS              gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"os,omitempty"`                  //
+	Browsers        gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"browsers,omitempty"`            //
+	Categories      gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"categories,omitempty"`          //
+	Carriers        gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"carriers,omitempty"`            //
+	Countries       gosql.NullableStringArray             `gorm:"type:TEXT[]" json:"countries,omitempty"`          //
+	Languages       gosql.NullableStringArray             `gorm:"type:TEXT[]" json:"languages,omitempty"`          //
+	Applications    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[];column:apps" json:"apps,omitempty"`    //
+	Zones           gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[];column:zones" json:"zones,omitempty"`  //
+	Domains         gosql.NullableStringArray             `gorm:"type:TEXT[]" json:"domains,omitempty"`            //
+	Sources         gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"rtb_sources,omitempty"`         //
+	Secure          int                                   `gorm:"notnull" json:"secure,omitempty"`                 // 0 - any, 1 - only, 2 - exclude
+	AdBlock         int                                   `gorm:"column:adblock;notnull" json:"adblock,omitempty"` // 0 - any, 1 - only, 2 - exclude
+	PrivateBrowsing int                                   `gorm:"notnull" json:"private_browsing,omitempty"`       // 0 - any, 1 - only, 2 - exclude
+	IP              int                                   `gorm:"notnull" json:"ip,omitempty"`                     // 0 - any, 1 - IPv4, 2 - IPv6
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -77,20 +76,18 @@ func (s *RTBAccessPoint) TableName() string {
 
 // Flag get by key
 func (s *RTBAccessPoint) Flag(flagName string) int {
-	var m map[string]int
-	if err := s.Flags.UnmarshalTo(&m); err == nil {
-		return gocast.ToInt(m[flagName])
+	if s.Flags.Data != nil {
+		if v, ok := (*s.Flags.Data)[flagName]; ok {
+			return v
+		}
 	}
 	return -1
 }
 
 // SetFlag for object
 func (s *RTBAccessPoint) SetFlag(flagName string, flagValue int) {
-	var m map[string]int
-	_ = s.Flags.UnmarshalTo(&m)
-	if m == nil {
-		m = map[string]int{}
+	if s.Flags.Data == nil {
+		s.Flags.Data = new(map[string]int)
 	}
-	m[flagName] = flagValue
-	_ = s.Flags.SetValue(m)
+	(*s.Flags.Data)[flagName] = flagValue
 }
