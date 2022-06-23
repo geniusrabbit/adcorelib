@@ -31,7 +31,7 @@ func Test_ItemPricing(t *testing.T) {
 		})
 
 		t.Run(prefix+"_bid_price", func(t *testing.T) {
-			if item.Price(admodels.ActionImpression) != billing.MoneyFloat(10) {
+			if item.Price(admodels.ActionImpression) != billing.MoneyFloat(10.) {
 				t.Errorf("target price must be 10, not %.3f", item.Price(admodels.ActionImpression).Float64())
 			}
 		})
@@ -58,7 +58,7 @@ func Test_ItemPricing(t *testing.T) {
 		})
 
 		t.Run(prefix+"_cpm_price", func(t *testing.T) {
-			if item.CPMPrice() != billing.MoneyFloat(5) {
+			if item.CPMPrice() != billing.MoneyFloat(5.) {
 				t.Errorf("cpm_price value: 5 != %.3f", item.CPMPrice().Float64())
 			}
 		})
@@ -72,8 +72,8 @@ func newRTBResponse(comp *admodels.Company, imp Impression) *ResponseBidItem {
 		Req:         &BidRequest{ID: "xxx", Imps: []Impression{imp}},
 		Imp:         &imp,
 		Bid:         &openrtb.Bid{Price: 60},
-		BidPrice:    billing.MoneyFloat(10),
-		CPMBidPrice: billing.MoneyFloat(5),
+		BidPrice:    billing.MoneyFloat(10.),
+		CPMBidPrice: billing.MoneyFloat(5.),
 		SecondAd:    SecondAd{},
 	}
 }
@@ -86,15 +86,15 @@ func newAdResponse(comp *admodels.Company, imp Impression) *ResponseAdItem {
 		Imp:    &imp,
 		Ad: &admodels.Ad{
 			Format:      &types.Format{Width: 250, Height: 250},
-			BidPrice:    billing.MoneyFloat(5),
-			Price:       billing.MoneyFloat(60),
-			LeadPrice:   billing.MoneyFloat(120),
-			DailyBudget: billing.MoneyFloat(1200),
-			Budget:      billing.MoneyFloat(10000),
+			BidPrice:    billing.MoneyFloat(5.),
+			Price:       billing.MoneyFloat(60.),
+			LeadPrice:   billing.MoneyFloat(120.),
+			DailyBudget: billing.MoneyFloat(1200.),
+			Budget:      billing.MoneyFloat(10000.),
 			Hours:       nil,
 		},
-		BidPrice:    billing.MoneyFloat(10),
-		CPMBidPrice: billing.MoneyFloat(5),
+		BidPrice:    billing.MoneyFloat(10.),
+		CPMBidPrice: billing.MoneyFloat(5.),
 		SecondAd:    SecondAd{},
 	}
 }

@@ -13,6 +13,8 @@ import (
 	"math"
 	"strconv"
 
+	"golang.org/x/exp/constraints"
+
 	"github.com/geniusrabbit/gosql/v2"
 )
 
@@ -28,13 +30,13 @@ const (
 type Money int64
 
 // MoneyFloat object
-func MoneyFloat(amount float64) Money {
-	return Money(math.Floor(amount*moneyFloatDelimeter + .5))
+func MoneyFloat[T constraints.Float](amount T) Money {
+	return Money(math.Floor(float64(amount)*moneyFloatDelimeter + .5))
 }
 
 // MoneyInt object
-func MoneyInt(amount int64) Money {
-	return Money(amount * moneyIntDelimeter)
+func MoneyInt[T constraints.Integer](amount T) Money {
+	return Money(int64(amount) * moneyIntDelimeter)
 }
 
 // String implementation of Stringer interface
@@ -80,22 +82,28 @@ func (m *Money) Scan(value interface{}) error {
 	var data []byte
 	switch v := value.(type) {
 	case int:
-		*m = Money(v)
+		*m = MoneyInt(v)
 		return nil
 	case int32:
-		*m = Money(v)
+		*m = MoneyInt(v)
 		return nil
 	case int64:
-		*m = Money(v)
+		*m = MoneyInt(v)
 		return nil
 	case uint:
-		*m = Money(v)
+		*m = MoneyInt(v)
 		return nil
 	case uint32:
-		*m = Money(v)
+		*m = MoneyInt(v)
 		return nil
 	case uint64:
-		*m = Money(v)
+		*m = MoneyInt(v)
+		return nil
+	case float32:
+		*m = MoneyFloat(v)
+		return nil
+	case float64:
+		*m = MoneyFloat(v)
 		return nil
 	case string:
 		data = []byte(v)
