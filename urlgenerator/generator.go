@@ -28,6 +28,22 @@ type Generator struct {
 	WinPattern     string
 }
 
+func (g *Generator) Init() *Generator {
+	if !(false ||
+		strings.HasPrefix(g.CDNDomain, "http://") ||
+		strings.HasPrefix(g.CDNDomain, "https://") ||
+		strings.HasPrefix(g.CDNDomain, "//")) {
+		g.CDNDomain = "//" + strings.TrimRight(g.CDNDomain, "/")
+	}
+	if !(false ||
+		strings.HasPrefix(g.LibDomain, "http://") ||
+		strings.HasPrefix(g.LibDomain, "https://") ||
+		strings.HasPrefix(g.LibDomain, "//")) {
+		g.LibDomain = "//" + strings.TrimRight(g.LibDomain, "/")
+	}
+	return g
+}
+
 // CDNURL returns full URL to path
 func (g *Generator) CDNURL(path string) string {
 	if path == "" {

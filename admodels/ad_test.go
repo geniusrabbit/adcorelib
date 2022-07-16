@@ -21,8 +21,8 @@ func Test_AdModel(t *testing.T) {
 		BidPrice:    billing.MoneyFloat(0.5),
 		Price:       billing.MoneyFloat(1.5),
 		LeadPrice:   billing.MoneyFloat(32.5),
-		DailyBudget: billing.MoneyFloat(100),
-		Budget:      billing.MoneyFloat(1000),
+		DailyBudget: billing.MoneyFloat(100.),
+		Budget:      billing.MoneyFloat(1000.),
 		Campaign:    &Campaign{},
 		Hours:       nil,
 	}
