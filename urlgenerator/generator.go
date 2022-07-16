@@ -50,9 +50,9 @@ func (g *Generator) CDNURL(path string) string {
 		return ""
 	}
 	if path[0] == '/' {
-		return "//" + g.CDNDomain + path
+		return g.CDNDomain + path
 	}
-	return "//" + g.CDNDomain + "/" + path
+	return g.CDNDomain + "/" + path
 }
 
 // LibURL returns full URL to lib file path
@@ -61,9 +61,9 @@ func (g *Generator) LibURL(path string) string {
 		return ""
 	}
 	if path[0] == '/' {
-		return "//" + g.LibDomain + path
+		return g.LibDomain + path
 	}
-	return "//" + g.LibDomain + "/" + path
+	return g.LibDomain + "/" + path
 }
 
 // PixelURL generator from response of item
