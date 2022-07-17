@@ -81,7 +81,7 @@ func PriceSourceFactors(price billing.Money, src Source, remove bool) billing.Mo
 	if src != nil {
 		if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
 			if remove {
-				return billing.MoneyFloat(price.Float64()/(1-reduce)) - price
+				return price/100*billing.Money((1-reduce)*100) - price
 			}
 			return price / 100 * billing.Money(reduce*100)
 		}
@@ -94,7 +94,7 @@ func PriceSystemComission(price billing.Money, item systemComissionFactorer, rem
 	if item != nil {
 		if reduce := item.ComissionShareFactor(); reduce > 0 {
 			if remove {
-				return billing.MoneyFloat(price.Float64()/(1-reduce)) - price
+				return price/100*billing.Money((1-reduce)*100) - price
 			}
 			return price / 100 * billing.Money(reduce*100)
 		}
@@ -107,7 +107,7 @@ func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerF
 	if rs != nil {
 		if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
 			if remove {
-				return billing.MoneyFloat(price.Float64()/(1-reduce)) - price
+				return price/100*billing.Money((1-reduce)*100) - price
 			}
 			return price / 100 * billing.Money(reduce*100)
 		}
