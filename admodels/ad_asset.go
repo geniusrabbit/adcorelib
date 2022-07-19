@@ -5,16 +5,18 @@
 
 package admodels
 
-import "geniusrabbit.dev/corelib/admodels/types"
+import (
+	"geniusrabbit.dev/corelib/admodels/types"
+)
 
 // AdAssetThumb of the file
 type AdAssetThumb struct {
-	Path        string // Path to image or video
-	Type        types.AdAssetType
-	Width       int
-	Height      int
-	ContentType string
-	Ext         map[string]any
+	Path        string            `json:"path"` // Path to image or video
+	Type        types.AdAssetType `json:"type"`
+	Width       int               `json:"w"`
+	Height      int               `json:"h"`
+	ContentType string            `json:"content_type,omitempty"`
+	Ext         map[string]any    `json:"ext,omitempty"`
 }
 
 // IsSuits thumb by size
@@ -76,12 +78,20 @@ type AdAsset struct {
 
 // ThumbBy size borders and specific type
 func (f *AdAsset) ThumbBy(w, h, wmin, hmin int, adType types.AdAssetType) (th *AdAssetThumb) {
+	if w <= 0 {
+		w = 0x0fffffff
+	}
+	if h <= 0 {
+		h = 0x0fffffff
+	}
 	for i := 0; i < len(f.Thumbs); i++ {
 		if f.Thumbs[i].Type == adType && f.Thumbs[i].IsSuits(w, h, wmin, hmin) {
-			return &f.Thumbs[i]
+			if th == nil || th.Width > f.Thumbs[i].Width {
+				th = &f.Thumbs[i]
+			}
 		}
 	}
-	return nil
+	return th
 }
 
 // IsImage file type

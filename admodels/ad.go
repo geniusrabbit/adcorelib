@@ -458,6 +458,9 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 			Thumbs:      make([]AdAssetThumb, 0, len(as.Meta.Data.Items)),
 		}
 		for _, thmb := range as.Meta.Data.Items {
+			if thmb.Type == types.AdAssetUndefinedType {
+				continue
+			}
 			adFile.Thumbs = append(adFile.Thumbs, AdAssetThumb{
 				Path:        filepath.Join(as.ObjectID, thmb.Name),
 				Type:        types.AdAssetType(thmb.Type),
