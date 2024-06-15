@@ -5,7 +5,7 @@
 
 package models
 
-import "geniusrabbit.dev/corelib/admodels/types"
+import "geniusrabbit.dev/adcorelib/admodels/types"
 
 // PricingModel value
 type PricingModel = types.PricingModel

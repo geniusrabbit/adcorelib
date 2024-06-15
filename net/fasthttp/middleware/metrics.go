@@ -14,7 +14,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/corelib/personification"
+	"geniusrabbit.dev/adcorelib/personification"
 )
 
 // CollectMetrics and send to metrics

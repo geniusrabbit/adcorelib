@@ -3,7 +3,7 @@ package experiments
 import (
 	"time"
 
-	"geniusrabbit.dev/corelib/adtype"
+	"geniusrabbit.dev/adcorelib/adtype"
 )
 
 type sourceSimpleWrapper struct {

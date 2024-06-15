@@ -11,9 +11,9 @@ import (
 
 	nc "github.com/geniusrabbit/notificationcenter/v2"
 
-	"geniusrabbit.dev/corelib/adtype"
-	"geniusrabbit.dev/corelib/eventtraking/eventgenerator"
-	"geniusrabbit.dev/corelib/eventtraking/events"
+	"geniusrabbit.dev/adcorelib/adtype"
+	"geniusrabbit.dev/adcorelib/eventtraking/eventgenerator"
+	"geniusrabbit.dev/adcorelib/eventtraking/events"
 )
 
 var errInvalidResponse = errors.New(`response object can't be nil`)

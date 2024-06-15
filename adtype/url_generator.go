@@ -5,7 +5,7 @@
 
 package adtype
 
-import "geniusrabbit.dev/corelib/eventtraking/events"
+import "geniusrabbit.dev/adcorelib/eventtraking/events"
 
 // URLGenerator of advertisement
 type URLGenerator interface {

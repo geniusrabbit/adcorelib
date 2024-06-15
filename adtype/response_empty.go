@@ -5,8 +5,8 @@ import (
 
 	"github.com/bsm/openrtb"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
 )
 
 // ResponseEmpty object

@@ -8,9 +8,9 @@ package admodels
 import (
 	"strings"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
-	"geniusrabbit.dev/corelib/models"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
+	"geniusrabbit.dev/adcorelib/models"
 )
 
 // RTBAccessPoint for DSP connect.

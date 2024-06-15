@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"geniusrabbit.dev/corelib/admodels"
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/adcorelib/admodels"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
 )
 
 // ResponseAdItem for select from storage

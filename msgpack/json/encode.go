@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"geniusrabbit.dev/corelib/msgpack/types"
+	"geniusrabbit.dev/adcorelib/msgpack/types"
 )
 
 type EncodeGenerator struct{}

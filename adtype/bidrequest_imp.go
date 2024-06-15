@@ -8,10 +8,10 @@ package adtype
 import (
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 
-	"geniusrabbit.dev/corelib/admodels"
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
-	"geniusrabbit.dev/corelib/searchtypes"
+	"geniusrabbit.dev/adcorelib/admodels"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
+	"geniusrabbit.dev/adcorelib/searchtypes"
 )
 
 // Impression target

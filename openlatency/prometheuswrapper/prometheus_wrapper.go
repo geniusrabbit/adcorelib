@@ -3,7 +3,7 @@ package prometheuswrapper
 import (
 	"time"
 
-	"geniusrabbit.dev/corelib/openlatency"
+	"geniusrabbit.dev/adcorelib/openlatency"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

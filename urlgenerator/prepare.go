@@ -3,10 +3,10 @@ package urlgenerator
 import (
 	"strings"
 
-	"github.com/demdxx/gocast"
+	"github.com/demdxx/gocast/v2"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/eventtraking/events"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/eventtraking/events"
 )
 
 // PrepareURL by event

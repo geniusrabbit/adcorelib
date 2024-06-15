@@ -7,7 +7,7 @@ import (
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 	uopenrtb "github.com/sspserver/udetect/openrtb"
 
-	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/admodels/types"
 )
 
 // BidRequestRTBOptions of request build

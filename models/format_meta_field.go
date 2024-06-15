@@ -6,7 +6,7 @@
 package models
 
 import (
-	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/admodels/types"
 )
 
 // FormatFieldType format

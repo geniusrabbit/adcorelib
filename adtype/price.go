@@ -1,7 +1,7 @@
 package adtype
 
 import (
-	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/adcorelib/billing"
 )
 
 type systemComissionFactorer interface {

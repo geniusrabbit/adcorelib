@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"github.com/geniusrabbit/gosql"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 )
 
@@ -20,20 +20,6 @@ const (
 	FormatTypeVideo  = `video`
 	FormatTypeProxy  = `proxy`
 	FormatTypeNative = `native`
-)
-
-type (
-	// FormatConfig description
-	FormatConfig = types.FormatConfig
-
-	// FormatFileRequirement rule
-	FormatFileRequirement = types.FormatFileRequirement
-)
-
-// Format asset defaults
-const (
-	FormatAssetMain = types.FormatAssetMain
-	FormatAssetIcon = types.FormatAssetIcon
 )
 
 // Format model description
@@ -48,7 +34,7 @@ type Format struct {
 	MinWidth  int `json:"min_width,omitempty"`
 	MinHeight int `json:"min_height,omitempty"`
 
-	Config gosql.NullableJSON `gorm:"type:JSONB" json:"config,omitempty"`
+	Config gosql.NullableJSON[types.FormatConfig] `gorm:"type:JSONB" json:"config,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -58,31 +44,6 @@ type Format struct {
 // TableName in database
 func (f *Format) TableName() string {
 	return "adv_format"
-}
-
-// DecodeConfig from JSON
-func (f Format) DecodeConfig() (meta *FormatConfig) {
-	if f.Config.Length() > 2 {
-		meta = new(FormatConfig)
-		if f.Config.UnmarshalTo(meta) != nil {
-			meta = nil
-		} else {
-			var idx = int(1)
-			for i, field := range meta.Fields {
-				field.ID = idx
-				meta.Fields[i] = field
-				idx++
-			}
-
-			// Update asset IDs
-			for i, asset := range meta.Assets {
-				asset.ID = idx
-				meta.Assets[i] = asset
-				idx++
-			}
-		}
-	}
-	return meta
 }
 
 // IsStretch format

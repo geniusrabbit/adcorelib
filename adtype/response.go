@@ -8,7 +8,7 @@ package adtype
 import (
 	"context"
 
-	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/admodels/types"
 )
 
 // Response from different sources

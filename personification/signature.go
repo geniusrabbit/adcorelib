@@ -6,14 +6,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/demdxx/gocast"
+	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/gogeo"
 	"github.com/google/uuid"
 	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/corelib/gtracing"
-	fasthttpext "geniusrabbit.dev/corelib/net/fasthttp"
+	"geniusrabbit.dev/adcorelib/gtracing"
+	fasthttpext "geniusrabbit.dev/adcorelib/net/fasthttp"
 )
 
 // Signeture provides the builder of cookie assigned to the user by HTTP

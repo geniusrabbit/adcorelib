@@ -5,7 +5,7 @@
 
 package admodels
 
-import "geniusrabbit.dev/corelib/models"
+import "geniusrabbit.dev/adcorelib/models"
 
 // Application model
 type Application struct {

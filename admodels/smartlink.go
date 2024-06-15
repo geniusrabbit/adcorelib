@@ -10,9 +10,9 @@ import (
 
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
-	"geniusrabbit.dev/corelib/models"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
+	"geniusrabbit.dev/adcorelib/models"
 )
 
 // Smartlink model

@@ -16,12 +16,12 @@ import (
 
 	openrtb "github.com/bsm/openrtb"
 	natresp "github.com/bsm/openrtb/native/response"
-	"github.com/demdxx/gocast"
+	"github.com/demdxx/gocast/v2"
 	"golang.org/x/net/html/charset"
 
-	"geniusrabbit.dev/corelib/admodels"
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/adcorelib/admodels"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
 )
 
 // BidResponse RTB record

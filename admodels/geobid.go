@@ -8,7 +8,7 @@ package admodels
 import (
 	"sort"
 
-	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/adcorelib/billing"
 )
 
 // GeoBid item

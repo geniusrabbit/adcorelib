@@ -3,8 +3,8 @@ package adtype
 import (
 	"strings"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"github.com/demdxx/gocast"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/demdxx/gocast/v2"
 )
 
 // PrepareURL by event

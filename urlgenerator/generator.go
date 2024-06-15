@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"geniusrabbit.dev/corelib/admodels"
-	"geniusrabbit.dev/corelib/adtype"
-	"geniusrabbit.dev/corelib/eventtraking/eventgenerator"
-	"geniusrabbit.dev/corelib/eventtraking/events"
-	"geniusrabbit.dev/corelib/eventtraking/pixelgenerator"
+	"geniusrabbit.dev/adcorelib/admodels"
+	"geniusrabbit.dev/adcorelib/adtype"
+	"geniusrabbit.dev/adcorelib/eventtraking/eventgenerator"
+	"geniusrabbit.dev/adcorelib/eventtraking/events"
+	"geniusrabbit.dev/adcorelib/eventtraking/pixelgenerator"
 )
 
 // Generator of URLs
@@ -181,7 +181,7 @@ func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, i
 		).Replace(pattern)
 	}
 
-	if err == nil && response.Request().AuctionType.IsSecondPrice() {
+	if response.Request().AuctionType.IsSecondPrice() {
 		if strings.Contains(urlVal, "?") {
 			urlVal += "&"
 		} else {

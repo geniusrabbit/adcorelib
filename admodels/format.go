@@ -6,8 +6,8 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/models"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/models"
 )
 
 // Formats field set
@@ -31,7 +31,7 @@ var (
 func FormatFromModel(format *models.Format) *types.Format {
 	var (
 		fmtp types.FormatTypeBitset
-		conf = format.DecodeConfig()
+		conf = format.Config.Data
 	)
 
 	switch {

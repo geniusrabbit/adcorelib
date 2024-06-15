@@ -8,8 +8,8 @@ package admodels
 import (
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
 )
 
 // TargetBid object

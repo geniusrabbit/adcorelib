@@ -15,11 +15,11 @@ import (
 	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"geniusrabbit.dev/corelib/billing"
-	"geniusrabbit.dev/corelib/i18n/languages"
-	"geniusrabbit.dev/corelib/models"
-	"geniusrabbit.dev/corelib/searchtypes"
+	"geniusrabbit.dev/adcorelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/billing"
+	"geniusrabbit.dev/adcorelib/i18n/languages"
+	"geniusrabbit.dev/adcorelib/models"
+	"geniusrabbit.dev/adcorelib/searchtypes"
 )
 
 // Errors set

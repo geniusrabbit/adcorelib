@@ -3,7 +3,7 @@ package ctxperson
 import (
 	"context"
 
-	"geniusrabbit.dev/corelib/personification"
+	"geniusrabbit.dev/adcorelib/personification"
 )
 
 var (

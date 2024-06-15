@@ -8,8 +8,8 @@ package types
 import (
 	"time"
 
-	"geniusrabbit.dev/corelib/billing"
-	"geniusrabbit.dev/corelib/searchtypes"
+	"geniusrabbit.dev/adcorelib/billing"
+	"geniusrabbit.dev/adcorelib/searchtypes"
 )
 
 // TargetPointer describer of base target params

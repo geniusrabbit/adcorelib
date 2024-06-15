@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/demdxx/gocast"
+	"github.com/demdxx/gocast/v2"
 )
 
 // Errors list...

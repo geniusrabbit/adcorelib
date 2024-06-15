@@ -10,11 +10,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/demdxx/gocast"
+	"github.com/demdxx/gocast/v2"
 
-	"geniusrabbit.dev/corelib/admodels"
-	"geniusrabbit.dev/corelib/adtype"
-	"geniusrabbit.dev/corelib/eventtraking/events"
+	"geniusrabbit.dev/adcorelib/admodels"
+	"geniusrabbit.dev/adcorelib/adtype"
+	"geniusrabbit.dev/adcorelib/eventtraking/events"
 )
 
 // Errors set

@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 )
 
@@ -14,9 +14,9 @@ type CompanyM2MMember struct {
 	UserID    int      `gorm:"primaryKey" json:"user_id"`
 	User      *User    `gorm:"foreignkey:User" json:"user"`
 
-	IsAdmin bool                    `json:"is_admin"`
-	ACL     gosql.NullableJSON      `gorm:"type:JSONB" json:"acl"`
-	Roles   gosql.NullableUintArray `gorm:"type:BIGINT[]" json:"roles"`
+	IsAdmin bool                              `json:"is_admin"`
+	ACL     gosql.NullableJSON[any]           `gorm:"type:JSONB" json:"acl"`
+	Roles   gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"roles"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

@@ -11,8 +11,8 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/corelib/gtracing"
-	"geniusrabbit.dev/corelib/personification"
+	"geniusrabbit.dev/adcorelib/gtracing"
+	"geniusrabbit.dev/adcorelib/personification"
 )
 
 type (

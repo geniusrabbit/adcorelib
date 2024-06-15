@@ -5,7 +5,7 @@ import (
 
 	"github.com/guregu/null"
 
-	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/admodels/types"
 )
 
 // AdLink to the advertisement target

@@ -6,7 +6,7 @@ package billingthrift
 // 	"github.com/thrift-iterator/go/protocol"
 // 	"github.com/thrift-iterator/go/spi"
 
-// 	"geniusrabbit.dev/corelib/billing"
+// 	"geniusrabbit.dev/adcorelib/billing"
 // )
 
 // // MoneyExt extension

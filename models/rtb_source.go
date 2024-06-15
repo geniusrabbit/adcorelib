@@ -8,10 +8,10 @@ package models
 import (
 	"time"
 
-	"geniusrabbit.dev/corelib/admodels/types"
-	"github.com/demdxx/gocast"
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
+
+	"geniusrabbit.dev/adcorelib/admodels/types"
 )
 
 // RTB price type
@@ -27,18 +27,18 @@ type RTBSource struct {
 	CompanyID uint64   `json:"company_id,omitempty"`
 	Title     string   `json:"title,omitempty"`
 
-	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
-	Active types.ActiveStatus  `gorm:"type:ActiveStatus" json:"active,omitempty"`
-	Flags  gosql.NullableJSON  `gorm:"type:JSONB" json:"flags,omitempty"`
+	Status types.ApproveStatus                `gorm:"type:ApproveStatus" json:"status,omitempty"`
+	Active types.ActiveStatus                 `gorm:"type:ActiveStatus" json:"active,omitempty"`
+	Flags  gosql.NullableJSON[map[string]int] `gorm:"type:JSONB" json:"flags,omitempty"`
 
-	Protocol      string               `json:"protocol"`                                // rtb as default
-	MinimalWeight float64              `json:"minimal_weight"`                          //
-	URL           string               `json:"url"`                                     // RTB client request URL
-	Method        string               `json:"method"`                                  // HTTP method GET, POST, ect; Default POST
-	RequestType   types.RTBRequestType `gorm:"type:RTBRequestType" json:"request_type"` // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - PLAINTEXT
-	Headers       gosql.NullableJSON   `gorm:"type:JSONB" json:"headers,omitempty"`     //
-	RPS           int                  `json:"rps"`                                     // 0 – unlimit
-	Timeout       int                  `json:"timeout"`                                 // In milliseconds
+	Protocol      string                                `json:"protocol"`                                // rtb as default
+	MinimalWeight float64                               `json:"minimal_weight"`                          //
+	URL           string                                `json:"url"`                                     // RTB client request URL
+	Method        string                                `json:"method"`                                  // HTTP method GET, POST, ect; Default POST
+	RequestType   types.RTBRequestType                  `gorm:"type:RTBRequestType" json:"request_type"` // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - PLAINTEXT
+	Headers       gosql.NullableJSON[map[string]string] `gorm:"type:JSONB" json:"headers,omitempty"`     //
+	RPS           int                                   `json:"rps"`                                     // 0 – unlimit
+	Timeout       int                                   `json:"timeout"`                                 // In milliseconds
 
 	// Money configs
 	Accuracy              float64           `json:"accuracy,omitempty"`                             // Price accuracy for auction in percentages
@@ -46,25 +46,25 @@ type RTBSource struct {
 	AuctionType           types.AuctionType `gorm:"type:AuctionType" json:"auction_type,omitempty"` // default: 0 – first price type, 1 – second price type
 
 	// Targeting filters
-	Formats         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters
-	DeviceTypes     gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"device_types,omitempty"`     //
-	Devices         gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"devices,omitempty"`          //
-	OS              gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"os,omitempty"`               //
-	Browsers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"browsers,omitempty"`         //
-	Carriers        gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"carriers,omitempty"`         //
-	Categories      gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"categories,omitempty"`       //
-	Countries       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"countries,omitempty"`       //
-	Languages       gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"languages,omitempty"`       //
-	Applications    gosql.NullableOrderedIntArray `gorm:"column:apps;type:INT[]" json:"apps,omitempty"` //
-	Domains         gosql.NullableStringArray     `gorm:"type:TEXT[]" json:"domains,omitempty"`         //
-	Zones           gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"zones,omitempty"`            //
-	ExternalZones   gosql.NullableOrderedIntArray `gorm:"type:INT[]" json:"external_zones,omitempty"`   //
-	Secure          int                           `json:"secure,omitempty"`                             // 0 - any, 1 - only, 2 - exclude
-	AdBlock         int                           `json:"adblock,omitempty" gorm:"column:adblock"`      // 0 - any, 1 - only, 2 - exclude
-	PrivateBrowsing int                           `json:"private_browsing,omitempty"`                   // 0 - any, 1 - only, 2 - exclude
-	IP              int                           `json:"ip,omitempty"`                                 // 0 - any, 1 - IPv4, 2 - IPv6
+	Formats         gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters
+	DeviceTypes     gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"device_types,omitempty"`     //
+	Devices         gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"devices,omitempty"`          //
+	OS              gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"os,omitempty"`               //
+	Browsers        gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"browsers,omitempty"`         //
+	Carriers        gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"carriers,omitempty"`         //
+	Categories      gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"categories,omitempty"`       //
+	Countries       gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"countries,omitempty"`       //
+	Languages       gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"languages,omitempty"`       //
+	Applications    gosql.NullableOrderedNumberArray[uint64] `gorm:"column:apps;type:INT[]" json:"apps,omitempty"` //
+	Domains         gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"domains,omitempty"`         //
+	Zones           gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"zones,omitempty"`            //
+	ExternalZones   gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"external_zones,omitempty"`   //
+	Secure          int                                      `json:"secure,omitempty"`                             // 0 - any, 1 - only, 2 - exclude
+	AdBlock         int                                      `json:"adblock,omitempty" gorm:"column:adblock"`      // 0 - any, 1 - only, 2 - exclude
+	PrivateBrowsing int                                      `json:"private_browsing,omitempty"`                   // 0 - any, 1 - only, 2 - exclude
+	IP              int                                      `json:"ip,omitempty"`                                 // 0 - any, 1 - IPv4, 2 - IPv6
 
-	Config gosql.NullableJSON `gorm:"type:JSONB" json:"config,omitempty"`
+	Config gosql.NullableJSON[any] `gorm:"type:JSONB" json:"config,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -86,22 +86,20 @@ func (c *RTBSource) ProtocolCode() string {
 
 // Flag get by key
 func (c *RTBSource) Flag(flagName string) int {
-	var m map[string]int
-	if err := c.Flags.UnmarshalTo(&m); err == nil {
-		return gocast.ToInt(m[flagName])
+	if c.Flags.Data != nil {
+		if v, ok := (*c.Flags.Data)[flagName]; ok {
+			return v
+		}
 	}
 	return -1
 }
 
 // SetFlag for object
 func (c *RTBSource) SetFlag(flagName string, flagValue int) {
-	var m map[string]int
-	_ = c.Flags.UnmarshalTo(&m)
-	if m == nil {
-		m = map[string]int{}
+	if c.Flags.Data == nil {
+		c.Flags.Data = new(map[string]int)
 	}
-	m[flagName] = flagValue
-	_ = c.Flags.SetValue(m)
+	(*c.Flags.Data)[flagName] = flagValue
 }
 
 // PriceCorrectionReduceFactor which is a potential

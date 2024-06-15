@@ -3,10 +3,10 @@ package models
 import (
 	"time"
 
-	"github.com/geniusrabbit/gosql"
+	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 
-	"geniusrabbit.dev/corelib/admodels/types"
+	"geniusrabbit.dev/adcorelib/admodels/types"
 )
 
 // Application model describes site or mobile/desktop application
@@ -36,7 +36,7 @@ type Application struct {
 	// Is private campaign type
 	Private types.PrivateStatus `gorm:"type:PrivateStatus" json:"private"`
 
-	Categories gosql.NullableUintArray `gorm:"type:INT[]" json:"categories,omitempty"`
+	Categories gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"categories,omitempty"`
 
 	// RevenueShare it's amount of percent of the raw incode which will be shared with the publisher company
 	// For example:
