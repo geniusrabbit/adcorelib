@@ -1,5 +1,5 @@
 //
-// @project trafficstars.com 2015
+// @project Geniusrabbit 2015
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2015
 //
 
