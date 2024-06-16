@@ -45,6 +45,8 @@ github.com/demdxx/gocast/v2 v2.9.0 h1:8zaPR50lPFXtETMj04FUNXYI2Zm0+cJgPorPq1ckaM
 github.com/demdxx/gocast/v2 v2.9.0/go.mod h1:gaT12/sJ4IyiZCZHrSZu67Abrjx41QSxe5wkD8aXNU0=
 github.com/demdxx/rpool/v2 v2.0.1 h1:ZxgPqK4u5bn4xvr2OcMKMwalUmcKyn3LIacg1FMGvwM=
 github.com/demdxx/rpool/v2 v2.0.1/go.mod h1:iJef6bxMV9GPN8bi+CrmJEYAoUvR6l5qjXfNwQcYf20=
+github.com/demdxx/xtypes v0.2.0 h1:F0jMk5ZlFfNatCJZp9gPlQhDAS6Q+1B/QNRtEHL1BzA=
+github.com/demdxx/xtypes v0.2.0/go.mod h1:z7AwIX7FpM9vW9oSzEbEjTxf9+52XqVUMYFaXEhe8O0=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=

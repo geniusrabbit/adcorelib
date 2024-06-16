@@ -22,7 +22,7 @@ type ResponseEmpty struct {
 
 // NewEmptyResponse by bid request
 func NewEmptyResponse(request *BidRequest, src Source, err error) *ResponseEmpty {
-	return &ResponseEmpty{Req: request, Src: src, Err: err}
+	return &ResponseEmpty{Req: request, Src: src, Err: err, context: request.Ctx}
 }
 
 // ID of current response item (unique code of current response)
@@ -142,6 +142,9 @@ func (r ResponseEmpty) Error() error {
 func (r *ResponseEmpty) Context(ctx ...context.Context) context.Context {
 	if r != nil && len(ctx) > 0 && ctx[0] != nil {
 		r.context = ctx[0]
+	}
+	if r.context == nil && r.Req != nil {
+		return r.Req.Ctx
 	}
 	return r.context
 }

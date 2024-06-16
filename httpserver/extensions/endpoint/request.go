@@ -7,15 +7,16 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/demdxx/gocast/v2"
+	"github.com/sspserver/udetect"
+	"github.com/valyala/fasthttp"
+
 	"geniusrabbit.dev/adcorelib/admodels"
 	"geniusrabbit.dev/adcorelib/admodels/types"
 	"geniusrabbit.dev/adcorelib/adtype"
 	fasthttpext "geniusrabbit.dev/adcorelib/net/fasthttp"
 	"geniusrabbit.dev/adcorelib/personification"
 	"geniusrabbit.dev/adcorelib/rand"
-	"github.com/demdxx/gocast/v2"
-	"github.com/sspserver/udetect"
-	"github.com/valyala/fasthttp"
 )
 
 // RequestOptions prepare
@@ -44,8 +45,8 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 	return &RequestOptions{
 		Debug:   debug,
 		Request: ctx,
-		X:       gocast.ToInt(string(queryArgs.Peek("x"))),
-		Y:       gocast.ToInt(string(queryArgs.Peek("y"))),
+		X:       gocast.Int(string(queryArgs.Peek("x"))),
+		Y:       gocast.Int(string(queryArgs.Peek("y"))),
 		W:       minW,
 		WMax:    ifPositiveNumber(w, -1),
 		H:       minH,
@@ -55,7 +56,7 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		SubID3:  peekOneFromQuery(queryArgs, "subid3", "s3"),
 		SubID4:  peekOneFromQuery(queryArgs, "subid4", "s4"),
 		SubID5:  peekOneFromQuery(queryArgs, "subid5", "s5"),
-		Count:   gocast.ToInt(peekOneFromQuery(queryArgs, "count")),
+		Count:   gocast.Int(peekOneFromQuery(queryArgs, "count")),
 	}
 }
 
@@ -68,8 +69,8 @@ func NewDirectRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 	return &RequestOptions{
 		Debug:   debug,
 		Request: ctx,
-		X:       gocast.ToInt(queryArgs.Peek("x")),
-		Y:       gocast.ToInt(queryArgs.Peek("y")),
+		X:       gocast.Int(string(queryArgs.Peek("x"))),
+		Y:       gocast.Int(string(queryArgs.Peek("y"))),
 		W:       -1,
 		H:       -1,
 		SubID1:  peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
@@ -146,8 +147,8 @@ func NewRequestFor(ctx context.Context, target admodels.Target, person personifi
 }
 
 // NewRequestByContext from request
-func NewRequestByContext(ectx *fasthttp.RequestCtx) (*adtype.BidRequest, error) {
-	request := &adtype.BidRequest{RequestCtx: ectx, Timemark: time.Now()}
+func NewRequestByContext(ctx context.Context, ectx *fasthttp.RequestCtx) (*adtype.BidRequest, error) {
+	request := &adtype.BidRequest{RequestCtx: ectx, Timemark: time.Now(), Ctx: ctx}
 	if err := json.NewDecoder(bytes.NewBuffer(ectx.Request.Body())).Decode(request); err != nil {
 		return nil, err
 	}

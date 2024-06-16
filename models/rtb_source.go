@@ -47,12 +47,12 @@ type RTBSource struct {
 
 	// Targeting filters
 	Formats         gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters
-	DeviceTypes     gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"device_types,omitempty"`     //
-	Devices         gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"devices,omitempty"`          //
-	OS              gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"os,omitempty"`               //
-	Browsers        gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"browsers,omitempty"`         //
-	Carriers        gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"carriers,omitempty"`         //
-	Categories      gosql.NullableOrderedNumberArray[uint64] `gorm:"type:INT[]" json:"categories,omitempty"`       //
+	DeviceTypes     gosql.NullableOrderedNumberArray[int]    `gorm:"type:INT[]" json:"device_types,omitempty"`     //
+	Devices         gosql.NullableOrderedNumberArray[int]    `gorm:"type:INT[]" json:"devices,omitempty"`          //
+	OS              gosql.NullableOrderedNumberArray[int]    `gorm:"type:INT[]" json:"os,omitempty"`               //
+	Browsers        gosql.NullableOrderedNumberArray[int]    `gorm:"type:INT[]" json:"browsers,omitempty"`         //
+	Carriers        gosql.NullableOrderedNumberArray[int]    `gorm:"type:INT[]" json:"carriers,omitempty"`         //
+	Categories      gosql.NullableOrderedNumberArray[int]    `gorm:"type:INT[]" json:"categories,omitempty"`       //
 	Countries       gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"countries,omitempty"`       //
 	Languages       gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"languages,omitempty"`       //
 	Applications    gosql.NullableOrderedNumberArray[uint64] `gorm:"column:apps;type:INT[]" json:"apps,omitempty"` //

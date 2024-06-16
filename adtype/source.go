@@ -18,6 +18,14 @@ const (
 	SingleRequestStrategy
 )
 
+func (rs RequestStrategy) IsSingle() bool {
+	return rs == SingleRequestStrategy
+}
+
+func (rs RequestStrategy) IsAsynchronous() bool {
+	return rs == AsynchronousRequestStrategy
+}
+
 // DefaultSourceID constant
 const (
 	DefaultSourceID = 0

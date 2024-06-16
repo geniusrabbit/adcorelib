@@ -186,7 +186,7 @@ func (r *BidRequest) nativeRTBRequest(imp *Impression, format *types.Format, opt
 	return openrtb.Extension(nativePrepared)
 }
 
-func (r *BidRequest) nativeRTBAssets(imp *Impression, format *types.Format) []openrtbnreq.Asset {
+func (r *BidRequest) nativeRTBAssets(_ *Impression, format *types.Format) []openrtbnreq.Asset {
 	assets := make([]openrtbnreq.Asset, 0, len(format.Config.Assets)+len(format.Config.Fields))
 	for _, asset := range format.Config.Assets {
 		if !asset.IsVideoSupport() || asset.IsImageSupport() {

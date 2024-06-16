@@ -150,7 +150,7 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 					wrp.metrics.IncrementBidErrorCount(src, request, response.Error())
 				}
 			})
-			if src.RequestStrategy() == adtype.SingleRequestStrategy {
+			if src.RequestStrategy().IsSingle() {
 				break
 			}
 		}
@@ -262,29 +262,31 @@ func (wrp *MultisourceWrapper) PriceCorrectionReduceFactor() float64 { return 0 
 /// Internal methods
 ///////////////////////////////////////////////////////////////////////////////
 
-func (wrp *MultisourceWrapper) sourceResponseLog(bidRequest *adtype.BidRequest, response adtype.Responser) {
-	if response != nil && response.Context() != nil {
-		eventStream := eventstream.StreamFromContext(response.Context())
-		if response.Error() == nil && len(response.Ads()) > 0 {
-			// Log ads
-			for _, it := range response.Ads() {
-				switch ad := it.(type) {
-				case adtype.ResponserItem:
-					_ = eventStream.Send(events.SourceBid, events.StatusSuccess, response, ad)
-				case adtype.ResponserMultipleItem:
-					if len(ad.Ads()) > 0 {
-						_ = eventStream.Send(events.SourceBid, events.StatusSuccess, response, ad.Ads()[0])
-					}
+func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ *adtype.BidRequest, response adtype.Responser) {
+	if isNil(response) {
+		return
+	}
+
+	eventStream := eventstream.StreamFromContext(response.Context())
+	if response.Error() == nil && len(response.Ads()) > 0 {
+		// Log ads
+		for _, it := range response.Ads() {
+			switch ad := it.(type) {
+			case adtype.ResponserItem:
+				_ = eventStream.Send(events.SourceBid, events.StatusSuccess, response, ad)
+			case adtype.ResponserMultipleItem:
+				if len(ad.Ads()) > 0 {
+					_ = eventStream.Send(events.SourceBid, events.StatusSuccess, response, ad.Ads()[0])
 				}
-				break
 			}
-		} else if response.Error() == nil && len(response.Ads()) == 0 {
-			_ = eventStream.SendSourceNoBid(response)
-		} else if response.Error() != nil && strings.Contains(response.Error().Error(), "skip") {
-			_ = eventStream.SendSourceSkip(response)
-		} else {
-			_ = eventStream.SendSourceFail(response)
+			break
 		}
+	} else if response.Error() == nil && len(response.Ads()) == 0 {
+		_ = eventStream.SendSourceNoBid(response)
+	} else if response.Error() != nil && strings.Contains(response.Error().Error(), "skip") {
+		_ = eventStream.SendSourceSkip(response)
+	} else {
+		_ = eventStream.SendSourceFail(response)
 	}
 }
 
@@ -303,4 +305,12 @@ func (wrp *MultisourceWrapper) getMainSource() adtype.Source {
 		return nil
 	}
 	return wrp.baseSource.Next()
+}
+
+func isNil(v any) bool {
+	switch v.(type) {
+	case nil:
+		return true
+	}
+	return false
 }

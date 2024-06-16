@@ -138,8 +138,8 @@ func (srv *Server) newRouter(ctx context.Context) *router.Router {
 ///////////////////////////////////////////////////////////////////////////////
 
 func (srv *Server) healthCheck(ctx *fasthttp.RequestCtx) {
+	ctx.Response.Header.SetContentType("application/json")
 	ctx.Response.SetStatusCode(http.StatusOK)
-	ctx.Response.Header.SetContentType("text/json")
 	headers := strings.TrimSpace(ctx.Request.Header.String())
 
 	json.NewEncoder(ctx.Response.BodyWriter()).Encode(&struct {
@@ -152,8 +152,8 @@ func (srv *Server) healthCheck(ctx *fasthttp.RequestCtx) {
 }
 
 func (srv *Server) check(ctx *fasthttp.RequestCtx) {
+	ctx.Response.Header.SetContentType("application/json")
 	ctx.Response.SetStatusCode(http.StatusOK)
-	ctx.Response.Header.SetContentType("text/json")
 	fmt.Fprint(ctx.Response.BodyWriter(), `{"status":"ok"}`)
 }
 

@@ -17,12 +17,12 @@ import (
 var errTargetObjectMustImplementMerge = errors.New(`target object must support "Merge(interface)" method`)
 
 type merger interface {
-	Merge(interface{})
+	Merge(any)
 }
 
 // PatternLoader returns new FileSystem for some root directory and pattern
 func PatternLoader(root, pattern string) loader.LoaderFnk {
-	return func(objectTarget interface{}, _ *time.Time) error {
+	return func(objectTarget any, _ *time.Time) error {
 		target, ok := objectTarget.(merger)
 		if !ok {
 			return errTargetObjectMustImplementMerge
@@ -41,7 +41,7 @@ func PatternLoader(root, pattern string) loader.LoaderFnk {
 	}
 }
 
-func loadFile(filename string, target interface{}) error {
+func loadFile(filename string, target any) error {
 	ext := filepath.Ext(filename)
 	switch ext {
 	case ".yml", ".yaml", ".json":
@@ -59,7 +59,7 @@ func loadFile(filename string, target interface{}) error {
 	}
 	switch ext {
 	case ".yml", ".yaml":
-		var interData interface{}
+		var interData any
 		if err := yaml.Unmarshal(data, &interData); err != nil {
 			return err
 		}

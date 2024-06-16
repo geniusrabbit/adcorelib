@@ -65,7 +65,7 @@ func Test_ItemPricing(t *testing.T) {
 	}
 }
 
-func newRTBResponse(comp *admodels.Company, imp Impression) *ResponseBidItem {
+func newRTBResponse(_ *admodels.Company, imp Impression) *ResponseBidItem {
 	return &ResponseBidItem{
 		ItemID:      "1",
 		Src:         &SourceEmpty{PriceCorrectionReduce: 0},
@@ -78,7 +78,7 @@ func newRTBResponse(comp *admodels.Company, imp Impression) *ResponseBidItem {
 	}
 }
 
-func newAdResponse(comp *admodels.Company, imp Impression) *ResponseAdItem {
+func newAdResponse(_ *admodels.Company, imp Impression) *ResponseAdItem {
 	return &ResponseAdItem{
 		ItemID: "1",
 		Src:    &SourceEmpty{PriceCorrectionReduce: 0},

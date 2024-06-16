@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/demdxx/xtypes"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -21,17 +22,18 @@ import (
 var errUnsupportedSourceProtocol = errors.New("unsupported source protocol")
 
 type sourceFactory interface {
-	New(ctx context.Context, source *admodels.RTBSource, opts ...interface{}) (adtype.SourceTester, error)
+	New(ctx context.Context, source *admodels.RTBSource, opts ...any) (adtype.SourceTester, error)
 	Info() info.Platform
 	Protocols() []string
 }
 
 // Accessor object ad reloader
 type Accessor struct {
+	mx sync.Mutex
+
 	loader.DataAccessor
 	companyAccessor *companyaccessor.CompanyAccessor
 
-	mx          sync.Mutex
 	mainContext context.Context
 
 	factories  map[string]sourceFactory
@@ -39,12 +41,7 @@ type Accessor struct {
 }
 
 // NewAccessor object
-func NewAccessor(
-	ctx context.Context,
-	dataAccessor loader.DataAccessor,
-	companyAccessor *companyaccessor.CompanyAccessor,
-	factories ...sourceFactory,
-) (*Accessor, error) {
+func NewAccessor(ctx context.Context, dataAccessor loader.DataAccessor, companyAccessor *companyaccessor.CompanyAccessor, factories ...sourceFactory) (*Accessor, error) {
 	if dataAccessor == nil {
 		return nil, errors.New("data accessor is required")
 	}
@@ -67,36 +64,39 @@ func NewAccessor(
 
 // SourceList returns list of sources
 func (acc *Accessor) SourceList() ([]adtype.Source, error) {
-	if acc.sourceList == nil || acc.NeedUpdate() {
-		acc.mx.Lock()
-		defer acc.mx.Unlock()
-		if acc.NeedUpdate() {
-			sources, err := acc.Data()
-			if err != nil {
-				return nil, err
-			}
-			list := make([]adtype.Source, 0, len(acc.sourceList))
-			for _, src := range sources {
-				company, err := acc.companyAccessor.CompanyByID(src.(*models.RTBSource).CompanyID)
-				if err != nil {
-					ctxlogger.Get(acc.mainContext).Error("get company by ID", zap.Error(err))
-				} else {
-					rtbModel := admodels.RTBSourceFromModel(src.(*models.RTBSource), company)
-					src, err := acc.newSource(acc.mainContext, rtbModel)
-					if err == nil {
-						list = append(list, src)
-					} else {
-						ctxlogger.Get(acc.mainContext).Error("create RTB source",
-							zap.Uint64("source_id", rtbModel.ID),
-							zap.String("source_protocol", rtbModel.Protocol),
-							zap.Error(err))
-					}
-				}
-			}
-			sort.Slice(list, func(i, j int) bool { return list[i].ID() < list[j].ID() })
-			acc.sourceList = list
-		}
+	if acc.sourceList != nil && !acc.NeedUpdate() {
+		return acc.sourceList, nil
 	}
+
+	acc.mx.Lock()
+	defer acc.mx.Unlock()
+	if !acc.NeedUpdate() {
+		return acc.sourceList, nil
+	}
+
+	sources, err := acc.Data()
+	if err != nil {
+		return nil, err
+	}
+
+	acc.sourceList = xtypes.SliceApply(sources, func(src any) adtype.Source {
+		company, err := acc.companyAccessor.CompanyByID(src.(*models.RTBSource).CompanyID)
+		if err != nil {
+			ctxlogger.Get(acc.mainContext).Error("get company by ID", zap.Error(err))
+			return nil
+		}
+		rtbModel := admodels.RTBSourceFromModel(src.(*models.RTBSource), company)
+		if src, err := acc.newSource(acc.mainContext, rtbModel); err == nil {
+			return src
+		} else {
+			ctxlogger.Get(acc.mainContext).Error("create RTB source",
+				zap.Uint64("source_id", rtbModel.ID),
+				zap.String("source_protocol", rtbModel.Protocol),
+				zap.Error(err))
+		}
+		return nil
+	}).Sort(func(i, j adtype.Source) bool { return i.ID() < j.ID() })
+
 	return acc.sourceList, nil
 }
 

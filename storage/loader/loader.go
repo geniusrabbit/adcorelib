@@ -23,7 +23,7 @@ type LoaderTarget interface {
 
 // DataAccessor with data loading
 type DataAccessor interface {
-	Data() ([]interface{}, error)
+	Data() ([]any, error)
 	NeedUpdate() bool
 }
 
@@ -35,7 +35,7 @@ type PeriodicDataAccessor struct {
 	period     uint64
 	target     LoaderTarget
 	loader     LoaderFnk
-	data       []interface{}
+	data       []any
 
 	metricReloadCounter *prometheus.CounterVec
 	metricLoadedCount   prometheus.Gauge
@@ -75,7 +75,7 @@ func (l *PeriodicDataAccessor) NeedUpdate() bool {
 }
 
 // Data returns loaded data and reload if necessary
-func (l *PeriodicDataAccessor) Data() ([]interface{}, error) {
+func (l *PeriodicDataAccessor) Data() ([]any, error) {
 	if l.NeedUpdate() {
 		l.mx.Lock()
 		defer l.mx.Unlock()

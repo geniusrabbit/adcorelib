@@ -155,9 +155,11 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 	}
 
 	defer resp.Body.Close()
-	if response, err = d.unmarshal(request, resp.Body); d.source.Options.Trace && err != nil {
+	if res, err := d.unmarshal(request, resp.Body); d.source.Options.Trace && err != nil {
 		response = adtype.NewErrorResponse(request, err)
 		ctxlogger.Get(request.Ctx).Error("bid response", zap.Error(err))
+	} else if res != nil {
+		response = res
 	}
 
 	if response != nil && response.Error() == nil {
@@ -189,6 +191,9 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 	}
 
 	d.processHTTPReponse(resp, err)
+	if response == nil {
+		return adtype.NewEmptyResponse(request, d, err)
+	}
 	return response
 }
 

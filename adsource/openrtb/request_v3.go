@@ -143,7 +143,7 @@ func openrtbV3NativeRequest(req *adtype.BidRequest, imp *adtype.Impression, form
 	return json.RawMessage(nativePrepared)
 }
 
-func openrtbV3NativeAssets(req *adtype.BidRequest, imp *adtype.Impression, format *types.Format) []openrtbnreq.Asset {
+func openrtbV3NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *types.Format) []openrtbnreq.Asset {
 	assets := make([]openrtbnreq.Asset, 0, len(format.Config.Assets)+len(format.Config.Fields))
 	for _, asset := range format.Config.Assets {
 		if !asset.IsVideoSupport() || asset.IsImageSupport() {

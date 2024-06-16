@@ -64,8 +64,6 @@ func (r *BidResponse) Prepare() {
 				"${AUCTION_CURRENCY}", "USD",
 			)
 
-			fmt.Println(">> BID", bid)
-
 			// Custom direct detect
 			if len(bid.AdMarkup) < 1 {
 				var (
@@ -234,6 +232,9 @@ func (r *BidResponse) Count() int {
 
 // Validate response
 func (r *BidResponse) Validate() error {
+	if r == nil {
+		return ErrResponseEmpty
+	}
 	err := r.BidResponse.Validate()
 	if err == nil {
 		for _, seat := range r.BidResponse.SeatBid {

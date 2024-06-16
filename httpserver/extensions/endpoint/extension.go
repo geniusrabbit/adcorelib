@@ -60,7 +60,7 @@ func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tra
 
 	// Ad handler request
 	for _, endpoint := range ext.endpoints {
-		routeWrapper.GET("/b/"+endpoint.Codename()+"/:zone",
+		routeWrapper.GET("/b/"+endpoint.Codename()+"/{zone}",
 			ext.handlerWrapper.SpyMetrics("endpoint."+endpoint.Codename(), ext.spy,
 				// Double wrap to evoid potential `endpoint` relink
 				func(endpoint Endpoint) httphandler.ExtHTTPSpyHandler {

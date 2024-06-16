@@ -8,6 +8,7 @@ package admodels
 import (
 	"strconv"
 
+	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/gosql/v2"
 
 	"geniusrabbit.dev/adcorelib/admodels/types"
@@ -43,7 +44,10 @@ func ZoneFromModel(zone models.Zone) *Zone {
 		AllowedTypes:      zone.AllowedTypes,
 		AllowedSources:    zone.AllowedSources,
 		DisallowedSources: zone.DisallowedSources,
-		DefaultCode:       *zone.DefaultCode.Data,
+		DefaultCode: gocast.IfThenExec(
+			zone.DefaultCode.Data != nil,
+			func() map[string]string { return *zone.DefaultCode.Data },
+			func() map[string]string { return nil }),
 	}
 }
 

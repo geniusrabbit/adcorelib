@@ -11,6 +11,7 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8
 	github.com/demdxx/gocast/v2 v2.9.0
 	github.com/demdxx/rpool/v2 v2.0.1
+	github.com/demdxx/xtypes v0.2.0
 	github.com/fasthttp/router v1.4.18
 	github.com/flf2ko/fasthttp-prometheus v0.1.0
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92

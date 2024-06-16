@@ -5,7 +5,10 @@
 
 package types
 
-import "github.com/geniusrabbit/gosql/v2"
+import (
+	"github.com/demdxx/gocast/v2"
+	"github.com/geniusrabbit/gosql/v2"
+)
 
 // Base filter fields
 const (
@@ -75,7 +78,7 @@ func (fl *BaseFilter) Set(field uint64, data interface{}) {
 			fl.Languages, positive = LanguageFilter(vl)
 		}
 	case FieldZones:
-		fl.Zones, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int]))
+		fl.Zones, positive = IDArrayFilter(gocast.AnySlice[int](data))
 	case FieldDomains:
 		switch arr := data.(type) {
 		case gosql.StringArray:
