@@ -11,7 +11,7 @@ type FormatData struct {
 }
 
 // Merge two data items
-func (d *FormatData) Merge(it interface{}) {
+func (d *FormatData) Merge(it any) {
 	v := it.(*FormatData)
 	if v.Format != nil {
 		d.Formats = append(d.Formats, v.Format)
@@ -20,8 +20,8 @@ func (d *FormatData) Merge(it interface{}) {
 }
 
 // Result of data as a list
-func (d *FormatData) Result() []interface{} {
-	data := make([]interface{}, 0, len(d.Formats))
+func (d *FormatData) Result() []any {
+	data := make([]any, 0, len(d.Formats))
 	for _, it := range d.Formats {
 		data = append(data, it)
 	}

@@ -10,11 +10,11 @@ import (
 )
 
 type merger interface {
-	Merge(interface{})
+	Merge(any)
 }
 
 type targeter interface {
-	Target() interface{}
+	Target() any
 }
 
 type dbQueryPrepare interface {
@@ -22,8 +22,8 @@ type dbQueryPrepare interface {
 }
 
 // SelectLoader returns new DB loader for select query
-func SelectLoader(db *gorm.DB, query string, args ...interface{}) loader.LoaderFnk {
-	return func(objectTarget interface{}, lastUpdate *time.Time) error {
+func SelectLoader(db *gorm.DB, query string, args ...any) loader.LoaderFnk {
+	return func(objectTarget any, lastUpdate *time.Time) error {
 		if lastUpdate == nil {
 			lastUpdate = &time.Time{}
 			*lastUpdate = time.Now().AddDate(-50, 0, 0)
@@ -51,11 +51,11 @@ func SelectLoader(db *gorm.DB, query string, args ...interface{}) loader.LoaderF
 }
 
 // Loader returns new DB loader for select query
-func Loader(db *gorm.DB, args ...interface{}) loader.LoaderFnk {
+func Loader(db *gorm.DB, args ...any) loader.LoaderFnk {
 	if len(args) == 0 {
 		args = append(args, `updated_at>=?`)
 	}
-	return func(objectTarget interface{}, lastUpdate *time.Time) error {
+	return func(objectTarget any, lastUpdate *time.Time) error {
 		if lastUpdate == nil {
 			lastUpdate = &time.Time{}
 			*lastUpdate = time.Now().AddDate(-50, 0, 0)

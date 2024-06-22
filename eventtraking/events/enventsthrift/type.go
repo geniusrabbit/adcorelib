@@ -53,12 +53,12 @@ package eventsthrift
 // }
 
 // /// spi.ValDecoder ...
-// func (e TypeThriftExy) Decode(val interface{}, iter spi.Iterator) {
+// func (e TypeThriftExy) Decode(val any, iter spi.Iterator) {
 // 	*val.(*Type) = Type(iter.ReadString())
 // }
 
 // /// spi.ValEncoder ...
-// func (e TypeThriftExy) Encode(val interface{}, stream spi.Stream) {
+// func (e TypeThriftExy) Encode(val any, stream spi.Stream) {
 // 	stream.WriteString(val.(Type).String())
 // }
 

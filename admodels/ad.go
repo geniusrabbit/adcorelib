@@ -83,7 +83,7 @@ func (a *Ad) GetID() uint64 {
 }
 
 // ContentItem by name
-func (a *Ad) ContentItem(name string) interface{} {
+func (a *Ad) ContentItem(name string) any {
 	if a.Content != nil {
 		return a.Content[name]
 	}
@@ -92,7 +92,7 @@ func (a *Ad) ContentItem(name string) interface{} {
 
 // ContentItemString by name
 func (a *Ad) ContentItemString(name string) string {
-	return gocast.ToString(a.ContentItem(name))
+	return gocast.Str(a.ContentItem(name))
 }
 
 // MainAsset field

@@ -68,6 +68,9 @@ func (c *FormatConfig) Intersec(conf *FormatConfig) bool {
 
 // AssetByName from config
 func (c *FormatConfig) AssetByName(name string) *FormatFileRequirement {
+	if c == nil {
+		return nil
+	}
 	for _, asset := range c.Assets {
 		if asset.Name == name || (name == "" && asset.IsMain()) {
 			return &asset

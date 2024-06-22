@@ -52,7 +52,7 @@ type ResponserItemCommon interface {
 	Context(ctx ...context.Context) context.Context
 
 	// Get ext field
-	Get(key string) interface{}
+	Get(key string) any
 }
 
 // ResponserItem for single AD
@@ -75,13 +75,13 @@ type ResponserItem interface {
 	PricingModel() types.PricingModel
 
 	// ContentItem returns the ad response data
-	ContentItem(name string) interface{}
+	ContentItem(name string) any
 
 	// ContentItemString from the ad
 	ContentItemString(name string) string
 
 	// ContentFields from advertisement object
-	ContentFields() map[string]interface{}
+	ContentFields() map[string]any
 
 	// MainAsset from response
 	MainAsset() *admodels.AdAsset

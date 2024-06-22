@@ -76,7 +76,7 @@ func (tp ApplicationType) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (tp *ApplicationType) Scan(value interface{}) error {
+func (tp *ApplicationType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		return tp.UnmarshalJSON([]byte(v))

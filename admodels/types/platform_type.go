@@ -132,7 +132,7 @@ func (tp PlatformType) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (tp *PlatformType) Scan(value interface{}) error {
+func (tp *PlatformType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		return tp.UnmarshalJSON([]byte(v))

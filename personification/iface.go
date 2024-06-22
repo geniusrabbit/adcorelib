@@ -132,7 +132,7 @@ type Person interface {
 // Properties accessor
 type Properties interface {
 	// Get property by key
-	Get(key string) interface{}
+	Get(key string) any
 
 	// GetString property by key
 	GetString(key string) string
@@ -141,7 +141,7 @@ type Properties interface {
 	GetIntSlice(key string) []int
 
 	// Set property
-	Set(key string, prop interface{})
+	Set(key string, prop any)
 
 	// Delete property by key
 	Delete(key string)

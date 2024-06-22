@@ -101,7 +101,7 @@ func (i *ResponseItemBlock) Context(ctx ...context.Context) context.Context {
 }
 
 // Get ext field
-func (i *ResponseItemBlock) Get(key string) interface{} {
+func (i *ResponseItemBlock) Get(key string) any {
 	if i.context != nil {
 		return i.context.Value(key)
 	}

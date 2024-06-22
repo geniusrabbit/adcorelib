@@ -6,18 +6,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	"geniusrabbit.dev/adcorelib/fasttime"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"go.uber.org/zap"
+
+	"geniusrabbit.dev/adcorelib/fasttime"
 )
 
 // LoaderFnk type
-type LoaderFnk func(objectTarget interface{}, lastUpdate *time.Time) error
+type LoaderFnk func(objectTarget any, lastUpdate *time.Time) error
 
 // LoaderTarget object interface
 type LoaderTarget interface {
-	Result() []interface{}
+	Result() []any
 	Reset()
 }
 

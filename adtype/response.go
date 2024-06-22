@@ -122,7 +122,7 @@ func (r *Response) Context(ctx ...context.Context) context.Context {
 }
 
 // Get context item by key
-func (r *Response) Get(key string) interface{} {
+func (r *Response) Get(key string) any {
 	if r.context == nil {
 		return nil
 	}

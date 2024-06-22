@@ -1,6 +1,6 @@
 package loader
 
-type MergeFnk func(datas ...[]interface{}) []interface{}
+type MergeFnk func(datas ...[]any) []any
 
 // CombinedLoader loads and merge data into other type
 type CombinedLoader struct {
@@ -26,8 +26,8 @@ func (l *CombinedLoader) NeedUpdate() bool {
 }
 
 // Data returns loaded data and reload if necessary
-func (l *CombinedLoader) Data() ([]interface{}, error) {
-	datas := make([][]interface{}, 0, len(l.loaders))
+func (l *CombinedLoader) Data() ([]any, error) {
+	datas := make([][]any, 0, len(l.loaders))
 	for _, lr := range l.loaders {
 		dr, err := lr.Data()
 		if err != nil {

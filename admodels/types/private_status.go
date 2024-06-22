@@ -50,7 +50,7 @@ func (st PrivateStatus) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (st *PrivateStatus) Scan(value interface{}) error {
+func (st *PrivateStatus) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		*st = PrivateNameToStatus(v[1 : len(v)-1])
@@ -79,7 +79,7 @@ func (st *PrivateStatus) UnmarshalJSON(b []byte) error {
 }
 
 // Implements the Unmarshaler interface of the yaml pkg.
-func (st *PrivateStatus) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (st *PrivateStatus) UnmarshalYAML(unmarshal func(any) error) error {
 	var yamlString string
 	if err := unmarshal(&yamlString); err != nil {
 		return err

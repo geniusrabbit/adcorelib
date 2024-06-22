@@ -132,7 +132,7 @@ func (it *ResponseAdItem) ContentItemString(name string) string {
 }
 
 // ContentItem returns the ad response data
-func (it *ResponseAdItem) ContentItem(name string) interface{} {
+func (it *ResponseAdItem) ContentItem(name string) any {
 	switch name {
 	case ContentItemLink:
 		if !it.Ad.Format.IsProxy() {
@@ -152,7 +152,7 @@ func (it *ResponseAdItem) ContentItem(name string) interface{} {
 }
 
 // ContentFields from advertisement object
-func (it *ResponseAdItem) ContentFields() map[string]interface{} {
+func (it *ResponseAdItem) ContentFields() map[string]any {
 	return it.Ad.Content
 }
 
@@ -456,7 +456,7 @@ func (it *ResponseAdItem) Context(ctx ...context.Context) (c context.Context) {
 }
 
 // Get ext field
-func (it *ResponseAdItem) Get(key string) interface{} {
+func (it *ResponseAdItem) Get(key string) any {
 	if it.Ctx == nil {
 		return nil
 	}

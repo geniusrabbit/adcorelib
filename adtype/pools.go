@@ -9,10 +9,10 @@ import (
 // Common pools
 var (
 	responseAdItemPool = sync.Pool{
-		New: func() interface{} { return new(ResponseAdItem) },
+		New: func() any { return new(ResponseAdItem) },
 	}
 	responsePool = sync.Pool{
-		New: func() interface{} { return new(Response) },
+		New: func() any { return new(Response) },
 	}
 )
 

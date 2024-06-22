@@ -29,12 +29,12 @@ package billingthrift
 // }
 
 // /// spi.ValDecoder ...
-// func (e MoneyExt) Decode(val interface{}, iter spi.Iterator) {
+// func (e MoneyExt) Decode(val any, iter spi.Iterator) {
 // 	*val.(*billing.Money) = billing.Money(iter.ReadInt64())
 // }
 
 // /// spi.ValEncoder ...
-// func (e MoneyExt) Encode(val interface{}, stream spi.Stream) {
+// func (e MoneyExt) Encode(val any, stream spi.Stream) {
 // 	stream.WriteInt64(val.(billing.Money).Int64())
 // }
 

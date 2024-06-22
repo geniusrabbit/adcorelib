@@ -19,7 +19,7 @@ type Impression struct {
 	ID                string                 `json:"id,omitempty"`                  // Internal impression ID
 	ExtID             string                 `json:"extid,omitempty"`               // External impression ID (ImpID)
 	ExtTargetID       string                 `json:"exttrgid"`                      // External zone ID (tagid)
-	Request           interface{}            `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
+	Request           any                    `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
 	Target            admodels.Target        `json:"target,omitempty"`              //
 	BidFloor          billing.Money          `json:"bid_floor,omitempty"`           //
 	PurchaseViewPrice billing.Money          `json:"purchase_view_price,omitempty"` //
@@ -36,7 +36,7 @@ type Impression struct {
 	SubID3            string                 `json:"subid3,omitempty"`              //
 	SubID4            string                 `json:"subid4,omitempty"`              //
 	SubID5            string                 `json:"subid5,omitempty"`              //
-	Ext               map[string]interface{} `json:"ext,omitempty"`
+	Ext               map[string]any         `json:"ext,omitempty"`
 	FormatTypes       types.FormatTypeBitset `json:"-"`
 	formats           []*types.Format
 	formatBitset      *searchtypes.UIntBitset
@@ -175,7 +175,7 @@ func (i *Impression) RTBNativeRequest() (r *openrtbnreq.Request) {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Get context item by key
-func (i *Impression) Get(key string) interface{} {
+func (i *Impression) Get(key string) any {
 	if i.Ext == nil {
 		return nil
 	}
@@ -183,9 +183,9 @@ func (i *Impression) Get(key string) interface{} {
 }
 
 // Set context item with key
-func (i *Impression) Set(key string, val interface{}) {
+func (i *Impression) Set(key string, val any) {
 	if i.Ext == nil {
-		i.Ext = map[string]interface{}{}
+		i.Ext = map[string]any{}
 	}
 	i.Ext[key] = val
 }

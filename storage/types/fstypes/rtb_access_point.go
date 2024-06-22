@@ -9,7 +9,7 @@ type RTBAccessPointData struct {
 }
 
 // Merge two data items
-func (d *RTBAccessPointData) Merge(it interface{}) {
+func (d *RTBAccessPointData) Merge(it any) {
 	v := it.(*RTBAccessPointData)
 	if v.AccessPoint != nil {
 		d.AccessPoints = append(d.AccessPoints, v.AccessPoint)
@@ -18,8 +18,8 @@ func (d *RTBAccessPointData) Merge(it interface{}) {
 }
 
 // Result of data as a list
-func (d *RTBAccessPointData) Result() []interface{} {
-	data := make([]interface{}, 0, len(d.AccessPoints))
+func (d *RTBAccessPointData) Result() []any {
+	data := make([]any, 0, len(d.AccessPoints))
 	for _, it := range d.AccessPoints {
 		data = append(data, it)
 	}

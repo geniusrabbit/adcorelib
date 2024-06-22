@@ -13,7 +13,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-//ipRange - a structure that holds the start and end of a range of ip addresses
+// ipRange - a structure that holds the start and end of a range of ip addresses
 type ipRange struct {
 	start net.IP
 	end   net.IP

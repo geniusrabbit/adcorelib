@@ -9,7 +9,7 @@ type ZoneData struct {
 }
 
 // Merge two data items
-func (d *ZoneData) Merge(it interface{}) {
+func (d *ZoneData) Merge(it any) {
 	v := it.(*ZoneData)
 	if v.Zone != nil {
 		d.Zones = append(d.Zones, v.Zone)
@@ -18,8 +18,8 @@ func (d *ZoneData) Merge(it interface{}) {
 }
 
 // Result of data as a list
-func (d *ZoneData) Result() []interface{} {
-	data := make([]interface{}, 0, len(d.Zones))
+func (d *ZoneData) Result() []any {
+	data := make([]any, 0, len(d.Zones))
 	for _, it := range d.Zones {
 		data = append(data, it)
 	}

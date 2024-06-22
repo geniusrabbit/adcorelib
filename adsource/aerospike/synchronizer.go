@@ -197,7 +197,7 @@ func (sync *synchronizer) setSyncState(sincing bool) {
 	}
 }
 
-func campaignKey(camp *models.Campaign) interface{} {
+func campaignKey(camp *models.Campaign) any {
 	return camp.ID
 }
 

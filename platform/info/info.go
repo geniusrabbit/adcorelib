@@ -20,10 +20,10 @@ type Documentation struct {
 
 // FieldOptionSelectItem describes variant of option
 type FieldOptionSelectItem struct {
-	Name        string      `json:"name,omitempty"`
-	Value       interface{} `json:"value"`
-	Description string      `json:"description,omitempty"`
-	Link        string      `json:"link,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Value       any    `json:"value"`
+	Description string `json:"description,omitempty"`
+	Link        string `json:"link,omitempty"`
 }
 
 // FieldOption description
@@ -32,7 +32,7 @@ type FieldOption struct {
 	Required    bool                    `json:"required,omitempty"`
 	Type        FieldOptionType         `json:"type,omitempty"`
 	Description string                  `json:"description,omitempty"`
-	Default     interface{}             `json:"default,omitempty"`
+	Default     any                     `json:"default,omitempty"`
 	Select      []FieldOptionSelectItem `json:"select,omitempty"` // Available variants
 }
 

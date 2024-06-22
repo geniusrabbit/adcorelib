@@ -15,7 +15,7 @@ var (
 )
 
 // StdPack message
-func StdPack(msg interface{}) ([]byte, error) {
+func StdPack(msg any) ([]byte, error) {
 	var (
 		buff   bytes.Buffer
 		writer = lz4.NewWriter(&buff)
@@ -31,6 +31,6 @@ func StdPack(msg interface{}) ([]byte, error) {
 }
 
 // StdUnpack message
-func StdUnpack(data []byte, msg interface{}) error {
+func StdUnpack(data []byte, msg any) error {
 	return DefaultDecodeGenerator.NewDecoder(lz4.NewReader(bytes.NewReader(data)), nil).Decode(msg)
 }

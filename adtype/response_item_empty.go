@@ -44,7 +44,7 @@ func (*ResponseItemEmpty) Validate() error { return nil }
 func (*ResponseItemEmpty) Context(ctx ...context.Context) context.Context { return nil }
 
 // Get ext field
-func (*ResponseItemEmpty) Get(key string) interface{} { return nil }
+func (*ResponseItemEmpty) Get(key string) any { return nil }
 
 // AdID number
 func (*ResponseItemEmpty) AdID() uint64 { return 0 }
@@ -62,13 +62,13 @@ func (*ResponseItemEmpty) Format() *types.Format { return &emptyFormat }
 func (*ResponseItemEmpty) PricingModel() types.PricingModel { return 0 }
 
 // ContentItem returns the ad response data
-func (*ResponseItemEmpty) ContentItem(name string) interface{} { return nil }
+func (*ResponseItemEmpty) ContentItem(name string) any { return nil }
 
 // ContentItemString from the ad
 func (*ResponseItemEmpty) ContentItemString(name string) string { return "" }
 
 // ContentFields from advertisement object
-func (*ResponseItemEmpty) ContentFields() map[string]interface{} { return nil }
+func (*ResponseItemEmpty) ContentFields() map[string]any { return nil }
 
 // MainAsset from response
 func (*ResponseItemEmpty) MainAsset() *admodels.AdAsset { return nil }

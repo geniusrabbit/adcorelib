@@ -44,7 +44,7 @@ type BaseFilter struct {
 }
 
 // Set filter item
-func (fl *BaseFilter) Set(field uint64, data interface{}) {
+func (fl *BaseFilter) Set(field uint64, data any) {
 	var positive bool
 	switch field {
 	case FieldFormat:

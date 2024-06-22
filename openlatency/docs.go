@@ -1,5 +1,4 @@
 /*
-
 # HTTP headers
 
 @link https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
@@ -15,6 +14,5 @@ That's why we have to create new custom HTTP header with the message oridinate t
 X-Request-Ts: 1549107735603
 X-Response-Accepted-Ts: 1549108715201
 X-Response-Ts: 1549108715201
-
 */
 package openlatency

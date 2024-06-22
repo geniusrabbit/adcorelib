@@ -243,7 +243,7 @@ func ringByID(id string, rings []Ring) (int, Ring) {
 	return -1, Ring{}
 }
 
-func adsCountByImpID(impID string, ads interface{}) (count int) {
+func adsCountByImpID(impID string, ads any) (count int) {
 	switch nads := ads.(type) {
 	case []adtype.ResponserItemCommon:
 		for _, ad := range nads {

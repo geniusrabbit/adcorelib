@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit rotator 2018 - 2019, 2022
+// @project GeniusRabbit rotator 2018 - 2019, 2022, 2024
 // @author Dmitry Ponomarev <demdxx@gmail.com>
 //
 
@@ -37,6 +37,9 @@ type Stream interface {
 
 	// SendSourceFail event for the response
 	SendSourceFail(response adtype.Responser) error
+
+	// SendAccessPointBid event for the response
+	SendAccessPointBid(response adtype.Responser, it ...adtype.ResponserItem) error
 
 	// SendAccessPointSkip event for the response
 	SendAccessPointSkip(response adtype.Responser) error
@@ -108,6 +111,17 @@ func (s *stream) SendSourceNoBid(response adtype.Responser) error {
 // SendSourceFail event for the response
 func (s *stream) SendSourceFail(response adtype.Responser) error {
 	return s.Send(events.SourceFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
+}
+
+// SendAccessPointBid event for the response
+func (s *stream) SendAccessPointBid(response adtype.Responser, it ...adtype.ResponserItem) error {
+	for _, item := range it {
+		err := s.Send(events.AccessPointBid, events.StatusSuccess, response, item)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // SendAccessPointSkip event for the response

@@ -143,8 +143,8 @@ func (srv *Server) healthCheck(ctx *fasthttp.RequestCtx) {
 	headers := strings.TrimSpace(ctx.Request.Header.String())
 
 	json.NewEncoder(ctx.Response.BodyWriter()).Encode(&struct {
-		Status  string      `json:"status"`
-		Headers interface{} `json:"headers"`
+		Status  string `json:"status"`
+		Headers any    `json:"headers"`
 	}{
 		Status:  "ok",
 		Headers: strings.Split(headers, "\r\n"),
@@ -161,7 +161,7 @@ func (srv *Server) check(ctx *fasthttp.RequestCtx) {
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-func (srv *Server) panicCallback(ctx *fasthttp.RequestCtx, rcv interface{}) {
+func (srv *Server) panicCallback(ctx *fasthttp.RequestCtx, rcv any) {
 	srv.logError(fmt.Errorf("server panic: %+v\n%s", rcv, debug.Stack()))
 	if srv.debug {
 		msg := fmt.Sprintf("server painc: %v\n", rcv)

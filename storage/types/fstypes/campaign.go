@@ -11,7 +11,7 @@ type CampaignData struct {
 }
 
 // Merge two data items
-func (d *CampaignData) Merge(it interface{}) {
+func (d *CampaignData) Merge(it any) {
 	v := it.(*CampaignData)
 	if v.Campaign != nil {
 		d.Campaigns = append(d.Campaigns, v.Campaign)
@@ -20,8 +20,8 @@ func (d *CampaignData) Merge(it interface{}) {
 }
 
 // Result of data as a list
-func (d *CampaignData) Result() []interface{} {
-	data := make([]interface{}, 0, len(d.Campaigns))
+func (d *CampaignData) Result() []any {
+	data := make([]any, 0, len(d.Campaigns))
 	for _, it := range d.Campaigns {
 		data = append(data, it)
 	}

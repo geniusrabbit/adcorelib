@@ -2,7 +2,7 @@ package adsource
 
 // SourceError contains only errors from some source drivers
 type SourceError struct {
-	Source  interface{}
+	Source  any
 	Message string
 }
 

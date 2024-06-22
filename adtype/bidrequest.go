@@ -45,7 +45,7 @@ type BidRequest struct {
 	Debug           bool                   `json:"debug,omitempty"`
 	AuctionType     types.AuctionType      `json:"auction_type,omitempty"`
 	RequestCtx      *fasthttp.RequestCtx   `json:"-"` // HTTP request context
-	Request         interface{}            `json:"-"` // Contains original request from RTB or another protocol
+	Request         any                    `json:"-"` // Contains original request from RTB or another protocol
 	Person          personification.Person `json:"-"`
 	Imps            []Impression           `json:"imps,omitempty"`
 	AppTarget       *admodels.Application  `json:"app_target,omitempty"`
@@ -56,9 +56,9 @@ type BidRequest struct {
 	Secure          int                    `json:"secure,omitempty"`
 	Adblock         int                    `json:"adb,omitempty"`
 	PrivateBrowsing int                    `json:"pb,omitempty"`
-	Ext             map[string]interface{} `json:"ext,omitempty"`
+	Ext             map[string]any         `json:"ext,omitempty"`
 	Timemark        time.Time              `json:"timemark,omitempty"`
-	Tracer          interface{}            `json:"-"`
+	Tracer          any                    `json:"-"`
 
 	targetIDs         []uint
 	externalTargetIDs []string
@@ -515,7 +515,7 @@ func (r *BidRequest) IsIPv6() bool {
 }
 
 // Get context item by key
-func (r *BidRequest) Get(key string) interface{} {
+func (r *BidRequest) Get(key string) any {
 	if r.Ext == nil {
 		return nil
 	}
@@ -523,9 +523,9 @@ func (r *BidRequest) Get(key string) interface{} {
 }
 
 // Set context item with key
-func (r *BidRequest) Set(key string, val interface{}) {
+func (r *BidRequest) Set(key string, val any) {
 	if r.Ext == nil {
-		r.Ext = map[string]interface{}{}
+		r.Ext = map[string]any{}
 	}
 	r.Ext[key] = val
 }

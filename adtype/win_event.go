@@ -26,17 +26,17 @@ var (
 
 // WinEvent models
 type WinEvent struct {
-	Time     time.Time   `json:"t,omitempty"`
-	Counter  int         `json:"c,omitempty"`
-	URL      string      `json:"u"`
-	Data     interface{} `json:"d,omitempty"`
-	Response string      `json:"-"`
-	Error    error       `json:"-"`
-	Status   int         `json:"-"`
+	Time     time.Time `json:"t,omitempty"`
+	Counter  int       `json:"c,omitempty"`
+	URL      string    `json:"u"`
+	Data     any       `json:"d,omitempty"`
+	Response string    `json:"-"`
+	Error    error     `json:"-"`
+	Status   int       `json:"-"`
 }
 
 // WinEventDecode from bytes
-func WinEventDecode(data string, ext ...interface{}) (*WinEvent, error) {
+func WinEventDecode(data string, ext ...any) (*WinEvent, error) {
 	var win = &WinEvent{}
 	if len(ext) > 0 {
 		win.Data = ext[0]

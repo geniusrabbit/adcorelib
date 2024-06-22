@@ -66,7 +66,7 @@ type FormatField struct {
 	Exclude []string `json:"exclude,omitempty"`
 
 	// Select is the choice of the available values
-	Select []interface{} `json:"select,omitempty"`
+	Select []any `json:"select,omitempty"`
 
 	// Minimum length for string or minimum value for int
 	Min float64 `json:"min,omitempty"`
@@ -108,7 +108,7 @@ func (f FormatField) SoftEqual(field *FormatField) bool {
 }
 
 // Prepare and validate value
-func (f FormatField) Prepare(value interface{}) (result interface{}, err error) {
+func (f FormatField) Prepare(value any) (result any, err error) {
 	if f.IsRequired() && gocast.IsEmpty(value) {
 		return nil, ErrFormatFieldIsRequired
 	}

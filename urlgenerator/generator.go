@@ -46,8 +46,8 @@ func (g *Generator) Init() *Generator {
 
 // CDNURL returns full URL to path
 func (g *Generator) CDNURL(path string) string {
-	if path == "" {
-		return ""
+	if path == "" || isFullURL(path) {
+		return path
 	}
 	if path[0] == '/' {
 		return g.CDNDomain + path
@@ -58,7 +58,7 @@ func (g *Generator) CDNURL(path string) string {
 // LibURL returns full URL to lib file path
 func (g *Generator) LibURL(path string) string {
 	if path == "" {
-		return ""
+		return path
 	}
 	if path[0] == '/' {
 		return g.LibDomain + path
@@ -192,4 +192,8 @@ func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, i
 		urlVal += "price=${AUCTION_PRICE}"
 	}
 	return urlVal, nil
+}
+
+func isFullURL(url string) bool {
+	return strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "//")
 }

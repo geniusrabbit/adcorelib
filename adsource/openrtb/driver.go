@@ -253,7 +253,7 @@ func (d *driver) getClient() *http.Client {
 // prepare request for RTB
 func (d *driver) request(request *adtype.BidRequest) (req *http.Request, err error) {
 	var (
-		rtbRequest interface{}
+		rtbRequest any
 		data       bytes.Buffer
 	)
 

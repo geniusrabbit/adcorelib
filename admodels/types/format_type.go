@@ -117,7 +117,7 @@ func (t FormatType) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (t *FormatType) Scan(value interface{}) error {
+func (t *FormatType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		return t.UnmarshalJSON([]byte(v))

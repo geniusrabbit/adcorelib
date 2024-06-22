@@ -24,7 +24,7 @@ func TestPrices(t *testing.T) {
 // func (it priceItem) PriorityFormatType() types.FormatType           { return types.FormatUndefinedType }
 // func (it priceItem) Validate() error                                { return nil }
 // func (it priceItem) Context(ctx ...context.Context) context.Context { return nil }
-// func (it priceItem) Get(key string) interface{}                     { return nil }
+// func (it priceItem) Get(key string) any                     { return nil }
 
 // func (it priceItem) MaxBid() billing.Money    { return it.maxBid }
 // func (it priceItem) Price() billing.Money     { return it.price }

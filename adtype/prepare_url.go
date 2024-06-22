@@ -26,7 +26,7 @@ func PrepareURL(url string, response Responser, it ResponserItem) string {
 		"{aucid}", response.AuctionID(),
 		"{auctype}", response.AuctionType().Name(),
 		"{platform}", "",
-		"{zone_id}", gocast.ToString(zoneID),
+		"{zone_id}", gocast.Str(zoneID),
 		"{jumper_id}", "",
 		"{pm}", it.PricingModel().Name(),
 		"{udid}", r.DeviceInfo().IFA,
@@ -39,9 +39,9 @@ func PrepareURL(url string, response Responser, it ResponserItem) string {
 		"{latitude}", "",
 		"{longitude}", "",
 		"{device_type}", types.PlatformType(r.DeviceType()).Name(),
-		"{device_id}", gocast.ToString(r.DeviceID()),
-		"{os_id}", gocast.ToString(r.OSID()),
-		"{browser_id}", gocast.ToString(r.BrowserID()),
+		"{device_id}", gocast.Str(r.DeviceID()),
+		"{os_id}", gocast.Str(r.OSID()),
+		"{browser_id}", gocast.Str(r.BrowserID()),
 	)
 	return replacer.Replace(url)
 }

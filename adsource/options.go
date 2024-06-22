@@ -12,7 +12,7 @@ import (
 type Option func(wrp *MultisourceWrapper)
 
 // WithBaseSource as default
-func WithBaseSource(source interface{}) Option {
+func WithBaseSource(source any) Option {
 	return func(wrp *MultisourceWrapper) {
 		switch src := source.(type) {
 		case nil:

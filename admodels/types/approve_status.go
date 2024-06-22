@@ -72,7 +72,7 @@ func (st ApproveStatus) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (st *ApproveStatus) Scan(value interface{}) error {
+func (st *ApproveStatus) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		return st.UnmarshalJSON([]byte(v))
@@ -105,7 +105,7 @@ func (st *ApproveStatus) UnmarshalJSON(b []byte) error {
 }
 
 // Implements the Unmarshaler interface of the yaml pkg.
-func (st *ApproveStatus) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (st *ApproveStatus) UnmarshalYAML(unmarshal func(any) error) error {
 	var yamlString string
 	if err := unmarshal(&yamlString); err != nil {
 		return err

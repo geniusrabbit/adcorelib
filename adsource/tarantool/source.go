@@ -24,7 +24,7 @@ func NewSource(opts ...OptionFnk) (*source, error) {
 // Bid request for standart system filter
 func (src *source) Bid(request *adtype.BidRequest) adtype.Responser {
 	var (
-		list []interface{}
+		list []any
 		err  error
 	)
 
@@ -32,13 +32,13 @@ func (src *source) Bid(request *adtype.BidRequest) adtype.Responser {
 	// 	switch z := target.(type) {
 	// 	case *models.Smartlink:
 	// 		if len(z.Campaigns) > 0 {
-	// 			err = src.conn.CallTyped("search_strict_ads", []interface{}{}, &list)
+	// 			err = src.conn.CallTyped("search_strict_ads", []any{}, &list)
 	// 			return adtype.NewErrorResponse(request, err)
 	// 		}
 	// 	}
 	// }
 
-	if err = src.conn.CallTyped("search_ads", []interface{}{}, &list); err != nil {
+	if err = src.conn.CallTyped("search_ads", []any{}, &list); err != nil {
 		return adtype.NewErrorResponse(request, err)
 	}
 

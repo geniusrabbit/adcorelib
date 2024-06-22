@@ -58,7 +58,7 @@ func (st ActiveStatus) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (st *ActiveStatus) Scan(value interface{}) error {
+func (st *ActiveStatus) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		return st.UnmarshalJSON([]byte(v))
@@ -91,7 +91,7 @@ func (st *ActiveStatus) UnmarshalJSON(b []byte) error {
 }
 
 // Implements the Unmarshaler interface of the yaml pkg.
-func (st *ActiveStatus) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (st *ActiveStatus) UnmarshalYAML(unmarshal func(any) error) error {
 	var yamlString string
 	if err := unmarshal(&yamlString); err != nil {
 		return err

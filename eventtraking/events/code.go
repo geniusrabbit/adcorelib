@@ -35,7 +35,7 @@ func CodeObj(data []byte, err error) Code {
 }
 
 // ObjectCode converts object to code object with defined encoder/decoder
-func ObjectCode(obj interface{}, gen ...types.EncodeGenerator) Code {
+func ObjectCode(obj any, gen ...types.EncodeGenerator) Code {
 	var (
 		buff bytes.Buffer
 		enc  types.Encoder
@@ -105,7 +105,7 @@ func (c Code) URLDecode() Code {
 }
 
 // DecodeObject converts current object data to target
-func (c Code) DecodeObject(target interface{}, gen ...types.DecodeGenerator) error {
+func (c Code) DecodeObject(target any, gen ...types.DecodeGenerator) error {
 	if c.err != nil {
 		return c.err
 	}
@@ -126,7 +126,7 @@ func (c *Code) ResetData() {
 	}
 }
 
-// Write method is implementation of io.Writer interface{}
+// Write method is implementation of io.Writer any
 func (c *Code) Write(p []byte) (n int, err error) {
 	c.data = append(c.data, p...)
 	return len(p), nil

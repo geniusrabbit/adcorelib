@@ -62,7 +62,7 @@ func (at AuctionType) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (at *AuctionType) Scan(value interface{}) error {
+func (at *AuctionType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		return at.UnmarshalJSON([]byte(v))
@@ -95,7 +95,7 @@ func (at *AuctionType) UnmarshalJSON(b []byte) error {
 }
 
 // Implements the Unmarshaler interface of the yaml pkg.
-func (at *AuctionType) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (at *AuctionType) UnmarshalYAML(unmarshal func(any) error) error {
 	var yamlString string
 	if err := unmarshal(&yamlString); err != nil {
 		return err

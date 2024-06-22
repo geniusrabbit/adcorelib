@@ -67,8 +67,8 @@ func (r *BidResponse) Prepare() {
 			// Custom direct detect
 			if len(bid.AdMarkup) < 1 {
 				var (
-					ext map[string]interface{}
-					url interface{}
+					ext map[string]any
+					url any
 				)
 				if json.Unmarshal(bid.Ext, &ext); ext != nil {
 					if url = ext["url"]; url == nil {
@@ -83,9 +83,9 @@ func (r *BidResponse) Prepare() {
 							if len(v) > 0 {
 								bid.AdMarkup = v[0]
 							}
-						case []interface{}:
+						case []any:
 							if len(v) > 0 {
-								bid.AdMarkup = gocast.ToString(v[0])
+								bid.AdMarkup = gocast.Str(v[0])
 							}
 						}
 					} // end if
@@ -151,10 +151,9 @@ func (r *BidResponse) Prepare() {
 			continue
 		}
 		for _, format := range imp.Formats() {
-			fmt.Println(">>>> format", format, bid, format.IsNative(), format.IsBanner(), format.IsProxy())
-			// if bid.ImpID != imp.IDByFormat(format) {
-			// 	continue
-			// }
+			if bid.ImpID != imp.IDByFormat(format) {
+				continue
+			}
 			switch {
 			case format.IsNative():
 				native, err := decodeNativeMarkup([]byte(bid.AdMarkup))
@@ -313,11 +312,14 @@ func (r *BidResponse) Context(ctx ...context.Context) context.Context {
 	if len(ctx) > 0 {
 		r.context = ctx[0]
 	}
+	if r.context == nil {
+		return r.Req.Ctx
+	}
 	return r.context
 }
 
 // Get context value
-func (r *BidResponse) Get(key string) interface{} {
+func (r *BidResponse) Get(key string) any {
 	if r.context != nil {
 		return r.context.Value(key)
 	}
@@ -341,8 +343,13 @@ func decodeNativeMarkup(data []byte) (*natresp.Response, error) {
 		native struct {
 			Native natresp.Response `json:"native"`
 		}
-		err = json.Unmarshal(data, &native)
+		err error
 	)
+	if bytes.Contains(data, []byte(`"native"`)) {
+		err = json.Unmarshal(data, &native)
+	} else {
+		err = json.Unmarshal(data, &native.Native)
+	}
 	if err != nil {
 		err = json.Unmarshal(data, &native.Native)
 	}

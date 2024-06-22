@@ -94,7 +94,7 @@ func (c *Campaign) TableName() string {
 }
 
 // SetCompany campaign owner
-func (c *Campaign) SetCompany(com interface{}) error {
+func (c *Campaign) SetCompany(com any) error {
 	switch v := com.(type) {
 	case *Company:
 		c.Company = v

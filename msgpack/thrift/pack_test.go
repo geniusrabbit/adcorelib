@@ -48,8 +48,8 @@ package thrift
 // 		}
 // 		tests = []struct {
 // 			name   string
-// 			pack   func(obj interface{}) ([]byte, error)
-// 			unpack func(data []byte, r interface{}) error
+// 			pack   func(obj any) ([]byte, error)
+// 			unpack func(data []byte, r any) error
 // 		}{
 // 			{name: "lz4json", pack: msgpack.StdPack, unpack: msgpack.StdUnpack},
 // 			{name: "json", pack: json.Marshal, unpack: json.Unmarshal},
@@ -91,7 +91,7 @@ package thrift
 // 		}
 // 		benches = []struct {
 // 			name string
-// 			pack func(obj interface{}) ([]byte, error)
+// 			pack func(obj any) ([]byte, error)
 // 		}{
 // 			{name: "lz4json", pack: msgpack.StdPack},
 // 			{name: "json", pack: json.Marshal},

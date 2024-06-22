@@ -56,7 +56,7 @@ func (rt RTBRequestType) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (rt *RTBRequestType) Scan(value interface{}) error {
+func (rt *RTBRequestType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		*rt = rtbRequestTypeMapping[v[1:len(v)-1]]

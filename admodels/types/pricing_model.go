@@ -90,7 +90,7 @@ func (pm PricingModel) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (pm *PricingModel) Scan(value interface{}) error {
+func (pm *PricingModel) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		*pm = PricingModelByName(v)

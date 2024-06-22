@@ -9,7 +9,7 @@ type CompanyData struct {
 }
 
 // Merge two data items
-func (d *CompanyData) Merge(it interface{}) {
+func (d *CompanyData) Merge(it any) {
 	v := it.(*CompanyData)
 	if v.Company != nil {
 		d.Companies = append(d.Companies, v.Company)
@@ -18,8 +18,8 @@ func (d *CompanyData) Merge(it interface{}) {
 }
 
 // Result of data as a list
-func (d *CompanyData) Result() []interface{} {
-	data := make([]interface{}, 0, len(d.Companies))
+func (d *CompanyData) Result() []any {
+	data := make([]any, 0, len(d.Companies))
 	for _, it := range d.Companies {
 		data = append(data, it)
 	}

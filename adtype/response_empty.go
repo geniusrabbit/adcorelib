@@ -150,7 +150,7 @@ func (r *ResponseEmpty) Context(ctx ...context.Context) context.Context {
 }
 
 // Get ext field
-func (r *ResponseEmpty) Get(key string) (res interface{}) {
+func (r *ResponseEmpty) Get(key string) (res any) {
 	if r != nil && r.context != nil {
 		res = r.context.Value(key)
 	}

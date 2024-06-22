@@ -3,11 +3,11 @@ package types
 import "io"
 
 type Encoder interface {
-	Encode(val interface{}) error
+	Encode(val any) error
 }
 
 type Decoder interface {
-	Decode(val interface{}) error
+	Decode(val any) error
 }
 
 type EncodeGenerator interface {

@@ -9,7 +9,7 @@ type RTBSourceData struct {
 }
 
 // Merge two data items
-func (d *RTBSourceData) Merge(it interface{}) {
+func (d *RTBSourceData) Merge(it any) {
 	v := it.(*RTBSourceData)
 	if v.Source != nil {
 		d.Sources = append(d.Sources, v.Source)
@@ -18,8 +18,8 @@ func (d *RTBSourceData) Merge(it interface{}) {
 }
 
 // Result of data as a list
-func (d *RTBSourceData) Result() []interface{} {
-	data := make([]interface{}, 0, len(d.Sources))
+func (d *RTBSourceData) Result() []any {
+	data := make([]any, 0, len(d.Sources))
 	for _, it := range d.Sources {
 		data = append(data, it)
 	}

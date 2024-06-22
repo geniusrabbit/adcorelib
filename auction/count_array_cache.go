@@ -13,10 +13,10 @@ import (
 
 var (
 	countersPool = sync.Pool{
-		New: func() interface{} { return &counters{items: make([]int, 0, 10)} },
+		New: func() any { return &counters{items: make([]int, 0, 10)} },
 	}
 	responseListPool = sync.Pool{
-		New: func() interface{} { return make([]adtype.ResponserItemCommon, 0, 10) },
+		New: func() any { return make([]adtype.ResponserItemCommon, 0, 10) },
 	}
 )
 

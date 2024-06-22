@@ -44,5 +44,5 @@ type Responser interface {
 	Context(ctx ...context.Context) context.Context
 
 	// Get context item by key
-	Get(key string) interface{}
+	Get(key string) any
 }

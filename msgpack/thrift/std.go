@@ -17,12 +17,12 @@ package thrift
 // }
 
 // // Marshal to []byte
-// func Marshal(obj interface{}) ([]byte, error) {
+// func Marshal(obj any) ([]byte, error) {
 // 	return thrift.Marshal(obj)
 // }
 
 // // Unmarshal message
-// func Unmarshal(buf []byte, obj interface{}) error {
+// func Unmarshal(buf []byte, obj any) error {
 // 	return thrift.Unmarshal(buf, obj)
 // }
 

@@ -20,7 +20,7 @@ import (
 )
 
 type responseDataAccessor interface {
-	Get(key string) interface{}
+	Get(key string) any
 }
 
 // ResponseBidItem value
@@ -60,13 +60,13 @@ func (it *ResponseBidItem) NetworkName() string {
 func (it *ResponseBidItem) ContentItemString(name string) string {
 	val := it.ContentItem(name)
 	if val != nil {
-		return gocast.ToString(val)
+		return gocast.Str(val)
 	}
 	return ""
 }
 
 // ContentItem returns the ad response data
-func (it *ResponseBidItem) ContentItem(name string) interface{} {
+func (it *ResponseBidItem) ContentItem(name string) any {
 	if it.Data != nil {
 		return it.Data.Get(name)
 	}
@@ -125,7 +125,10 @@ func (it *ResponseBidItem) ContentItem(name string) interface{} {
 
 // ContentFields from advertisement object
 func (it *ResponseBidItem) ContentFields() map[string]any {
-	fields := map[string]interface{}{}
+	if it.Format().Config == nil {
+		return nil
+	}
+	fields := map[string]any{}
 	config := it.Format().Config
 	for _, field := range config.Fields {
 		for _, asset := range it.Native.Assets {
@@ -183,7 +186,7 @@ func (it *ResponseBidItem) Asset(name string) *admodels.AdAsset {
 
 // Assets list
 func (it *ResponseBidItem) Assets() (assets admodels.AdAssets) {
-	if it.assets != nil {
+	if it.assets != nil || it.Format().Config == nil {
 		return it.assets
 	}
 
@@ -461,7 +464,7 @@ func (it *ResponseBidItem) Context(ctx ...context.Context) context.Context {
 }
 
 // Get ext field
-func (it *ResponseBidItem) Get(key string) (res interface{}) {
+func (it *ResponseBidItem) Get(key string) (res any) {
 	if it.context == nil {
 		return res
 	}

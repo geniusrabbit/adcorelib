@@ -25,8 +25,9 @@ const (
 
 // Money value type: first 9 numbers it's float part
 // Example:
-//   1_000000000 => 1    $
-//   0_010000000 => 0.01 $
+//
+//	1_000000000 => 1    $
+//	0_010000000 => 0.01 $
 type Money int64
 
 // MoneyFloat object
@@ -78,7 +79,7 @@ func (m Money) Value() (_ driver.Value, err error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (m *Money) Scan(value interface{}) error {
+func (m *Money) Scan(value any) error {
 	var data []byte
 	switch v := value.(type) {
 	case int:
@@ -142,7 +143,7 @@ func (m *Money) UnmarshalJSON(b []byte) error {
 }
 
 // DecodeValue implements the gocast.Decoder
-func (m *Money) DecodeValue(v interface{}) (err error) {
+func (m *Money) DecodeValue(v any) (err error) {
 	switch val := v.(type) {
 	case []byte:
 		err = m.UnmarshalJSON(val)
@@ -163,7 +164,7 @@ func (m *Money) DecodeValue(v interface{}) (err error) {
 }
 
 // Implements the Unmarshaler interface of the yaml pkg.
-func (m *Money) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (m *Money) UnmarshalYAML(unmarshal func(any) error) error {
 	var yamlValue float64
 	if err := unmarshal(&yamlValue); err != nil {
 		return err

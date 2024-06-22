@@ -20,7 +20,7 @@ func (l otErrorWrapper) Error(s string) {
 	l.logger.Error(s)
 }
 
-func (l otErrorWrapper) Infof(msg string, args ...interface{}) {
+func (l otErrorWrapper) Infof(msg string, args ...any) {
 	l.logger.Info(fmt.Sprintf(msg, args...))
 }
 

@@ -11,14 +11,14 @@ import (
 
 // ObjectBitset any numbers
 type ObjectBitset struct {
-	less   func(o1, o2 interface{}) bool
-	value  func(o1 interface{}) uint
-	values []interface{}
+	less   func(o1, o2 any) bool
+	value  func(o1 any) uint
+	values []any
 	mask   uint64
 }
 
 // NewObjectBitset from numbers
-func NewObjectBitset(less func(o1, o2 interface{}) bool, value func(o1 interface{}) uint, vals ...interface{}) (b *ObjectBitset) {
+func NewObjectBitset(less func(o1, o2 any) bool, value func(o1 any) uint, vals ...any) (b *ObjectBitset) {
 	return (&ObjectBitset{less: less, value: value}).Set(vals...)
 }
 
@@ -31,7 +31,7 @@ func (b *ObjectBitset) Len() int {
 }
 
 // Values list
-func (b *ObjectBitset) Values() []interface{} {
+func (b *ObjectBitset) Values() []any {
 	if b == nil {
 		return nil
 	}
@@ -39,7 +39,7 @@ func (b *ObjectBitset) Values() []interface{} {
 }
 
 // Set type values
-func (b *ObjectBitset) Set(vals ...interface{}) *ObjectBitset {
+func (b *ObjectBitset) Set(vals ...any) *ObjectBitset {
 	var updated = false
 	for _, v := range vals {
 		if !b.Has(v) {
@@ -57,7 +57,7 @@ func (b *ObjectBitset) Set(vals ...interface{}) *ObjectBitset {
 }
 
 // Unset type values
-func (b *ObjectBitset) Unset(vals ...interface{}) *ObjectBitset {
+func (b *ObjectBitset) Unset(vals ...any) *ObjectBitset {
 	newVals := b.values
 	for _, v := range vals {
 		idx := sort.Search(len(newVals), func(i int) bool {
@@ -90,7 +90,7 @@ func (b *ObjectBitset) Unset(vals ...interface{}) *ObjectBitset {
 }
 
 // Has type in bitset
-func (b *ObjectBitset) Has(v interface{}) bool {
+func (b *ObjectBitset) Has(v any) bool {
 	if b != nil && b.mask&(1<<uint64(b.value(v)%64)) != 0 {
 		idx := sort.Search(b.Len(), func(i int) bool {
 			return b.less(v, b.values[i])

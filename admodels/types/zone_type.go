@@ -52,7 +52,7 @@ func (st ZoneType) Value() (driver.Value, error) {
 }
 
 // Scan implements the driver.Valuer interface, json field interface
-func (st *ZoneType) Scan(value interface{}) error {
+func (st *ZoneType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
 		*st = ZoneNameToType(v[1 : len(v)-1])
@@ -85,7 +85,7 @@ func (st *ZoneType) UnmarshalJSON(b []byte) error {
 }
 
 // Implements the Unmarshaler interface of the yaml pkg.
-func (st *ZoneType) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (st *ZoneType) UnmarshalYAML(unmarshal func(any) error) error {
 	var yamlString string
 	if err := unmarshal(&yamlString); err != nil {
 		return err

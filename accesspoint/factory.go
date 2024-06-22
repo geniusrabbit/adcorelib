@@ -11,7 +11,7 @@ import (
 
 // Factory of the plaform object
 type Factory interface {
-	New(ctx context.Context, accessPoint *admodels.RTBAccessPoint, opts ...interface{}) (Platformer, error)
+	New(ctx context.Context, accessPoint *admodels.RTBAccessPoint, opts ...any) (Platformer, error)
 	Info() info.Platform
 }
 

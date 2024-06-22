@@ -53,7 +53,7 @@ func (z *Zone) RevenueShare() float64 {
 }
 
 // SetCompany object
-func (z *Zone) SetCompany(c interface{}) error {
+func (z *Zone) SetCompany(c any) error {
 	switch v := c.(type) {
 	case *Company:
 		z.Company = v
