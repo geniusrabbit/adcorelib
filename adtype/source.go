@@ -47,6 +47,9 @@ type Source interface {
 	// ID of the source driver
 	ID() uint64
 
+	// Protocol of the source driver
+	Protocol() string
+
 	// Test request before processing
 	Test(request *BidRequest) bool
 
@@ -101,6 +104,9 @@ type minimalSourceWrapper struct {
 
 // ID of the source driver
 func (wp minimalSourceWrapper) ID() uint64 { return 0 }
+
+// Protocol of the source driver
+func (wp minimalSourceWrapper) Protocol() string { return "undefined" }
 
 // Test request before processing
 func (wp minimalSourceWrapper) Test(request *BidRequest) bool { return true }

@@ -21,7 +21,7 @@ import (
 
 var errUnsupportedSourceProtocol = errors.New("unsupported source protocol")
 
-type sourceFactory interface {
+type SourceFactory interface {
 	New(ctx context.Context, source *admodels.RTBSource, opts ...any) (adtype.SourceTester, error)
 	Info() info.Platform
 	Protocols() []string
@@ -36,19 +36,20 @@ type Accessor struct {
 
 	mainContext context.Context
 
-	factories  map[string]sourceFactory
-	sourceList []adtype.Source
+	factories   map[string]SourceFactory
+	factoryList []SourceFactory
+	sourceList  []adtype.Source
 }
 
 // NewAccessor object
-func NewAccessor(ctx context.Context, dataAccessor loader.DataAccessor, companyAccessor *companyaccessor.CompanyAccessor, factories ...sourceFactory) (*Accessor, error) {
+func NewAccessor(ctx context.Context, dataAccessor loader.DataAccessor, companyAccessor *companyaccessor.CompanyAccessor, factories ...SourceFactory) (*Accessor, error) {
 	if dataAccessor == nil {
 		return nil, errors.New("data accessor is required")
 	}
 	if companyAccessor == nil {
 		return nil, errors.New("company accessor is required")
 	}
-	mapFactory := map[string]sourceFactory{}
+	mapFactory := map[string]SourceFactory{}
 	for _, fact := range factories {
 		for _, protoName := range fact.Protocols() {
 			mapFactory[protoName] = fact
@@ -58,8 +59,14 @@ func NewAccessor(ctx context.Context, dataAccessor loader.DataAccessor, companyA
 		mainContext:     ctx,
 		DataAccessor:    dataAccessor,
 		companyAccessor: companyAccessor,
+		factoryList:     factories,
 		factories:       mapFactory,
 	}, nil
+}
+
+// FactoryList returns list of source factories
+func (acc *Accessor) FactoryList() []SourceFactory {
+	return acc.factoryList
 }
 
 // SourceList returns list of sources

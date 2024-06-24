@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit rotator 2016 – 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019
+// @project GeniusRabbit rotator 2016 – 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2024
 //
 
 package adtype

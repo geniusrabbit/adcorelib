@@ -66,8 +66,8 @@ func openrtbV3ImpressionByFormat(req *adtype.BidRequest, imp *adtype.Impression,
 		}
 		banner = &openrtb.Banner{
 			ID:           "",
-			Width:        w,
-			Height:       h,
+			Width:        max(w, 5),
+			Height:       max(h, 5),
 			WidthMax:     wm,
 			HeightMax:    wh,
 			WidthMin:     0,

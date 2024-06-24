@@ -2,27 +2,48 @@ package endpoint
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/demdxx/gocast/v2"
+	"github.com/demdxx/xtypes"
 	"github.com/fasthttp/router"
 	"github.com/opentracing/opentracing-go"
 	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
+	"go.uber.org/zap"
 
 	"geniusrabbit.dev/adcorelib/admodels"
 	"geniusrabbit.dev/adcorelib/admodels/types"
 	"geniusrabbit.dev/adcorelib/adtype"
+	"geniusrabbit.dev/adcorelib/context/ctxlogger"
 	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httphandler"
 	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httptraceroute"
 	"geniusrabbit.dev/adcorelib/net/fasthttp/middleware"
+	"geniusrabbit.dev/adcorelib/openlatency"
 	"geniusrabbit.dev/adcorelib/personification"
+	"geniusrabbit.dev/adcorelib/storage/accessors/adsourceaccessor"
 )
 
-type zoneAccessor interface {
-	TargetByID(uint64) (admodels.Target, error)
-}
+type (
+	zoneAccessor interface {
+		TargetByID(uint64) (admodels.Target, error)
+	}
+	getSourceAccessor interface {
+		Sources() adtype.SourceAccessor
+	}
+	factoryListAccessor interface {
+		FactoryList() []adsourceaccessor.SourceFactory
+	}
+	sourceListAccessor interface {
+		SourceList() ([]adtype.Source, error)
+	}
+	sourceMetricsAccessor interface {
+		Metrics() *openlatency.MetricsInfo
+	}
+)
 
 // Extension of the server
 type Extension struct {
@@ -70,6 +91,32 @@ func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tra
 				}(endpoint),
 			))
 	}
+
+	// API info handlers
+	if sa, ok := ext.source.(getSourceAccessor); ok {
+		sources := sa.Sources()
+		// Factories info API handler
+		if fa, ok := sources.(factoryListAccessor); ok {
+			routeWrapper.GET("/protocols", middleware.CollectSimpleMetrics("api.protocols", ext.factoryListHandler(fa)))
+			for _, factory := range fa.FactoryList() {
+				if factory.Info().Protocol == "" {
+					ctxlogger.Get(ctx).Warn("Empty protocol in factory info", zap.String("factory", factory.Info().Name))
+					continue
+				}
+				routeWrapper.GET("/protocols/"+factory.Info().Protocol,
+					middleware.CollectSimpleMetrics("api.protocols."+factory.Info().Protocol, ext.factoryInfoHandler(factory)))
+			}
+		}
+
+		// Source info API handler
+		if sla, ok := sources.(sourceListAccessor); ok {
+			routeWrapper.GET("/sources", middleware.CollectSimpleMetrics("api.sources", ext.sourceListHandler(sla)))
+		}
+		routeWrapper.GET("/sources/{id}",
+			middleware.CollectSimpleMetrics("api.sources.info", ext.sourceInfoHandler(sources)))
+		routeWrapper.GET("/sources/{id}/metrics",
+			middleware.CollectSimpleMetrics("api.sources.metrics", ext.sourceMetricsHandler(sources)))
+	}
 }
 
 func (ext *Extension) endpointRequestHandler(ctx context.Context, req *fasthttp.RequestCtx, person personification.Person, endpoint Endpoint) {
@@ -80,6 +127,91 @@ func (ext *Extension) endpointRequestHandler(ctx context.Context, req *fasthttp.
 	}
 	response := endpoint.Handle(ext.source, bidRequest)
 	ext.source.ProcessResponse(response)
+}
+
+func (ext *Extension) factoryListHandler(fa factoryListAccessor) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		factories := fa.FactoryList()
+		ctx.SetContentType("application/json")
+		ctx.SetStatusCode(http.StatusOK)
+		json.NewEncoder(ctx).Encode(map[string]any{
+			"protocols": xtypes.SliceApply(factories, func(f adsourceaccessor.SourceFactory) any {
+				info := f.Info()
+				return map[string]any{
+					"protocol":    info.Protocol,
+					"name":        info.Name,
+					"description": info.Description,
+					"versions":    info.Versions,
+				}
+			}),
+		})
+	}
+}
+
+func (ext *Extension) factoryInfoHandler(factory adsourceaccessor.SourceFactory) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		info := factory.Info()
+		ctx.SetContentType("application/json")
+		ctx.SetStatusCode(http.StatusOK)
+		json.NewEncoder(ctx).Encode(info)
+	}
+}
+
+func (ext *Extension) sourceListHandler(sa sourceListAccessor) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		sources, err := sa.SourceList()
+		if err != nil {
+			ctx.SetStatusCode(http.StatusInternalServerError)
+			return
+		}
+		ctx.SetContentType("application/json")
+		ctx.SetStatusCode(http.StatusOK)
+		json.NewEncoder(ctx).Encode(xtypes.SliceApply(sources, func(s adtype.Source) any {
+			return map[string]any{
+				"id":       s.ID(),
+				"protocol": s.Protocol(),
+			}
+		}))
+	}
+}
+
+func (ext *Extension) sourceInfoHandler(sa adtype.SourceAccessor) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		id := gocast.Uint64(ctx.UserValue("id"))
+		src, _ := sa.SourceByID(id)
+		if src == nil {
+			ctx.SetStatusCode(http.StatusNotFound)
+			ctx.SetContentType("application/json")
+			ctx.Write([]byte(`{"error":"source not found"}`))
+			return
+		}
+		ctx.SetContentType("application/json")
+		ctx.SetStatusCode(http.StatusOK)
+		json.NewEncoder(ctx).Encode(map[string]any{
+			"id":       src.ID(),
+			"protocol": src.Protocol(),
+		})
+	}
+}
+
+func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		id := gocast.Uint64(ctx.UserValue("id"))
+		src, _ := sa.SourceByID(id)
+		if src == nil {
+			ctx.SetStatusCode(http.StatusNotFound)
+			ctx.SetContentType("application/json")
+			ctx.Write([]byte(`{"error":"source not found"}`))
+			return
+		}
+		var metrics any
+		if sm, ok := src.(sourceMetricsAccessor); ok {
+			metrics = sm.Metrics()
+		}
+		ctx.SetContentType("application/json")
+		ctx.SetStatusCode(http.StatusOK)
+		json.NewEncoder(ctx).Encode(metrics)
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

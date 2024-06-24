@@ -1,10 +1,11 @@
+// Package openrtb provides implementation of the OpenRTB protocol for the adsource package.
+// Supported versions: 2.3, 2.4, 2.5, 2.6, 3.0+
 package openrtb
 
 import (
 	"context"
 
 	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/adsource/srctestwrapper"
 	"geniusrabbit.dev/adcorelib/adtype"
 	"geniusrabbit.dev/adcorelib/platform/info"
 )
@@ -22,7 +23,7 @@ func (*factory) New(ctx context.Context, source *admodels.RTBSource, opts ...any
 	if err != nil {
 		return nil, err
 	}
-	return srctestwrapper.Wrap(source, dr), nil
+	return dr, nil
 }
 
 func (*factory) Info() info.Platform {

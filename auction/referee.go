@@ -160,6 +160,11 @@ func (r *Referee) MatchRequest(req *adtype.BidRequest) []adtype.ResponserItemCom
 	return r.Match(rings...)
 }
 
+// Equipment list
+func (r *Referee) Equipment() []adtype.ResponserItemCommon {
+	return r.equipment
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Internal methods
 ///////////////////////////////////////////////////////////////////////////////

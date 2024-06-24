@@ -30,6 +30,9 @@ func (d *driver) init() {
 // ID of the source driver
 func (d *driver) ID() uint64 { return 0 }
 
+// Protocol of the source driver
+func (d *driver) Protocol() string { return protocol }
+
 // Test request before processing
 func (d *driver) Test(request *adtype.BidRequest) bool { return true }
 

@@ -3,7 +3,12 @@ package srctestwrapper
 import (
 	"geniusrabbit.dev/adcorelib/admodels"
 	"geniusrabbit.dev/adcorelib/adtype"
+	"geniusrabbit.dev/adcorelib/openlatency"
 )
+
+type metricsIface interface {
+	Metrics() *openlatency.MetricsInfo
+}
 
 type sourceTester struct {
 	adtype.SourceMinimal
@@ -19,9 +24,21 @@ func (w *sourceTester) ID() uint64 {
 	return w.sourceInfo.ID
 }
 
+// Protocol of the source driver
+func (w *sourceTester) Protocol() string {
+	return w.sourceInfo.Protocol
+}
+
 // Test current request for compatibility
 func (w *sourceTester) Test(request *adtype.BidRequest) bool {
 	return true
+}
+
+func (w *sourceTester) Metrics() *openlatency.MetricsInfo {
+	if metrics, ok := w.SourceMinimal.(metricsIface); ok {
+		return metrics.Metrics()
+	}
+	return nil
 }
 
 // PriceCorrectionReduceFactor which is a potential

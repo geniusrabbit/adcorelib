@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -73,10 +74,14 @@ func newDriver(_ context.Context, source *admodels.RTBSource, _ ...any) (*driver
 // ID of source
 func (d *driver) ID() uint64 { return d.source.ID }
 
+// Protocol of source
+func (d *driver) Protocol() string { return d.source.Protocol }
+
 // Test request before processing
 func (d *driver) Test(request *adtype.BidRequest) bool {
 	if d.source.RPS > 0 {
 		if !d.source.Options.ErrorsIgnore && !d.errorCounter.Next() {
+			d.latencyMetrics.IncSkip()
 			return false
 		}
 
@@ -85,11 +90,13 @@ func (d *driver) Test(request *adtype.BidRequest) bool {
 			atomic.StoreUint64(&d.lastRequestTime, now)
 			d.rpsCurrent.Set(0)
 		} else if d.rpsCurrent.Get() >= int64(d.source.RPS) {
+			d.latencyMetrics.IncSkip()
 			return false
 		}
 	}
 
 	if !d.source.Test(request) {
+		d.latencyMetrics.IncSkip()
 		return false
 	}
 
@@ -104,6 +111,7 @@ func (d *driver) Test(request *adtype.BidRequest) bool {
 			request.BrowserID(),
 			d.source.MinimalWeight,
 		) {
+			d.latencyMetrics.IncSkip()
 			return false
 		}
 	}
@@ -124,14 +132,19 @@ func (d *driver) RequestStrategy() adtype.RequestStrategy {
 
 // Bid request for standart system filter
 func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
+	beginTime := time.Now().UnixNano()
 	d.rpsCurrent.Inc(1)
+	d.latencyMetrics.BeginQuery()
 
 	httpRequest, err := d.request(request)
+
 	if err != nil {
 		return adtype.NewErrorResponse(request, err)
 	}
 
 	resp, err := d.getClient().Do(httpRequest)
+	d.latencyMetrics.UpdateQueryLatency(time.Duration(time.Now().UnixNano() - beginTime))
+
 	if err != nil {
 		d.processHTTPReponse(resp, err)
 		ctxlogger.Get(request.Ctx).Debug("bid",
@@ -146,6 +159,7 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 		zap.Int("http_response_status", resp.StatusCode))
 
 	if resp.StatusCode == http.StatusNoContent {
+		d.latencyMetrics.IncNobid()
 		return adtype.NewErrorResponse(request, ErrNoCampaignsStatus)
 	}
 
@@ -163,6 +177,11 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 	}
 
 	if response != nil && response.Error() == nil {
+		if len(response.Ads()) > 0 {
+			d.latencyMetrics.IncSuccess()
+		} else {
+			d.latencyMetrics.IncNobid()
+		}
 		for _, ad := range response.Ads() {
 			for _, f := range ad.Impression().Formats() {
 				_ = d.optimizator.Inc(
@@ -232,6 +251,7 @@ func (d *driver) Metrics() *openlatency.MetricsInfo {
 	d.latencyMetrics.FillMetrics(&info)
 	info.ID = d.ID()
 	info.Protocol = d.source.Protocol
+	info.QPSLimit = d.source.RPS
 	return &info
 }
 
@@ -267,6 +287,10 @@ func (d *driver) request(request *adtype.BidRequest) (req *http.Request, err err
 	if err = json.NewEncoder(&data).Encode(rtbRequest); err != nil {
 		return nil, err
 	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(rtbRequest)
 
 	// Create new request
 	if req, err = http.NewRequest(d.source.Method, d.source.URL, &data); err != nil {
@@ -345,10 +369,11 @@ func (d *driver) processHTTPReponse(resp *http.Response, err error) {
 	switch {
 	case err != nil || resp == nil ||
 		(resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent):
-		// if err == http.ErrHandlerTimeout {
-
-		// }
+		if err == http.ErrHandlerTimeout {
+			d.latencyMetrics.IncTimeout()
+		}
 		d.errorCounter.Inc()
+		d.latencyMetrics.IncError(openlatency.MetricErrorHTTP, resp.Status)
 	default:
 		d.errorCounter.Dec()
 	}

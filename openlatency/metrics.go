@@ -27,16 +27,16 @@ type MetricsInfo struct {
 	Protocol   string            `json:"protocol"`
 	Codename   string            `json:"codename,omitempty"`
 	Traceroute string            `json:"traceroute,omitempty"`
-	MinLatency int64             `json:"min_latency"` // Minimal request delay in Milliseconds
-	MaxLatency int64             `json:"max_latency"` // Maximal request delay in Milliseconds
-	AvgLatency int64             `json:"avg_latency"`
+	MinLatency int64             `json:"min_latency_ms"` // Minimal request delay in Millisecond
+	MaxLatency int64             `json:"max_latency_ms"` // Maximal request delay in Millisecond
+	AvgLatency int64             `json:"avg_latency_ms"` // Average request delay in Millisecond
 	QPSLimit   int               `json:"qps_limit,omitempty"`
-	QPS        int32             `json:"qps"`
-	Skips      int32             `json:"skips"`
-	Success    int32             `json:"success"`
-	Timeouts   int32             `json:"timeouts"`
-	NoBids     int32             `json:"no_bids"`
-	Errors     int32             `json:"errors"`
+	QPS        float64           `json:"qps"`
+	Skips      float64           `json:"skips_qps"`
+	Success    float64           `json:"success_qps"`
+	Timeouts   float64           `json:"timeouts_qps"`
+	NoBids     float64           `json:"no_bids_qps"`
+	Errors     float64           `json:"errors_qps"`
 	ErrorRates []MetricErrorRate `json:"error_rates,omitempty"`
 	GeoRates   []MetricsGeoRate  `json:"geo_rates,omitempty"`
 }

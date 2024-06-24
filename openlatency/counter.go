@@ -8,9 +8,9 @@ import (
 // MetricsCounter implements several counters of request metrics
 type MetricsCounter struct {
 	startingTime int64
-	minLatency   int64 // In Milliseconds
-	maxLatency   int64 // In Milliseconds
-	avgLatency   int64 // In Milliseconds
+	minLatency   int64 // In Millisecond
+	maxLatency   int64 // In Millisecond
+	avgLatency   int64 // In Millisecond
 	queries      int32
 	success      int32
 	skips        int32
@@ -106,11 +106,11 @@ func (cnt *MetricsCounter) refresh() {
 	cnt.setStartingTime(now.Add(-time.Second))
 	atomic.StoreInt64(&cnt.minLatency, atomic.LoadInt64(&cnt.avgLatency))
 	atomic.StoreInt64(&cnt.maxLatency, atomic.LoadInt64(&cnt.avgLatency))
-	atomic.StoreInt32(&cnt.queries, counter(&cnt.queries, seconds))
-	atomic.StoreInt32(&cnt.success, counter(&cnt.success, seconds))
-	atomic.StoreInt32(&cnt.timeouts, counter(&cnt.timeouts, seconds))
-	atomic.StoreInt32(&cnt.noBids, counter(&cnt.noBids, seconds))
-	atomic.StoreInt32(&cnt.errors, counter(&cnt.errors, seconds))
+	atomic.StoreInt32(&cnt.queries, int32(counter(&cnt.queries, seconds)))
+	atomic.StoreInt32(&cnt.success, int32(counter(&cnt.success, seconds)))
+	atomic.StoreInt32(&cnt.timeouts, int32(counter(&cnt.timeouts, seconds)))
+	atomic.StoreInt32(&cnt.noBids, int32(counter(&cnt.noBids, seconds)))
+	atomic.StoreInt32(&cnt.errors, int32(counter(&cnt.errors, seconds)))
 }
 
 func (cnt *MetricsCounter) setStartingTime(tm time.Time) {
@@ -121,6 +121,6 @@ func (cnt *MetricsCounter) getStartingTime() time.Time {
 	return time.Unix(0, atomic.LoadInt64(&cnt.startingTime))
 }
 
-func counter(cnt *int32, seconds float64) int32 {
-	return int32(float64(atomic.LoadInt32(cnt)) / seconds)
+func counter(cnt *int32, seconds float64) float64 {
+	return float64(atomic.LoadInt32(cnt)) / seconds
 }
