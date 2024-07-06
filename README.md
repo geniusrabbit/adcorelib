@@ -1,35 +1,76 @@
-# Corelib advertisement project
+# AdCoreLib - Core Functions Library for Advertising Software
 
-Contains common lib pockages
+[![Build Status](https://github.com/geniusrabbit/adcorelib/workflows/Tests/badge.svg)](https://github.com/geniusrabbit/adcorelib/actions?workflow=Tests)
+[![Go Report Card](https://goreportcard.com/badge/github.com/geniusrabbit/adcorelib)](https://goreportcard.com/report/github.com/geniusrabbit/adcorelib)
+[![GoDoc](https://godoc.org/github.com/geniusrabbit/adcorelib?status.svg)](https://godoc.org/github.com/geniusrabbit/adcorelib)
+[![Coverage Status](https://coveralls.io/repos/github/geniusrabbit/adcorelib/badge.svg)](https://coveralls.io/github/geniusrabbit/adcorelib)
 
-## Prices math
+AdCoreLib is a library of core functions for advertising software, intended for personal and company use. It supports the development of internal advertising services but prohibits providing commercial services to other companies and individuals.
 
-ComissionShareFactor - represents internal commision of the system.
-RevenueShareFactor - represents revenue of the publisher or advertiser
+This project contains common library packages for advertising software.
 
-RevenueShareFactor = 1. - ComissionShareFactor
+### Prices Math
 
-For example if
-ComissionShareFactor = 10% = 0.1 then
-RevenueShareFactor = 90% = 0.9
-RevenueShareReduce = 10%
+- **ComissionShareFactor**: Represents the internal commission of the system.
+- **RevenueShareFactor**: Represents the revenue of the publisher or advertiser.
 
-* Source
-  - `ComissionShareFactor` and `RevenueShareReduce`
-    - newPrice = (price * (1 - `RevenueShareReduce`)) - price * `ComissionShareFactor` 1 * (1 - 0.1) * (1 - 0.1)  = 0.81
-* Target (Zone + Site, AccessPoint{DSP})
-  - `ComissionShareFactor` and `RevenueShareReduce`
-    - publisherPrice = price - price * `ComissionShareFactor` - price * `RevenueShareReduce`
-  - If target have fixed view price then can be used that value instead
-  - If target is AccessPoint then `RevenueShareReduce` will reduce descrepancy
+RevenueShareFactor is calculated as:
 
-So we have two commissions:
-  1 - from source to reduce descrepancy between buyer(DSP) and saller
-  2 - from target
+```plaintext
+RevenueShareFactor = 1.0 - ComissionShareFactor
+```
+
+For example, if:
+
+- ComissionShareFactor = 10% (0.1)
+- RevenueShareFactor = 90% (0.9)
+- RevenueShareReduce = 10%
+
+The new price calculation:
+
+```plaintext
+newPrice = (price * (1 - RevenueShareReduce)) - (price * ComissionShareFactor)
+```
+
+For example:
+
+```plaintext
+newPrice = price * (1 - 0.1) * (1 - 0.1) = 0.81
+```
+
+### Source and Target Calculations
+
+**Source:**
+
+- `ComissionShareFactor` and `RevenueShareReduce`
+  - `newPrice = (price * (1 - RevenueShareReduce)) - (price * ComissionShareFactor)`
+
+**Target (Zone + Site, AccessPoint{DSP}):**
+
+- `ComissionShareFactor` and `RevenueShareReduce`
+  - `publisherPrice = price - (price * ComissionShareFactor) - (price * RevenueShareReduce)`
+
+If the target has a fixed view price, that value can be used instead. If the target is an AccessPoint, `RevenueShareReduce` will reduce discrepancy.
+
+We have two types of commissions:
+
+1. From source to reduce discrepancy between buyer (DSP) and seller.
+2. From target.
+
+### Example Price Calculation
 
 ![Price](docs/assets/price.svg)
 
-* CorrectedSourcePrice = OriginalSourcePrice - Discrepancy
-* CorrectedPrice = CorrectedSourcePrice - TargetShareReduce
-* ComissionPrice = CorrectedPrice % (1-RevShare)
-* PurchasePrice = CorrectedPrice - ComissionPrice
+- `CorrectedSourcePrice = OriginalSourcePrice - Discrepancy`
+- `CorrectedPrice = CorrectedSourcePrice - TargetShareReduce`
+- `ComissionPrice = CorrectedPrice % (1 - RevShare)`
+- `PurchasePrice = CorrectedPrice - ComissionPrice`
+
+## TODO
+
+- [ ] Add documentation
+- [ ] Reorganize package structure
+
+## License
+
+[LICENSE](LICENSE)
