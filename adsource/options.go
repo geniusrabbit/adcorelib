@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"geniusrabbit.dev/adcorelib/adsourceexperiments"
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adsourceexperiments"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // Option sets some property of the server

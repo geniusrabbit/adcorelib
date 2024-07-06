@@ -8,9 +8,9 @@ package adtype
 import (
 	"context"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // Content item names

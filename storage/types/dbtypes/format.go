@@ -5,7 +5,7 @@ import (
 
 	"github.com/demdxx/gocast/v2"
 
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // FormatList represented in DB

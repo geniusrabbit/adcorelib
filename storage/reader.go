@@ -3,7 +3,7 @@ package storage
 import (
 	"time"
 
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // Reader interface collects information about advertisement objects

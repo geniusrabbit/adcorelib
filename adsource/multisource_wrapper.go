@@ -16,14 +16,14 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/adsourceexperiments"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/auction"
-	"geniusrabbit.dev/adcorelib/context/ctxlogger"
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
-	"geniusrabbit.dev/adcorelib/eventtraking/eventstream"
-	"geniusrabbit.dev/adcorelib/fasttime"
-	"geniusrabbit.dev/adcorelib/gtracing"
+	"github.com/geniusrabbit/adcorelib/adsourceexperiments"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/auction"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
+	"github.com/geniusrabbit/adcorelib/fasttime"
+	"github.com/geniusrabbit/adcorelib/gtracing"
 )
 
 // Error set...

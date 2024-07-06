@@ -10,7 +10,7 @@ import (
 
 	"github.com/guregu/null"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // ```pg

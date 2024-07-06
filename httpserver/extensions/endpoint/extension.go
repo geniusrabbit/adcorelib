@@ -15,16 +15,16 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/context/ctxlogger"
-	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httphandler"
-	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httptraceroute"
-	"geniusrabbit.dev/adcorelib/net/fasthttp/middleware"
-	"geniusrabbit.dev/adcorelib/openlatency"
-	"geniusrabbit.dev/adcorelib/personification"
-	"geniusrabbit.dev/adcorelib/storage/accessors/adsourceaccessor"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httphandler"
+	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httptraceroute"
+	"github.com/geniusrabbit/adcorelib/net/fasthttp/middleware"
+	"github.com/geniusrabbit/adcorelib/openlatency"
+	"github.com/geniusrabbit/adcorelib/personification"
+	"github.com/geniusrabbit/adcorelib/storage/accessors/adsourceaccessor"
 )
 
 type (

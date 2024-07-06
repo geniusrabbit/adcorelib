@@ -1,6 +1,6 @@
 package httpserver
 
-import "geniusrabbit.dev/adcorelib/adtype"
+import "github.com/geniusrabbit/adcorelib/adtype"
 
 // Source of advertisement
 type Source interface {

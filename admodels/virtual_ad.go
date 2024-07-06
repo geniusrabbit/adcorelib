@@ -6,8 +6,8 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // VirtualAd extract for targeting

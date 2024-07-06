@@ -8,8 +8,8 @@ package admodels
 import (
 	"testing"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 func Test_AdModel(t *testing.T) {

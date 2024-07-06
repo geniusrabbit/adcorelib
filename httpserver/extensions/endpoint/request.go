@@ -11,12 +11,12 @@ import (
 	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/adtype"
-	fasthttpext "geniusrabbit.dev/adcorelib/net/fasthttp"
-	"geniusrabbit.dev/adcorelib/personification"
-	"geniusrabbit.dev/adcorelib/rand"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	fasthttpext "github.com/geniusrabbit/adcorelib/net/fasthttp"
+	"github.com/geniusrabbit/adcorelib/personification"
+	"github.com/geniusrabbit/adcorelib/rand"
 )
 
 // RequestOptions prepare

@@ -3,7 +3,7 @@ package tarantool
 import (
 	libtarantool "github.com/tarantool/go-tarantool"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // Source provides access to the advertisement campaigns

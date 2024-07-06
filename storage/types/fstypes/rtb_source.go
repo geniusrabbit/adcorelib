@@ -1,6 +1,6 @@
 package fstypes
 
-import "geniusrabbit.dev/adcorelib/models"
+import "github.com/geniusrabbit/adcorelib/models"
 
 // RTBSourceData represented in files
 type RTBSourceData struct {

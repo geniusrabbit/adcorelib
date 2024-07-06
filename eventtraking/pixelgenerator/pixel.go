@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 )
 
 // PixelGenerator object

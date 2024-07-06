@@ -3,8 +3,8 @@ package aerospike
 import (
 	"log"
 
-	"geniusrabbit.dev/adcorelib/adtype"
 	as "github.com/aerospike/aerospike-client-go"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 type source struct {

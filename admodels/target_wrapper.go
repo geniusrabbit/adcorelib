@@ -1,8 +1,8 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // VirtualTarget it's a wrapper which don't have ID

@@ -8,12 +8,12 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/accesspoint"
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/context/ctxlogger"
-	"geniusrabbit.dev/adcorelib/models"
-	"geniusrabbit.dev/adcorelib/storage/accessors/companyaccessor"
-	"geniusrabbit.dev/adcorelib/storage/loader"
+	"github.com/geniusrabbit/adcorelib/accesspoint"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	"github.com/geniusrabbit/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/storage/accessors/companyaccessor"
+	"github.com/geniusrabbit/adcorelib/storage/loader"
 )
 
 var (

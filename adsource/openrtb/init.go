@@ -5,9 +5,9 @@ package openrtb
 import (
 	"context"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/platform/info"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/platform/info"
 )
 
 const protocol = "openrtb"

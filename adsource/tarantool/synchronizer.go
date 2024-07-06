@@ -5,7 +5,7 @@ import (
 
 	libtarantool "github.com/tarantool/go-tarantool"
 
-	"geniusrabbit.dev/adcorelib/storage"
+	"github.com/geniusrabbit/adcorelib/storage"
 )
 
 type synchronizer struct {

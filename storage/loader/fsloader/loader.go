@@ -11,7 +11,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"geniusrabbit.dev/adcorelib/storage/loader"
+	"github.com/geniusrabbit/adcorelib/storage/loader"
 )
 
 var errTargetObjectMustImplementMerge = errors.New(`target object must support "Merge(interface)" method`)

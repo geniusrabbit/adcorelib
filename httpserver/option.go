@@ -1,7 +1,7 @@
 package httpserver
 
 import (
-	"geniusrabbit.dev/adcorelib/httpserver/extensions"
+	"github.com/geniusrabbit/adcorelib/httpserver/extensions"
 	"go.uber.org/zap"
 
 	"github.com/valyala/fasthttp"

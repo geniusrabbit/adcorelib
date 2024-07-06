@@ -12,9 +12,9 @@ import (
 
 	"github.com/demdxx/gocast/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 )
 
 // Errors set

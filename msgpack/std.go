@@ -6,7 +6,7 @@ import (
 
 	"github.com/pierrec/lz4"
 
-	jsongen "geniusrabbit.dev/adcorelib/msgpack/json"
+	jsongen "github.com/geniusrabbit/adcorelib/msgpack/json"
 )
 
 var (

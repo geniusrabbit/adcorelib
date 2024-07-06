@@ -3,7 +3,7 @@
 package adsourceaccessor
 
 import (
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 type priorityIterator struct {

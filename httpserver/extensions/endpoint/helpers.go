@@ -7,7 +7,7 @@ import (
 	"github.com/demdxx/gocast/v2"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 func peekOneFromQuery(query *fasthttp.Args, keys ...string) string {

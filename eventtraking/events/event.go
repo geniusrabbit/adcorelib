@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"geniusrabbit.dev/adcorelib/msgpack"
+	"github.com/geniusrabbit/adcorelib/msgpack"
 
-	// "geniusrabbit.dev/adcorelib/billing/billingthrift"
-	// "geniusrabbit.dev/adcorelib/msgpack/thrift"
-	msgjson "geniusrabbit.dev/adcorelib/msgpack/json"
+	// "github.com/geniusrabbit/adcorelib/billing/billingthrift"
+	// "github.com/geniusrabbit/adcorelib/msgpack/thrift"
+	msgjson "github.com/geniusrabbit/adcorelib/msgpack/json"
 )
 
 // Event status

@@ -5,7 +5,7 @@
 
 package types
 
-import "geniusrabbit.dev/adcorelib/searchtypes"
+import "github.com/geniusrabbit/adcorelib/searchtypes"
 
 // FormatsAccessor object interface
 type FormatsAccessor interface {

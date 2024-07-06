@@ -14,9 +14,9 @@ import (
 	"github.com/bsm/openrtb"
 	natresp "github.com/bsm/openrtb/native/response"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 type responseDataAccessor interface {

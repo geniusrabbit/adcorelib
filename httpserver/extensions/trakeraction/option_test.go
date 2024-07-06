@@ -6,10 +6,10 @@ import (
 	"github.com/geniusrabbit/notificationcenter/v2/dummy"
 	"github.com/stretchr/testify/assert"
 
-	"geniusrabbit.dev/adcorelib/eventtraking/eventgenerator"
-	"geniusrabbit.dev/adcorelib/eventtraking/eventstream"
-	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httphandler"
-	"geniusrabbit.dev/adcorelib/urlgenerator"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventgenerator"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
+	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httphandler"
+	"github.com/geniusrabbit/adcorelib/urlgenerator"
 )
 
 func Test_Options(t *testing.T) {

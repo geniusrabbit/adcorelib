@@ -11,11 +11,11 @@ import (
 	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
-	"geniusrabbit.dev/adcorelib/i18n/languages"
-	"geniusrabbit.dev/adcorelib/models"
-	"geniusrabbit.dev/adcorelib/storage"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/i18n/languages"
+	"github.com/geniusrabbit/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/storage"
 )
 
 var (

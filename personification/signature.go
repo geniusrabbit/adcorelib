@@ -12,8 +12,8 @@ import (
 	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/adcorelib/gtracing"
-	fasthttpext "geniusrabbit.dev/adcorelib/net/fasthttp"
+	"github.com/geniusrabbit/adcorelib/gtracing"
+	fasthttpext "github.com/geniusrabbit/adcorelib/net/fasthttp"
 )
 
 // Signeture provides the builder of cookie assigned to the user by HTTP

@@ -5,14 +5,14 @@ import (
 
 	"github.com/demdxx/rpool/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/auction"
-	"geniusrabbit.dev/adcorelib/fasttime"
-	"geniusrabbit.dev/adcorelib/rand"
-	"geniusrabbit.dev/adcorelib/searchtypes"
-	"geniusrabbit.dev/adcorelib/storage/accessors/campaignaccessor"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/auction"
+	"github.com/geniusrabbit/adcorelib/fasttime"
+	"github.com/geniusrabbit/adcorelib/rand"
+	"github.com/geniusrabbit/adcorelib/searchtypes"
+	"github.com/geniusrabbit/adcorelib/storage/accessors/campaignaccessor"
 )
 
 type driver struct {

@@ -1,6 +1,6 @@
 package fstypes
 
-import "geniusrabbit.dev/adcorelib/models"
+import "github.com/geniusrabbit/adcorelib/models"
 
 // CompanyData represented in files
 type CompanyData struct {

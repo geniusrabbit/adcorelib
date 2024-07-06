@@ -6,8 +6,8 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // Formats field set

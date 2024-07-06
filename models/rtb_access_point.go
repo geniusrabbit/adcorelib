@@ -11,8 +11,8 @@ import (
 	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // RTBAccessPoint for DSP connect.

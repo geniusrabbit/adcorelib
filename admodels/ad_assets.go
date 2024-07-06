@@ -1,7 +1,7 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // AdAssets contains the list of file assets

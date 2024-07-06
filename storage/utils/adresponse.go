@@ -1,6 +1,6 @@
 package utils
 
-import "geniusrabbit.dev/adcorelib/admodels"
+import "github.com/geniusrabbit/adcorelib/admodels"
 
 // ResponseCache object
 type ResponseCache struct {

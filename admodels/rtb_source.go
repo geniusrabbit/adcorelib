@@ -10,8 +10,8 @@ import (
 
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // RTBRequestType contains type of representation of request information

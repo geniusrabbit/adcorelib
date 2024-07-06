@@ -10,13 +10,13 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/context/ctxlogger"
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
-	"geniusrabbit.dev/adcorelib/eventtraking/eventstream"
-	"geniusrabbit.dev/adcorelib/fasttime"
-	"geniusrabbit.dev/adcorelib/gtracing"
-	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httphandler"
-	"geniusrabbit.dev/adcorelib/openlatency"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
+	"github.com/geniusrabbit/adcorelib/fasttime"
+	"github.com/geniusrabbit/adcorelib/gtracing"
+	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httphandler"
+	"github.com/geniusrabbit/adcorelib/openlatency"
 )
 
 const (

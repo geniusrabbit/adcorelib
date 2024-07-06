@@ -5,7 +5,7 @@
 
 package adtype
 
-import "geniusrabbit.dev/adcorelib/billing"
+import "github.com/geniusrabbit/adcorelib/billing"
 
 // SecondAd description
 type SecondAd struct {

@@ -6,8 +6,8 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/adcorelib/billing"
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/models"
 	"go.uber.org/zap"
 )
 

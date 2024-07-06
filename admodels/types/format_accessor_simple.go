@@ -3,7 +3,7 @@ package types
 import (
 	"sort"
 
-	"geniusrabbit.dev/adcorelib/searchtypes"
+	"github.com/geniusrabbit/adcorelib/searchtypes"
 )
 
 type formatLoaderFnk func() ([]*Format, error)

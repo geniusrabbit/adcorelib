@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 )

@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/eventtraking/eventgenerator"
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
-	"geniusrabbit.dev/adcorelib/eventtraking/pixelgenerator"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventgenerator"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/eventtraking/pixelgenerator"
 )
 
 // Generator of URLs

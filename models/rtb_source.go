@@ -11,7 +11,7 @@ import (
 	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // RTB price type

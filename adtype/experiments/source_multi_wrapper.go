@@ -3,7 +3,7 @@ package experiments
 import (
 	"time"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // SourceMultiWrapper implements source functionality with source choicer

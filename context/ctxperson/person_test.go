@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"geniusrabbit.dev/adcorelib/personification"
+	"github.com/geniusrabbit/adcorelib/personification"
 
 	"github.com/stretchr/testify/assert"
 )

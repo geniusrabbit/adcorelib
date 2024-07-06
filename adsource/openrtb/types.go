@@ -3,7 +3,7 @@ package openrtb
 import (
 	"errors"
 
-	"geniusrabbit.dev/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels"
 )
 
 // Request type enum

@@ -8,8 +8,8 @@ package models
 import (
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // AdBid submodel

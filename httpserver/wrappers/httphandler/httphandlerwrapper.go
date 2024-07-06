@@ -6,8 +6,8 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/net/fasthttp/middleware"
-	"geniusrabbit.dev/adcorelib/personification"
+	"github.com/geniusrabbit/adcorelib/net/fasthttp/middleware"
+	"github.com/geniusrabbit/adcorelib/personification"
 )
 
 type (

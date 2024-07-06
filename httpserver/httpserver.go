@@ -17,9 +17,9 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/context/ctxlogger"
-	"geniusrabbit.dev/adcorelib/gtracing"
-	"geniusrabbit.dev/adcorelib/httpserver/extensions"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	"github.com/geniusrabbit/adcorelib/gtracing"
+	"github.com/geniusrabbit/adcorelib/httpserver/extensions"
 )
 
 type (

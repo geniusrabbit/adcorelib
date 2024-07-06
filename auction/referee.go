@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"sort"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // Referee which could combine and select most profitable advertisement bids

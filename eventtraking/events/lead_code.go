@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"hash/crc32"
 
-	"geniusrabbit.dev/adcorelib/msgpack"
+	"github.com/geniusrabbit/adcorelib/msgpack"
 )
 
 const (

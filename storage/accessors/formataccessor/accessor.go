@@ -3,10 +3,10 @@ package formataccessor
 import (
 	"context"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/models"
-	"geniusrabbit.dev/adcorelib/storage/loader"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/storage/loader"
 )
 
 var ctxFormatAccessor = struct{ s string }{s: "formataccessor"}

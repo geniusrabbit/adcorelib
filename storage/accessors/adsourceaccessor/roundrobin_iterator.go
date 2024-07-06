@@ -5,7 +5,7 @@ package adsourceaccessor
 import (
 	"math/rand"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 type roundrobinIterator struct {

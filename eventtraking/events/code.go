@@ -13,8 +13,8 @@ import (
 
 	lz4 "github.com/bkaradzic/go-lz4"
 
-	"geniusrabbit.dev/adcorelib/msgpack"
-	"geniusrabbit.dev/adcorelib/msgpack/types"
+	"github.com/geniusrabbit/adcorelib/msgpack"
+	"github.com/geniusrabbit/adcorelib/msgpack/types"
 )
 
 // LZ4BlockMaxSize constant

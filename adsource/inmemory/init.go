@@ -3,9 +3,9 @@ package inmemory
 import (
 	"context"
 
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/platform/info"
-	"geniusrabbit.dev/adcorelib/storage/accessors/campaignaccessor"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/platform/info"
+	"github.com/geniusrabbit/adcorelib/storage/accessors/campaignaccessor"
 )
 
 const protocol = "inmemory"

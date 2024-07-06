@@ -3,7 +3,7 @@ package openrtb
 import (
 	"time"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // BidRequestRTBOptions of request build

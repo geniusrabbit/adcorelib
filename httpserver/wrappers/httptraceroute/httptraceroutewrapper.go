@@ -5,7 +5,7 @@ import (
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/adcorelib/gtracing"
+	"github.com/geniusrabbit/adcorelib/gtracing"
 )
 
 // TraceRouterWrapper of the HTTP router

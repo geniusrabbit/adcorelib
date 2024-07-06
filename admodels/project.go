@@ -5,7 +5,7 @@
 
 package admodels
 
-import "geniusrabbit.dev/adcorelib/billing"
+import "github.com/geniusrabbit/adcorelib/billing"
 
 // Project model
 type Project struct {

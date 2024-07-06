@@ -6,7 +6,7 @@
 package admodels
 
 import (
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // AdAssetThumb of the file

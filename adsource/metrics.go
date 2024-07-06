@@ -3,7 +3,7 @@ package adsource
 import (
 	"time"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 
 	"github.com/demdxx/gocast/v2"
 	"github.com/prometheus/client_golang/prometheus"

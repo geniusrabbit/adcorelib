@@ -7,8 +7,8 @@ import (
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 	uopenrtb "github.com/sspserver/udetect/openrtb"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 func requestToRTBv2(req *adtype.BidRequest, opts ...BidRequestRTBOption) *openrtb.BidRequest {

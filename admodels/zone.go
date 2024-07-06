@@ -11,9 +11,9 @@ import (
 	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // Zone model

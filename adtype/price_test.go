@@ -3,8 +3,8 @@ package adtype
 import (
 	"testing"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/stretchr/testify/assert"
 )
 

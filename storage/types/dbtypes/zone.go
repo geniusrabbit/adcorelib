@@ -3,8 +3,8 @@ package dbtypes
 import (
 	"sort"
 
-	"geniusrabbit.dev/adcorelib/models"
 	"github.com/demdxx/gocast/v2"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // ZoneList represented in DB

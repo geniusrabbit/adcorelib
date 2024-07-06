@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"geniusrabbit.dev/adcorelib/storage/loader"
+	"github.com/geniusrabbit/adcorelib/storage/loader"
 )
 
 type merger interface {

@@ -1,7 +1,7 @@
 package endpoint
 
 import (
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // Source of advertisement

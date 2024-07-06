@@ -4,9 +4,9 @@ import (
 	"sort"
 	"sync"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/models"
-	"geniusrabbit.dev/adcorelib/storage/loader"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/storage/loader"
 )
 
 // CompanyAccessor provides accessor to the admodel company type

@@ -5,7 +5,7 @@ package thrift
 
 // 	basethrift "github.com/thrift-iterator/go"
 
-// 	"geniusrabbit.dev/adcorelib/msgpack/types"
+// 	"github.com/geniusrabbit/adcorelib/msgpack/types"
 // )
 
 // type EncodeGenerator struct {

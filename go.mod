@@ -1,4 +1,4 @@
-module geniusrabbit.dev/adcorelib
+module github.com/geniusrabbit/adcorelib
 
 go 1.22
 

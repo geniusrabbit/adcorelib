@@ -5,8 +5,8 @@ import (
 
 	"github.com/demdxx/gocast/v2"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 )
 
 // PrepareURL by event

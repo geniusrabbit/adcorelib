@@ -1,9 +1,9 @@
 package trakeraction
 
 import (
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/eventtraking/eventstream"
-	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httphandler"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
+	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httphandler"
 )
 
 // Option type

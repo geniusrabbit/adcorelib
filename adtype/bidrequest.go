@@ -14,12 +14,12 @@ import (
 	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/billing"
-	"geniusrabbit.dev/adcorelib/i18n/languages"
-	"geniusrabbit.dev/adcorelib/personification"
-	"geniusrabbit.dev/adcorelib/searchtypes"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/i18n/languages"
+	"github.com/geniusrabbit/adcorelib/personification"
+	"github.com/geniusrabbit/adcorelib/searchtypes"
 )
 
 var defaultUserdata = User{Geo: &udetect.GeoDefault}

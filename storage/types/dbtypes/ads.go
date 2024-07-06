@@ -6,8 +6,8 @@ import (
 	"github.com/demdxx/gocast/v2"
 	"gorm.io/gorm"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // AdList represented in DB

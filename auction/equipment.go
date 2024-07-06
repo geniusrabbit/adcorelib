@@ -6,8 +6,8 @@
 package auction
 
 import (
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 type equipmentSlice []adtype.ResponserItemCommon

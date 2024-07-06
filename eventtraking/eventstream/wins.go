@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	nc "github.com/geniusrabbit/notificationcenter/v2"
 )
 

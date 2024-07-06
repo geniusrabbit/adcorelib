@@ -1,7 +1,7 @@
 package fstypes
 
 import (
-	"geniusrabbit.dev/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // CampaignData represented in files

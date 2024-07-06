@@ -3,10 +3,10 @@ package campaignaccessor
 import (
 	"sort"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/models"
-	"geniusrabbit.dev/adcorelib/storage/loader"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/storage/loader"
 )
 
 // CampaignAccessor provides accessor to the admodel company type

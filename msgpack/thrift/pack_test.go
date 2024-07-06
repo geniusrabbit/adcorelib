@@ -10,9 +10,9 @@ package thrift
 // 	"github.com/alecthomas/binary"
 // 	"github.com/stretchr/testify/assert"
 
-// 	"geniusrabbit.dev/adcorelib/billing"
-// 	"geniusrabbit.dev/adcorelib/billing/billingthrift"
-// 	"geniusrabbit.dev/adcorelib/msgpack"
+// 	"github.com/geniusrabbit/adcorelib/billing"
+// 	"github.com/geniusrabbit/adcorelib/billing/billingthrift"
+// 	"github.com/geniusrabbit/adcorelib/msgpack"
 // )
 
 // type msgStd struct {

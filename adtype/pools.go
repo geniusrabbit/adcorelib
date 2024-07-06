@@ -3,7 +3,7 @@ package adtype
 import (
 	"sync"
 
-	"geniusrabbit.dev/adcorelib/rand"
+	"github.com/geniusrabbit/adcorelib/rand"
 )
 
 // Common pools

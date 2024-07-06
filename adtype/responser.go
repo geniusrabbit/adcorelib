@@ -8,7 +8,7 @@ package adtype
 import (
 	"context"
 
-	"geniusrabbit.dev/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // Responser type

@@ -1,9 +1,9 @@
 package endpoint
 
 import (
-	"geniusrabbit.dev/adcorelib/admodels/types"
-	"geniusrabbit.dev/adcorelib/httpserver/wrappers/httphandler"
-	"geniusrabbit.dev/adcorelib/net/fasthttp/middleware"
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httphandler"
+	"github.com/geniusrabbit/adcorelib/net/fasthttp/middleware"
 )
 
 // Option type

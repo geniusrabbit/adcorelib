@@ -3,7 +3,7 @@ package adsourceexperiments
 import (
 	"time"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 type sourceSimpleWrapper struct {

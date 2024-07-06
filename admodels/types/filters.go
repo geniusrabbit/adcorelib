@@ -9,7 +9,7 @@ import (
 	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql/v2"
 
-	"geniusrabbit.dev/adcorelib/i18n/languages"
+	"github.com/geniusrabbit/adcorelib/i18n/languages"
 )
 
 // IntArrayToUint array type

@@ -10,7 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/fasttime"
+	"github.com/geniusrabbit/adcorelib/fasttime"
 )
 
 // LoaderFnk type

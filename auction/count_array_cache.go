@@ -8,7 +8,7 @@ package auction
 import (
 	"sync"
 
-	"geniusrabbit.dev/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 var (

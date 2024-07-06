@@ -16,15 +16,15 @@ import (
 	"github.com/bsm/openrtb"
 	"go.uber.org/zap"
 
-	"geniusrabbit.dev/adcorelib/admodels"
-	"geniusrabbit.dev/adcorelib/adsource/optimizer"
-	"geniusrabbit.dev/adcorelib/adtype"
-	"geniusrabbit.dev/adcorelib/context/ctxlogger"
-	counter "geniusrabbit.dev/adcorelib/errorcounter"
-	"geniusrabbit.dev/adcorelib/eventtraking/events"
-	"geniusrabbit.dev/adcorelib/eventtraking/eventstream"
-	"geniusrabbit.dev/adcorelib/fasttime"
-	"geniusrabbit.dev/adcorelib/openlatency"
+	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adsource/optimizer"
+	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	counter "github.com/geniusrabbit/adcorelib/errorcounter"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
+	"github.com/geniusrabbit/adcorelib/fasttime"
+	"github.com/geniusrabbit/adcorelib/openlatency"
 )
 
 const (
