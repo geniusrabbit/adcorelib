@@ -16,7 +16,7 @@ This project contains common library packages for advertising software.
 
 RevenueShareFactor is calculated as:
 
-```plaintext
+```js
 RevenueShareFactor = 1.0 - ComissionShareFactor
 ```
 
@@ -28,13 +28,13 @@ For example, if:
 
 The new price calculation:
 
-```plaintext
+```js
 newPrice = (price * (1 - RevenueShareReduce)) - (price * ComissionShareFactor)
 ```
 
 For example:
 
-```plaintext
+```js
 newPrice = price * (1 - 0.1) * (1 - 0.1) = 0.81
 ```
 
