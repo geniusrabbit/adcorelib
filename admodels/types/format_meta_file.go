@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit AdNet 2021
+// @project GeniusRabbit corelib 2021
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2021
 //
 

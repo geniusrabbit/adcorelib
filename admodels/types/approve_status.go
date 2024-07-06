@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit::corelib 2022
+// @project GeniusRabbit corelib 2022
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2022
 //
 

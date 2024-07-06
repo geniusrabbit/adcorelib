@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit rotator 2018
+// @project GeniusRabbit corelib 2018
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2018
 //
 
@@ -12,7 +12,7 @@ package admodels
 // 	"testing"
 
 // 	"bitbucket.org/geniusrabbit/corelib/models"
-// 	"geniusrabbit.dev/sspserver/internal/models/types"
+// 	"github.com/sspserver/sspserver/internal/models/types"
 // )
 
 // func Test_Formats(t *testing.T) {

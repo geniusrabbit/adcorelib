@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit AdNet
+// @project GeniusRabbit corelib
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2015 – 2016, 2018
 //
 

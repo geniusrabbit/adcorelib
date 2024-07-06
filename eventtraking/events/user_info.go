@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit rotator 2019
+// @project GeniusRabbit corelib 2019
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2019
 //
 

@@ -1,5 +1,5 @@
 //
-// @project geniusrabbit::sspserver 2017, 2019, 2024
+// @project GeniusRabbit corelib 2017, 2019, 2024
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2017, 2019, 2024
 //
 
