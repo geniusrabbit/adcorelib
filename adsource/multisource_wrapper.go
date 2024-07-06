@@ -1,6 +1,6 @@
 //
-// @project geniusrabbit::sspserver 2017, 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017, 2019
+// @project geniusrabbit::sspserver 2017, 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017, 2019, 2024
 //
 
 package adsource
@@ -94,6 +94,9 @@ func (wrp *MultisourceWrapper) Test(request *adtype.BidRequest) bool { return tr
 
 // Bid request for standart system filter
 func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.Responser) {
+	if wrp == nil {
+		return adtype.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
+	}
 	var (
 		err     error
 		count   = wrp.maxParallelRequest
@@ -242,9 +245,6 @@ func (wrp *MultisourceWrapper) SetRequestTimeout(timeout time.Duration) {
 
 // Sources of the ads
 func (wrp *MultisourceWrapper) Sources() adtype.SourceAccessor {
-	if wrp == nil {
-		return nil
-	}
 	return wrp.sources
 }
 
