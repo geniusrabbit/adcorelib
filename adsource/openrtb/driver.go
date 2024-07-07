@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/bsm/openrtb"
+	"github.com/demdxx/gocast/v2"
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
@@ -25,6 +26,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
 	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/adcorelib/openlatency"
+	"github.com/geniusrabbit/adcorelib/openlatency/prometheuswrapper"
 )
 
 const (
@@ -40,7 +42,7 @@ type driver struct {
 	// Requests RPS counter
 	rpsCurrent     counter.Counter
 	errorCounter   counter.ErrorCounter
-	latencyMetrics *openlatency.MetricsCounter
+	latencyMetrics *prometheuswrapper.Wrapper
 
 	// Original source model
 	source *admodels.RTBSource
@@ -64,10 +66,13 @@ func newDriver(_ context.Context, source *admodels.RTBSource, _ ...any) (*driver
 		source.MinimalWeight = defaultMinWeight
 	}
 	return &driver{
-		source:         source,
-		latencyMetrics: &openlatency.MetricsCounter{},
-		Headers:        headers,
-		optimizator:    optimizer.New(),
+		source:      source,
+		Headers:     headers,
+		optimizator: optimizer.New(),
+		latencyMetrics: prometheuswrapper.NewWrapperDefault("adsource_",
+			[]string{"id", "protocol", "driver"},
+			[]string{gocast.Str(source.ID), source.Protocol, "openrtb"},
+		),
 	}, nil
 }
 

@@ -15,6 +15,7 @@ import (
 )
 
 // Format types...
+// TODO: switch format-type check on type
 const (
 	FormatTypeDirect = `direct`
 	FormatTypeVideo  = `video`
@@ -26,6 +27,7 @@ const (
 type Format struct {
 	ID       uint64             `json:"id"`
 	Codename string             `json:"codename"`
+	Type     string             `json:"type"`
 	Title    string             `json:"title"`
 	Active   types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
@@ -60,20 +62,20 @@ func (f *Format) IsFixed() bool {
 
 // IsDirect type (popunder or proxy or etc.)
 func (f Format) IsDirect() bool {
-	return f.Codename == FormatTypeDirect
+	return f.Type == FormatTypeDirect || f.Codename == FormatTypeDirect
 }
 
 // IsVideo type of advertisement
 func (f Format) IsVideo() bool {
-	return strings.HasPrefix(f.Codename, FormatTypeVideo)
+	return f.Type == FormatTypeVideo || strings.HasPrefix(f.Codename, FormatTypeVideo)
 }
 
 // IsProxy type of format
 func (f Format) IsProxy() bool {
-	return strings.HasPrefix(f.Codename, FormatTypeProxy)
+	return f.Type == FormatTypeProxy || strings.HasPrefix(f.Codename, FormatTypeProxy)
 }
 
 // IsNative type of format
 func (f Format) IsNative() bool {
-	return strings.HasPrefix(f.Codename, FormatTypeNative)
+	return f.Type == FormatTypeNative || strings.HasPrefix(f.Codename, FormatTypeNative)
 }

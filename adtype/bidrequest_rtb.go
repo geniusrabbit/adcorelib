@@ -10,6 +10,8 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
+var defaultCurrency = []string{"USD"}
+
 // BidRequestRTBOptions of request build
 type BidRequestRTBOptions struct {
 	OpenNative struct {
@@ -27,7 +29,7 @@ func (opts *BidRequestRTBOptions) currencies() []string {
 	if len(opts.Currency) > 0 {
 		return opts.Currency
 	}
-	return []string{"USD"}
+	return defaultCurrency
 }
 
 // BidRequestRTBOption set function
