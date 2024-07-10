@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,6 +26,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
 	"github.com/geniusrabbit/adcorelib/fasttime"
+	"github.com/geniusrabbit/adcorelib/net/httpclient"
 	"github.com/geniusrabbit/adcorelib/openlatency"
 	"github.com/geniusrabbit/adcorelib/openlatency/prometheuswrapper"
 )
@@ -36,7 +38,7 @@ const (
 	defaultMinWeight             = 0.001
 )
 
-type driver struct {
+type driver[NetDriver httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclient.Response] struct {
 	lastRequestTime uint64
 
 	// Requests RPS counter
@@ -51,23 +53,20 @@ type driver struct {
 	Headers map[string]string
 
 	// Client of HTTP requests
-	Client *http.Client
+	netClient NetDriver
 
 	// optimizator object
 	optimizator *optimizer.Optimizer
 }
 
-func newDriver(_ context.Context, source *admodels.RTBSource, _ ...any) (*driver, error) {
-	var headers map[string]string
-	if source.Headers.Data != nil {
-		headers = *source.Headers.Data
-	}
+func newDriver[ND httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclient.Response](_ context.Context, source *admodels.RTBSource, netClient ND, _ ...any) (*driver[ND, Rq, Rs], error) {
 	if source.MinimalWeight <= 0 {
 		source.MinimalWeight = defaultMinWeight
 	}
-	return &driver{
+	return &driver[ND, Rq, Rs]{
 		source:      source,
-		Headers:     headers,
+		Headers:     source.Headers.DataOr(nil),
+		netClient:   netClient,
 		optimizator: optimizer.New(),
 		latencyMetrics: prometheuswrapper.NewWrapperDefault("adsource_",
 			[]string{"id", "protocol", "driver"},
@@ -77,13 +76,13 @@ func newDriver(_ context.Context, source *admodels.RTBSource, _ ...any) (*driver
 }
 
 // ID of source
-func (d *driver) ID() uint64 { return d.source.ID }
+func (d *driver[ND, Rq, Rs]) ID() uint64 { return d.source.ID }
 
 // Protocol of source
-func (d *driver) Protocol() string { return d.source.Protocol }
+func (d *driver[ND, Rq, Rs]) Protocol() string { return d.source.Protocol }
 
 // Test request before processing
-func (d *driver) Test(request *adtype.BidRequest) bool {
+func (d *driver[ND, Rq, Rs]) Test(request *adtype.BidRequest) bool {
 	if d.source.RPS > 0 {
 		if !d.source.Options.ErrorsIgnore && !d.errorCounter.Next() {
 			d.latencyMetrics.IncSkip()
@@ -126,17 +125,17 @@ func (d *driver) Test(request *adtype.BidRequest) bool {
 // PriceCorrectionReduceFactor which is a potential
 // Returns percent from 0 to 1 for reducing of the value
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
-func (d *driver) PriceCorrectionReduceFactor() float64 {
+func (d *driver[ND, Rq, Rs]) PriceCorrectionReduceFactor() float64 {
 	return d.source.PriceCorrectionReduceFactor()
 }
 
 // RequestStrategy description
-func (d *driver) RequestStrategy() adtype.RequestStrategy {
+func (d *driver[ND, Rq, Rs]) RequestStrategy() adtype.RequestStrategy {
 	return adtype.AsynchronousRequestStrategy
 }
 
 // Bid request for standart system filter
-func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
+func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 	beginTime := time.Now().UnixNano()
 	d.rpsCurrent.Inc(1)
 	d.latencyMetrics.BeginQuery()
@@ -147,7 +146,7 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 		return adtype.NewErrorResponse(request, err)
 	}
 
-	resp, err := d.getClient().Do(httpRequest)
+	resp, err := d.netClient.Do(httpRequest)
 	d.latencyMetrics.UpdateQueryLatency(time.Duration(time.Now().UnixNano() - beginTime))
 
 	if err != nil {
@@ -160,21 +159,21 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 
 	ctxlogger.Get(request.Ctx).Debug("bid",
 		zap.String("source_url", d.source.URL),
-		zap.String("http_response_status_txt", http.StatusText(resp.StatusCode)),
-		zap.Int("http_response_status", resp.StatusCode))
+		zap.String("http_response_status_txt", http.StatusText(resp.StatusCode())),
+		zap.Int("http_response_status", resp.StatusCode()))
 
-	if resp.StatusCode == http.StatusNoContent {
+	if resp.StatusCode() == http.StatusNoContent {
 		d.latencyMetrics.IncNobid()
 		return adtype.NewErrorResponse(request, ErrNoCampaignsStatus)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK {
 		d.processHTTPReponse(resp, nil)
 		return adtype.NewErrorResponse(request, ErrInvalidResponseStatus)
 	}
 
-	defer resp.Body.Close()
-	if res, err := d.unmarshal(request, resp.Body); d.source.Options.Trace && err != nil {
+	defer resp.Close()
+	if res, err := d.unmarshal(request, resp.Body()); d.source.Options.Trace && err != nil {
 		response = adtype.NewErrorResponse(request, err)
 		ctxlogger.Get(request.Ctx).Error("bid response", zap.Error(err))
 	} else if res != nil {
@@ -222,7 +221,7 @@ func (d *driver) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 }
 
 // ProcessResponseItem result or error
-func (d *driver) ProcessResponseItem(response adtype.Responser, item adtype.ResponserItem) {
+func (d *driver[ND, Rq, Rs]) ProcessResponseItem(response adtype.Responser, item adtype.ResponserItem) {
 	if response == nil || response.Error() != nil {
 		return
 	}
@@ -242,7 +241,7 @@ func (d *driver) ProcessResponseItem(response adtype.Responser, item adtype.Resp
 }
 
 // RevenueShareReduceFactor which is a potential
-func (d *driver) RevenueShareReduceFactor() float64 {
+func (d *driver[ND, Rq, Rs]) RevenueShareReduceFactor() float64 {
 	return 0 // TODO: d.source.PriceCorrectionReduce / 100
 }
 
@@ -251,7 +250,7 @@ func (d *driver) RevenueShareReduceFactor() float64 {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Metrics information of the platform
-func (d *driver) Metrics() *openlatency.MetricsInfo {
+func (d *driver[ND, Rq, Rs]) Metrics() *openlatency.MetricsInfo {
 	var info openlatency.MetricsInfo
 	d.latencyMetrics.FillMetrics(&info)
 	info.ID = d.ID()
@@ -264,19 +263,8 @@ func (d *driver) Metrics() *openlatency.MetricsInfo {
 /// Internal methods
 ///////////////////////////////////////////////////////////////////////////////
 
-func (d *driver) getClient() *http.Client {
-	if d.Client == nil {
-		timeout := time.Millisecond * time.Duration(d.source.Timeout)
-		if timeout < 1 {
-			timeout = time.Millisecond * 150
-		}
-		d.Client = &http.Client{Timeout: timeout}
-	}
-	return d.Client
-}
-
 // prepare request for RTB
-func (d *driver) request(request *adtype.BidRequest) (req *http.Request, err error) {
+func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err error) {
 	var (
 		rtbRequest any
 		data       bytes.Buffer
@@ -290,7 +278,7 @@ func (d *driver) request(request *adtype.BidRequest) (req *http.Request, err err
 
 	// Prepare data for request
 	if err = json.NewEncoder(&data).Encode(rtbRequest); err != nil {
-		return nil, err
+		return d.netClient.NoopRequest(), err
 	}
 
 	enc := json.NewEncoder(os.Stdout)
@@ -298,15 +286,15 @@ func (d *driver) request(request *adtype.BidRequest) (req *http.Request, err err
 	enc.Encode(rtbRequest)
 
 	// Create new request
-	if req, err = http.NewRequest(d.source.Method, d.source.URL, &data); err != nil {
-		return nil, err
+	if req, err = d.netClient.Request(d.source.Method, d.source.URL, &data); err != nil {
+		return req, err
 	}
 
 	d.fillRequest(request, req)
 	return req, nil
 }
 
-func (d *driver) unmarshal(request *adtype.BidRequest, r io.Reader) (response *adtype.BidResponse, err error) {
+func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) (response *adtype.BidResponse, err error) {
 	var bidResp openrtb.BidResponse
 
 	switch d.source.RequestType {
@@ -354,37 +342,38 @@ func (d *driver) unmarshal(request *adtype.BidRequest, r io.Reader) (response *a
 }
 
 // fillRequest of HTTP
-func (d *driver) fillRequest(request *adtype.BidRequest, httpReq *http.Request) {
-	httpReq.Header.Set("Content-Type", "application/json")
+func (d *driver[ND, Rq, Rs]) fillRequest(request *adtype.BidRequest, httpReq Rq) {
+	httpReq.SetHeader("Content-Type", "application/json")
 	if d.source.Protocol == "openrtb3" {
-		httpReq.Header.Set(headerRequestOpenRTBVersion, headerRequestOpenRTBVersion3)
+		httpReq.SetHeader(headerRequestOpenRTBVersion, headerRequestOpenRTBVersion3)
 	} else {
-		httpReq.Header.Set(headerRequestOpenRTBVersion, headerRequestOpenRTBVersion2)
+		httpReq.SetHeader(headerRequestOpenRTBVersion, headerRequestOpenRTBVersion2)
 	}
-	httpReq.Header.Set(openlatency.HTTPHeaderRequestTimemark, strconv.FormatInt(openlatency.RequestInitTime(request.Time()), 10))
+	httpReq.SetHeader(openlatency.HTTPHeaderRequestTimemark,
+		strconv.FormatInt(openlatency.RequestInitTime(request.Time()), 10))
 
 	// Fill default headers
 	for key, value := range d.Headers {
-		httpReq.Header.Set(key, value)
+		httpReq.SetHeader(key, value)
 	}
 }
 
 // @link https://golang.org/src/net/http/status.go
-func (d *driver) processHTTPReponse(resp *http.Response, err error) {
+func (d *driver[ND, Rq, Rs]) processHTTPReponse(resp Rs, err error) {
 	switch {
-	case err != nil || resp == nil ||
-		(resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent):
-		if err == http.ErrHandlerTimeout {
+	case err != nil || resp.IsNoop() ||
+		(resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusNoContent):
+		if errors.Is(err, http.ErrHandlerTimeout) {
 			d.latencyMetrics.IncTimeout()
 		}
 		d.errorCounter.Inc()
-		d.latencyMetrics.IncError(openlatency.MetricErrorHTTP, resp.Status)
+		d.latencyMetrics.IncError(openlatency.MetricErrorHTTP, http.StatusText(resp.StatusCode()))
 	default:
 		d.errorCounter.Dec()
 	}
 }
 
-func (d *driver) getRequestOptions() []BidRequestRTBOption {
+func (d *driver[ND, Rq, Rs]) getRequestOptions() []BidRequestRTBOption {
 	return []BidRequestRTBOption{
 		WithRTBOpenNativeVersion("1.1"),
 		WithFormatFilter(d.source.TestFormat),

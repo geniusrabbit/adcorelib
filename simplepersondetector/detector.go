@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
+	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
 	useragent "github.com/mileusna/useragent"
-	"github.com/sspserver/udetect"
 )
 
 type Item struct {

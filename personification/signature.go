@@ -8,8 +8,8 @@ import (
 
 	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/gogeo"
+	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
-	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
 
 	"github.com/geniusrabbit/adcorelib/gtracing"
@@ -56,10 +56,10 @@ func (sign *Signeture) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 		UA:              string(req.UserAgent()),
 		URL:             string(req.Referer()),
 		Ref:             string(req.Request.Header.Referer()), // TODO: add additional information
-		DNT:             int8(gocast.ToInt(req.Request.Header.Peek("Dnt"))),
-		LMT:             int8(gocast.ToInt(req.QueryArgs().Peek("lmt"))),
-		Adblock:         int8(gocast.ToInt(req.QueryArgs().Peek("adb"))),
-		PrivateBrowsing: int8(gocast.ToInt(req.QueryArgs().Peek("private"))),
+		DNT:             gocast.Int8(req.Request.Header.Peek("Dnt")),
+		LMT:             gocast.Int8(req.QueryArgs().Peek("lmt")),
+		Adblock:         gocast.Int8(req.QueryArgs().Peek("adb")),
+		PrivateBrowsing: gocast.Int8(req.QueryArgs().Peek("private")),
 		JS:              1,
 		Languages:       langs,
 		PrimaryLanguage: primaryLanguage,

@@ -11,7 +11,7 @@ import (
 	"sort"
 
 	"github.com/cznic/sortutil"
-	"github.com/sspserver/udetect"
+	"github.com/geniusrabbit/udetect"
 )
 
 // BaseFilter object

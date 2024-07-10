@@ -24,16 +24,10 @@ type Optimizer struct {
 
 // New optimizer
 func New() *Optimizer {
-	opt := &Optimizer{}
-	opt.Init()
-	return opt
-}
-
-// Init Optimizer object
-func (opt *Optimizer) Init() {
-	if opt.data == nil {
-		opt.data = make([]*optimizerItem, 0, 10)
+	opt := &Optimizer{
+		data: make([]*optimizerItem, 0, 10),
 	}
+	return opt
 }
 
 // Inc incrementation of the filter effectivity

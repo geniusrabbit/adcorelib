@@ -3,8 +3,8 @@ package personification
 import (
 	"context"
 
+	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
-	"github.com/sspserver/udetect"
 )
 
 // Client interface

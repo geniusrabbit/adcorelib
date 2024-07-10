@@ -1,7 +1,7 @@
 package personification
 
 import (
-	"github.com/sspserver/udetect"
+	"github.com/geniusrabbit/udetect"
 )
 
 type person struct {

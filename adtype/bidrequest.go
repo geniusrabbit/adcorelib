@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sspserver/udetect"
+	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
 
 	"github.com/geniusrabbit/adcorelib/admodels"

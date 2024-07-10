@@ -10,8 +10,8 @@ import (
 	"github.com/demdxx/gocast/v2"
 	"github.com/demdxx/xtypes"
 	"github.com/fasthttp/router"
+	"github.com/geniusrabbit/udetect"
 	"github.com/opentracing/opentracing-go"
-	"github.com/sspserver/udetect"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 

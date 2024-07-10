@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/demdxx/gocast/v2"
-	"github.com/sspserver/udetect"
+	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
 
 	"github.com/geniusrabbit/adcorelib/admodels"

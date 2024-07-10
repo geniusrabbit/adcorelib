@@ -8,7 +8,6 @@ import (
 
 func TestOptimizerEncode(t *testing.T) {
 	var optimizer Optimizer
-	optimizer.Init()
 
 	for i := 0; i < 10; i++ {
 		var (
@@ -37,7 +36,6 @@ func TestOptimizerDecode(t *testing.T) {
 		optimizer Optimizer
 		data      = []byte(`{"1":[{"cc":1,"ln":1,"dv":1,"os":1,"br":1,"vl":1},{"vl":0.5}]}`)
 	)
-	optimizer.Init()
 
 	if err := json.Unmarshal(data, &optimizer); err != nil {
 		t.Errorf("decode error: %s", err.Error())
@@ -61,7 +59,6 @@ func TestOptimizerDecode(t *testing.T) {
 
 func BenchmarkOptimizer(b *testing.B) {
 	var optimizer Optimizer
-	optimizer.Init()
 
 	b.ResetTimer()
 	b.ReportAllocs()

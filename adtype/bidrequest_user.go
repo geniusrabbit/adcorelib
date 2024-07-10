@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/bsm/openrtb"
-	"github.com/sspserver/udetect"
-	uopenrtb "github.com/sspserver/udetect/openrtb"
+	"github.com/geniusrabbit/udetect"
+	uopenrtb "github.com/geniusrabbit/udetect/openrtb"
 )
 
 // TypeSex type

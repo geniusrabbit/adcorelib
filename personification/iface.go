@@ -1,8 +1,8 @@
 package personification
 
 import (
+	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
-	"github.com/sspserver/udetect"
 )
 
 type (

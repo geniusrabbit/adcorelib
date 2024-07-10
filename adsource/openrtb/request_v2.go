@@ -5,7 +5,7 @@ import (
 
 	"github.com/bsm/openrtb"
 	openrtbnreq "github.com/bsm/openrtb/native/request"
-	uopenrtb "github.com/sspserver/udetect/openrtb"
+	uopenrtb "github.com/geniusrabbit/udetect/openrtb"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adtype"
