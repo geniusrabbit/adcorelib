@@ -19,7 +19,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
-	"github.com/geniusrabbit/adcorelib/adsource/optimizer"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
 	counter "github.com/geniusrabbit/adcorelib/errorcounter"
@@ -54,9 +53,6 @@ type driver[NetDriver httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpc
 
 	// Client of HTTP requests
 	netClient NetDriver
-
-	// optimizator object
-	optimizator *optimizer.Optimizer
 }
 
 func newDriver[ND httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclient.Response](_ context.Context, source *admodels.RTBSource, netClient ND, _ ...any) (*driver[ND, Rq, Rs], error) {
@@ -64,10 +60,9 @@ func newDriver[ND httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclien
 		source.MinimalWeight = defaultMinWeight
 	}
 	return &driver[ND, Rq, Rs]{
-		source:      source,
-		Headers:     source.Headers.DataOr(nil),
-		netClient:   netClient,
-		optimizator: optimizer.New(),
+		source:    source,
+		Headers:   source.Headers.DataOr(nil),
+		netClient: netClient,
 		latencyMetrics: prometheuswrapper.NewWrapperDefault("adsource_",
 			[]string{"id", "protocol", "driver"},
 			[]string{gocast.Str(source.ID), source.Protocol, "openrtb"},
@@ -104,21 +99,6 @@ func (d *driver[ND, Rq, Rs]) Test(request *adtype.BidRequest) bool {
 		return false
 	}
 
-	// Check formats targeting
-	for _, f := range request.Formats() {
-		if !d.optimizator.Test(
-			uint(f.ID),
-			byte(request.GeoID()),
-			request.LanguageID(),
-			request.DeviceID(),
-			request.OSID(),
-			request.BrowserID(),
-			d.source.MinimalWeight,
-		) {
-			d.latencyMetrics.IncSkip()
-			return false
-		}
-	}
 	return true
 }
 
@@ -185,31 +165,6 @@ func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Re
 			d.latencyMetrics.IncSuccess()
 		} else {
 			d.latencyMetrics.IncNobid()
-		}
-		for _, ad := range response.Ads() {
-			for _, f := range ad.Impression().Formats() {
-				_ = d.optimizator.Inc(
-					uint(f.ID),
-					byte(request.GeoID()),
-					request.LanguageID(),
-					request.DeviceID(),
-					request.OSID(),
-					request.BrowserID(),
-					d.source.MinimalWeight,
-				)
-			}
-		}
-	} else {
-		for _, f := range request.Formats() {
-			_ = d.optimizator.Inc(
-				uint(f.ID),
-				byte(request.GeoID()),
-				request.LanguageID(),
-				request.DeviceID(),
-				request.OSID(),
-				request.BrowserID(),
-				-d.source.MinimalWeight,
-			)
 		}
 	}
 

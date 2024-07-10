@@ -1,4 +1,4 @@
-package simplepersondetector
+package personification
 
 import (
 	"context"

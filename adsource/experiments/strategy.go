@@ -1,4 +1,4 @@
-package adsourceexperiments
+package experiments
 
 import (
 	"math/rand"
@@ -12,7 +12,6 @@ type IndexStrategy interface {
 }
 
 // Counter strategy wrapper
-
 type counterStrategy struct {
 	counter uint32
 }

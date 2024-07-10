@@ -16,7 +16,7 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"go.uber.org/zap"
 
-	"github.com/geniusrabbit/adcorelib/adsourceexperiments"
+	"github.com/geniusrabbit/adcorelib/adsource/experiments"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/auction"
 	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
@@ -40,7 +40,7 @@ const (
 // where should be sent in which driver
 type MultisourceWrapper struct {
 	// Main source which called everytime
-	baseSource adsourceexperiments.SourceWrapper
+	baseSource experiments.SourceWrapper
 
 	// Source list of external platforms
 	sources adtype.SourceAccessor
@@ -70,14 +70,8 @@ func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 		return nil, ErrSourcesCantBeNil
 	}
 
-	if wrp.requestTimeout < minimalTimeout {
-		wrp.requestTimeout = minimalTimeout
-	}
-
-	if wrp.maxParallelRequest < minimalParallelRequests {
-		wrp.maxParallelRequest = minimalParallelRequests
-	}
-
+	wrp.requestTimeout = max(wrp.requestTimeout, minimalTimeout)
+	wrp.maxParallelRequest = max(wrp.maxParallelRequest, minimalParallelRequests)
 	wrp.execpool = rpool.NewPool(rpool.WithMaxTasksCount(wrp.maxParallelRequest))
 
 	return &wrp, nil
@@ -98,12 +92,12 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		return adtype.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
 	}
 	var (
-		err     error
 		count   = wrp.maxParallelRequest
-		tube    = make(chan adtype.Responser, wrp.maxParallelRequest)
+		tube    = make(chan adtype.Responser, count)
 		span, _ = gtracing.StartSpanFromContext(request.Ctx, "ssp.bid")
 		referee auction.Referee
 		timeout bool
+		err     error
 	)
 
 	if span != nil {

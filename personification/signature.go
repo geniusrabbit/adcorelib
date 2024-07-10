@@ -16,8 +16,8 @@ import (
 	fasthttpext "github.com/geniusrabbit/adcorelib/net/fasthttp"
 )
 
-// Signeture provides the builder of cookie assigned to the user by HTTP
-type Signeture struct {
+// Signature provides the builder of cookie assigned to the user by HTTP
+type Signature struct {
 	UUIDName       string
 	SessidName     string
 	SessidLifetime time.Duration
@@ -25,7 +25,7 @@ type Signeture struct {
 }
 
 // Whois user information
-func (sign *Signeture) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Person, error) {
+func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Person, error) {
 	var (
 		uuidCookie   fasthttp.Cookie
 		sessidCookie fasthttp.Cookie
@@ -95,7 +95,7 @@ func (sign *Signeture) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 }
 
 // SignCookie do sign request by traking response
-func (sign *Signeture) SignCookie(resp Person, req *fasthttp.RequestCtx) {
+func (sign *Signature) SignCookie(resp Person, req *fasthttp.RequestCtx) {
 	if span, _ := gtracing.StartSpanFromFastContext(req, "personification.sign"); span != nil {
 		defer span.Finish()
 	}

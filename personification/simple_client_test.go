@@ -1,4 +1,4 @@
-package simplepersondetector
+package personification
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	useragent "github.com/mileusna/useragent"
 )
 
-func TestDetector(t *testing.T) {
+func TestSimpleDetector(t *testing.T) {
 	userAgents := []string{
 		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8",
 		"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",

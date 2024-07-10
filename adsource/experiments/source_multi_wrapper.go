@@ -1,4 +1,4 @@
-package adsourceexperiments
+package experiments
 
 import (
 	"time"

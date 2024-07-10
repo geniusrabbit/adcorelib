@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/geniusrabbit/adcorelib/adsourceexperiments"
+	"github.com/geniusrabbit/adcorelib/adsource/experiments"
 	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
@@ -17,8 +17,8 @@ func WithBaseSource(source any) Option {
 		switch src := source.(type) {
 		case nil:
 		case adtype.Source:
-			wrp.baseSource = adsourceexperiments.NewSimpleWrapper(src)
-		case adsourceexperiments.SourceWrapper:
+			wrp.baseSource = experiments.NewSimpleWrapper(src)
+		case experiments.SourceWrapper:
 			wrp.baseSource = src
 		default:
 			panic(fmt.Sprintf("Invalid base source type %T", source))
