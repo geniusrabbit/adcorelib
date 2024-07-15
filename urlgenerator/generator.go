@@ -19,13 +19,14 @@ import (
 
 // Generator of URLs
 type Generator struct {
-	EventGenerator eventgenerator.Generator
-	PixelGenerator pixelgenerator.PixelGenerator
-	CDNDomain      string
-	LibDomain      string
-	ClickPattern   string
-	DirectPattern  string
-	WinPattern     string
+	EventGenerator       eventgenerator.Generator
+	PixelGenerator       pixelgenerator.PixelGenerator
+	CDNDomain            string
+	LibDomain            string
+	ClickPattern         string
+	DirectPattern        string
+	WinPattern           string
+	BillingNoticePattern string
 }
 
 func (g *Generator) Init() *Generator {
@@ -139,6 +140,14 @@ func (g *Generator) WinURL(event events.Type, status uint8, item adtype.Response
 		event = events.AccessPointWin
 	}
 	return g.encodeURL(g.WinPattern, event, events.StatusSuccess, item, response)
+}
+
+// BillingNoticeURL generator from response of item
+func (g *Generator) BillingNoticeURL(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+	if event == events.Undefined {
+		event = events.AccessPointBillingNotice
+	}
+	return g.encodeURL(g.BillingNoticePattern, event, status, item, response)
 }
 
 // WinRouterURL returns router pattern

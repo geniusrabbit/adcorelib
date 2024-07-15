@@ -27,9 +27,8 @@ type responseDataAccessor interface {
 type ResponseBidItem struct {
 	ItemID string
 
-	Src Source
-
 	// Request and impression data
+	Src Source
 	Req *BidRequest
 	Imp *Impression
 
@@ -361,13 +360,10 @@ func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
 }
 
 // PurchasePrice gives the price of view from external resource.
-// The cost of this request.
+// The cost of this request for the system.
 func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
 	if it == nil {
 		return 0
-	}
-	if len(removeFactors) == 0 {
-		removeFactors = []PriceFactor{^TargetReducePriceFactor}
 	}
 	// Some sources can have the fixed price of buying
 	if action.IsImpression() && it.Imp.PurchaseViewPrice > 0 {
@@ -377,6 +373,9 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
 			return pPrice
 		}
+	}
+	if len(removeFactors) == 0 {
+		removeFactors = []PriceFactor{^TargetReducePriceFactor}
 	}
 	switch action {
 	case admodels.ActionImpression:

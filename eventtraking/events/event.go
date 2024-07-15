@@ -58,7 +58,7 @@ type Event struct {
 	ExtAuctionID string `thrift:",15" json:"eauc,omitempty"`    // RTB Request/Response ID
 	ExtImpID     string `thrift:",16" json:"eimp,omitempty"`    // RTB Imp ID
 	ExtTargetID  string `thrift:",17" json:"extz,omitempty"`    // RTB Zone ID (tagid)
-	Source       uint64 `thrift:",18" json:"src,omitempty"`     // Advertisement Source ID
+	Source       uint64 `thrift:",18" json:"sid,omitempty"`     // Advertisement Source ID
 	Network      string `thrift:",19" json:"net,omitempty"`     // Source Network Name or Domain (Cross sails)
 	AccessPoint  uint64 `thrift:",20" json:"acp,omitempty"`     // Access Point ID to own Advertisement
 	// State Location

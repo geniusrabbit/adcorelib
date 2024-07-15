@@ -125,6 +125,7 @@ func (d *driver) bidImpFormat(request *adtype.BidRequest, imp *adtype.Impression
 			Imp:         imp,
 			Campaign:    ad.Campaign,
 			Ad:          ad,
+			AdBid:       targetBid.Bid,
 			BidECPM:     targetBid.ECPM,
 			BidPrice:    targetBid.BidPrice,
 			AdPrice:     targetBid.Price,

@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2016 – 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019
+// @project GeniusRabbit corelib 2016 – 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2024
 //
 
 package adtype
@@ -18,20 +18,24 @@ import (
 
 // ResponseAdItem for select from storage
 type ResponseAdItem struct {
-	Ctx         context.Context    `json:"-"`
-	ItemID      string             `json:"id"`
-	Src         Source             `json:"source,omitempty"`     //
-	Req         *BidRequest        `json:"request,omitempty"`    //
-	Imp         *Impression        `json:"impression,omitempty"` // Impression Unique
-	Campaign    *admodels.Campaign `json:"campaign,omitempty"`   //
-	Ad          *admodels.Ad       `json:"ad,omitempty"`         //
-	AdLink      admodels.AdLink    `json:"ad_link,omitempty"`    //
-	BidECPM     billing.Money      `json:"bid_ecpm,omitempty"`   //
-	BidPrice    billing.Money      `json:"bid_price,omitempty"`  // Max RTB bid price (CPM only)
-	AdPrice     billing.Money      `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
-	AdLeadPrice billing.Money      `json:"lead_price,omitempty"` //
-	CPMBidPrice billing.Money      `json:"cpm_bid,omitempty"`    // This param can update only price predictor
-	SecondAd    SecondAd           `json:"second_ad,omitempty"`  //
+	Ctx    context.Context `json:"-"`
+	ItemID string          `json:"id"`
+
+	Src Source      `json:"source,omitempty"`
+	Req *BidRequest `json:"request,omitempty"`
+	Imp *Impression `json:"impression,omitempty"` // Impression Unique
+
+	Campaign *admodels.Campaign `json:"campaign,omitempty"`
+	Ad       *admodels.Ad       `json:"ad,omitempty"`
+	AdBid    *admodels.AdBid    `json:"ad_bid,omitempty"`
+	AdLink   admodels.AdLink    `json:"ad_link,omitempty"`
+
+	BidECPM     billing.Money `json:"bid_ecpm,omitempty"`   //
+	BidPrice    billing.Money `json:"bid_price,omitempty"`  // Max RTB bid price (CPM only)
+	AdPrice     billing.Money `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
+	AdLeadPrice billing.Money `json:"lead_price,omitempty"` //
+	CPMBidPrice billing.Money `json:"cpm_bid,omitempty"`    // This param can update only price predictor
+	SecondAd    SecondAd      `json:"second_ad,omitempty"`  //
 }
 
 // ID of current response item (unique code of current response)
@@ -215,7 +219,7 @@ func (it *ResponseAdItem) AdID() uint64 {
 	if it == nil || it.Ad == nil {
 		return 0
 	}
-	return uint64(it.Ad.ID)
+	return it.Ad.ID
 }
 
 // AdIDString References the ad to be served if the bid wins.
@@ -381,9 +385,6 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 	if it == nil {
 		return 0
 	}
-	if len(removeFactors) == 0 {
-		removeFactors = []PriceFactor{^TargetReducePriceFactor}
-	}
 	// Some sources can have the fixed price of buying
 	if action.IsImpression() && it.Imp.PurchaseViewPrice > 0 {
 		return it.Imp.PurchaseViewPrice
@@ -392,6 +393,9 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
 			return pPrice
 		}
+	}
+	if len(removeFactors) == 0 {
+		removeFactors = []PriceFactor{^TargetReducePriceFactor}
 	}
 	switch action {
 	case admodels.ActionImpression:

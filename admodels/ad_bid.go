@@ -14,11 +14,12 @@ import (
 
 // TargetBid object
 type TargetBid struct {
+	Ad        *Ad
+	Bid       *AdBid
 	ECPM      billing.Money
 	BidPrice  billing.Money // Max price per one View (used in DSP auction)
 	Price     billing.Money // Price per one view or click
 	LeadPrice billing.Money // Price per one lead
-	Ad        *Ad
 }
 
 // Less then other target

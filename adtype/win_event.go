@@ -10,7 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -37,7 +37,7 @@ type WinEvent struct {
 
 // WinEventDecode from bytes
 func WinEventDecode(data string, ext ...any) (*WinEvent, error) {
-	var win = &WinEvent{}
+	win := &WinEvent{}
 	if len(ext) > 0 {
 		win.Data = ext[0]
 	}
@@ -77,14 +77,14 @@ func (e *WinEvent) Ping() bool {
 	}
 
 	var resp *http.Response
-	if u, err := url.QueryUnescape(e.URL); nil == err {
+	if u, err := url.QueryUnescape(e.URL); err == nil {
 		e.URL = u
 	}
 
 	resp, e.Error = http.Get(e.URL)
 	if resp != nil && e.Error == nil {
 		e.Status = resp.StatusCode
-		if data, _ := ioutil.ReadAll(resp.Body); nil != data {
+		if data, _ := io.ReadAll(resp.Body); data != nil {
 			e.Response = string(data)
 		} else {
 			e.Response = ""

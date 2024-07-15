@@ -46,6 +46,13 @@ type AdAsset struct {
 	Thumbs      []AdAssetThumb
 }
 
+func (f *AdAsset) GetID() uint64 {
+	if f == nil {
+		return 0
+	}
+	return f.ID
+}
+
 // // AdAssetByModel original
 // func AdAssetByModel(file *models.AdAsset) *AdAsset {
 // 	var (

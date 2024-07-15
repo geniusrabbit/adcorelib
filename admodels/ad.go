@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2016 – 2018
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2018
+// @project GeniusRabbit corelib 2016 – 2018, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2018, 2024
 //
 
 package admodels
@@ -235,6 +235,7 @@ func (a *Ad) TargetBid(pointer types.TargetPointer) TargetBid {
 	if bid := a.Bids.Bid(pointer); bid != nil {
 		return TargetBid{
 			Ad:        a,
+			Bid:       bid,
 			BidPrice:  bid.BidPrice,
 			Price:     bid.Price,
 			LeadPrice: bid.LeadPrice,
@@ -244,6 +245,7 @@ func (a *Ad) TargetBid(pointer types.TargetPointer) TargetBid {
 
 	return TargetBid{
 		Ad:        a,
+		Bid:       nil,
 		BidPrice:  a.BidPrice,
 		Price:     a.Price,
 		LeadPrice: a.LeadPrice,
@@ -350,7 +352,7 @@ func (a *Ad) Errors() []error {
 /// Internal methods
 ///////////////////////////////////////////////////////////////////////////////
 
-func (a *Ad) ecpm(pointer types.TargetPointer, price billing.Money) billing.Money {
+func (a *Ad) ecpm( /*pointer*/ types.TargetPointer /*price*/, billing.Money) billing.Money {
 	// if a.State != nil {
 	// 	if ecpm := a.State.ECPM().Value(pointer); ecpm > 0 {
 	// 		return ecpm

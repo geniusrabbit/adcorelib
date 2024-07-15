@@ -18,6 +18,7 @@ type revenueShareReducerFactorer interface {
 type PriceFactor uint32
 
 const (
+	NonePriceFactor            PriceFactor = 0x0000
 	AllPriceFactors            PriceFactor = 0xffffffff
 	SourcePriceFactor          PriceFactor = 0x0001
 	SystemComissionPriceFactor PriceFactor = 0x0002
@@ -34,7 +35,7 @@ func PriceFactorFromList(factors ...PriceFactor) (f PriceFactor) {
 
 // Add comissions to price and rеturns comissions with positive sign `+`
 func (f PriceFactor) Add(price billing.Money, it ResponserItem) (comissions billing.Money) {
-	if price <= 0 {
+	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
 	if f&SourcePriceFactor == SourcePriceFactor {
@@ -57,7 +58,7 @@ func (f PriceFactor) Add(price billing.Money, it ResponserItem) (comissions bill
 
 // Remove comissions from price and rеturns comissions with negative sign `-`
 func (f PriceFactor) Remove(price billing.Money, it ResponserItem) (comissions billing.Money) {
-	if price <= 0 {
+	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
 	if f&TargetReducePriceFactor == TargetReducePriceFactor {

@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2017 - 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019
+// @project GeniusRabbit corelib 2017 - 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019, 2024
 //
 
 package adtype
@@ -42,6 +42,9 @@ type URLGenerator interface {
 
 	// WinURL generator from response of item
 	WinURL(event events.Type, status uint8, item ResponserItem, response Responser) (string, error)
+
+	// BillingNoticeURL generator from response of item
+	BillingNoticeURL(event events.Type, status uint8, item ResponserItem, response Responser) (string, error)
 
 	// WinRouterURL returns router pattern
 	WinRouterURL() string
