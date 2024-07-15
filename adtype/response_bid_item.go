@@ -25,20 +25,32 @@ type responseDataAccessor interface {
 
 // ResponseBidItem value
 type ResponseBidItem struct {
-	ItemID      string
-	Src         Source
-	Req         *BidRequest
-	Imp         *Impression
-	FormatType  types.FormatType
-	RespFormat  *types.Format
-	Bid         *openrtb.Bid
-	Native      *natresp.Response
-	Data        responseDataAccessor
-	BidPrice    billing.Money
+	ItemID string
+
+	Src Source
+
+	// Request and impression data
+	Req *BidRequest
+	Imp *Impression
+
+	// Format of response advertisement item
+	FormatType types.FormatType
+	RespFormat *types.Format
+
+	// External response data from RTB source
+	Bid    *openrtb.Bid
+	Native *natresp.Response
+
+	// External bidding price
+	BidPrice    billing.Money // Bid price per one action (can be updated by price predictor)
 	CPMBidPrice billing.Money // This param can update only price predictor
-	SecondAd    SecondAd
-	assets      admodels.AdAssets
-	context     context.Context
+
+	// Competitive second AD
+	SecondAd SecondAd
+
+	Data    responseDataAccessor
+	assets  admodels.AdAssets
+	context context.Context
 }
 
 // ID of current response item (unique code of current response)
@@ -318,15 +330,12 @@ func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...PriceF
 			price = billing.MoneyFloat(it.Bid.Price / 1000)
 		}
 	}
-	price -= PriceFactorList(removeFactors).Calc(price, it, true)
-	return price
+	return price + PriceFactorFromList(removeFactors...).Remove(price, it)
 }
 
 // SetCPMPrice update of DSP auction value
 func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
-	for _, fact := range includeFactors {
-		price += fact.Calc(price, it, false)
-	}
+	price += PriceFactorFromList(includeFactors...).Add(price, it)
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price
 	}
@@ -334,16 +343,16 @@ func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...Pr
 
 // CPMPrice value price value for DSP auction
 func (it *ResponseBidItem) CPMPrice(removeFactors ...PriceFactor) (price billing.Money) {
-	if it.PricingModel() == types.PricingModelCPM {
+	if it.PricingModel().IsCPM() {
 		price = it.Price(admodels.ActionImpression) * 1000
 	} else {
 		price = it.ECPM()
 	}
+	// Here we have check for the price from the source wasn't exceeded the ad aficiency price
 	if it.CPMBidPrice > 0 && it.CPMBidPrice < price {
 		price = it.CPMBidPrice
 	}
-	price -= PriceFactorList(removeFactors).Calc(price, it, true)
-	return price
+	return price + PriceFactorFromList(removeFactors...).Remove(price, it)
 }
 
 // AuctionCPMBid value price without any comission
@@ -391,7 +400,7 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (it *ResponseBidItem) PotentialPrice(action admodels.Action) billing.Money {
-	return SourcePriceFactor.Calc(it.Price(action), it, true)
+	return -SourcePriceFactor.Remove(it.Price(action), it)
 }
 
 // Second campaigns
@@ -399,17 +408,7 @@ func (it *ResponseBidItem) Second() *SecondAd {
 	return &it.SecondAd
 }
 
-// RevenuePercent money
-func (it *ResponseBidItem) RevenuePercent() float64 {
-	return it.RevenueShareFactor() * 100
-}
-
-// PotentialPercent money
-func (it *ResponseBidItem) PotentialPercent() float64 {
-	return it.Source().PriceCorrectionReduceFactor() * 100
-}
-
-// RevenueShareFactor value
+// RevenueShareFactor value for the publisher company
 func (it *ResponseBidItem) RevenueShareFactor() float64 {
 	return it.Imp.RevenueShareFactor()
 }
@@ -419,12 +418,12 @@ func (it *ResponseBidItem) ComissionShareFactor() float64 {
 	return it.Imp.ComissionShareFactor()
 }
 
-// IsDirect ad
+// IsDirect AD format
 func (it *ResponseBidItem) IsDirect() bool {
 	return it.Imp.IsDirect()
 }
 
-// ActionURL for direct ads
+// ActionURL for direct ADS
 func (it *ResponseBidItem) ActionURL() string {
 	if it.Native == nil {
 		return ""

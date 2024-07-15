@@ -124,12 +124,6 @@ type ResponserItem interface {
 	// Second campaigns
 	Second() *SecondAd
 
-	// RevenuePercent money
-	RevenuePercent() float64
-
-	// PotentialPercent money
-	PotentialPercent() float64
-
 	// ECPM item value
 	ECPM() billing.Money
 

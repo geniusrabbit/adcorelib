@@ -121,7 +121,6 @@ func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Re
 	d.latencyMetrics.BeginQuery()
 
 	httpRequest, err := d.request(request)
-
 	if err != nil {
 		return adtype.NewErrorResponse(request, err)
 	}
@@ -257,7 +256,7 @@ func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) 
 		if d.source.Options.Trace {
 			var data []byte
 			if data, err = io.ReadAll(r); err == nil {
-				ctxlogger.Get(request.Ctx).Error("unmarshal",
+				ctxlogger.Get(request.Ctx).Error("trace unmarshal",
 					zap.String("src_url", d.source.URL),
 					zap.String("unmarshal_data", string(data)))
 				err = json.Unmarshal(data, &bidResp)

@@ -220,7 +220,7 @@ func (it *ResponseAdItem) AdID() uint64 {
 
 // AdIDString References the ad to be served if the bid wins.
 func (it *ResponseAdItem) AdIDString() string {
-	return fmt.Sprintf("%d", it.Ad.ID)
+	return strconv.FormatUint(it.AdID(), 10)
 }
 
 // ProjectID number
@@ -340,13 +340,13 @@ func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...PriceFa
 			price = it.Ad.LeadPrice
 		}
 	}
-	price -= PriceFactorList(removeFactors).Calc(price, it, true)
+	price += PriceFactorFromList(removeFactors...).Remove(price, it)
 	return price
 }
 
 // SetCPMPrice update of DSP auction value
 func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
-	price += PriceFactorList(includeFactors).Calc(price, it, false)
+	price += PriceFactorFromList(includeFactors...).Add(price, it)
 	if price < it.ECPM() || price < it.Ad.BidPrice {
 		it.CPMBidPrice = price
 	}
@@ -365,7 +365,7 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.
 	price = it.prepareMaxBidPrice(price, true)
 
 	// Remove system commision from the price
-	price -= PriceFactorList(removeFactors).Calc(price, it, true)
+	price += PriceFactorFromList(removeFactors...).Remove(price, it)
 	return price
 }
 
@@ -415,20 +415,7 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (it *ResponseAdItem) PotentialPrice(action admodels.Action) billing.Money {
-	return SourcePriceFactor.Calc(it.Price(action), it, true)
-}
-
-// RevenuePercent value
-func (it *ResponseAdItem) RevenuePercent() float64 {
-	return it.ComissionShareFactor() * 100
-}
-
-// PotentialPercent money
-func (it *ResponseAdItem) PotentialPercent() float64 {
-	if it.Src != nil {
-		return it.Src.PriceCorrectionReduceFactor() * 100
-	}
-	return 0
+	return -SourcePriceFactor.Remove(it.Price(action), it)
 }
 
 // Validate item

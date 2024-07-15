@@ -146,7 +146,6 @@ func (r *BidResponse) Prepare() {
 				Bid:        bid,
 				Native:     nil,
 				Data:       nil,
-				BidPrice:   billing.MoneyFloat(bid.Price),
 			})
 			continue
 		}
@@ -168,7 +167,6 @@ func (r *BidResponse) Prepare() {
 						RespFormat: format,
 						Bid:        bid,
 						Native:     native,
-						BidPrice:   billing.MoneyFloat(bid.Price),
 					})
 				}
 			case format.IsBanner() || format.IsProxy():
@@ -180,7 +178,6 @@ func (r *BidResponse) Prepare() {
 					FormatType: bannerFormatType(bid.AdMarkup),
 					RespFormat: format,
 					Bid:        bid,
-					BidPrice:   billing.MoneyFloat(bid.Price),
 				})
 			}
 			break

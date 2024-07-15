@@ -1,14 +1,15 @@
 //
-// @project GeniusRabbit corelib 2017, 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017, 2019
+// @project GeniusRabbit corelib 2017, 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017, 2019, 2024
 //
 
 package admodels
 
 import (
+	"go.uber.org/zap"
+
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/models"
-	"go.uber.org/zap"
 )
 
 // Company model
@@ -38,7 +39,7 @@ func CompanyFromModel(c *models.Company) *Company {
 	}
 }
 
-// RevenueShareFactor multipler 0..1
+// RevenueShareFactor multipler 0..1 that publisher get from system
 func (c *Company) RevenueShareFactor() float64 {
 	if c == nil {
 		zap.L().Error("company is not inited")
@@ -49,11 +50,7 @@ func (c *Company) RevenueShareFactor() float64 {
 
 // ComissionShareFactor which system get from publisher 0..1
 func (c *Company) ComissionShareFactor() float64 {
-	if c == nil {
-		zap.L().Error("company is not inited")
-		return 1
-	}
-	return (100 - c.RevenueShare) / 100.
+	return 1 - c.RevenueShareFactor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////

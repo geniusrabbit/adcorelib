@@ -50,13 +50,6 @@ func Test_ItemPricing(t *testing.T) {
 			}
 		})
 
-		t.Run(prefix+"_potential_value", func(t *testing.T) {
-			pot := item.PotentialPercent() * item.Price(admodels.ActionImpression).Float64()
-			if pot != 0 {
-				t.Errorf("wrong_potential value: %.3f", pot)
-			}
-		})
-
 		t.Run(prefix+"_cpm_price", func(t *testing.T) {
 			if item.CPMPrice() != billing.MoneyFloat(5.) {
 				t.Errorf("cpm_price value: 5 != %.3f", item.CPMPrice().Float64())

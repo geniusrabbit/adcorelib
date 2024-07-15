@@ -86,7 +86,7 @@ func (l *Smartlink) CompanyID() uint64 {
 	return l.CompID
 }
 
-// RevenueShareFactor amount %
+// RevenueShareFactor amount of % which company get from publisher
 func (l *Smartlink) RevenueShareFactor() float64 {
 	return l.Comp.RevenueShareFactor()
 }

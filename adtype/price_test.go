@@ -28,9 +28,13 @@ func TestPriceCorrection(t *testing.T) {
 	}
 	price := billing.MoneyFloat(1.123)
 	price += PriceSourceFactors(price, &SourceEmpty{PriceCorrectionReduce: 10}, true)
-	price += PriceSystemComission(price, item, true)
-	price += PriceRevenueShareReduceFactors(price, item, true)
-	assert.True(t, price > 0 && price < billing.MoneyFloat(1.123))
+	if assert.Equal(t, billing.MoneyFloat(1.123*0.9), price, "source price factor") {
+		price += PriceSystemComission(price, item, true)
+		if assert.Equal(t, billing.MoneyFloat(1.123*0.9*0.95), price, "system comission") {
+			price += PriceRevenueShareReduceFactors(price, item, true)
+			assert.Equal(t, billing.MoneyFloat(1.123*0.9*0.95*0.85), price, "revenue share reduce")
+		}
+	}
 }
 
 func TestPriceCorrection2(t *testing.T) {
@@ -43,6 +47,8 @@ func TestPriceCorrection2(t *testing.T) {
 		item = newRTBResponse(comp, imp)
 	)
 	price := billing.MoneyFloat(1.123)
-	price += PriceFactorList{SourcePriceFactor, SystemComissionPriceFactor, TargetReducePriceFactor}.Calc(price, item, true)
+	price += PriceFactorFromList(SourcePriceFactor, SystemComissionPriceFactor, TargetReducePriceFactor).
+		Remove(price, item)
 	assert.True(t, price > 0 && price < billing.MoneyFloat(1.123))
+	assert.Equal(t, billing.MoneyFloat(1.123*0.85).Float64(), price.Float64())
 }

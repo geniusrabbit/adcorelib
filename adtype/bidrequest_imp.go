@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2016 – 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019
+// @project GeniusRabbit corelib 2016 – 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2024
 //
 
 package adtype
@@ -16,30 +16,37 @@ import (
 
 // Impression target
 type Impression struct {
-	ID                string                 `json:"id,omitempty"`                  // Internal impression ID
-	ExtID             string                 `json:"extid,omitempty"`               // External impression ID (ImpID)
-	ExtTargetID       string                 `json:"exttrgid"`                      // External zone ID (tagid)
-	Request           any                    `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
-	Target            admodels.Target        `json:"target,omitempty"`              //
-	BidFloor          billing.Money          `json:"bid_floor,omitempty"`           //
-	PurchaseViewPrice billing.Money          `json:"purchase_view_price,omitempty"` //
-	Pos               int                    `json:"pos,omitempty"`                 // 5.4 Ad Position
-	Count             int                    `json:"cnt,omitempty"`                 // Count of places for multiple banners
-	X                 int                    `json:"x,omitempty"`                   // Position on the site screen
-	Y                 int                    `json:"y,omitempty"`                   //
-	W                 int                    `json:"w,omitempty"`                   //
-	H                 int                    `json:"h,omitempty"`                   //
-	WMax              int                    `json:"wm,omitempty"`                  //
-	HMax              int                    `json:"hm,omitempty"`                  //
-	SubID1            string                 `json:"subid1,omitempty"`              //
-	SubID2            string                 `json:"subid2,omitempty"`              //
-	SubID3            string                 `json:"subid3,omitempty"`              //
-	SubID4            string                 `json:"subid4,omitempty"`              //
-	SubID5            string                 `json:"subid5,omitempty"`              //
-	Ext               map[string]any         `json:"ext,omitempty"`
-	FormatTypes       types.FormatTypeBitset `json:"-"`
-	formats           []*types.Format
-	formatBitset      *searchtypes.UIntBitset
+	ID                string          `json:"id,omitempty"`                  // Internal impression ID
+	ExtID             string          `json:"extid,omitempty"`               // External impression ID (ImpID)
+	ExtTargetID       string          `json:"exttrgid"`                      // External zone ID (tagid)
+	Request           any             `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
+	Target            admodels.Target `json:"target,omitempty"`              //
+	BidFloor          billing.Money   `json:"bid_floor,omitempty"`           //
+	PurchaseViewPrice billing.Money   `json:"purchase_view_price,omitempty"` //
+	Pos               int             `json:"pos,omitempty"`                 // 5.4 Ad Position
+	Count             int             `json:"cnt,omitempty"`                 // Count of places for multiple banners
+
+	// Sizes and position on the screen
+	X    int `json:"x,omitempty"`  // Position on the site screen
+	Y    int `json:"y,omitempty"`  //
+	W    int `json:"w,omitempty"`  //
+	H    int `json:"h,omitempty"`  //
+	WMax int `json:"wm,omitempty"` //
+	HMax int `json:"hm,omitempty"` //
+
+	// Additional identifiers
+	SubID1 string `json:"subid1,omitempty"`
+	SubID2 string `json:"subid2,omitempty"`
+	SubID3 string `json:"subid3,omitempty"`
+	SubID4 string `json:"subid4,omitempty"`
+	SubID5 string `json:"subid5,omitempty"`
+
+	// Format types for impression
+	FormatTypes  types.FormatTypeBitset `json:"-"`
+	formats      []*types.Format
+	formatBitset *searchtypes.UIntBitset
+
+	Ext map[string]any `json:"ext,omitempty"`
 }
 
 // Init internal information
@@ -126,7 +133,7 @@ func (i *Impression) IsStandart() bool {
 		i.FormatTypes.Is(types.FormatBannerHTML5Type)
 }
 
-// RevenueShareFactor value
+// RevenueShareFactor value for the publisher company
 func (i *Impression) RevenueShareFactor() float64 {
 	if i == nil || i.Target == nil {
 		return 0
