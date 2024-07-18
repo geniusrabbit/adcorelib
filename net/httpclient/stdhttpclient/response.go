@@ -10,6 +10,9 @@ type Response struct {
 }
 
 func (r *Response) StatusCode() int {
+	if r == nil {
+		return 0
+	}
 	return r.HTTP.StatusCode
 }
 

@@ -21,6 +21,8 @@ import (
 type Generator struct {
 	EventGenerator       eventgenerator.Generator
 	PixelGenerator       pixelgenerator.PixelGenerator
+	Schema               string
+	ServiceDomain        string
 	CDNDomain            string
 	LibDomain            string
 	ClickPattern         string
@@ -30,6 +32,9 @@ type Generator struct {
 }
 
 func (g *Generator) Init() *Generator {
+	if g.Schema != "" && !strings.HasSuffix(g.Schema, "://") {
+		g.Schema = strings.TrimRight(g.Schema, ":/") + "://"
+	}
 	if !(false ||
 		strings.HasPrefix(g.CDNDomain, "http://") ||
 		strings.HasPrefix(g.CDNDomain, "https://") ||
@@ -167,8 +172,10 @@ func (g *Generator) EventCode(event events.Type, status uint8, item adtype.Respo
 }
 
 func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+	if pattern == "" {
+		return "", nil
+	}
 	var (
-		rctx      = response.Request().HTTPRequest()
 		code, err = g.EventCode(event, status, item, response)
 		urlVal    string
 	)
@@ -179,14 +186,15 @@ func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, i
 	code = url.QueryEscape(code)
 	if !strings.Contains(pattern, "{hostname}") {
 		if strings.HasPrefix(pattern, "/") {
-			urlVal = "//" + string(rctx.Host()) + strings.Replace(pattern, "{code}", code, -1)
+			urlVal = g.hostSchema() + g.hostDomain(response) + strings.Replace(pattern, "{code}", code, -1)
 		} else {
-			urlVal = "//" + string(rctx.Host()) + "/" + strings.Replace(pattern, "{code}", code, -1)
+			urlVal = g.hostSchema() + g.hostDomain(response) + "/" + strings.Replace(pattern, "{code}", code, -1)
 		}
 	} else {
 		urlVal = strings.NewReplacer(
+			"{schema}", g.hostSchema(),
 			"{code}", code,
-			"{hostname}", string(rctx.Host()),
+			"{hostname}", g.hostDomain(response),
 		).Replace(pattern)
 	}
 
@@ -201,6 +209,20 @@ func (g *Generator) encodeURL(pattern string, event events.Type, status uint8, i
 		urlVal += "price=${AUCTION_PRICE}"
 	}
 	return urlVal, nil
+}
+
+func (g *Generator) hostSchema() string {
+	if g.Schema == "" {
+		return "//"
+	}
+	return g.Schema
+}
+
+func (g *Generator) hostDomain(response adtype.Responser) string {
+	if g.ServiceDomain != "" {
+		return g.ServiceDomain
+	}
+	return string(response.Request().HTTPRequest().Host())
 }
 
 func isFullURL(url string) bool {

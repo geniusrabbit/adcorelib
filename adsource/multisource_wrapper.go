@@ -129,12 +129,8 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 	}
 
 	// Source request loop
-	for iterator := wrp.sources.Iterator(request); ; {
-		src := iterator.Next()
-		if src == nil {
-			break
-		}
-
+	iterator := wrp.sources.Iterator(request)
+	for src := iterator.Next(); src != nil; src = iterator.Next() {
 		if wrp.testSource(src, request) {
 			count--
 			wrp.execpool.Go(func() {
@@ -150,13 +146,9 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 					wrp.metrics.IncrementBidErrorCount(src, request, response.Error())
 				}
 			})
-			if src.RequestStrategy().IsSingle() {
+			if src.RequestStrategy().IsSingle() || count < 1 {
 				break
 			}
-		}
-
-		if count < 1 {
-			break
 		}
 	}
 

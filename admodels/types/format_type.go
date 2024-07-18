@@ -111,6 +111,11 @@ func (t FormatType) IsProxy() bool {
 	return t == FormatProxyType
 }
 
+// IsNative format type
+func (t FormatType) IsNative() bool {
+	return t == FormatNativeType
+}
+
 // Value implements the driver.Valuer interface, json field interface
 func (t FormatType) Value() (driver.Value, error) {
 	return t.Name(), nil

@@ -16,7 +16,6 @@ import (
 
 	openrtb "github.com/bsm/openrtb"
 	natresp "github.com/bsm/openrtb/native/response"
-	"github.com/demdxx/gocast/v2"
 	"golang.org/x/net/html/charset"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
@@ -53,71 +52,30 @@ func (r *BidResponse) Source() Source {
 
 // Prepare bid response
 func (r *BidResponse) Prepare() {
+	// Prepare URLs and markup for response
 	for i, seat := range r.BidResponse.SeatBid {
 		for i, bid := range seat.Bid {
-			replacer := strings.NewReplacer(
-				"${AUCTION_AD_ID}", bid.AdID,
-				"${AUCTION_ID}", r.BidResponse.ID,
-				"${AUCTION_BID_ID}", r.BidResponse.BidID,
-				"${AUCTION_IMP_ID}", bid.ImpID,
-				"${AUCTION_PRICE}", fmt.Sprintf("%.6f", bid.Price),
-				"${AUCTION_CURRENCY}", "USD",
-			)
-
-			// Custom direct detect
-			if len(bid.AdMarkup) < 1 {
-				var (
-					ext map[string]any
-					url any
-				)
-				if json.Unmarshal(bid.Ext, &ext); ext != nil {
-					if url = ext["url"]; url == nil {
-						url = ext["landingpage"]
-					}
-
-					if url != nil {
-						switch v := url.(type) {
-						case string:
-							bid.AdMarkup = v
-						case []string:
-							if len(v) > 0 {
-								bid.AdMarkup = v[0]
-							}
-						case []any:
-							if len(v) > 0 {
-								bid.AdMarkup = gocast.Str(v[0])
-							}
-						}
-					} // end if
-				}
-			}
-
-			impID := bid.ImpID
-			for _, imp := range r.Req.Imps {
-				impID = imp.ID
-			}
-			if imp := r.Req.ImpressionByIDvariation(impID); imp != nil {
+			if imp := r.Req.ImpressionByIDvariation(bid.ImpID); imp != nil {
 				// Prepare date for bid W/H
 				if bid.W == 0 && bid.H == 0 {
 					bid.W, bid.H = imp.W, imp.H
 				}
 
 				if imp.IsDirect() {
+					// Custom direct detect
+					if bid.AdMarkup == "" {
+						bid.AdMarkup, _ = customDirectURL(bid.Ext)
+					}
 					if strings.HasPrefix(bid.AdMarkup, `<?xml`) {
-						// TODO postprocess direct error
 						bid.AdMarkup, _ = decodePopMarkup([]byte(bid.AdMarkup))
 					}
 				}
 			}
 
+			replacer := r.newBidReplacer(&bid)
 			bid.AdMarkup = replacer.Replace(bid.AdMarkup)
-
-			if len(bid.NURL) > 0 {
-				if u, err := url.QueryUnescape(bid.NURL); err == nil {
-					bid.NURL = u
-				}
-				bid.NURL = replacer.Replace(bid.NURL)
-			}
+			bid.NURL = prepareURL(bid.NURL, replacer)
+			bid.BURL = prepareURL(bid.BURL, replacer)
 
 			seat.Bid[i] = bid
 		}
@@ -125,12 +83,12 @@ func (r *BidResponse) Prepare() {
 		r.BidResponse.SeatBid[i] = seat
 	} // end for
 
-	bids := r.OptimalBids()
-	for _, bid := range bids {
+	for _, bid := range r.OptimalBids() {
 		imp := r.Req.ImpressionByIDvariation(bid.ImpID)
 		if imp == nil {
 			continue
 		}
+
 		if imp.IsDirect() {
 			format := imp.FormatByType(types.FormatDirectType)
 			if format == nil {
@@ -144,11 +102,11 @@ func (r *BidResponse) Prepare() {
 				FormatType: types.FormatDirectType,
 				RespFormat: format,
 				Bid:        bid,
-				Native:     nil,
-				Data:       nil,
+				ActionLink: bid.AdMarkup,
 			})
 			continue
 		}
+
 		for _, format := range imp.Formats() {
 			if bid.ImpID != imp.IDByFormat(format) {
 				continue
@@ -167,6 +125,7 @@ func (r *BidResponse) Prepare() {
 						RespFormat: format,
 						Bid:        bid,
 						Native:     native,
+						ActionLink: native.Link.URL,
 					})
 				}
 			case format.IsBanner() || format.IsProxy():
@@ -203,11 +162,6 @@ func (r *BidResponse) Item(impid string) ResponserItemCommon {
 		}
 	}
 	return nil
-}
-
-// ActionURL for rtb
-func (r *BidResponse) ActionURL() string {
-	return ""
 }
 
 // Price for response
@@ -264,7 +218,7 @@ func (r *BidResponse) OptimalBids() []*openrtb.Bid {
 		return r.optimalBids
 	}
 
-	var bids = map[string]*openrtb.Bid{}
+	bids := make(map[string]*openrtb.Bid, len(r.BidResponse.SeatBid))
 	for _, seat := range r.BidResponse.SeatBid {
 		for _, bid := range seat.Bid {
 			if obid, ok := bids[bid.ImpID]; !ok || obid.Price < bid.Price {
@@ -273,6 +227,7 @@ func (r *BidResponse) OptimalBids() []*openrtb.Bid {
 		}
 	}
 
+	r.optimalBids = make([]*openrtb.Bid, 0, len(bids))
 	for _, b := range bids {
 		r.optimalBids = append(r.optimalBids, b)
 	}
@@ -281,7 +236,7 @@ func (r *BidResponse) OptimalBids() []*openrtb.Bid {
 
 // BidPosition returns index from OpenRTB bid
 func (r *BidResponse) BidPosition(b *openrtb.Bid) int {
-	var idx int
+	idx := 0
 	for _, seat := range r.BidResponse.SeatBid {
 		for _, bid := range seat.Bid {
 			if bid.ImpID == b.ImpID {
@@ -290,7 +245,7 @@ func (r *BidResponse) BidPosition(b *openrtb.Bid) int {
 			idx++
 		}
 	}
-	return idx
+	return -1
 }
 
 // UpdateBid object
@@ -323,6 +278,17 @@ func (r *BidResponse) Get(key string) any {
 	return nil
 }
 
+func (r *BidResponse) newBidReplacer(bid *openrtb.Bid) *strings.Replacer {
+	return strings.NewReplacer(
+		"${AUCTION_AD_ID}", bid.AdID,
+		"${AUCTION_ID}", r.BidResponse.ID,
+		"${AUCTION_BID_ID}", r.BidResponse.BidID,
+		"${AUCTION_IMP_ID}", bid.ImpID,
+		"${AUCTION_PRICE}", fmt.Sprintf("%.6f", bid.Price),
+		"${AUCTION_CURRENCY}", "USD",
+	)
+}
+
 func decodePopMarkup(data []byte) (val string, err error) {
 	var item struct {
 		URL string `xml:"popunderAd>url"`
@@ -331,6 +297,18 @@ func decodePopMarkup(data []byte) (val string, err error) {
 	decoder.CharsetReader = charset.NewReaderLabel
 	if err = decoder.Decode(&item); err == nil {
 		val = item.URL
+	}
+	return val, err
+}
+
+func customDirectURL(data []byte) (val string, err error) {
+	var item struct {
+		URL         string `json:"url"`
+		LandingPage string `json:"landingpage"`
+		Link        string `json:"link"`
+	}
+	if err = json.Unmarshal(data, &item); err == nil {
+		val = max(item.URL, item.LandingPage, item.Link)
 	}
 	return val, err
 }
@@ -364,6 +342,16 @@ func bannerFormatType(markup string) types.FormatType {
 		return types.FormatProxyType
 	}
 	return types.FormatBannerType
+}
+
+func prepareURL(surl string, replacer *strings.Replacer) string {
+	if surl == "" {
+		return surl
+	}
+	if u, err := url.QueryUnescape(surl); err == nil {
+		surl = u
+	}
+	return replacer.Replace(surl)
 }
 
 var (

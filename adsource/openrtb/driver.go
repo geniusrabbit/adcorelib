@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -235,9 +234,9 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 		return d.netClient.NoopRequest(), err
 	}
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	enc.Encode(rtbRequest)
+	// enc := json.NewEncoder(os.Stdout)
+	// enc.SetIndent("", "  ")
+	// enc.Encode(rtbRequest)
 
 	// Create new request
 	if req, err = d.netClient.Request(d.source.Method, d.source.URL, &data); err != nil {

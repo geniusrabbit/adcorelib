@@ -37,8 +37,9 @@ type ResponseBidItem struct {
 	RespFormat *types.Format
 
 	// External response data from RTB source
-	Bid    *openrtb.Bid
-	Native *natresp.Response
+	Bid        *openrtb.Bid
+	Native     *natresp.Response
+	ActionLink string
 
 	// External bidding price
 	BidPrice    billing.Money // Bid price per one action (can be updated by price predictor)
@@ -424,10 +425,7 @@ func (it *ResponseBidItem) IsDirect() bool {
 
 // ActionURL for direct ADS
 func (it *ResponseBidItem) ActionURL() string {
-	if it.Native == nil {
-		return ""
-	}
-	return it.Native.Link.URL
+	return it.ActionLink
 }
 
 // Validate item
