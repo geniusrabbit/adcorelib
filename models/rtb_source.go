@@ -21,14 +21,14 @@ const (
 )
 
 type RTBSourceFlags struct {
-	Trace        bool `json:"trace,omitempty"`
-	ErrorsIgnore bool `json:"errors_ignore,omitempty"`
+	Trace        int8 `json:"trace,omitempty"`
+	ErrorsIgnore int8 `json:"errors_ignore,omitempty"`
 }
 
 // RTBSource for SSP connect
 type RTBSource struct {
 	ID        uint64 `json:"id"`
-	AccountID uint64 `json:"company_id,omitempty"`
+	AccountID uint64 `json:"account_id,omitempty"`
 	Title     string `json:"title,omitempty"`
 
 	Status types.ApproveStatus                `gorm:"type:ApproveStatus" json:"status,omitempty"`

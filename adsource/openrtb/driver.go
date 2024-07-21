@@ -78,7 +78,7 @@ func (d *driver[ND, Rq, Rs]) Protocol() string { return d.source.Protocol }
 // Test request before processing
 func (d *driver[ND, Rq, Rs]) Test(request *adtype.BidRequest) bool {
 	if d.source.RPS > 0 {
-		if !d.source.Options.ErrorsIgnore && !d.errorCounter.Next() {
+		if d.source.Options.ErrorsIgnore == 0 && !d.errorCounter.Next() {
 			d.latencyMetrics.IncSkip()
 			return false
 		}
@@ -151,7 +151,7 @@ func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Re
 	}
 
 	defer resp.Close()
-	if res, err := d.unmarshal(request, resp.Body()); d.source.Options.Trace && err != nil {
+	if res, err := d.unmarshal(request, resp.Body()); d.source.Options.Trace != 0 && err != nil {
 		response = adtype.NewErrorResponse(request, err)
 		ctxlogger.Get(request.Ctx).Error("bid response", zap.Error(err))
 	} else if res != nil {
@@ -252,7 +252,7 @@ func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) 
 
 	switch d.source.RequestType {
 	case RequestTypeJSON:
-		if d.source.Options.Trace {
+		if d.source.Options.Trace != 0 {
 			var data []byte
 			if data, err = io.ReadAll(r); err == nil {
 				ctxlogger.Get(request.Ctx).Error("trace unmarshal",

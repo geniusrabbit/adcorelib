@@ -16,8 +16,8 @@ import (
 )
 
 type RTBAccessPointFlags struct {
-	Trace        bool `json:"trace,omitempty"`
-	ErrorsIgnore bool `json:"errors_ignore,omitempty"`
+	Trace        int8 `json:"trace,omitempty"`
+	ErrorsIgnore int8 `json:"errors_ignore,omitempty"`
 }
 
 // RTBAccessPoint for DSP connect.
