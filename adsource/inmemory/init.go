@@ -5,7 +5,7 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/platform/info"
-	"github.com/geniusrabbit/adcorelib/storage/accessors/campaignaccessor"
+	"github.com/geniusrabbit/adstorage/accessors/campaignaccessor"
 )
 
 const protocol = "inmemory"

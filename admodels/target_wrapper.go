@@ -37,8 +37,8 @@ func (tw VirtualTarget) RevenueShareFactor() float64 { return tw.trg.RevenueShar
 // ComissionShareFactor of current target
 func (tw VirtualTarget) ComissionShareFactor() float64 { return tw.trg.ComissionShareFactor() }
 
-// Company object
-func (tw VirtualTarget) Company() *Company { return tw.trg.Company() }
+// Account object
+func (tw VirtualTarget) Account() *Account { return tw.trg.Account() }
 
-// CompanyID of current target
-func (tw VirtualTarget) CompanyID() uint64 { return tw.trg.CompanyID() }
+// AccountID of current target
+func (tw VirtualTarget) AccountID() uint64 { return tw.trg.AccountID() }

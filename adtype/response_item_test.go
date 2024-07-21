@@ -13,12 +13,12 @@ import (
 
 func Test_ItemPricing(t *testing.T) {
 	var (
-		comp = &admodels.Company{
-			ID:           1,
+		acc = &admodels.Account{
+			IDval:        1,
 			RevenueShare: 90,
 		}
-		imp   = Impression{Target: &admodels.Smartlink{Comp: comp}}
-		items = []ResponserItem{newRTBResponse(comp, imp), newAdResponse(comp, imp)}
+		imp   = Impression{Target: &admodels.Smartlink{Acc: acc}}
+		items = []ResponserItem{newRTBResponse(acc, imp), newAdResponse(acc, imp)}
 	)
 
 	for _, item := range items {
@@ -58,7 +58,7 @@ func Test_ItemPricing(t *testing.T) {
 	}
 }
 
-func newRTBResponse(_ *admodels.Company, imp Impression) *ResponseBidItem {
+func newRTBResponse(_ *admodels.Account, imp Impression) *ResponseBidItem {
 	return &ResponseBidItem{
 		ItemID:      "1",
 		Src:         &SourceEmpty{PriceCorrectionReduce: 0},
@@ -71,7 +71,7 @@ func newRTBResponse(_ *admodels.Company, imp Impression) *ResponseBidItem {
 	}
 }
 
-func newAdResponse(_ *admodels.Company, imp Impression) *ResponseAdItem {
+func newAdResponse(_ *admodels.Account, imp Impression) *ResponseAdItem {
 	return &ResponseAdItem{
 		ItemID: "1",
 		Src:    &SourceEmpty{PriceCorrectionReduce: 0},

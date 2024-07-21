@@ -42,9 +42,9 @@ type CampaignCamparator interface {
 
 // Campaign model
 type Campaign struct {
-	ID        uint64
-	Company   *Company
-	CompanyID uint64
+	id    uint64
+	Acc   *Account
+	AccID uint64
 
 	Weight uint8
 	Flags  uint8
@@ -143,10 +143,10 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 
 	campaign := &Campaign{
 		// MaxBid:      billing.Money(camp.MaxBid),
-		ID:        camp.ID,
-		CompanyID: camp.CompanyID,
-		Weight:    0, // camp.Weight,
-		Flags:     flags,
+		id:     camp.ID,
+		AccID:  camp.AccountID,
+		Weight: 0, // camp.Weight,
+		Flags:  flags,
 
 		DailyBudget:     billing.MoneyFloat(camp.DailyBudget),
 		Budget:          billing.MoneyFloat(camp.Budget),
@@ -195,9 +195,24 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 	return campaign
 }
 
-// GetID of the object
-func (c *Campaign) GetID() uint64 {
-	return c.ID
+// ID of the object
+func (c *Campaign) ID() uint64 {
+	return c.id
+}
+
+// Account object
+func (c *Campaign) Account() *Account {
+	return c.Acc
+}
+
+// AccountID of current target
+func (c *Campaign) AccountID() uint64 {
+	return c.AccID
+}
+
+// SetAccount for target
+func (c *Campaign) SetAccount(acc *Account) {
+	c.Acc = acc
 }
 
 // ProjectID number

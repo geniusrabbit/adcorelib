@@ -17,11 +17,14 @@ import (
 
 // Smartlink model
 type Smartlink struct {
-	id                uint64
-	StringID          string
-	Price             billing.Money // The cost of single view
-	Comp              *Company
-	CompID            uint64
+	id       uint64
+	StringID string
+
+	Acc   *Account
+	AccID uint64
+
+	Price billing.Money // The cost of single view
+
 	AllowedTypes      gosql.NullableOrderedNumberArray[int]
 	AllowedSources    gosql.NullableOrderedNumberArray[int]
 	DisallowedSources gosql.NullableOrderedNumberArray[int]
@@ -30,13 +33,13 @@ type Smartlink struct {
 }
 
 // SmartlinkFromModel convert database model to specified model
-func SmartlinkFromModel(zone models.Zone) *Smartlink {
+func SmartlinkFromModel(zone *models.Zone, account *Account) *Smartlink {
 	return &Smartlink{
 		id:                zone.ID,
 		StringID:          strconv.FormatUint(zone.ID, 10),
 		Price:             billing.MoneyFloat(zone.Price),
-		Comp:              nil,
-		CompID:            zone.CompanyID,
+		Acc:               account,
+		AccID:             zone.AccountID,
 		AllowedTypes:      zone.AllowedTypes,
 		AllowedSources:    zone.AllowedSources,
 		DisallowedSources: zone.DisallowedSources,
@@ -76,24 +79,29 @@ func (l *Smartlink) PurchasePrice(action Action) billing.Money {
 	return 0
 }
 
-// Company object
-func (l *Smartlink) Company() *Company {
-	return l.Comp
+// Account object
+func (l *Smartlink) Account() *Account {
+	return l.Acc
 }
 
-// CompanyID of current target
-func (l *Smartlink) CompanyID() uint64 {
-	return l.CompID
+// AccountID of current target
+func (l *Smartlink) AccountID() uint64 {
+	return l.AccID
+}
+
+// SetAccount for target
+func (l *Smartlink) SetAccount(acc *Account) {
+	l.Acc = acc
 }
 
 // RevenueShareFactor amount of % which company get from publisher
 func (l *Smartlink) RevenueShareFactor() float64 {
-	return l.Comp.RevenueShareFactor()
+	return l.Acc.RevenueShareFactor()
 }
 
 // ComissionShareFactor which system get from publisher
 func (l *Smartlink) ComissionShareFactor() float64 {
-	return l.Comp.ComissionShareFactor()
+	return l.Acc.ComissionShareFactor()
 }
 
 // RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy

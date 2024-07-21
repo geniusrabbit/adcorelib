@@ -7,7 +7,6 @@ package adtype
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -235,17 +234,17 @@ func (it *ResponseAdItem) ProjectID() uint64 {
 	return it.Campaign.ProjectID()
 }
 
-// CompanyID number
-func (it *ResponseAdItem) CompanyID() uint64 {
+// AccountID number
+func (it *ResponseAdItem) AccountID() uint64 {
 	if it == nil || it.Campaign == nil {
 		return 0
 	}
-	return it.Campaign.CompanyID
+	return it.Campaign.AccountID()
 }
 
 // CampaignIDString that appears with the Ad markup.
 func (it *ResponseAdItem) CampaignIDString() string {
-	return fmt.Sprintf("%d", it.Campaign.ID)
+	return strconv.FormatUint(it.Campaign.ID(), 10)
 }
 
 // CampaignID number
@@ -253,7 +252,7 @@ func (it *ResponseAdItem) CampaignID() uint64 {
 	if it == nil || it.Campaign == nil {
 		return 0
 	}
-	return it.Campaign.ID
+	return it.Campaign.ID()
 }
 
 // CreativeIDString for reporting content issues or defects.

@@ -62,8 +62,8 @@ type ResponserItem interface {
 	// AdID number
 	AdID() uint64
 
-	// CompanyID number
-	CompanyID() uint64
+	// AccountID number
+	AccountID() uint64
 
 	// CampaignID number
 	CampaignID() uint64

@@ -49,8 +49,8 @@ func (*ResponseItemEmpty) Get(key string) any { return nil }
 // AdID number
 func (*ResponseItemEmpty) AdID() uint64 { return 0 }
 
-// CompanyID number
-func (*ResponseItemEmpty) CompanyID() uint64 { return 0 }
+// AccountID number
+func (*ResponseItemEmpty) AccountID() uint64 { return 0 }
 
 // CampaignID number
 func (*ResponseItemEmpty) CampaignID() uint64 { return 0 }

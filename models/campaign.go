@@ -6,7 +6,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/bsm/openrtb"
@@ -35,12 +34,8 @@ type Campaign struct {
 	Title string `json:"title"`
 
 	// Owner/moderator Company of the Campaign
-	Company     *Company `json:"company,omitempty"` // Owner Project
-	CompanyID   uint64   `json:"company_id"`
-	Creator     *User    `json:"creator,omitempty"` // User who created the object
-	CreatorID   uint64   `json:"creator_id"`
-	Moderator   *User    `json:"moderator,omitempty"`
-	ModeratorID uint64   `json:"moderator_id"`
+	AccountID uint64 `json:"account_id"`
+	CreatorID uint64 `json:"creator_id"`
 
 	// Status of the campaign
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`
@@ -91,21 +86,4 @@ type Campaign struct {
 // TableName in database
 func (c *Campaign) TableName() string {
 	return "adv_campaign"
-}
-
-// SetCompany campaign owner
-func (c *Campaign) SetCompany(com any) error {
-	switch v := com.(type) {
-	case *Company:
-		c.Company = v
-		c.CompanyID = v.ID
-	case uint64:
-		if c.CompanyID != v {
-			c.Company = nil
-			c.CompanyID = v
-		}
-	default:
-		return fmt.Errorf("[models.Campaign] undefined value type: %t", com)
-	}
-	return nil
 }

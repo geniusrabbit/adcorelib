@@ -13,13 +13,15 @@ import (
 	"github.com/geniusrabbit/adcorelib/models"
 )
 
+type RTBAccessPointFlags = models.RTBAccessPointFlags
+
 // RTBAccessPoint for DSP connect.
 // It means that this is entry point which contains
 // information for access and search data
 type RTBAccessPoint struct {
 	ID      uint64
 	Title   string
-	Company *Company
+	Account *Account
 
 	Codename string // Unical name of the access point
 	Headers  map[string]string
@@ -40,18 +42,17 @@ type RTBAccessPoint struct {
 
 	Filter types.BaseFilter
 
-	Flags map[string]int
+	Flags RTBAccessPointFlags
 }
 
 // RTBAccessPoint create new DSP connect.
-func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTBAccessPoint) {
-	if comp == nil {
+func RTBAccessPointFromModel(cl *models.RTBAccessPoint, acc *Account) (src *RTBAccessPoint) {
+	if acc == nil {
 		return nil
 	}
 
 	var (
 		headers = cl.Headers.DataOr(nil)
-		flags   = cl.Flags.DataOr(nil)
 		filter  = types.BaseFilter{
 			Secure:          cl.Secure,
 			Adblock:         cl.AdBlock,
@@ -73,7 +74,7 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 
 	return &RTBAccessPoint{
 		ID:                 cl.ID,
-		Company:            comp,
+		Account:            acc,
 		Codename:           cl.Codename,
 		Protocol:           strings.ToLower(cl.Protocol),
 		Headers:            headers,
@@ -83,7 +84,7 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, comp *Company) (src *RTB
 		MaxBid:             cl.MaxBid,
 		Filter:             filter,
 		RevenueShareReduce: cl.RevenueShareReduce,
-		Flags:              flags,
+		Flags:              cl.Flags.DataOr(RTBAccessPointFlags{}),
 	}
 }
 

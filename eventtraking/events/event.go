@@ -48,8 +48,8 @@ type Event struct {
 	Status   uint8  `thrift:",7" json:"st,omitempty"`  // Status: 0 - undefined, 1 - success, 2 - failed, 3 - compromised
 	// Accounts link information
 	Project           uint64 `thrift:",8"  json:"pr,omitempty"`  // Project network ID
-	PublisherCompany  uint64 `thrift:",9"  json:"pcb,omitempty"` // -- // --
-	AdvertiserCompany uint64 `thrift:",10" json:"acv,omitempty"` // -- // --
+	PublisherAccount  uint64 `thrift:",9"  json:"pcb,omitempty"` // -- // --
+	AdvertiserAccount uint64 `thrift:",10" json:"acv,omitempty"` // -- // --
 	// Source
 	AuctionID    string `thrift:",11" json:"auc,omitempty"`     // Internal Auction ID
 	AuctionType  uint8  `thrift:",12" json:"auctype,omitempty"` // Aution type 1 - First price, 2 - Second price

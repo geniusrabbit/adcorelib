@@ -283,14 +283,14 @@ func (it *ResponseBidItem) AdID() uint64 {
 	return 0
 }
 
-// CompanyID number
-func (it *ResponseBidItem) CompanyID() uint64 {
+// AccountID number
+func (it *ResponseBidItem) AccountID() uint64 {
 	if it.Src != nil {
-		type companyIDGetter interface {
-			CompanyID() uint64
+		type accountIDGetter interface {
+			AccountID() uint64
 		}
-		if src, _ := it.Src.(companyIDGetter); src != nil {
-			return src.CompanyID()
+		if src, _ := it.Src.(accountIDGetter); src != nil {
+			return src.AccountID()
 		}
 	}
 	return 0

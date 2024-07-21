@@ -24,7 +24,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/net/fasthttp/middleware"
 	"github.com/geniusrabbit/adcorelib/openlatency"
 	"github.com/geniusrabbit/adcorelib/personification"
-	"github.com/geniusrabbit/adcorelib/storage/accessors/adsourceaccessor"
+	"github.com/geniusrabbit/adstorage/accessors/adsourceaccessor"
 )
 
 type (

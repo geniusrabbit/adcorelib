@@ -40,18 +40,18 @@ type Target interface {
 	// If there is 10% of price correction, it means that 10% of the final price must be ignored
 	RevenueShareReduceFactor() float64
 
-	// Company object
-	Company() *Company
+	// Account object
+	Account() *Account
 
-	// CompanyID of current target
-	CompanyID() uint64
+	// AccountID of current target
+	AccountID() uint64
 }
 
 // TargetFromModel convert datavase model specified model
 // which implements Target interface
-func TargetFromModel(zone models.Zone) Target {
+func TargetFromModel(zone *models.Zone, acc *Account) Target {
 	if zone.Type.IsSmartlink() {
-		return SmartlinkFromModel(zone)
+		return SmartlinkFromModel(zone, acc)
 	}
-	return ZoneFromModel(zone)
+	return ZoneFromModel(zone, acc)
 }

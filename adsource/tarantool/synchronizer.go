@@ -4,8 +4,6 @@ import (
 	"time"
 
 	libtarantool "github.com/tarantool/go-tarantool"
-
-	"github.com/geniusrabbit/adcorelib/storage"
 )
 
 type synchronizer struct {
@@ -25,6 +23,6 @@ func NewSynchronizer(opts ...OptionFnk) (*synchronizer, error) {
 	return &synchronizer{namespace: opt.namespace, conn: conn}, nil
 }
 
-func (sync *synchronizer) Sync(reader storage.Reader) error {
-	return nil
-}
+// func (sync *synchronizer) Sync(reader storage.Reader) error {
+// 	return nil
+// }

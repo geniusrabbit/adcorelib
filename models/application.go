@@ -11,13 +11,9 @@ import (
 
 // Application model describes site or mobile/desktop application
 type Application struct {
-	ID          uint64   `json:"id"`                // Authoincrement key
-	Company     *Company `json:"company,omitempty"` // Who have this company
-	CompanyID   uint64   `json:"company_id,omitempty"`
-	Creator     *User    `json:"creator,omitempty"` // User who created the object
-	CreatorID   uint64   `json:"creator_id"`
-	Moderator   *User    `json:"moderator,omitempty"`
-	ModeratorID uint64   `json:"moderator_id"`
+	ID        uint64 `json:"id"` // Authoincrement key
+	AccountID uint64 `json:"account_id"`
+	CreatorID uint64 `json:"creator_id"`
 
 	// Unical application identificator like:
 	//   - site domain -> domain.com

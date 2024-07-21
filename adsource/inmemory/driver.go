@@ -12,7 +12,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/adcorelib/rand"
 	"github.com/geniusrabbit/adcorelib/searchtypes"
-	"github.com/geniusrabbit/adcorelib/storage/accessors/campaignaccessor"
+	"github.com/geniusrabbit/adstorage/accessors/campaignaccessor"
 )
 
 type driver struct {

@@ -95,8 +95,8 @@ func newEvent() Event {
 		Status:   1,
 		// Accounts link information
 		Project:           100,
-		PublisherCompany:  1122,
-		AdvertiserCompany: 99,
+		PublisherAccount:  1122,
+		AdvertiserAccount: 99,
 		// Source
 		AuctionID:    "1234-123456-123456-1234",
 		ImpID:        "1234-123456-123456-1234",

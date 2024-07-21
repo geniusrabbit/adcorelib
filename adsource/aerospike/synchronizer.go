@@ -8,14 +8,8 @@ import (
 	"time"
 
 	as "github.com/aerospike/aerospike-client-go"
-	"github.com/geniusrabbit/gogeo"
-	"github.com/geniusrabbit/gosql/v2"
 
-	"github.com/geniusrabbit/adcorelib/admodels/types"
-	"github.com/geniusrabbit/adcorelib/billing"
-	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/models"
-	"github.com/geniusrabbit/adcorelib/storage"
 )
 
 var (
@@ -47,90 +41,90 @@ func NewSynchronizer(ac *as.Client, namespace string) *synchronizer {
 	return &synchronizer{client: ac, namespace: namespace}
 }
 
-func (sync *synchronizer) Sync(reader storage.Reader) error {
-	if sync.startSync() {
-		return ErrUnderSynchronisation
-	}
-	defer sync.setSyncState(false)
+// func (sync *synchronizer) Sync(reader storage.Reader) error {
+// 	if sync.startSync() {
+// 		return ErrUnderSynchronisation
+// 	}
+// 	defer sync.setSyncState(false)
 
-	list, err := reader.CampaignList(nil)
-	if err != nil {
-		return err
-	}
+// 	list, err := reader.CampaignList(nil)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	namespace := sync.currentNamespace()
-	for _, camp := range list {
-		var (
-			formats      []uint
-			countriesArr gosql.NullableOrderedNumberArray[uint]
-			languagesArr gosql.NullableOrderedNumberArray[uint]
-			hours, err   = types.HoursByString(camp.Hours.String)
-		)
+// 	namespace := sync.currentNamespace()
+// 	for _, camp := range list {
+// 		var (
+// 			formats      []uint
+// 			countriesArr gosql.NullableOrderedNumberArray[uint]
+// 			languagesArr gosql.NullableOrderedNumberArray[uint]
+// 			hours, err   = types.HoursByString(camp.Hours.String)
+// 		)
 
-		if err != nil {
-			return err
-		}
+// 		if err != nil {
+// 			return err
+// 		}
 
-		// Format list
-		for _, ad := range camp.Ads {
-			formats = append(formats, uint(ad.ID))
-		}
+// 		// Format list
+// 		for _, ad := range camp.Ads {
+// 			formats = append(formats, uint(ad.ID))
+// 		}
 
-		// Countries filter
-		if camp.Geos.Len() > 0 {
-			for _, cc := range camp.Geos {
-				countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
-			}
-			countriesArr.Sort()
-		}
+// 		// Countries filter
+// 		if camp.Geos.Len() > 0 {
+// 			for _, cc := range camp.Geos {
+// 				countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
+// 			}
+// 			countriesArr.Sort()
+// 		}
 
-		// Languages filter
-		if len(camp.Languages) > 0 {
-			for _, lg := range camp.Languages {
-				languagesArr = append(languagesArr, languages.GetLanguageIdByCodeString(lg))
-			}
-			languagesArr.Sort()
-		}
+// 		// Languages filter
+// 		if len(camp.Languages) > 0 {
+// 			for _, lg := range camp.Languages {
+// 				languagesArr = append(languagesArr, languages.GetLanguageIdByCodeString(lg))
+// 			}
+// 			languagesArr.Sort()
+// 		}
 
-		private := camp.Private.IsPrivate()
-		key, _ := as.NewKey(namespace, setName(private), campaignKey(camp))
-		err = sync.client.PutBins(writePolicy, key,
-			as.NewBin("id", camp.ID),
-			as.NewBin("company_id", camp.CompanyID),
+// 		private := camp.Private.IsPrivate()
+// 		key, _ := as.NewKey(namespace, setName(private), campaignKey(camp))
+// 		err = sync.client.PutBins(writePolicy, key,
+// 			as.NewBin("id", camp.ID),
+// 			as.NewBin("account_id", camp.AccountID),
 
-			as.NewBin("weight", 0),
+// 			as.NewBin("weight", 0),
 
-			as.NewBin("daily_test_budget", billing.MoneyFloat(camp.DailyTestBudget).Int64()),
-			as.NewBin("test_budget", billing.MoneyFloat(camp.TestBudget).Int64()),
-			as.NewBin("daily_budget", billing.MoneyFloat(camp.DailyBudget).Int64()),
-			as.NewBin("budget", billing.MoneyFloat(camp.Budget).Int64()),
+// 			as.NewBin("daily_test_budget", billing.MoneyFloat(camp.DailyTestBudget).Int64()),
+// 			as.NewBin("test_budget", billing.MoneyFloat(camp.TestBudget).Int64()),
+// 			as.NewBin("daily_budget", billing.MoneyFloat(camp.DailyBudget).Int64()),
+// 			as.NewBin("budget", billing.MoneyFloat(camp.Budget).Int64()),
 
-			as.NewBin("context", camp.Context.String()),
+// 			as.NewBin("context", camp.Context.String()),
 
-			as.NewBin("formats", formats),
-			// as.NewBin("keywords", camp.Keywords),
-			as.NewBin("zones", camp.Zones.Ordered()),
-			as.NewBin("domains", camp.Domains),
-			as.NewBin("categories", camp.Categories.Ordered()),
-			as.NewBin("countries", countriesArr),
-			as.NewBin("languages", languagesArr),
-			as.NewBin("browsers", camp.Browsers.Ordered()),
-			as.NewBin("os", camp.Os.Ordered()),
-			as.NewBin("device_types", camp.DeviceTypes.Ordered()),
-			as.NewBin("devices", camp.Devices.Ordered()),
-			as.NewBin("hours", hours.String()),
-			as.NewBin("sex", camp.Sex.Ordered()),
-			as.NewBin("age", camp.Age.Ordered()),
-			as.NewBin("trace", camp.Trace),
-			as.NewBin("trace_percent", camp.TracePercent),
-		)
-		if err != nil {
-			return err
-		}
-	}
+// 			as.NewBin("formats", formats),
+// 			// as.NewBin("keywords", camp.Keywords),
+// 			as.NewBin("zones", camp.Zones.Ordered()),
+// 			as.NewBin("domains", camp.Domains),
+// 			as.NewBin("categories", camp.Categories.Ordered()),
+// 			as.NewBin("countries", countriesArr),
+// 			as.NewBin("languages", languagesArr),
+// 			as.NewBin("browsers", camp.Browsers.Ordered()),
+// 			as.NewBin("os", camp.Os.Ordered()),
+// 			as.NewBin("device_types", camp.DeviceTypes.Ordered()),
+// 			as.NewBin("devices", camp.Devices.Ordered()),
+// 			as.NewBin("hours", hours.String()),
+// 			as.NewBin("sex", camp.Sex.Ordered()),
+// 			as.NewBin("age", camp.Age.Ordered()),
+// 			as.NewBin("trace", camp.Trace),
+// 			as.NewBin("trace_percent", camp.TracePercent),
+// 		)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 // deleteSet and all records inside
 func (sync *synchronizer) deleteSet(namespace, name string) (int, error) {

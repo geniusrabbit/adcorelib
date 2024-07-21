@@ -6,7 +6,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
@@ -17,10 +16,9 @@ import (
 
 // Zone model
 type Zone struct {
-	ID        uint64   `json:"id"`
-	Title     string   `json:"title"`
-	Company   *Company `json:"company,omitempty"`
-	CompanyID uint64   `json:"company_id,omitempty"`
+	ID        uint64 `json:"id"`
+	Title     string `json:"title"`
+	AccountID uint64 `json:"account_id,omitempty"`
 
 	Type   types.ZoneType      `gorm:"type:ZoneType" json:"type,omitempty"`
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`
@@ -52,17 +50,6 @@ func (z *Zone) RevenueShare() float64 {
 	return 0
 }
 
-// SetCompany object
-func (z *Zone) SetCompany(c any) error {
-	switch v := c.(type) {
-	case *Company:
-		z.Company = v
-		z.CompanyID = v.ID
-	case uint64:
-		z.Company = nil
-		z.CompanyID = v
-	default:
-		return fmt.Errorf("undefined value type: %t", c)
-	}
-	return nil
+func (z *Zone) GetAccountID() uint64 {
+	return z.AccountID
 }

@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2016 – 2017, 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2017, 2019
+// @project GeniusRabbit corelib 2016 – 2017, 2019, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2017, 2019, 2024
 //
 
 package models
@@ -20,16 +20,20 @@ const (
 	RTBPricePerOne
 )
 
+type RTBSourceFlags struct {
+	Trace        bool `json:"trace,omitempty"`
+	ErrorsIgnore bool `json:"errors_ignore,omitempty"`
+}
+
 // RTBSource for SSP connect
 type RTBSource struct {
-	ID        uint64   `json:"id"`
-	Company   *Company `json:"company,omitempty"`
-	CompanyID uint64   `json:"company_id,omitempty"`
-	Title     string   `json:"title,omitempty"`
+	ID        uint64 `json:"id"`
+	AccountID uint64 `json:"company_id,omitempty"`
+	Title     string `json:"title,omitempty"`
 
 	Status types.ApproveStatus                `gorm:"type:ApproveStatus" json:"status,omitempty"`
 	Active types.ActiveStatus                 `gorm:"type:ActiveStatus" json:"active,omitempty"`
-	Flags  gosql.NullableJSON[map[string]int] `gorm:"type:JSONB" json:"flags,omitempty"`
+	Flags  gosql.NullableJSON[RTBSourceFlags] `gorm:"type:JSONB" json:"flags,omitempty"`
 
 	Protocol      string                                `json:"protocol"`                                // rtb as default
 	MinimalWeight float64                               `json:"minimal_weight"`                          //
@@ -82,24 +86,6 @@ func (c *RTBSource) ProtocolCode() string {
 		c.Protocol = "rtb"
 	}
 	return c.Protocol
-}
-
-// Flag get by key
-func (c *RTBSource) Flag(flagName string) int {
-	if c.Flags.Data != nil {
-		if v, ok := (*c.Flags.Data)[flagName]; ok {
-			return v
-		}
-	}
-	return -1
-}
-
-// SetFlag for object
-func (c *RTBSource) SetFlag(flagName string, flagValue int) {
-	if c.Flags.Data == nil {
-		c.Flags.Data = new(map[string]int)
-	}
-	(*c.Flags.Data)[flagName] = flagValue
 }
 
 // PriceCorrectionReduceFactor which is a potential

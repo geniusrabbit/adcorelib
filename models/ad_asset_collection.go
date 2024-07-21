@@ -23,9 +23,8 @@ import (
 
 // AdAssetCollection represents the list of prepared assets
 type AdAssetCollection struct {
-	ID        uint64   `json:"id"`
-	Company   *Company `json:"company,omitempty"` // Owner Project
-	CompanyID uint64   `json:"company_id"`
+	ID        uint64 `json:"id"`
+	AccountID uint64 `json:"account_id"`
 
 	// Assets related to advertisement
 	Assets []*AdAsset `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_collection;foreignKey:collection_id;association_autoupdate:false"`

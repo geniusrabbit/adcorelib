@@ -82,8 +82,8 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		Status:   status,    //
 		// Accounts link information
 		Project:           0,               // Project network ID
-		PublisherCompany:  imp.CompanyID(), // -- // --
-		AdvertiserCompany: it.CompanyID(),  // -- // --
+		PublisherAccount:  imp.AccountID(), // -- // --
+		AdvertiserAccount: it.AccountID(),  // -- // --
 		// Source
 		AuctionID:    r.ID,                          // ID of last auction
 		AuctionType:  uint8(response.AuctionType()), // Aution type 1 - First price, 2 - Second price

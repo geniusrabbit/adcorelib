@@ -10,8 +10,8 @@ import "github.com/geniusrabbit/adcorelib/models"
 // Application model
 type Application struct {
 	ID           uint64   // Authoincrement key
-	Company      *Company // Who have this company
-	CompanyID    uint64   //
+	Account      *Account // Who have this company
+	AccountID    uint64   //
 	Opt          [8]uint8 // Platform, Premium, Type
 	Categories   []uint   //
 	RevenueShare float64  // From 0 to 100 percents
@@ -21,7 +21,7 @@ type Application struct {
 func ApplicationFromModel(app *models.Application) Application {
 	return Application{
 		ID:           app.ID,
-		CompanyID:    app.CompanyID,
+		AccountID:    app.AccountID,
 		Categories:   app.Categories,
 		RevenueShare: app.RevenueShare,
 	}
@@ -32,7 +32,7 @@ func (a *Application) RevenueShareFactor() float64 {
 	if a.RevenueShare > 0 {
 		return a.RevenueShare / 100.0
 	}
-	return a.Company.RevenueShareFactor()
+	return a.Account.RevenueShareFactor()
 }
 
 // ComissionShareFactor which system get from publisher
@@ -40,5 +40,5 @@ func (a *Application) ComissionShareFactor() float64 {
 	if a.RevenueShare > 0 {
 		return (100.0 - a.RevenueShare) / 100.0
 	}
-	return a.Company.ComissionShareFactor()
+	return a.Account.ComissionShareFactor()
 }

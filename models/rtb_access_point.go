@@ -15,15 +15,19 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
+type RTBAccessPointFlags struct {
+	Trace        bool `json:"trace,omitempty"`
+	ErrorsIgnore bool `json:"errors_ignore,omitempty"`
+}
+
 // RTBAccessPoint for DSP connect.
 // It means that this is entry point which contains
 // information for access and search data
 type RTBAccessPoint struct {
-	ID        uint64   `json:"id"`
-	Company   *Company `json:"company,omitempty"`
-	CompanyID uint64   `json:"company_id,omitempty"`
-	Title     string   `json:"title,omitempty"`
-	Codename  string   `json:"codename,omitempty"`
+	ID        uint64 `json:"id"`
+	AccountID uint64 `json:"account_id"`
+	Title     string `json:"title,omitempty"`
+	Codename  string `json:"codename,omitempty"`
 
 	// RevenueShareReduce represents extra reduce factor to nevilate AdExchange and SSP discrepancy.
 	// It means that the final bid respose will be decresed by RevenueShareReduce %
@@ -33,9 +37,9 @@ type RTBAccessPoint struct {
 	RevenueShareReduce float64           `json:"revenue_share_reduce,omitempty"`                 // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 	AuctionType        types.AuctionType `gorm:"type:AuctionType" json:"auction_type,omitempty"` // default: 0 – first price type, 1 – second price type
 
-	Status types.ApproveStatus                `gorm:"type:ApproveStatus" json:"status,omitempty"`
-	Active types.ActiveStatus                 `gorm:"type:ActiveStatus" json:"active,omitempty"`
-	Flags  gosql.NullableJSON[map[string]int] `gorm:"type:JSONB" json:"flags,omitempty"`
+	Status types.ApproveStatus                     `gorm:"type:ApproveStatus" json:"status,omitempty"`
+	Active types.ActiveStatus                      `gorm:"type:ActiveStatus" json:"active,omitempty"`
+	Flags  gosql.NullableJSON[RTBAccessPointFlags] `gorm:"type:JSONB" json:"flags,omitempty"`
 
 	// Protocol configs
 	Protocol      string                                `json:"protocol,omitempty"`
@@ -72,22 +76,4 @@ type RTBAccessPoint struct {
 // TableName in database
 func (s *RTBAccessPoint) TableName() string {
 	return "rtb_access_point"
-}
-
-// Flag get by key
-func (s *RTBAccessPoint) Flag(flagName string) int {
-	if s.Flags.Data != nil {
-		if v, ok := (*s.Flags.Data)[flagName]; ok {
-			return v
-		}
-	}
-	return -1
-}
-
-// SetFlag for object
-func (s *RTBAccessPoint) SetFlag(flagName string, flagValue int) {
-	if s.Flags.Data == nil {
-		s.Flags.Data = new(map[string]int)
-	}
-	(*s.Flags.Data)[flagName] = flagValue
 }

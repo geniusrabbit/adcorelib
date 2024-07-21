@@ -108,10 +108,10 @@ func (i *Impression) TargetID() uint {
 	return uint(i.Target.ID())
 }
 
-// CompanyID number
-func (i *Impression) CompanyID() uint64 {
+// AccountID number
+func (i *Impression) AccountID() uint64 {
 	if i != nil && i.Target != nil {
-		return i.Target.CompanyID()
+		return i.Target.AccountID()
 	}
 	return 0
 }

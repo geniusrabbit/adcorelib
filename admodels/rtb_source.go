@@ -27,17 +27,13 @@ const (
 	RTBRequestTypePLAINTEXT       = types.RTBRequestTypePLAINTEXT
 )
 
-// RTBSourceOptions flags
-type RTBSourceOptions struct {
-	ErrorsIgnore bool
-	Trace        bool
-}
+type RTBSourceFlags = models.RTBSourceFlags
 
 // RTBSource describe the source of external DSP platform or similar exchange protocol.
 // All that sources have similar options and very common prefilter configurations
 type RTBSource struct {
 	ID      uint64
-	Company *Company
+	Account *Account
 
 	Protocol    string         // rtb as default
 	URL         string         // RTB client request URL
@@ -48,28 +44,23 @@ type RTBSource struct {
 	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
 	RPS         int               // 0 – unlimit
 	Timeout     int               // In milliseconds
-	Options     RTBSourceOptions  //
+	Options     RTBSourceFlags    //
 	Filter      types.BaseFilter  //
 
 	Accuracy              float64 // Price accuracy for auction in percentages
 	PriceCorrectionReduce float64 // % 100, 80%, 65.5%
 	MinimalWeight         float64
 
-	Flags  gosql.NullableJSON[map[string]int]
 	Config gosql.NullableJSON[any]
 }
 
 // RTBSourceFromModel convert database model to specified model
-func RTBSourceFromModel(cl *models.RTBSource, comp *Company) (src *RTBSource) {
-	if comp == nil {
+func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
+	if acc == nil {
 		return nil
 	}
 
 	var (
-		opt = RTBSourceOptions{
-			ErrorsIgnore: cl.Flag("errors_ignore") == 1,
-			Trace:        cl.Flag("trace") == 1,
-		}
 		filter = types.BaseFilter{
 			Secure:          cl.Secure,
 			Adblock:         cl.AdBlock,
@@ -91,7 +82,7 @@ func RTBSourceFromModel(cl *models.RTBSource, comp *Company) (src *RTBSource) {
 
 	return &RTBSource{
 		ID:                    cl.ID,
-		Company:               comp,
+		Account:               acc,
 		Protocol:              strings.ToLower(cl.Protocol),
 		URL:                   cl.URL,
 		Method:                strings.ToUpper(cl.Method),
@@ -100,12 +91,11 @@ func RTBSourceFromModel(cl *models.RTBSource, comp *Company) (src *RTBSource) {
 		AuctionType:           cl.AuctionType,
 		RPS:                   cl.RPS,
 		Timeout:               cl.Timeout,
-		Options:               opt,
+		Options:               cl.Flags.DataOr(RTBSourceFlags{}),
 		Filter:                filter,
 		Accuracy:              cl.Accuracy,
 		PriceCorrectionReduce: cl.PriceCorrectionReduce,
 		MinimalWeight:         cl.MinimalWeight,
-		Flags:                 cl.Flags,
 		Config:                cl.Config,
 	}
 }

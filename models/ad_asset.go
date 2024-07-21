@@ -53,10 +53,9 @@ type AdAssetMeta struct {
 //	File:  1, dhg321h3ndp43u2hfc, 'images/a/c/banner1.jpg', 64322, NULL, image,   image/jpeg, {"main": {...}, "items": [{...}]}
 //	File:  2, xxg321h3xxx43u2hfc,  'images/a/c/video1.mp4', 44322, NULL, video,  video/x-mp4, {"main": {...}, "items": [{...}]}
 type AdAsset struct {
-	ID        uint64   `json:"id"`
-	HashID    string   `json:"hashid" gorm:"column:hashid"` // File hash
-	Company   *Company `json:"company,omitempty"`           // Owner Project
-	CompanyID uint64   `json:"company_id"`
+	ID        uint64 `json:"id"`
+	HashID    string `json:"hashid" gorm:"column:hashid"` // File hash
+	AccountID uint64 `json:"account_id"`
 
 	ProcessingStatus types.ProcessingStatus `gorm:"type:ProcessingStatus" json:"processing_status"`
 

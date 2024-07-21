@@ -39,12 +39,12 @@ func TestPriceCorrection(t *testing.T) {
 
 func TestPriceCorrection2(t *testing.T) {
 	var (
-		comp = &admodels.Company{
-			ID:           1,
+		acc = &admodels.Account{
+			IDval:        1,
 			RevenueShare: 85,
 		}
-		imp  = Impression{Target: &admodels.Smartlink{Comp: comp}}
-		item = newRTBResponse(comp, imp)
+		imp  = Impression{Target: &admodels.Smartlink{Acc: acc}}
+		item = newRTBResponse(acc, imp)
 	)
 	price := billing.MoneyFloat(1.123)
 	price += PriceFactorFromList(SourcePriceFactor, SystemComissionPriceFactor, TargetReducePriceFactor).

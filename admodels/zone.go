@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2016 – 2019, 2021
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2021
+// @project GeniusRabbit corelib 2016 – 2019, 2021, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2021, 2024
 //
 
 package admodels
@@ -8,7 +8,6 @@ package admodels
 import (
 	"strconv"
 
-	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/gosql/v2"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -18,13 +17,16 @@ import (
 
 // Zone model
 type Zone struct {
-	id                uint64
-	StringID          string
-	MinECPM           float64
-	MinECPMByGeo      GeoBidSlice
-	Price             billing.Money // CPM of source
-	Comp              *Company
-	CompID            uint64
+	id       uint64
+	StringID string
+
+	Acc   *Account
+	AccID uint64
+
+	Price        billing.Money // CPM of source
+	MinECPM      float64
+	MinECPMByGeo GeoBidSlice
+
 	AllowedTypes      gosql.NullableOrderedNumberArray[int]
 	AllowedSources    gosql.NullableOrderedNumberArray[int]
 	DisallowedSources gosql.NullableOrderedNumberArray[int]
@@ -32,22 +34,19 @@ type Zone struct {
 }
 
 // ZoneFromModel convert database model to specified model
-func ZoneFromModel(zone models.Zone) *Zone {
+func ZoneFromModel(zone *models.Zone, account *Account) *Zone {
 	return &Zone{
 		id:                zone.ID,
 		StringID:          strconv.FormatUint(zone.ID, 10),
 		Price:             billing.MoneyFloat(zone.Price),
-		Comp:              nil,
-		CompID:            zone.CompanyID,
+		Acc:               account,
+		AccID:             zone.AccountID,
 		MinECPM:           zone.MinECPM,
 		MinECPMByGeo:      nil,
 		AllowedTypes:      zone.AllowedTypes,
 		AllowedSources:    zone.AllowedSources,
 		DisallowedSources: zone.DisallowedSources,
-		DefaultCode: gocast.IfThenExec(
-			zone.DefaultCode.Data != nil,
-			func() map[string]string { return *zone.DefaultCode.Data },
-			func() map[string]string { return nil }),
+		DefaultCode:       zone.DefaultCode.DataOr(nil),
 	}
 }
 
@@ -82,24 +81,29 @@ func (z *Zone) PurchasePrice(action Action) billing.Money {
 	return 0
 }
 
-// Company object
-func (z *Zone) Company() *Company {
-	return z.Comp
+// Account object
+func (z *Zone) Account() *Account {
+	return z.Acc
 }
 
-// CompanyID of current target
-func (z *Zone) CompanyID() uint64 {
-	return z.CompID
+// AccountID of current target
+func (z *Zone) AccountID() uint64 {
+	return z.AccID
+}
+
+// SetAccount for target
+func (z *Zone) SetAccount(acc *Account) {
+	z.Acc = acc
 }
 
 // RevenueShareFactor amount %
 func (z *Zone) RevenueShareFactor() float64 {
-	return z.Comp.RevenueShareFactor()
+	return z.Acc.RevenueShareFactor()
 }
 
 // ComissionShareFactor which system get from publisher
 func (z *Zone) ComissionShareFactor() float64 {
-	return z.Comp.ComissionShareFactor()
+	return z.Acc.ComissionShareFactor()
 }
 
 // RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy

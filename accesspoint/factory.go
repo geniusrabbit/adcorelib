@@ -3,10 +3,11 @@ package accesspoint
 import (
 	"context"
 
+	"github.com/valyala/fasthttp"
+
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/platform/info"
-	"github.com/valyala/fasthttp"
 )
 
 // Factory of the plaform object
@@ -17,13 +18,13 @@ type Factory interface {
 
 // Platformer interface of the platform executor
 type Platformer interface {
-	// ID of source
+	// ID of the access point
 	ID() uint64
 
-	// Codename of the platform
+	// Codename of the access point
 	Codename() string
 
-	// Protocol name of the platform
+	// Protocol name of the access point
 	Protocol() string
 
 	// HTTPHandler of the raw HTTP request
