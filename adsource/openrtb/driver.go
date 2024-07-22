@@ -67,6 +67,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adsource/openrtb/adresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
 	counter "github.com/geniusrabbit/adcorelib/errorcounter"
@@ -227,7 +228,7 @@ func (d *driver[ND, Rq, Rs]) ProcessResponseItem(response adtype.Responser, item
 	}
 	for _, ad := range response.Ads() {
 		switch bid := ad.(type) {
-		case *adtype.ResponseBidItem:
+		case *adresponse.ResponseBidItem:
 			if len(bid.Bid.NURL) > 0 {
 				eventstream.WinsFromContext(response.Context()).Send(response.Context(), bid.Bid.NURL)
 				ctxlogger.Get(response.Context()).Info("ping", zap.String("url", bid.Bid.NURL))
@@ -294,7 +295,7 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 	return req, nil
 }
 
-func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) (_ *adtype.BidResponse, err error) {
+func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) (_ *adresponse.BidResponse, err error) {
 	var bidResp openrtb.BidResponse
 
 	switch d.source.RequestType {
@@ -360,14 +361,14 @@ func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) 
 	}
 
 	// Build response
-	response := &adtype.BidResponse{
+	bidResponse := &adresponse.BidResponse{
 		Src:         d,
 		Req:         request,
 		BidResponse: bidResp,
 	}
 
-	response.Prepare()
-	return response, nil
+	bidResponse.Prepare()
+	return bidResponse, nil
 }
 
 // fillRequest of HTTP

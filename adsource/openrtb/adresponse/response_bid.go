@@ -3,7 +3,7 @@
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2024
 //
 
-package adtype
+package adresponse
 
 import (
 	"bytes"
@@ -20,19 +20,20 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // BidResponse RTB record
 type BidResponse struct {
-	Src         Source
-	Req         *BidRequest
+	Src         adtype.Source
+	Req         *adtype.BidRequest
 	Application *admodels.Application
 	Target      admodels.Target
 	BidResponse openrtb.BidResponse
 	context     context.Context
 	optimalBids []*openrtb.Bid
-	ads         []ResponserItemCommon
+	ads         []adtype.ResponserItemCommon
 }
 
 // AuctionID response
@@ -46,7 +47,7 @@ func (r *BidResponse) AuctionType() types.AuctionType {
 }
 
 // Source of response
-func (r *BidResponse) Source() Source {
+func (r *BidResponse) Source() adtype.Source {
 	return r.Src
 }
 
@@ -145,17 +146,17 @@ func (r *BidResponse) Prepare() {
 }
 
 // Request information
-func (r *BidResponse) Request() *BidRequest {
+func (r *BidResponse) Request() *adtype.BidRequest {
 	return r.Req
 }
 
 // Ads list
-func (r *BidResponse) Ads() []ResponserItemCommon {
+func (r *BidResponse) Ads() []adtype.ResponserItemCommon {
 	return r.ads
 }
 
 // Item by impression code
-func (r *BidResponse) Item(impid string) ResponserItemCommon {
+func (r *BidResponse) Item(impid string) adtype.ResponserItemCommon {
 	for _, it := range r.Ads() {
 		if it.ImpressionID() == impid {
 			return it
@@ -183,13 +184,13 @@ func (r *BidResponse) Count() int {
 // Validate response
 func (r *BidResponse) Validate() error {
 	if r == nil {
-		return ErrResponseEmpty
+		return adtype.ErrResponseEmpty
 	}
 	err := r.BidResponse.Validate()
 	if err == nil {
 		for _, seat := range r.BidResponse.SeatBid {
 			if seat.Group == 1 {
-				return ErrResponseInvalidGroup
+				return adtype.ErrResponseInvalidGroup
 			}
 		}
 	}
@@ -355,5 +356,5 @@ func prepareURL(surl string, replacer *strings.Replacer) string {
 }
 
 var (
-	_ Responser = &BidResponse{}
+	_ adtype.Responser = &BidResponse{}
 )

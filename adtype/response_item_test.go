@@ -4,8 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/bsm/openrtb"
-
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
@@ -18,7 +16,7 @@ func Test_ItemPricing(t *testing.T) {
 			RevenueShare: 90,
 		}
 		imp   = Impression{Target: &admodels.Smartlink{Acc: acc}}
-		items = []ResponserItem{newRTBResponse(acc, imp), newAdResponse(acc, imp)}
+		items = []ResponserItem{newAdResponse(acc, imp)}
 	)
 
 	for _, item := range items {
@@ -55,19 +53,6 @@ func Test_ItemPricing(t *testing.T) {
 				t.Errorf("cpm_price value: 5 != %.3f", item.CPMPrice().Float64())
 			}
 		})
-	}
-}
-
-func newRTBResponse(_ *admodels.Account, imp Impression) *ResponseBidItem {
-	return &ResponseBidItem{
-		ItemID:      "1",
-		Src:         &SourceEmpty{PriceCorrectionReduce: 0},
-		Req:         &BidRequest{ID: "xxx", Imps: []Impression{imp}},
-		Imp:         &imp,
-		Bid:         &openrtb.Bid{Price: 60},
-		BidPrice:    billing.MoneyFloat(10.),
-		CPMBidPrice: billing.MoneyFloat(5.),
-		SecondAd:    SecondAd{},
 	}
 }
 

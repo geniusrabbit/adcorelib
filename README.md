@@ -9,6 +9,8 @@ AdCoreLib is a library of core functions for advertising software, intended for 
 
 This project contains common library packages for advertising software.
 
+## Features
+
 ### Prices Math
 
 - **ComissionShareFactor**: Represents the internal commission of the system.

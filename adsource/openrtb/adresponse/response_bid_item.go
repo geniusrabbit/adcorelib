@@ -3,7 +3,7 @@
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019
 //
 
-package adtype
+package adresponse
 
 import (
 	"context"
@@ -16,6 +16,7 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
@@ -28,9 +29,9 @@ type ResponseBidItem struct {
 	ItemID string
 
 	// Request and impression data
-	Src Source
-	Req *BidRequest
-	Imp *Impression
+	Src adtype.Source
+	Req *adtype.BidRequest
+	Imp *adtype.Impression
 
 	// Format of response advertisement item
 	FormatType types.FormatType
@@ -46,7 +47,7 @@ type ResponseBidItem struct {
 	CPMBidPrice billing.Money // This param can update only price predictor
 
 	// Competitive second AD
-	SecondAd SecondAd
+	SecondAd adtype.SecondAd
 
 	Data    responseDataAccessor
 	assets  admodels.AdAssets
@@ -59,7 +60,7 @@ func (it *ResponseBidItem) ID() string {
 }
 
 // Source of response
-func (it *ResponseBidItem) Source() Source {
+func (it *ResponseBidItem) Source() adtype.Source {
 	return it.Src
 }
 
@@ -86,20 +87,20 @@ func (it *ResponseBidItem) ContentItem(name string) any {
 	formatType := it.PriorityFormatType()
 
 	switch name {
-	case ContentItemContent, ContentItemIFrameURL:
+	case adtype.ContentItemContent, adtype.ContentItemIFrameURL:
 		if formatType.IsBanner() {
 			switch name {
-			case ContentItemIFrameURL:
+			case adtype.ContentItemIFrameURL:
 				if strings.HasPrefix(it.Bid.AdMarkup, "http://") ||
 					strings.HasPrefix(it.Bid.AdMarkup, "https://") ||
 					(strings.HasPrefix(it.Bid.AdMarkup, "//") && !strings.ContainsAny(it.Bid.AdMarkup, "\n\t")) {
 					return it.Bid.AdMarkup
 				}
-			case ContentItemContent:
+			case adtype.ContentItemContent:
 				return it.Bid.AdMarkup
 			}
 		}
-	case ContentItemLink:
+	case adtype.ContentItemLink:
 		switch {
 		case it.Native != nil:
 			return it.Native.Link.URL
@@ -107,11 +108,11 @@ func (it *ResponseBidItem) ContentItem(name string) any {
 			// In this case here have to be the advertisement link
 			return it.Bid.AdMarkup
 		}
-	case ContentItemNotifyWinURL:
+	case adtype.ContentItemNotifyWinURL:
 		if it.Bid != nil {
 			return it.Bid.NURL
 		}
-	case ContentItemNotifyDisplayURL:
+	case adtype.ContentItemNotifyDisplayURL:
 		if it.Bid != nil {
 			return it.Bid.BURL
 		}
@@ -253,7 +254,7 @@ func (it *ResponseBidItem) PriorityFormatType() types.FormatType {
 }
 
 // Impression place object
-func (it *ResponseBidItem) Impression() *Impression {
+func (it *ResponseBidItem) Impression() *adtype.Impression {
 	return it.Imp
 }
 
@@ -319,7 +320,7 @@ func (it *ResponseBidItem) ECPM() billing.Money {
 
 // Price for specific action if supported `click`, `lead`, `view`
 // returns total price of the action
-func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...PriceFactor) (price billing.Money) {
+func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...adtype.PriceFactor) (price billing.Money) {
 	if it == nil || it.Bid == nil {
 		return 0
 	}
@@ -330,19 +331,19 @@ func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...PriceF
 			price = billing.MoneyFloat(it.Bid.Price / 1000)
 		}
 	}
-	return price + PriceFactorFromList(removeFactors...).Remove(price, it)
+	return price + adtype.PriceFactorFromList(removeFactors...).Remove(price, it)
 }
 
 // SetCPMPrice update of DSP auction value
-func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
-	price += PriceFactorFromList(includeFactors...).Add(price, it)
+func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...adtype.PriceFactor) {
+	price += adtype.PriceFactorFromList(includeFactors...).Add(price, it)
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price
 	}
 }
 
 // CPMPrice value price value for DSP auction
-func (it *ResponseBidItem) CPMPrice(removeFactors ...PriceFactor) (price billing.Money) {
+func (it *ResponseBidItem) CPMPrice(removeFactors ...adtype.PriceFactor) (price billing.Money) {
 	if it.PricingModel().IsCPM() {
 		price = it.Price(admodels.ActionImpression) * 1000
 	} else {
@@ -352,17 +353,17 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...PriceFactor) (price billing
 	if it.CPMBidPrice > 0 && it.CPMBidPrice < price {
 		price = it.CPMBidPrice
 	}
-	return price + PriceFactorFromList(removeFactors...).Remove(price, it)
+	return price + adtype.PriceFactorFromList(removeFactors...).Remove(price, it)
 }
 
 // AuctionCPMBid value price without any comission
 func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice(AllPriceFactors)
+	return it.CPMPrice(adtype.AllPriceFactors)
 }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request for the system.
-func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
+func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors ...adtype.PriceFactor) billing.Money {
 	if it == nil {
 		return 0
 	}
@@ -376,7 +377,7 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 		}
 	}
 	if len(removeFactors) == 0 {
-		removeFactors = []PriceFactor{^TargetReducePriceFactor}
+		removeFactors = []adtype.PriceFactor{^adtype.TargetReducePriceFactor}
 	}
 	switch action {
 	case admodels.ActionImpression:
@@ -400,11 +401,11 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (it *ResponseBidItem) PotentialPrice(action admodels.Action) billing.Money {
-	return -SourcePriceFactor.Remove(it.Price(action), it)
+	return -adtype.SourcePriceFactor.Remove(it.Price(action), it)
 }
 
 // Second campaigns
-func (it *ResponseBidItem) Second() *SecondAd {
+func (it *ResponseBidItem) Second() *adtype.SecondAd {
 	return &it.SecondAd
 }
 
@@ -431,7 +432,7 @@ func (it *ResponseBidItem) ActionURL() string {
 // Validate item
 func (it *ResponseBidItem) Validate() error {
 	if it.Src == nil || it.Req == nil || it.Imp == nil || it.Bid == nil {
-		return ErrInvalidItemInitialisation
+		return adtype.ErrInvalidItemInitialisation
 	}
 	return it.Bid.Validate()
 }
@@ -468,5 +469,5 @@ func (it *ResponseBidItem) Get(key string) (res any) {
 }
 
 var (
-	_ ResponserItem = &ResponseBidItem{}
+	_ adtype.ResponserItem = &ResponseBidItem{}
 )

@@ -3,7 +3,6 @@ package adtype
 import (
 	"testing"
 
-	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/stretchr/testify/assert"
 )
@@ -35,20 +34,4 @@ func TestPriceCorrection(t *testing.T) {
 			assert.Equal(t, billing.MoneyFloat(1.123*0.9*0.95*0.85), price, "revenue share reduce")
 		}
 	}
-}
-
-func TestPriceCorrection2(t *testing.T) {
-	var (
-		acc = &admodels.Account{
-			IDval:        1,
-			RevenueShare: 85,
-		}
-		imp  = Impression{Target: &admodels.Smartlink{Acc: acc}}
-		item = newRTBResponse(acc, imp)
-	)
-	price := billing.MoneyFloat(1.123)
-	price += PriceFactorFromList(SourcePriceFactor, SystemComissionPriceFactor, TargetReducePriceFactor).
-		Remove(price, item)
-	assert.True(t, price > 0 && price < billing.MoneyFloat(1.123))
-	assert.Equal(t, billing.MoneyFloat(1.123*0.85).Float64(), price.Float64())
 }
