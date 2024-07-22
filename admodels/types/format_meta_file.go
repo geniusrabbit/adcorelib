@@ -12,6 +12,7 @@ const (
 	FormatAssetBanner = "banner"
 	FormatAssetMain   = "main"
 	FormatAssetIcon   = "icon"
+	FormatAssetLogo   = "logo"
 )
 
 // FormatFileRequirement rule

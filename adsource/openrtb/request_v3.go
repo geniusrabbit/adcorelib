@@ -23,7 +23,7 @@ func requestToRTBv3(req *adtype.BidRequest, opts ...BidRequestRTBOption) *openrt
 		App:               uopenrtbOpenrtbV3ApplicationFrom(req.AppInfo()),
 		Device:            uopenrtbOpenrtbV3DeviceFrom(req.DeviceInfo(), req.UserInfo().Geo),
 		User:              uopenrtbOpenrtbV3UserInfo(req.UserInfo()),
-		AuctionType:       1,                               // 1 = First Price, 2 = Second Price Plus
+		AuctionType:       int(opt.AuctionType),            // 1 = First Price, 2 = Second Price Plus
 		TimeMax:           int(opt.TimeMax.Milliseconds()), // Maximum amount of time in milliseconds to submit a bid
 		Seats:             nil,                             // Array of buyer seats allowed to bid on this auction
 		AllImpressions:    0,                               //
@@ -105,7 +105,7 @@ func openrtbV3ImpressionByFormat(req *adtype.BidRequest, imp *adtype.Impression,
 		DisplayManagerVersion: "",                                          // Version of the above
 		Interstitial:          b2i(imp.IsDirect()),                         // Interstitial, Default: 0 ("1": Interstitial, "0": Something else)
 		TagID:                 tagid,                                       // IDentifier for specific ad placement or ad tag
-		BidFloor:              imp.BidFloor.Float64(),                      // Bid floor for this impression in CPM
+		BidFloor:              max(imp.BidFloor.Float64(), opts.BidFloor),  // Bid floor for this impression in CPM
 		BidFloorCurrency:      "",                                          // Currency of bid floor
 		Secure:                openrtb.NumberOrString(b2i(req.IsSecure())), // Flag to indicate whether the impression requires secure HTTPS URL creative assets and markup.
 		IFrameBusters:         nil,                                         // Array of names for supportediframe busters.
@@ -115,27 +115,20 @@ func openrtbV3ImpressionByFormat(req *adtype.BidRequest, imp *adtype.Impression,
 }
 
 func openrtbV3NativeRequest(req *adtype.BidRequest, imp *adtype.Impression, format *types.Format, opts *BidRequestRTBOptions) json.RawMessage {
-	var (
-		nativePrepared []byte
-		native         *openrtbnreq.Request
-	)
-
-	if native = imp.RTBNativeRequest(); native == nil {
-		native = &openrtbnreq.Request{
-			Ver:              opts.openNativeVer(),                    // Version of the Native Markup
-			LayoutID:         0,                                       // DEPRECATED The Layout ID of the native ad
-			AdUnitID:         0,                                       // DEPRECATED The Ad unit ID of the native ad
-			ContextTypeID:    imp.ContextType(),                       // The context in which the ad appears
-			ContextSubTypeID: imp.ContextSubType(),                    // A more detailed context in which the ad appears
-			PlacementTypeID:  imp.PlacementType(),                     // The design/format/layout of the ad unit being offered
-			PlacementCount:   imp.Count,                               // The number of identical placements in this Layout
-			Sequence:         0,                                       // 0 for the first ad, 1 for the second ad, and so on
-			Assets:           openrtbV3NativeAssets(req, imp, format), // An array of Asset Objects
-			Ext:              nil,
-		}
+	native := &openrtbnreq.Request{
+		Ver:              opts.openNativeVer(),                    // Version of the Native Markup
+		LayoutID:         0,                                       // DEPRECATED The Layout ID of the native ad
+		AdUnitID:         0,                                       // DEPRECATED The Ad unit ID of the native ad
+		ContextTypeID:    imp.ContextType(),                       // The context in which the ad appears
+		ContextSubTypeID: imp.ContextSubType(),                    // A more detailed context in which the ad appears
+		PlacementTypeID:  imp.PlacementType(),                     // The design/format/layout of the ad unit being offered
+		PlacementCount:   imp.Count,                               // The number of identical placements in this Layout
+		Sequence:         0,                                       // 0 for the first ad, 1 for the second ad, and so on
+		Assets:           openrtbV3NativeAssets(req, imp, format), // An array of Asset Objects
+		Ext:              nil,
 	}
 
-	nativePrepared, _ = json.Marshal(native)
+	nativePrepared, _ := json.Marshal(native)
 
 	// We have to encode it as a JSON string
 	nativePrepared, _ = json.Marshal(`{"native":` + string(nativePrepared) + `}`)
@@ -170,87 +163,9 @@ func openrtbV3NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *t
 		}
 		// TODO add video tag support
 	}
-
 	for _, field := range format.Config.Fields {
-		switch field.Name {
-		case types.FormatFieldTitle:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Title:    &openrtbnreq.Title{Length: field.MaxLength()},
-			})
-		case types.FormatFieldDescription:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeDesc,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldBrandname:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeSponsored,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldPhone:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypePhone,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldURL:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeDisplayURL,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldRating:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeRating,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldLikes:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeLikes,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldAddress:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeAddress,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldSponsored:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeSponsored,
-					Length: field.MaxLength(),
-				},
-			})
+		if asset, ok := openrtbV3NativeFieldAsset(&field); ok {
+			assets = append(assets, asset)
 		}
 	}
 	return assets
@@ -428,4 +343,88 @@ func uopenrtbOpenrtbV3DeviceFrom(d *udetect.Device, geo *udetect.Geo) *openrtb.D
 		MacSHA1:      "",                                        // SHA1 hashed device ID; IMEI when available, else MEID or ESN
 		MacMD5:       "",                                        // MD5 hashed device ID; IMEI when available, else MEID or ESN
 	}
+}
+
+func openrtbV3NativeFieldAsset(field *types.FormatField) (openrtbnreq.Asset, bool) {
+	switch field.Name {
+	case types.FormatFieldTitle:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Title:    &openrtbnreq.Title{Length: field.MaxLength()},
+		}, true
+	case types.FormatFieldDescription:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeDesc,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldBrandname:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeSponsored,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldPhone:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypePhone,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldURL:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeDisplayURL,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldRating:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeRating,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldLikes:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeLikes,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldAddress:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeAddress,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldSponsored:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeSponsored,
+				Length: field.MaxLength(),
+			},
+		}, true
+	}
+	return openrtbnreq.Asset{}, false
 }

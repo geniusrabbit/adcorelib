@@ -14,6 +14,8 @@ type BidRequestRTBOptions struct {
 	FormatFilter func(f *types.Format) bool
 	Currency     []string
 	TimeMax      time.Duration
+	AuctionType  types.AuctionType
+	BidFloor     float64
 }
 
 func (opts *BidRequestRTBOptions) openNativeVer() string {
@@ -48,5 +50,19 @@ func WithFormatFilter(f func(f *types.Format) bool) BidRequestRTBOption {
 func WithMaxTimeDuration(duration time.Duration) BidRequestRTBOption {
 	return func(opts *BidRequestRTBOptions) {
 		opts.TimeMax = duration
+	}
+}
+
+// WithAuctionType set type of auction
+func WithAuctionType(auction types.AuctionType) BidRequestRTBOption {
+	return func(opts *BidRequestRTBOptions) {
+		opts.AuctionType = auction
+	}
+}
+
+// WithBidFloor set minimal bid value
+func WithBidFloor(bidFloor float64) BidRequestRTBOption {
+	return func(opts *BidRequestRTBOptions) {
+		opts.BidFloor = max(bidFloor, 0)
 	}
 }

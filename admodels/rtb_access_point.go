@@ -19,7 +19,9 @@ type RTBAccessPointFlags = models.RTBAccessPointFlags
 // It means that this is entry point which contains
 // information for access and search data
 type RTBAccessPoint struct {
-	ID      uint64
+	ID       uint64
+	Protocol string // rtb/openrtb as default
+
 	Title   string
 	Account *Account
 
@@ -27,6 +29,7 @@ type RTBAccessPoint struct {
 	Headers  map[string]string
 
 	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
+	Flags       RTBAccessPointFlags
 
 	// RevenueShareReduce represents extra reduce factor to nevilate AdExchange and SSP discrepancy.
 	// It means that the final bid respose will be decresed by RevenueShareReduce %
@@ -35,14 +38,14 @@ type RTBAccessPoint struct {
 	//   2. Final `bid = bid - $AdSourceComission{%} - $AdExchangeComission{%} - $RevenueShareReduce{%}`
 	RevenueShareReduce float64 // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 
-	Protocol string // rtb as default
-	RPS      int    // 0 – unlimit
-	Timeout  int    // In milliseconds
-	MaxBid   billing.Money
+	RPS     int // 0 – unlimit
+	Timeout int // In milliseconds
+
+	// Price limits
+	MaxBid             billing.Money
+	FixedPurchasePrice billing.Money
 
 	Filter types.BaseFilter
-
-	Flags RTBAccessPointFlags
 }
 
 // RTBAccessPoint create new DSP connect.
@@ -51,15 +54,12 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, acc *Account) (src *RTBA
 		return nil
 	}
 
-	var (
-		headers = cl.Headers.DataOr(nil)
-		filter  = types.BaseFilter{
-			Secure:          cl.Secure,
-			Adblock:         cl.AdBlock,
-			PrivateBrowsing: cl.PrivateBrowsing,
-			IP:              cl.IP,
-		}
-	)
+	filter := types.BaseFilter{
+		Secure:          cl.Secure,
+		Adblock:         cl.AdBlock,
+		PrivateBrowsing: cl.PrivateBrowsing,
+		IP:              cl.IP,
+	}
 
 	filter.Set(types.FieldFormat, cl.Formats)
 	filter.Set(types.FieldDeviceTypes, cl.DeviceTypes)
@@ -74,17 +74,21 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, acc *Account) (src *RTBA
 
 	return &RTBAccessPoint{
 		ID:                 cl.ID,
+		Protocol:           strings.ToLower(cl.Protocol),
 		Account:            acc,
 		Codename:           cl.Codename,
-		Protocol:           strings.ToLower(cl.Protocol),
-		Headers:            headers,
+		Headers:            cl.Headers.DataOr(nil),
 		AuctionType:        cl.AuctionType,
+		Flags:              cl.Flags.DataOr(RTBAccessPointFlags{}),
+		RevenueShareReduce: cl.RevenueShareReduce,
 		RPS:                cl.RPS,
 		Timeout:            cl.Timeout,
+
+		// Price limits
 		MaxBid:             cl.MaxBid,
-		Filter:             filter,
-		RevenueShareReduce: cl.RevenueShareReduce,
-		Flags:              cl.Flags.DataOr(RTBAccessPointFlags{}),
+		FixedPurchasePrice: cl.FixedPurchasePrice,
+
+		Filter: filter,
 	}
 }
 

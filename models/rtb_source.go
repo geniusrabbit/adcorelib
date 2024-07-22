@@ -12,6 +12,7 @@ import (
 	"github.com/guregu/null"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // RTB price type
@@ -48,6 +49,10 @@ type RTBSource struct {
 	Accuracy              float64           `json:"accuracy,omitempty"`                             // Price accuracy for auction in percentages
 	PriceCorrectionReduce float64           `json:"price_correction_reduce,omitempty"`              // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 	AuctionType           types.AuctionType `gorm:"type:AuctionType" json:"auction_type,omitempty"` // default: 0 – first price type, 1 – second price type
+
+	// Price limits
+	MinBid billing.Money `json:"min_bid,omitempty"` // Minimal bid value
+	MaxBid billing.Money `json:"max_bid,omitempty"` // Maximal bid value
 
 	// Targeting filters
 	Formats         gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters

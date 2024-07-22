@@ -8,9 +8,12 @@ import (
 
 // Request type enum
 const (
-	RequestTypeJSON      = admodels.RTBRequestTypeJSON
-	RequestTypeXML       = admodels.RTBRequestTypeXML
-	RequestTypeProtobuff = admodels.RTBRequestTypeProtoBUFF
+	RequestTypeUndefined       = admodels.RTBRequestTypeUndefined
+	RequestTypeJSON            = admodels.RTBRequestTypeJSON
+	RequestTypeXML             = admodels.RTBRequestTypeXML
+	RequestTypeProtobuff       = admodels.RTBRequestTypeProtoBUFF
+	RequestTypePOSTFormEncoded = admodels.RTBRequestTypePOSTFormEncoded
+	RequestTypePlain           = admodels.RTBRequestTypePLAINTEXT
 )
 
 // Errors set

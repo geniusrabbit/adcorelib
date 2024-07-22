@@ -21,7 +21,7 @@ const (
 
 // IsFirtsPrice auction type
 func (at AuctionType) IsFirtsPrice() bool {
-	return at == FirstPriceAuctionType
+	return at != SecondPriceAuctionType // By default is first price
 }
 
 // IsSecondPrice auction type

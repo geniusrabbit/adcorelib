@@ -45,9 +45,12 @@ type RTBAccessPoint struct {
 	Protocol      string                                `json:"protocol,omitempty"`
 	Timeout       int                                   `json:"timeout,omitempty"`
 	RPS           int                                   `json:"rps,omitempty"`
-	MaxBid        billing.Money                         `json:"max_bid,omitempty"`
 	DomainDefault string                                `json:"domain_default,omitempty"`
 	Headers       gosql.NullableJSON[map[string]string] `gorm:"type:JSONB" json:"headers,omitempty"`
+
+	// Price limits
+	MaxBid             billing.Money `json:"max_bid,omitempty"`
+	FixedPurchasePrice billing.Money `json:"fixed_purchase_price,omitempty"`
 
 	// Targeting filters
 	Formats         gosql.NullableStringArray             `gorm:"type:TEXT[]" json:"formats,omitempty"`            // => Filters [direct,banner_250x300]

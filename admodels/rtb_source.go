@@ -11,6 +11,7 @@ import (
 	"github.com/geniusrabbit/gosql/v2"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/models"
 )
 
@@ -41,15 +42,20 @@ type RTBSource struct {
 	RequestType RTBRequestType // 1 - json, 2 - xml, 3 - ProtoBUFF, 4 - MultipleFormaData, 5 - PLAINTEXT
 	Headers     gosql.NullableJSON[map[string]string]
 
+	Options RTBSourceFlags
+	Filter  types.BaseFilter
+
 	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
 	RPS         int               // 0 – unlimit
 	Timeout     int               // In milliseconds
-	Options     RTBSourceFlags    //
-	Filter      types.BaseFilter  //
 
 	Accuracy              float64 // Price accuracy for auction in percentages
-	PriceCorrectionReduce float64 // % 100, 80%, 65.5%
+	PriceCorrectionReduce float64 // % 100, 80%, 65.5% - 0 .. 1
 	MinimalWeight         float64
+
+	// Price limits
+	MinBid billing.Money // Minimal bid value
+	MaxBid billing.Money // Maximal bid value
 
 	Config gosql.NullableJSON[any]
 }
@@ -60,14 +66,12 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 		return nil
 	}
 
-	var (
-		filter = types.BaseFilter{
-			Secure:          cl.Secure,
-			Adblock:         cl.AdBlock,
-			PrivateBrowsing: cl.PrivateBrowsing,
-			IP:              cl.IP,
-		}
-	)
+	filter := types.BaseFilter{
+		Secure:          cl.Secure,
+		Adblock:         cl.AdBlock,
+		PrivateBrowsing: cl.PrivateBrowsing,
+		IP:              cl.IP,
+	}
 
 	filter.Set(types.FieldFormat, cl.Formats)
 	filter.Set(types.FieldDeviceTypes, cl.DeviceTypes)
@@ -81,22 +85,28 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 	filter.Set(types.FieldDomains, cl.Domains)
 
 	return &RTBSource{
-		ID:                    cl.ID,
-		Account:               acc,
-		Protocol:              strings.ToLower(cl.Protocol),
-		URL:                   cl.URL,
-		Method:                strings.ToUpper(cl.Method),
-		RequestType:           cl.RequestType,
-		Headers:               cl.Headers,
-		AuctionType:           cl.AuctionType,
-		RPS:                   cl.RPS,
-		Timeout:               cl.Timeout,
-		Options:               cl.Flags.DataOr(RTBSourceFlags{}),
-		Filter:                filter,
+		ID:      cl.ID,
+		Account: acc,
+
+		MinimalWeight: cl.MinimalWeight,
+		Protocol:      strings.ToLower(cl.Protocol),
+		URL:           cl.URL,
+		Method:        strings.ToUpper(cl.Method),
+		RequestType:   cl.RequestType,
+		Headers:       cl.Headers,
+		AuctionType:   cl.AuctionType,
+		RPS:           cl.RPS,
+		Timeout:       cl.Timeout,
+		Options:       cl.Flags.DataOr(RTBSourceFlags{}),
+		Filter:        filter,
+
 		Accuracy:              cl.Accuracy,
-		PriceCorrectionReduce: cl.PriceCorrectionReduce,
-		MinimalWeight:         cl.MinimalWeight,
-		Config:                cl.Config,
+		PriceCorrectionReduce: max(min(cl.PriceCorrectionReduce, 100), 0) / 100,
+
+		MinBid: cl.MinBid,
+		MaxBid: cl.MaxBid,
+
+		Config: cl.Config,
 	}
 }
 
@@ -114,5 +124,5 @@ func (s *RTBSource) TestFormat(f *types.Format) bool {
 // Returns percent from 0 to 1 for reducing of the value
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
 func (s *RTBSource) PriceCorrectionReduceFactor() float64 {
-	return s.PriceCorrectionReduce / 100.0
+	return s.PriceCorrectionReduce
 }

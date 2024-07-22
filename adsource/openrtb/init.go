@@ -1,5 +1,39 @@
 // Package openrtb provides implementation of the OpenRTB protocol for the adsource package.
 // Supported versions: 2.3, 2.4, 2.5, 2.6, 3.0+
+//
+// The openrtb package is designed to facilitate interaction with the OpenRTB protocol, allowing for real-time bidding
+// requests and responses within the adsource framework. It supports multiple versions of the protocol, ensuring compatibility
+// with various OpenRTB standards.
+//
+// Key Features:
+// - **Version Support**: Supports OpenRTB versions 2.3, 2.4, 2.5, 2.6, and 3.0+.
+// - **Customizable Clients**: Allows for the creation of customizable HTTP clients through the NewClientFnk function.
+// - **Timeout Handling**: Manages request timeouts with a default value and configurable options based on source settings.
+// - **Platform Information**: Provides detailed platform information, including supported protocols and documentation links.
+//
+// Usage:
+//
+// Initialization of the Factory:
+//   ctx := context.Background()
+//   newClient := func(ctx context.Context, timeout time.Duration) (httpclient.Driver, error) {
+//       return httpclient.New(timeout), nil // Implement your HTTP client creation logic
+//   }
+//
+//   factory := openrtb.NewFactory(newClient)
+//
+// Creating a New Driver:
+//   source := &admodels.RTBSource{ /* initialize with source details */ }
+//   driver, err := factory.New(ctx, source)
+//   if err != nil {
+//       // handle error
+//   }
+//
+// Retrieving Platform Information:
+//   platformInfo := factory.Info()
+//
+// The main components of the package include the factory for creating new driver instances, customizable HTTP client function,
+// and platform information retrieval.
+
 package openrtb
 
 import (
@@ -57,19 +91,32 @@ func (*factory[ND, Rq, Rs]) Info() info.Platform {
 				Title: "OpenRTB (Real-Time Bidding)",
 				Link:  "https://www.iab.com/guidelines/real-time-bidding-rtb-project/",
 			},
-			{
-				Title: "Digital Video Ad Serving Template (VAST)",
-				Link:  "https://www.iab.com/guidelines/vast/",
-			},
 		},
 		Subprotocols: []info.Subprotocol{
 			{
 				Name:     "VAST",
 				Protocol: "vast",
+				Docs: []info.Documentation{
+					{
+						Title: "Digital Video Ad Serving Template (VAST)",
+						Link:  "https://www.iab.com/guidelines/vast/",
+					},
+				},
 			},
 			{
 				Name:     "OpenNative",
 				Protocol: "opennative",
+				Versions: []string{"1.1", "1.2"},
+				Docs: []info.Documentation{
+					{
+						Title: "OpenRTB Native Ads Specification 1.1",
+						Link:  "https://www.iab.com/wp-content/uploads/2016/03/OpenRTB-Native-Ads-Specification-1-1_2016.pdf",
+					},
+					{
+						Title: "OpenRTB Native Ads Specification 1.2",
+						Link:  "https://www.iab.com/wp-content/uploads/2018/03/OpenRTB-Native-Ads-Specification-Final-1.2.pdf",
+					},
+				},
 			},
 		},
 	}

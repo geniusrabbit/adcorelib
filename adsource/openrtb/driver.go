@@ -1,3 +1,52 @@
+// Package openrtb facilitates the interaction with the OpenRTB (Real-Time Bidding) protocol,
+// enabling real-time bidding requests and responses following OpenRTB standards.
+//
+// Features:
+// - Request and Response Handling: Manages bid requests and responses for OpenRTB 2.x and 3.x.
+// - Metrics and Logging: Integrates comprehensive metrics and logging using zap and prometheuswrapper.
+// - Error Handling: Implements robust error handling and retry mechanisms.
+// - Customizable Headers: Allows customization of HTTP request headers.
+// - Rate Limiting: Supports RPS (Requests Per Second) limits to control request rates.
+//
+// The main component of the package is the `driver` struct which handles the lifecycle of a bid request,
+// including preparation, execution, and response processing. It utilizes various supporting packages for
+// logging, metrics, and HTTP client functionalities.
+//
+// Usage:
+//
+// Initialization:
+//   ctx := context.Background()
+//   source := &admodels.RTBSource{ /* initialize with source details */ }
+//   netClient := httpclient.New() // Or your custom HTTP client
+//
+//   driver, err := newDriver(ctx, source, netClient)
+//   if err != nil {
+//       // handle error
+//   }
+//
+// Sending a Bid Request:
+//   request := &adtype.BidRequest{ /* initialize bid request */ }
+//   if driver.Test(request) {
+//       response := driver.Bid(request)
+//       // process response
+//   }
+//
+// Handling Metrics:
+//   metrics := driver.Metrics()
+//   // log or process metrics
+//
+// Functions:
+// - newDriver: Initializes a new driver instance.
+// - ID: Returns the ID of the source.
+// - Protocol: Returns the protocol version.
+// - Test: Tests if the request meets the criteria for processing.
+// - PriceCorrectionReduceFactor: Returns the price correction reduce factor.
+// - RequestStrategy: Returns the request strategy.
+// - Bid: Processes a bid request and returns a response.
+// - ProcessResponseItem: Processes individual response items.
+// - RevenueShareReduceFactor: Returns the revenue share reduce factor.
+// - Metrics: Returns platform
+
 package openrtb
 
 import (
@@ -55,9 +104,7 @@ type driver[NetDriver httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpc
 }
 
 func newDriver[ND httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclient.Response](_ context.Context, source *admodels.RTBSource, netClient ND, _ ...any) (*driver[ND, Rq, Rs], error) {
-	if source.MinimalWeight <= 0 {
-		source.MinimalWeight = defaultMinWeight
-	}
+	source.MinimalWeight = max(source.MinimalWeight, defaultMinWeight)
 	return &driver[ND, Rq, Rs]{
 		source:    source,
 		Headers:   source.Headers.DataOr(nil),
@@ -168,7 +215,7 @@ func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Re
 
 	d.processHTTPReponse(resp, err)
 	if response == nil {
-		return adtype.NewEmptyResponse(request, d, err)
+		response = adtype.NewEmptyResponse(request, d, err)
 	}
 	return response
 }
@@ -247,7 +294,7 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 	return req, nil
 }
 
-func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) (response *adtype.BidResponse, err error) {
+func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) (_ *adtype.BidResponse, err error) {
 	var bidResp openrtb.BidResponse
 
 	switch d.source.RequestType {
@@ -284,12 +331,41 @@ func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) 
 		} // end for
 	}
 
+	// Check response for price limits
+	if d.source.MaxBid > 0 {
+		maxBid := d.source.MaxBid.Float64()
+		for i, seat := range bidResp.SeatBid {
+			changed := false
+			for j, bid := range seat.Bid {
+				if bid.Price > maxBid {
+					// Remove bid from response if price is more than max bid
+					// TODO: add metrics for this case
+					seat.Bid = append(seat.Bid[:j], seat.Bid[j+1:]...)
+					changed = true
+				}
+			}
+			if changed {
+				if len(seat.Bid) == 0 {
+					bidResp.SeatBid = append(bidResp.SeatBid[:i], bidResp.SeatBid[i+1:]...)
+				} else {
+					bidResp.SeatBid[i] = seat
+				}
+			}
+		}
+	}
+
+	// If the response is empty, then return nil
+	if len(bidResp.SeatBid) == 0 {
+		return nil, nil
+	}
+
 	// Build response
-	response = &adtype.BidResponse{
+	response := &adtype.BidResponse{
 		Src:         d,
 		Req:         request,
 		BidResponse: bidResp,
 	}
+
 	response.Prepare()
 	return response, nil
 }
@@ -331,5 +407,7 @@ func (d *driver[ND, Rq, Rs]) getRequestOptions() []BidRequestRTBOption {
 		WithRTBOpenNativeVersion("1.1"),
 		WithFormatFilter(d.source.TestFormat),
 		WithMaxTimeDuration(time.Duration(d.source.Timeout) * time.Millisecond),
+		WithAuctionType(d.source.AuctionType),
+		WithBidFloor(d.source.MinBid.Float64()),
 	}
 }

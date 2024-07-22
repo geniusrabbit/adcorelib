@@ -23,7 +23,7 @@ func requestToRTBv2(req *adtype.BidRequest, opts ...BidRequestRTBOption) *openrt
 		App:         uopenrtb.ApplicationFrom(req.AppInfo()),
 		Device:      uopenrtb.DeviceFrom(req.DeviceInfo(), req.UserInfo().Geo),
 		User:        req.UserInfo().RTBObject(),
-		AuctionType: 1,                               // 1 = First Price, 2 = Second Price Plus
+		AuctionType: int(opt.AuctionType),            // 1 = First Price, 2 = Second Price Plus
 		TMax:        int(opt.TimeMax.Milliseconds()), // Maximum amount of time in milliseconds to submit a bid
 		WSeat:       nil,                             // Array of buyer seats allowed to bid on this auction
 		AllImps:     0,                               //
@@ -105,7 +105,7 @@ func openrtbV2ImpressionByFormat(req *adtype.BidRequest, imp *adtype.Impression,
 		DisplayManagerVer: "",                                          // Version of the above
 		Instl:             b2i(imp.IsDirect()),                         // Interstitial, Default: 0 ("1": Interstitial, "0": Something else)
 		TagID:             tagid,                                       // IDentifier for specific ad placement or ad tag
-		BidFloor:          imp.BidFloor.Float64(),                      // Bid floor for this impression in CPM
+		BidFloor:          max(imp.BidFloor.Float64(), opts.BidFloor),  // Bid floor for this impression in CPM
 		BidFloorCurrency:  "",                                          // Currency of bid floor
 		Secure:            openrtb.NumberOrString(b2i(req.IsSecure())), // Flag to indicate whether the impression requires secure HTTPS URL creative assets and markup.
 		IFrameBuster:      nil,                                         // Array of names for supportediframe busters.
@@ -154,7 +154,7 @@ func openrtbV2NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *t
 				typeid = openrtbnreq.ImageTypeMain
 			case types.FormatAssetIcon:
 				typeid = openrtbnreq.ImageTypeIcon
-			case "logo":
+			case types.FormatAssetLogo:
 				typeid = openrtbnreq.ImageTypeLogo
 			}
 			assets = append(assets, openrtbnreq.Asset{
@@ -170,88 +170,94 @@ func openrtbV2NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *t
 		}
 		// TODO add video tag support
 	}
-
 	for _, field := range format.Config.Fields {
-		switch field.Name {
-		case types.FormatFieldTitle:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Title:    &openrtbnreq.Title{Length: field.MaxLength()},
-			})
-		case types.FormatFieldDescription:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeDesc,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldBrandname:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeSponsored,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldPhone:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypePhone,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldURL:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeDisplayURL,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldRating:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeRating,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldLikes:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeLikes,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldAddress:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeAddress,
-					Length: field.MaxLength(),
-				},
-			})
-		case types.FormatFieldSponsored:
-			assets = append(assets, openrtbnreq.Asset{
-				ID:       field.ID,
-				Required: b2i(field.Required),
-				Data: &openrtbnreq.Data{
-					TypeID: openrtbnreq.DataTypeSponsored,
-					Length: field.MaxLength(),
-				},
-			})
+		if asset, ok := openrtbV2NativeFieldAsset(&field); ok {
+			assets = append(assets, asset)
 		}
 	}
 	return assets
+}
+
+func openrtbV2NativeFieldAsset(field *types.FormatField) (openrtbnreq.Asset, bool) {
+	switch field.Name {
+	case types.FormatFieldTitle:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Title:    &openrtbnreq.Title{Length: field.MaxLength()},
+		}, true
+	case types.FormatFieldDescription:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeDesc,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldBrandname:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeSponsored,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldPhone:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypePhone,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldURL:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeDisplayURL,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldRating:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeRating,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldLikes:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeLikes,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldAddress:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeAddress,
+				Length: field.MaxLength(),
+			},
+		}, true
+	case types.FormatFieldSponsored:
+		return openrtbnreq.Asset{
+			ID:       field.ID,
+			Required: b2i(field.Required),
+			Data: &openrtbnreq.Data{
+				TypeID: openrtbnreq.DataTypeSponsored,
+				Length: field.MaxLength(),
+			},
+		}, true
+	}
+	return openrtbnreq.Asset{}, false
 }

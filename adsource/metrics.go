@@ -18,9 +18,9 @@ type Metrics struct {
 // IncrementBidRequestCount metric
 func (m *Metrics) IncrementBidRequestCount(source adtype.Source, request *adtype.BidRequest, duration time.Duration) {
 	m.counter().WithLabelValues(
-		gocast.ToString(source.ID()),
-		gocast.ToString(request.TargetID()),
-		gocast.ToString(request.DeviceInfo().DeviceType),
+		gocast.Str(source.ID()),
+		gocast.Str(request.TargetID()),
+		gocast.Str(request.DeviceInfo().DeviceType),
 		request.AuctionType.Name(),
 		"0",
 	).Inc()
@@ -29,11 +29,11 @@ func (m *Metrics) IncrementBidRequestCount(source adtype.Source, request *adtype
 // IncrementBidErrorCount metric
 func (m *Metrics) IncrementBidErrorCount(source adtype.Source, request *adtype.BidRequest, err error) {
 	m.counter().WithLabelValues(
-		gocast.ToString(source.ID()),
-		gocast.ToString(request.TargetID()),
-		gocast.ToString(request.DeviceInfo().DeviceType),
+		gocast.Str(source.ID()),
+		gocast.Str(request.TargetID()),
+		gocast.Str(request.DeviceInfo().DeviceType),
 		request.AuctionType.Name(),
-		isToBinS(err != nil),
+		gocast.IfThen(err != nil, "1", "0"),
 	).Inc()
 }
 
@@ -45,11 +45,4 @@ func (m *Metrics) counter() *prometheus.CounterVec {
 		}, []string{"source_id", "zone_id", "device_type", "auction_type", "error"})
 	}
 	return m.requestCounter
-}
-
-func isToBinS(b bool) string {
-	if b {
-		return "1"
-	}
-	return "0"
 }
