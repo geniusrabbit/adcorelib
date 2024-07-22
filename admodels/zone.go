@@ -23,9 +23,9 @@ type Zone struct {
 	Acc   *Account
 	AccID uint64
 
-	Price        billing.Money // CPM of source
-	MinECPM      float64
-	MinECPMByGeo GeoBidSlice
+	FixedPurchasePrice billing.Money // The cost of single view
+	MinECPM            float64
+	MinECPMByGeo       GeoBidSlice
 
 	AllowedTypes      gosql.NullableOrderedNumberArray[int]
 	AllowedSources    gosql.NullableOrderedNumberArray[int]
@@ -36,17 +36,17 @@ type Zone struct {
 // ZoneFromModel convert database model to specified model
 func ZoneFromModel(zone *models.Zone, account *Account) *Zone {
 	return &Zone{
-		id:                zone.ID,
-		StringID:          strconv.FormatUint(zone.ID, 10),
-		Price:             billing.MoneyFloat(zone.Price),
-		Acc:               account,
-		AccID:             zone.AccountID,
-		MinECPM:           zone.MinECPM,
-		MinECPMByGeo:      nil,
-		AllowedTypes:      zone.AllowedTypes,
-		AllowedSources:    zone.AllowedSources,
-		DisallowedSources: zone.DisallowedSources,
-		DefaultCode:       zone.DefaultCode.DataOr(nil),
+		id:                 zone.ID,
+		StringID:           strconv.FormatUint(zone.ID, 10),
+		FixedPurchasePrice: zone.FixedPurchasePrice,
+		Acc:                account,
+		AccID:              zone.AccountID,
+		MinECPM:            zone.MinECPM,
+		MinECPMByGeo:       nil,
+		AllowedTypes:       zone.AllowedTypes,
+		AllowedSources:     zone.AllowedSources,
+		DisallowedSources:  zone.DisallowedSources,
+		DefaultCode:        zone.DefaultCode.DataOr(nil),
 	}
 }
 
@@ -76,7 +76,7 @@ func (z *Zone) AlternativeAdCode(key string) string {
 // PurchasePrice gives the price of view from external resource
 func (z *Zone) PurchasePrice(action Action) billing.Money {
 	if action.IsImpression() {
-		return z.Price
+		return z.FixedPurchasePrice
 	}
 	return 0
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/guregu/null"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // Zone model
@@ -24,11 +25,15 @@ type Zone struct {
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`
 	Active types.ActiveStatus  `gorm:"type:ActiveStatus" json:"active"`
 
-	DefaultCode       gosql.NullableJSON[map[string]string] `gorm:"type:JSONB" json:"default_code,omitempty"`
-	Context           gosql.NullableJSON[map[string]any]    `gorm:"type:JSONB" json:"context,omitempty"`            //
-	MinECPM           float64                               `json:"min_ecpm,omitempty"`                             // Default
-	MinECPMByGeo      gosql.NullableJSON[map[string]any]    `gorm:"type:JSONB" json:"min_ecpm_by_geo,omitempty"`    // {"CODE": <ecpm>, ...}
-	Price             float64                               `json:"price,omitempty"`                                // The cost of single view
+	DefaultCode  gosql.NullableJSON[map[string]string]  `gorm:"type:JSONB" json:"default_code,omitempty"`
+	Context      gosql.NullableJSON[map[string]any]     `gorm:"type:JSONB" json:"context,omitempty"`         //
+	MinECPM      float64                                `json:"min_ecpm,omitempty"`                          // Default
+	MinECPMByGeo gosql.NullableJSON[map[string]float64] `gorm:"type:JSONB" json:"min_ecpm_by_geo,omitempty"` // {"CODE": <ecpm>, ...}
+
+	// The cost of the traffic acceptance
+	FixedPurchasePrice billing.Money `json:"fixed_purchase_price,omitempty"`
+
+	// Filtering
 	AllowedFormats    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
 	AllowedTypes      gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
 	AllowedSources    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //

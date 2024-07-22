@@ -23,7 +23,7 @@ type Smartlink struct {
 	Acc   *Account
 	AccID uint64
 
-	Price billing.Money // The cost of single view
+	FixedPurchasePrice billing.Money // The cost of single view
 
 	AllowedTypes      gosql.NullableOrderedNumberArray[int]
 	AllowedSources    gosql.NullableOrderedNumberArray[int]
@@ -35,16 +35,16 @@ type Smartlink struct {
 // SmartlinkFromModel convert database model to specified model
 func SmartlinkFromModel(zone *models.Zone, account *Account) *Smartlink {
 	return &Smartlink{
-		id:                zone.ID,
-		StringID:          strconv.FormatUint(zone.ID, 10),
-		Price:             billing.MoneyFloat(zone.Price),
-		Acc:               account,
-		AccID:             zone.AccountID,
-		AllowedTypes:      zone.AllowedTypes,
-		AllowedSources:    zone.AllowedSources,
-		DisallowedSources: zone.DisallowedSources,
-		Campaigns:         zone.Campaigns,
-		DefaultCode:       *zone.DefaultCode.Data,
+		id:                 zone.ID,
+		StringID:           strconv.FormatUint(zone.ID, 10),
+		FixedPurchasePrice: zone.FixedPurchasePrice,
+		Acc:                account,
+		AccID:              zone.AccountID,
+		AllowedTypes:       zone.AllowedTypes,
+		AllowedSources:     zone.AllowedSources,
+		DisallowedSources:  zone.DisallowedSources,
+		Campaigns:          zone.Campaigns,
+		DefaultCode:        *zone.DefaultCode.Data,
 	}
 }
 
@@ -74,7 +74,7 @@ func (l *Smartlink) AlternativeAdCode(key string) string {
 // PurchasePrice gives the price of view from external resource
 func (l *Smartlink) PurchasePrice(action Action) billing.Money {
 	if action.IsImpression() {
-		return l.Price
+		return l.FixedPurchasePrice
 	}
 	return 0
 }
