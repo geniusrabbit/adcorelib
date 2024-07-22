@@ -13,7 +13,7 @@ require (
 	github.com/demdxx/xtypes v0.2.0
 	github.com/fasthttp/router v1.5.2
 	github.com/flf2ko/fasthttp-prometheus v0.1.0
-	github.com/geniusrabbit/adstorage v0.0.0-20240721155614-ebdc576c67c8
+	github.com/geniusrabbit/adstorage v0.0.0-20240721171545-f97f1e63a015
 	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
 	github.com/geniusrabbit/gosql/v2 v2.2.2
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
@@ -46,7 +46,7 @@ require (
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/eapache/go-resiliency v1.6.0 // indirect
+	github.com/eapache/go-resiliency v1.7.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/frankban/quicktest v1.14.6 // indirect
@@ -75,7 +75,7 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/redis/go-redis/v9 v9.5.3 // indirect
+	github.com/redis/go-redis/v9 v9.6.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/savsgio/gotils v0.0.0-20240704082632-aef3928b8a38 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
