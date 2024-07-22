@@ -1,7 +1,37 @@
+// Package adsource provides the implementation of ad source drivers for the AdEngine.
+// This package offers a unified interface for interacting with various ad sources
+// and includes a collection of standard ad sources such as in-memory, database,
+// OpenRTB (Real-Time Bidding) sources, and more.
 //
-// @project GeniusRabbit corelib 2017, 2019, 2024
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017, 2019, 2024
+// The primary components of the package are:
+// - MultisourceWrapper: An abstraction that manages multiple ad sources and controls
+//   the request distribution and response collection from these sources.
+// - Error definitions: Standardized error messages used across the package.
+// - Internal methods: Helper functions and internal logic to support the primary
+//   operations of the MultisourceWrapper and other components.
 //
+// The package ensures efficient and parallel processing of ad requests by utilizing
+// a worker pool for executing bid requests. It also integrates with tracing and
+// logging systems to provide detailed insights into the bidding process and performance.
+//
+// Key Features:
+// - Unified interface for multiple ad sources
+// - Support for parallel bid requests
+// - Integration with tracing (using OpenTracing) and logging (using zap)
+// - Metrics collection and reporting for monitoring performance
+//
+// Example usage:
+//   wrapper, err := adsource.NewMultisourceWrapper(options...)
+//   if err != nil {
+//       log.Fatal(err)
+//   }
+//
+//   response := wrapper.Bid(request)
+//   if response.Error() != nil {
+//       log.Println("Bid request failed:", response.Error())
+//   } else {
+//       log.Println("Bid request succeeded:", response.Ads())
+//   }
 
 package adsource
 
@@ -28,7 +58,7 @@ import (
 
 // Error set...
 var (
-	ErrSourcesCantBeNil = errors.New("[SSP] seurces cant be nil")
+	ErrSourcesCantBeNil = errors.New("[SSP] seurces can`t be nil")
 )
 
 const (
@@ -36,10 +66,10 @@ const (
 	minimalParallelRequests = 1
 )
 
-// MultisourceWrapper describes the abstraction which can control what request
-// where should be sent in which driver
+// MultisourceWrapper describes the abstraction which can control where to send requests
+// and how to handle responses from different sources.
 type MultisourceWrapper struct {
-	// Main source which called everytime
+	// Main source which is called every time
 	baseSource experiments.SourceWrapper
 
 	// Source list of external platforms
@@ -48,17 +78,17 @@ type MultisourceWrapper struct {
 	// Execution pool
 	execpool *rpool.Pool
 
-	// RequestTimeout duration
+	// Request timeout duration
 	requestTimeout time.Duration
 
-	// MaxParallelRequest number
+	// Maximum number of parallel requests
 	maxParallelRequest int
 
 	// Metrics accessor
 	metrics Metrics
 }
 
-// NewMultisourceWrapper SSP inited with options
+// NewMultisourceWrapper initializes a new MultisourceWrapper with the given options
 func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 	var wrp MultisourceWrapper
 
@@ -77,16 +107,16 @@ func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 	return &wrp, nil
 }
 
-// ID of the source driver
+// ID returns the ID of the source driver
 func (wrp *MultisourceWrapper) ID() uint64 { return 0 }
 
-// Protocol of the source driver
+// Protocol returns the protocol of the source driver
 func (wrp *MultisourceWrapper) Protocol() string { return "multisource" }
 
-// Test request before processing
+// Test validates the request before processing
 func (wrp *MultisourceWrapper) Test(request *adtype.BidRequest) bool { return true }
 
-// Bid request for standart system filter
+// Bid handles a bid request and processes it through the appropriate sources
 func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 	if wrp == nil {
 		return adtype.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
@@ -111,44 +141,45 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 	}
 
 	// Base request to internal DB
-	if src := wrp.getMainSource(); wrp != nil && wrp.testSource(src, request) {
+	if src := wrp.getMainSource(); wrp.testSource(src, request) {
 		startTime := fasttime.UnixTimestampNano()
-		response := src.Bid(request)
+		resp := src.Bid(request)
 		wrp.metrics.IncrementBidRequestCount(src, request, time.Duration(startTime-fasttime.UnixTimestampNano()))
 
 		// Store bidding information
-		wrp.sourceResponseLog(request, response)
+		wrp.sourceResponseLog(request, resp)
 
-		if response.Error() == nil {
-			referee.Push(response.Ads()...)
+		if resp.Error() == nil {
+			referee.Push(resp.Ads()...)
 			// TODO update minimal bids by response
 			// TODO release response
 		} else {
-			wrp.metrics.IncrementBidErrorCount(src, request, response.Error())
+			wrp.metrics.IncrementBidErrorCount(src, request, resp.Error())
 		}
 	}
 
 	// Source request loop
 	iterator := wrp.sources.Iterator(request)
 	for src := iterator.Next(); src != nil; src = iterator.Next() {
-		if wrp.testSource(src, request) {
-			count--
-			wrp.execpool.Go(func() {
-				startTime := fasttime.UnixTimestampNano()
-				response := src.Bid(request)
-				wrp.metrics.IncrementBidRequestCount(src, request, time.Duration(startTime-fasttime.UnixTimestampNano()))
-				tube <- response
+		if !wrp.testSource(src, request) {
+			continue
+		}
+		count--
+		wrp.execpool.Go(func() {
+			startTime := fasttime.UnixTimestampNano()
+			resp := src.Bid(request)
+			wrp.metrics.IncrementBidRequestCount(src, request, time.Duration(startTime-fasttime.UnixTimestampNano()))
+			tube <- resp
 
-				// Store bidding information
-				wrp.sourceResponseLog(request, response)
+			// Store bidding information
+			wrp.sourceResponseLog(request, resp)
 
-				if response.Error() != nil {
-					wrp.metrics.IncrementBidErrorCount(src, request, response.Error())
-				}
-			})
-			if src.RequestStrategy().IsSingle() || count < 1 {
-				break
+			if resp.Error() != nil {
+				wrp.metrics.IncrementBidErrorCount(src, request, resp.Error())
 			}
+		})
+		if src.RequestStrategy().IsSingle() || count < 1 {
+			break
 		}
 	}
 
@@ -184,7 +215,7 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 	return response
 }
 
-// ProcessResponse when need to fix the result and process all counters
+// ProcessResponse processes the response to update metrics and log information
 func (wrp *MultisourceWrapper) ProcessResponse(response adtype.Responser) {
 	if response == nil || response.Error() != nil {
 		return
@@ -208,14 +239,14 @@ func (wrp *MultisourceWrapper) ProcessResponse(response adtype.Responser) {
 	}
 }
 
-// ProcessResponseItem result or error
+// ProcessResponseItem processes an individual response item
 func (wrp *MultisourceWrapper) ProcessResponseItem(response adtype.Responser, item adtype.ResponserItem) {
 	if src := item.Source(); src != nil {
 		src.ProcessResponseItem(response, item)
 	}
 }
 
-// SetRequestTimeout of the simple request
+// SetRequestTimeout sets the request timeout, ensuring it is not below the minimal timeout
 func (wrp *MultisourceWrapper) SetRequestTimeout(timeout time.Duration) {
 	if timeout < minimalTimeout {
 		timeout = minimalTimeout
@@ -229,22 +260,21 @@ func (wrp *MultisourceWrapper) SetRequestTimeout(timeout time.Duration) {
 	}
 }
 
-// Sources of the ads
+// Sources returns the source accessor
 func (wrp *MultisourceWrapper) Sources() adtype.SourceAccessor {
 	return wrp.sources
 }
 
-// RequestStrategy description
+// RequestStrategy returns the request strategy
 func (wrp *MultisourceWrapper) RequestStrategy() adtype.RequestStrategy {
 	return adtype.AsynchronousRequestStrategy
 }
 
-// RevenueShareReduceFactor which is a potential
+// RevenueShareReduceFactor returns the revenue share reduce factor
 func (wrp *MultisourceWrapper) RevenueShareReduceFactor() float64 { return 0 }
 
-// PriceCorrectionReduceFactor which is a potential
-// Returns percent from 0 to 1 for reducing of the value
-// If there is 10% of price correction, it means that 10% of the final price must be ignored
+// PriceCorrectionReduceFactor returns the price correction reduce factor
+// If there is a 10% price correction, it means that 10% of the final price must be ignored
 func (wrp *MultisourceWrapper) PriceCorrectionReduceFactor() float64 { return 0 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -297,9 +327,11 @@ func (wrp *MultisourceWrapper) getMainSource() adtype.Source {
 }
 
 func isNil(v any) bool {
-	switch v.(type) {
+	switch vv := v.(type) {
 	case nil:
 		return true
+	case any:
+		return vv == nil
 	}
 	return false
 }
