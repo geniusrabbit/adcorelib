@@ -6,6 +6,7 @@
 package types
 
 import (
+	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql/v2"
 
@@ -13,31 +14,34 @@ import (
 )
 
 // IntArrayToUint array type
-func IntArrayToUint(arr []int) (res gosql.NullableOrderedNumberArray[uint]) {
+func IntArrayToUint64(arr []int) (res gosql.NullableOrderedNumberArray[uint64]) {
 	if len(arr) < 1 {
 		return
 	}
 	for _, v := range arr {
-		res = append(res, uint(v))
+		res = append(res, uint64(v))
 	}
 	res.Sort()
 	return
 }
 
 // IDArrayFilter array which could be or positive (include) or negative (exclude)
-func IDArrayFilter(arr gosql.NullableOrderedNumberArray[int]) (narr gosql.NullableOrderedNumberArray[uint], executed bool) {
+func IDArrayFilter(arr gosql.NullableOrderedNumberArray[int64]) (narr gosql.NullableOrderedNumberArray[uint64], executed bool) {
 	if arr.Len() < 1 {
-		return
+		return narr, false
 	}
 
-	subarr := arr.Map(func(v int) (int, bool) { return v, v > 0 })
+	subarr := arr.Map(func(v int64) (int64, bool) { return v, v > 0 })
 	if subarr.Len() < 1 {
-		subarr = arr.Map(func(v int) (int, bool) { return -v, v < 0 })
+		subarr = arr.Map(func(v int64) (int64, bool) { return -v, v < 0 })
 		executed = true
 	}
 
-	narr = IntArrayToUint(subarr)
-	return
+	narr = gosql.NullableOrderedNumberArray[uint64](
+		gocast.Slice[uint64](subarr),
+	)
+	narr.Sort()
+	return narr, executed
 }
 
 // StringArrayFilter array
@@ -65,14 +69,14 @@ func StringArrayFilter(arr gosql.NullableStringArray) (gosql.StringArray, bool) 
 }
 
 // CountryFilter array which could be or positive (include) or negative (exclude)
-func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint], executed bool) {
+func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint64], executed bool) {
 	var sarr gosql.StringArray
 	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
 		return narr, executed
 	}
 	// Countries filter
 	for _, cc := range sarr {
-		narr = append(narr, uint(gogeo.CountryByCode2(cc).ID))
+		narr = append(narr, uint64(gogeo.CountryByCode2(cc).ID))
 	}
 	narr.Sort()
 
@@ -80,14 +84,14 @@ func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNum
 }
 
 // LanguageFilter array which could be or positive (include) or negative (exclude)
-func LanguageFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint], executed bool) {
+func LanguageFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint64], executed bool) {
 	var sarr gosql.StringArray
 	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
 		return narr, executed
 	}
 	// Countries filter
 	for _, lg := range sarr {
-		narr = append(narr, languages.GetLanguageIdByCodeString(lg))
+		narr = append(narr, uint64(languages.GetLanguageIdByCodeString(lg)))
 	}
 	narr.Sort()
 

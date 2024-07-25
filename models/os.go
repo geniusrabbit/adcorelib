@@ -27,3 +27,8 @@ type OS struct {
 func (m *OS) TableName() string {
 	return `type_os`
 }
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (m *OS) RBACResourceName() string {
+	return "type_os"
+}

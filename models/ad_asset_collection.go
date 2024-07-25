@@ -18,7 +18,7 @@ import (
 //
 // , created_at            TIMESTAMPTZ     NOT NULL  DEFAULT NOW()
 //
-// , PRIMARY KEY (file_id, collection_id)
+// , PRIMARY KEY (asset_id, collection_id)
 // );
 
 // AdAssetCollection represents the list of prepared assets
@@ -36,5 +36,10 @@ type AdAssetCollection struct {
 
 // TableName in database
 func (aac *AdAssetCollection) TableName() string {
+	return "adv_ad_asset_collection"
+}
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (aac *AdAssetCollection) RBACResourceName() string {
 	return "adv_ad_asset_collection"
 }

@@ -50,6 +50,11 @@ func (z *Zone) TableName() string {
 	return "adv_zone"
 }
 
+// RBACResourceName returns the name of the resource for the RBAC
+func (z *Zone) RBACResourceName() string {
+	return "adv_zone"
+}
+
 // RevenueShare amount %
 func (z *Zone) RevenueShare() float64 {
 	return 0

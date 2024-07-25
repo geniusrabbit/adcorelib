@@ -29,30 +29,30 @@ func (t TargetBid) Less(tb TargetBid) bool {
 
 // AdBid submodel
 type AdBid struct {
-	BidPrice    billing.Money                   `json:"bid_price"`
-	Price       billing.Money                   `json:"price" validate:"notempty"`
-	LeadPrice   billing.Money                   `json:"lead_price"`
-	Tags        gosql.NullableStringArray       `json:"tags,omitempty"`
-	Zones       gosql.NullableNumberArray[uint] `json:"zones,omitempty"`
-	Domains     gosql.NullableStringArray       `json:"domains,omitempty"` // site domains or application bundels
-	Sex         gosql.NullableNumberArray[uint] `json:"sex,omitempty"`
-	Age         uint                            `json:"age,omitempty"`
-	Categories  gosql.NullableNumberArray[uint] `json:"categories,omitempty"`
-	Countries   gosql.NullableNumberArray[uint] `json:"countries,omitempty"`
-	Cities      gosql.NullableStringArray       `json:"cities,omitempty"`
-	Languages   gosql.NullableNumberArray[uint] `json:"languages,omitempty"`
-	DeviceTypes gosql.NullableNumberArray[uint] `json:"device_types,omitempty"`
-	Devices     gosql.NullableNumberArray[uint] `json:"devices,omitempty"`
-	Os          gosql.NullableNumberArray[uint] `json:"os,omitempty"`
-	Browsers    gosql.NullableNumberArray[uint] `json:"browsers,omitempty"`
-	Hours       types.Hours                     `json:"hours,omitempty"`
+	BidPrice    billing.Money                     `json:"bid_price"`
+	Price       billing.Money                     `json:"price" validate:"notempty"`
+	LeadPrice   billing.Money                     `json:"lead_price"`
+	Tags        gosql.NullableStringArray         `json:"tags,omitempty"`
+	Zones       gosql.NullableNumberArray[uint64] `json:"zones,omitempty"`
+	Domains     gosql.NullableStringArray         `json:"domains,omitempty"` // site domains or application bundels
+	Sex         gosql.NullableNumberArray[uint]   `json:"sex,omitempty"`
+	Age         uint                              `json:"age,omitempty"`
+	Categories  gosql.NullableNumberArray[uint64] `json:"categories,omitempty"`
+	Countries   gosql.NullableNumberArray[uint64] `json:"countries,omitempty"`
+	Cities      gosql.NullableStringArray         `json:"cities,omitempty"`
+	Languages   gosql.NullableNumberArray[uint64] `json:"languages,omitempty"`
+	DeviceTypes gosql.NullableNumberArray[uint64] `json:"device_types,omitempty"`
+	Devices     gosql.NullableNumberArray[uint64] `json:"devices,omitempty"`
+	Os          gosql.NullableNumberArray[uint64] `json:"os,omitempty"`
+	Browsers    gosql.NullableNumberArray[uint64] `json:"browsers,omitempty"`
+	Hours       types.Hours                       `json:"hours,omitempty"`
 }
 
 // Test is it suites by pointer
 func (bid *AdBid) Test(pointer types.TargetPointer) bool {
 	return true &&
 		(bid.Tags.Len() < 1 || bid.Tags.OneOf(pointer.Tags())) &&
-		(bid.Zones.Len() < 1 || bid.Zones.IndexOf(uint(pointer.TargetID())) != -1) &&
+		(bid.Zones.Len() < 1 || bid.Zones.IndexOf(pointer.TargetID()) != -1) &&
 		(bid.Domains.Len() < 1 || bid.Domains.OneOf(pointer.Domain())) &&
 		(bid.Sex.Len() < 1 || bid.Sex.IndexOf(pointer.Sex()) != -1) &&
 		(bid.Age < 1 && bid.Age >= pointer.Age()) &&

@@ -36,3 +36,8 @@ type AdLink struct {
 func (link *AdLink) TableName() string {
 	return "adv_link"
 }
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (link *AdLink) RBACResourceName() string {
+	return "adv_link"
+}

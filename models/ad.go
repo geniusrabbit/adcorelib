@@ -108,3 +108,8 @@ func (a *Ad) Stringify() string {
 	}
 	return fmt.Sprintf("%d - %s - Campaign: %d", a.ID, a.PricingModel.Name(), a.CampaignID)
 }
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (a *Ad) RBACResourceName() string {
+	return "adv_ad"
+}

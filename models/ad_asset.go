@@ -84,3 +84,8 @@ func (fl *AdAsset) Stringify() string {
 	}
 	return fmt.Sprintf("%d - %s", fl.ID, fl.ObjectID)
 }
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (fl *AdAsset) RBACResourceName() string {
+	return "adv_ad_asset"
+}

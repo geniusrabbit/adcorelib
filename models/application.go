@@ -53,3 +53,8 @@ type Application struct {
 func (app *Application) TableName() string {
 	return "adv_application"
 }
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (app *Application) RBACResourceName() string {
+	return "adv_application"
+}

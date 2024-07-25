@@ -28,19 +28,19 @@ const (
 type BaseFilter struct {
 	excludeMask     uint64
 	Formats         gosql.StringArray
-	DeviceTypes     gosql.NullableOrderedNumberArray[uint]
-	Devices         gosql.NullableOrderedNumberArray[uint]
-	OS              gosql.NullableOrderedNumberArray[uint]
-	Browsers        gosql.NullableOrderedNumberArray[uint]
-	Categories      gosql.NullableOrderedNumberArray[uint]
-	Countries       gosql.NullableOrderedNumberArray[uint]
-	Languages       gosql.NullableOrderedNumberArray[uint]
-	Zones           gosql.NullableOrderedNumberArray[uint]
+	DeviceTypes     gosql.NullableOrderedNumberArray[uint64]
+	Devices         gosql.NullableOrderedNumberArray[uint64]
+	OS              gosql.NullableOrderedNumberArray[uint64]
+	Browsers        gosql.NullableOrderedNumberArray[uint64]
+	Categories      gosql.NullableOrderedNumberArray[uint64]
+	Countries       gosql.NullableOrderedNumberArray[uint64]
+	Languages       gosql.NullableOrderedNumberArray[uint64]
+	Zones           gosql.NullableOrderedNumberArray[uint64]
 	Domains         gosql.StringArray
-	Secure          int // 0 - any, 1 - only, 2 - exclude
-	Adblock         int // 0 - any, 1 - only, 2 - exclude
-	PrivateBrowsing int // 0 - any, 1 - only, 2 - exclude
-	IP              int // 0 - any, 1 - IPv4, 2 - IPv6
+	Secure          int8 // 0 - any, 1 - only, 2 - exclude
+	Adblock         int8 // 0 - any, 1 - only, 2 - exclude
+	PrivateBrowsing int8 // 0 - any, 1 - only, 2 - exclude
+	IP              int8 // 0 - any, 1 - IPv4, 2 - IPv6
 }
 
 // Set filter item
@@ -50,18 +50,18 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 	case FieldFormat:
 		fl.Formats, _ = data.(gosql.StringArray)
 	case FieldDeviceTypes:
-		fl.DeviceTypes, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int]))
+		fl.DeviceTypes, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
 	case FieldDevices:
-		fl.Devices, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int]))
+		fl.Devices, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
 	case FieldOS:
-		fl.OS, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int]))
+		fl.OS, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
 	case FieldBrowsers:
-		fl.Browsers, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int]))
+		fl.Browsers, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
 	case FieldCategories:
-		fl.Categories, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int]))
+		fl.Categories, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
 	case FieldCountries:
 		switch vl := data.(type) {
-		case gosql.NullableOrderedNumberArray[int]:
+		case gosql.NullableOrderedNumberArray[int64]:
 			fl.Countries, positive = IDArrayFilter(vl)
 		case gosql.StringArray:
 			fl.Countries, positive = CountryFilter(gosql.NullableStringArray(vl))
@@ -70,7 +70,7 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 		}
 	case FieldLanguages:
 		switch vl := data.(type) {
-		case gosql.NullableOrderedNumberArray[int]:
+		case gosql.NullableOrderedNumberArray[int64]:
 			fl.Languages, positive = IDArrayFilter(vl)
 		case gosql.StringArray:
 			fl.Languages, positive = LanguageFilter(gosql.NullableStringArray(vl))
@@ -78,7 +78,7 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 			fl.Languages, positive = LanguageFilter(vl)
 		}
 	case FieldZones:
-		fl.Zones, positive = IDArrayFilter(gocast.AnySlice[int](data))
+		fl.Zones, positive = IDArrayFilter(gocast.AnySlice[int64](data))
 	case FieldDomains:
 		switch arr := data.(type) {
 		case gosql.StringArray:
@@ -119,7 +119,7 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 		fl.multyCheckUintArr(t.Categories(), FieldCategories, fl.Categories) &&
 		fl.checkUintArr(t.GeoID(), FieldCountries, fl.Countries) &&
 		fl.checkUintArr(t.LanguageID(), FieldLanguages, fl.Languages) &&
-		fl.checkUintArr(uint(t.TargetID()), FieldZones, fl.Zones)
+		fl.checkUintArr(t.TargetID(), FieldZones, fl.Zones)
 }
 
 // TestFormat available in filter
@@ -133,11 +133,11 @@ func (fl *BaseFilter) TestFormat(f *Format) bool {
 	return found
 }
 
-func (fl *BaseFilter) checkUintArr(v uint, off uint64, arr gosql.NullableOrderedNumberArray[uint]) bool {
+func (fl *BaseFilter) checkUintArr(v uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
 	return arr.Len() < 1 || (arr.IndexOf(v) >= 0) == (fl.excludeMask&(1<<off) == 0)
 }
 
-func (fl *BaseFilter) multyCheckUintArr(v []uint, off uint64, arr gosql.NullableOrderedNumberArray[uint]) bool {
+func (fl *BaseFilter) multyCheckUintArr(v []uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
 	return arr.Len() < 1 || arr.OneOf(v) == (fl.excludeMask&(1<<off) == 0)
 }
 

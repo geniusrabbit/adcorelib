@@ -8,47 +8,48 @@
 package adtype
 
 import (
+	"slices"
 	"sort"
 
-	"github.com/cznic/sortutil"
 	"github.com/geniusrabbit/udetect"
 )
 
 // BaseFilter object
 type BaseFilter struct {
-	Secure               int   // 0 - any, 1 - only secure, 2 - no secure
-	Adblock              int   // 0 - any, 1 - only adblock, 2 - no adblock
-	PrivateBrowsing      int   // 0 - any, 1 - only private, 2 - no private
-	Devices              []int // Devices type
-	OS                   []uint
-	OSExclude            []uint
-	Browsers             []uint
-	BrowsersExclude      []uint
-	Categories           []uint
+	Secure               int8     // 0 - any, 1 - only secure, 2 - no secure
+	Adblock              int8     // 0 - any, 1 - only adblock, 2 - no adblock
+	PrivateBrowsing      int8     // 0 - any, 1 - only private, 2 - no private
+	IP                   int8     // 0 - any, 1 - IPv4, 2 - IPv6
+	Devices              []uint64 // Devices type
+	OS                   []uint64
+	OSExclude            []uint64
+	Browsers             []uint64
+	BrowsersExclude      []uint64
+	Categories           []uint64
 	Countries            []string
-	Applications         []uint
-	ApplicationsExclude  []uint
+	Applications         []uint64
+	ApplicationsExclude  []uint64
 	Domains              []string
 	DomainsExclude       []string
-	Zones                []uint
-	ZonesExclude         []uint
+	Zones                []uint64
+	ZonesExclude         []uint64
 	ExternalZones        []string
 	ExternalZonesExclude []string
 }
 
 // Normalise params
 func (f *BaseFilter) Normalise() {
-	sort.Ints(f.Devices)
-	sort.Sort(sortutil.UintSlice(f.Categories))
-	sort.Strings(f.Countries)
-	sort.Sort(sortutil.UintSlice(f.Applications))
-	sort.Sort(sortutil.UintSlice(f.ApplicationsExclude))
-	sort.Strings(f.Domains)
-	sort.Strings(f.DomainsExclude)
-	sort.Sort(sortutil.UintSlice(f.Zones))
-	sort.Sort(sortutil.UintSlice(f.ZonesExclude))
-	sort.Strings(f.ExternalZones)
-	sort.Strings(f.ExternalZonesExclude)
+	slices.Sort(f.Devices)
+	slices.Sort(f.Categories)
+	slices.Sort(f.Countries)
+	slices.Sort(f.Applications)
+	slices.Sort(f.ApplicationsExclude)
+	slices.Sort(f.Domains)
+	slices.Sort(f.DomainsExclude)
+	slices.Sort(f.Zones)
+	slices.Sort(f.ZonesExclude)
+	slices.Sort(f.ExternalZones)
+	slices.Sort(f.ExternalZonesExclude)
 }
 
 // Test base from search request
@@ -77,15 +78,15 @@ func (f *BaseFilter) Test(request *BidRequest) bool {
 	}
 
 	return true &&
-		(len(f.Devices) /* ***** */ < 1 || hasInIntArr(int(deviceType), f.Devices)) &&
-		(len(f.Countries) /* *** */ < 1 || hasInStringArr(countryCode, f.Countries)) &&
-		(len(f.Categories) /* ** */ < 1 || intersecUintArr(request.Categories(), f.Categories)) &&
-		(len(f.ApplicationsExclude) < 1 || !hasInUintArr(uint(request.AppID()), f.ApplicationsExclude)) &&
-		(len(f.Applications) /*  */ < 1 || hasInUintArr(uint(request.AppID()), f.Applications)) &&
+		(len(f.Devices) /* ***** */ < 1 || hasInTArr(uint64(deviceType), f.Devices)) &&
+		(len(f.Countries) /* *** */ < 1 || hasInTArr(countryCode, f.Countries)) &&
+		(len(f.Categories) /* ** */ < 1 || intersecTArr(request.Categories(), f.Categories)) &&
+		(len(f.ApplicationsExclude) < 1 || !hasInTArr(request.AppID(), f.ApplicationsExclude)) &&
+		(len(f.Applications) /*  */ < 1 || hasInTArr(request.AppID(), f.Applications)) &&
 		(len(f.DomainsExclude) /**/ < 1 || !hasOneInStringArr(request.Domain(), f.DomainsExclude)) &&
 		(len(f.Domains) /* ***** */ < 1 || hasOneInStringArr(request.Domain(), f.Domains)) &&
-		(len(f.ZonesExclude) /*  */ < 1 || !intersecUintArr(request.TargetIDs(), f.ZonesExclude)) &&
-		(len(f.Zones) /* ******* */ < 1 || intersecUintArr(request.TargetIDs(), f.Zones)) &&
+		(len(f.ZonesExclude) /*  */ < 1 || !intersecTArr(request.TargetIDs(), f.ZonesExclude)) &&
+		(len(f.Zones) /* ******* */ < 1 || intersecTArr(request.TargetIDs(), f.Zones)) &&
 		(len(f.ExternalZonesExclude) < 1 || !hasOneInStringArr(request.ExtTargetIDs(), f.ExternalZonesExclude)) &&
 		(len(f.ExternalZones) /* */ < 1 || hasOneInStringArr(request.ExtTargetIDs(), f.ExternalZones))
 }
@@ -94,68 +95,21 @@ func (f *BaseFilter) Test(request *BidRequest) bool {
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-func hasInIntArr(v int, arr []int) bool {
-	i := sort.SearchInts(arr, v)
-	return i >= 0 && i < len(arr) && v == arr[i]
-}
-
-// func hasInInt32Arr(v int32, arr []int32) bool {
-// 	i := sortutil.SearchInt32s(arr, v)
-// 	return i >= 0 && i < len(arr) && v == arr[i]
-// }
-
-func hasInUintArr(v uint, arr []uint) bool {
-	i := sortutil.SearchUints(arr, v)
-	return i >= 0 && i < len(arr) && v == arr[i]
-}
-
-func hasInStringArr(v string, arr []string) bool {
-	i := sort.SearchStrings(arr, v)
+func hasInTArr[T ~string | ~int | ~int64 | ~uint | ~uint64](v T, arr []T) bool {
+	i := sort.Search(len(arr), func(i int) bool { return arr[i] >= v })
 	return i >= 0 && i < len(arr) && v == arr[i]
 }
 
 func hasOneInStringArr(arr1, arr2 []string) bool {
 	for _, v := range arr1 {
-		if hasInStringArr(v, arr2) {
+		if hasInTArr(v, arr2) {
 			return true
 		}
 	}
 	return false
 }
 
-// func intersecInt32Arr(cat1, cat2 []int32) bool {
-// 	if len(cat1) < 1 && len(cat2) < 1 {
-// 		return true
-// 	}
-// 	if len(cat1) < 1 || len(cat2) < 1 {
-// 		return false
-// 	}
-
-// 	for _, c1 := range cat1 {
-// 		if hasInInt32Arr(c1, cat2) {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func intersecIntArr(cat1, cat2 []int) bool {
-// 	if len(cat1) < 1 && len(cat2) < 1 {
-// 		return true
-// 	}
-// 	if len(cat1) < 1 || len(cat2) < 1 {
-// 		return false
-// 	}
-
-// 	for _, c1 := range cat1 {
-// 		if hasInIntArr(c1, cat2) {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-func intersecUintArr(cat1, cat2 []uint) bool {
+func intersecTArr[T ~string | ~int | ~int64 | ~uint | ~uint64](cat1, cat2 []T) bool {
 	if len(cat1) < 1 && len(cat2) < 1 {
 		return true
 	}
@@ -164,7 +118,7 @@ func intersecUintArr(cat1, cat2 []uint) bool {
 	}
 
 	for _, c1 := range cat1 {
-		if hasInUintArr(c1, cat2) {
+		if hasInTArr(c1, cat2) {
 			return true
 		}
 	}

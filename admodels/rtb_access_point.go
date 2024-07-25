@@ -55,10 +55,10 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, acc *Account) (src *RTBA
 	}
 
 	filter := types.BaseFilter{
-		Secure:          cl.Secure,
-		Adblock:         cl.AdBlock,
-		PrivateBrowsing: cl.PrivateBrowsing,
-		IP:              cl.IP,
+		Secure:          int8(cl.Secure),
+		Adblock:         int8(cl.AdBlock),
+		PrivateBrowsing: int8(cl.PrivateBrowsing),
+		IP:              int8(cl.IP),
 	}
 
 	filter.Set(types.FieldFormat, cl.Formats)

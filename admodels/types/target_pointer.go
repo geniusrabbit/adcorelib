@@ -42,28 +42,28 @@ type TargetPointer interface {
 	Age() uint
 
 	// Categories of the current request
-	Categories() []uint
+	Categories() []uint64
 
 	// GeoID of the target GEO
-	GeoID() uint
+	GeoID() uint64
 
 	// City of the target GEO
 	City() string
 
 	// LanguageID of targeting
-	LanguageID() uint
+	LanguageID() uint64
 
 	// DeviceType value
-	DeviceType() uint
+	DeviceType() uint64
 
 	// DeviceID of the target
-	DeviceID() uint
+	DeviceID() uint64
 
 	// OSID of the user
-	OSID() uint
+	OSID() uint64
 
 	// BrowserID of the user
-	BrowserID() uint
+	BrowserID() uint64
 
 	// MinECPM value
 	MinECPM() billing.Money

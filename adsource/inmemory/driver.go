@@ -101,7 +101,7 @@ func (d *driver) bidImpFormat(request *adtype.BidRequest, imp *adtype.Impression
 		if imp.BidFloor > ad.TargetBid(request).ECPM ||
 			!ad.Campaign.Hours.TestTime(fasttime.Now()) ||
 			(ad.Campaign.Keywords.Len() > 0 && ad.Campaign.Keywords.OneOf(request.Keywords())) ||
-			(ad.Campaign.Zones.Len() > 0 && ad.Campaign.Zones.IndexOf(uint(request.TargetID())) < 0) ||
+			(ad.Campaign.Zones.Len() > 0 && ad.Campaign.Zones.IndexOf(request.TargetID()) < 0) ||
 			(ad.Campaign.Domains.Len() > 0 && ad.Campaign.Domains.OneOf(request.Domain())) ||
 			(ad.Campaign.Sex.Len() > 0 && ad.Campaign.Sex.IndexOf(request.Sex()) < 0) ||
 			(ad.Campaign.Age.Len() > 0 && ad.Campaign.Age.IndexOf(request.Age()) < 0) || // TODO range processing 0-10 years, 10-20, 20-25 & etc.

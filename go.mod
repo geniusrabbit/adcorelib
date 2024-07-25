@@ -7,7 +7,6 @@ require (
 	github.com/bkaradzic/go-lz4 v1.0.0
 	github.com/bsm/openrtb v2.1.2+incompatible
 	github.com/bsm/openrtb/v3 v3.2.1
-	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8
 	github.com/demdxx/gocast/v2 v2.9.0
 	github.com/demdxx/rpool/v2 v2.0.1
 	github.com/demdxx/xtypes v0.2.0
@@ -43,7 +42,6 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/eapache/go-resiliency v1.7.0 // indirect
@@ -76,7 +74,6 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/redis/go-redis/v9 v9.6.0 // indirect
-	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/savsgio/gotils v0.0.0-20240704082632-aef3928b8a38 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

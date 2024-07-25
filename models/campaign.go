@@ -55,20 +55,20 @@ type Campaign struct {
 	Context gosql.NullableJSON[map[string]any] `gorm:"type:JSONB" json:"context,omitempty"`
 
 	// Targeting scope incofrmation
-	Zones       gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"zones,omitempty"`
-	Domains     gosql.NullableStringArray       `gorm:"type:TEXT[]" json:"domains,omitempty"` // site domains or application bundels
-	Categories  gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"categories,omitempty"`
-	Geos        gosql.NullableStringArray       `gorm:"type:TEXT[]" json:"geos,omitempty"`
-	Languages   gosql.NullableStringArray       `gorm:"type:TEXT[]" json:"languages,omitempty"`
-	Browsers    gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"browsers,omitempty"`
-	Os          gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"os,omitempty"`
-	DeviceTypes gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"device_types,omitempty"`
-	Devices     gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"devices,omitempty"`
-	DateStart   null.Time                       `json:"date_start,omitempty"`
-	DateEnd     null.Time                       `json:"date_end,omitempty"`
-	Hours       null.String                     `json:"hours,omitempty"`
-	Sex         gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"sex,omitempty"`
-	Age         gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"age,omitempty"`
+	Zones       gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"zones,omitempty"`
+	Domains     gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"domains,omitempty"` // site domains or application bundels
+	Categories  gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"categories,omitempty"`
+	Geos        gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"geos,omitempty"`
+	Languages   gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"languages,omitempty"`
+	Browsers    gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"browsers,omitempty"`
+	Os          gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"os,omitempty"`
+	DeviceTypes gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"device_types,omitempty"`
+	Devices     gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"devices,omitempty"`
+	DateStart   null.Time                         `json:"date_start,omitempty"`
+	DateEnd     null.Time                         `json:"date_end,omitempty"`
+	Hours       null.String                       `json:"hours,omitempty"`
+	Sex         gosql.NullableNumberArray[uint]   `gorm:"type:INT[]" json:"sex,omitempty"`
+	Age         gosql.NullableNumberArray[uint]   `gorm:"type:INT[]" json:"age,omitempty"`
 
 	// Advertisement list
 	Ads   []*Ad     `json:"ads,omitempty" gorm:"ForeignKey:CampaignID"`
@@ -85,5 +85,10 @@ type Campaign struct {
 
 // TableName in database
 func (c *Campaign) TableName() string {
+	return "adv_campaign"
+}
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (c *Campaign) RBACResourceName() string {
 	return "adv_campaign"
 }

@@ -60,9 +60,9 @@ type BidRequest struct {
 	Timemark        time.Time              `json:"timemark,omitempty"`
 	Tracer          any                    `json:"-"`
 
-	targetIDs         []uint
+	targetIDs         []uint64
 	externalTargetIDs []string
-	categoryArray     []uint
+	categoryArray     []uint64
 	domain            []string
 	tags              []string
 	formats           []*types.Format
@@ -206,7 +206,7 @@ func (r *BidRequest) TargetID() uint64 {
 }
 
 // TargetIDs by request
-func (r *BidRequest) TargetIDs() []uint {
+func (r *BidRequest) TargetIDs() []uint64 {
 	targets, _ := r.getTargetIDs()
 	return targets
 }
@@ -217,18 +217,18 @@ func (r *BidRequest) ExtTargetIDs() []string {
 	return extTargets
 }
 
-func (r *BidRequest) getTargetIDs() (ids []uint, externalIDs []string) {
+func (r *BidRequest) getTargetIDs() (ids []uint64, externalIDs []string) {
 	if r.targetIDs == nil && r.externalTargetIDs == nil && len(r.Imps) > 0 {
 		for _, imp := range r.Imps {
 			if imp.Target != nil {
-				r.targetIDs = append(r.targetIDs, uint(imp.Target.ID()))
+				r.targetIDs = append(r.targetIDs, imp.Target.ID())
 			}
 			if imp.ExtTargetID != "" {
 				r.externalTargetIDs = append(r.externalTargetIDs, imp.ExtTargetID)
 			}
 		}
 		if r.targetIDs == nil {
-			r.targetIDs = []uint{}
+			r.targetIDs = []uint64{}
 		}
 	}
 	return r.targetIDs, r.externalTargetIDs
@@ -269,19 +269,19 @@ func (r *BidRequest) Sex() uint {
 }
 
 // AppID by request
-func (r *BidRequest) AppID() uint {
+func (r *BidRequest) AppID() uint64 {
 	if r == nil || r.AppTarget == nil {
 		return 0
 	}
-	return uint(r.AppTarget.ID)
+	return r.AppTarget.ID
 }
 
 // GeoID by request
-func (r *BidRequest) GeoID() uint {
+func (r *BidRequest) GeoID() uint64 {
 	if r == nil || r.User == nil || r.User.Geo == nil {
 		return 0
 	}
-	return r.User.Geo.ID
+	return uint64(r.User.Geo.ID)
 }
 
 // GeoCode by request
@@ -301,26 +301,26 @@ func (r *BidRequest) City() string {
 }
 
 // LanguageID value
-func (r *BidRequest) LanguageID() uint {
-	return languages.GetLanguageIdByCodeString(
+func (r *BidRequest) LanguageID() uint64 {
+	return uint64(languages.GetLanguageIdByCodeString(
 		r.BrowserInfo().PrimaryLanguage,
-	)
+	))
 }
 
 // BrowserID by request
-func (r *BidRequest) BrowserID() uint {
+func (r *BidRequest) BrowserID() uint64 {
 	if r.Device == nil || r.Device.Browser == nil {
 		return 0
 	}
-	return uint(r.Device.Browser.ID)
+	return r.Device.Browser.ID
 }
 
 // OSID by request
-func (r *BidRequest) OSID() uint {
+func (r *BidRequest) OSID() uint64 {
 	if r.Device == nil || r.Device.OS == nil {
 		return 0
 	}
-	return r.Device.OS.ID
+	return uint64(r.Device.OS.ID)
 }
 
 // Gender which the most relevant
@@ -368,7 +368,7 @@ func (r *BidRequest) Keywords() []string {
 }
 
 // Categories for request
-func (r *BidRequest) Categories() []uint {
+func (r *BidRequest) Categories() []uint64 {
 	// if r.categoryArray == nil {
 	// 	if r.App != nil {
 	// 	}
@@ -450,19 +450,19 @@ func (r *BidRequest) DeviceInfo() *udetect.Device {
 }
 
 // DeviceID value
-func (r *BidRequest) DeviceID() uint {
+func (r *BidRequest) DeviceID() uint64 {
 	if r != nil && r.Device != nil {
-		return uint(r.Device.ID)
+		return uint64(r.Device.ID)
 	}
 	return 0
 }
 
 // DeviceType item
-func (r *BidRequest) DeviceType() uint {
+func (r *BidRequest) DeviceType() uint64 {
 	if r == nil {
 		return 0
 	}
-	return uint(r.DeviceInfo().DeviceType)
+	return uint64(r.DeviceInfo().DeviceType)
 }
 
 // OSInfo data

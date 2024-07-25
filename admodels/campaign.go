@@ -60,22 +60,22 @@ type Campaign struct {
 	Links []AdLink
 
 	// Targeting
-	FormatSet   searchtypes.UIntBitset                 //
-	Context     gosql.NullableJSON[map[string]any]     //
-	Keywords    gosql.NullableStringArray              //
-	Zones       gosql.NullableOrderedNumberArray[uint] //
-	Domains     gosql.NullableStringArray              // site domains or application bundels
-	Sex         gosql.NullableOrderedNumberArray[uint] //
-	Age         gosql.NullableOrderedNumberArray[uint] //
-	Categories  gosql.NullableOrderedNumberArray[uint] //
-	Countries   gosql.NullableOrderedNumberArray[uint] //
-	Cities      gosql.NullableStringArray              //
-	Languages   gosql.NullableOrderedNumberArray[uint] //
-	Browsers    gosql.NullableOrderedNumberArray[uint] //
-	Os          gosql.NullableOrderedNumberArray[uint] //
-	DeviceTypes gosql.NullableOrderedNumberArray[uint] //
-	Devices     gosql.NullableOrderedNumberArray[uint] //
-	Hours       types.Hours                            // len(24) * bitmask in week days
+	FormatSet   searchtypes.UIntBitset                   //
+	Context     gosql.NullableJSON[map[string]any]       //
+	Keywords    gosql.NullableStringArray                //
+	Zones       gosql.NullableOrderedNumberArray[uint64] //
+	Domains     gosql.NullableStringArray                // site domains or application bundels
+	Sex         gosql.NullableOrderedNumberArray[uint]   //
+	Age         gosql.NullableOrderedNumberArray[uint]   //
+	Categories  gosql.NullableOrderedNumberArray[uint64] //
+	Countries   gosql.NullableOrderedNumberArray[uint64] //
+	Cities      gosql.NullableStringArray                //
+	Languages   gosql.NullableOrderedNumberArray[uint64] //
+	Browsers    gosql.NullableOrderedNumberArray[uint64] //
+	Os          gosql.NullableOrderedNumberArray[uint64] //
+	DeviceTypes gosql.NullableOrderedNumberArray[uint64] //
+	Devices     gosql.NullableOrderedNumberArray[uint64] //
+	Hours       types.Hours                              // len(24) * bitmask in week days
 
 	// DEBUG
 	Trace        gosql.NullableStringArray
@@ -85,8 +85,8 @@ type Campaign struct {
 // CampaignFromModel convert database model to specified model
 func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Campaign {
 	var (
-		countriesArr gosql.NullableOrderedNumberArray[uint]
-		languagesArr gosql.NullableOrderedNumberArray[uint]
+		countriesArr gosql.NullableOrderedNumberArray[uint64]
+		languagesArr gosql.NullableOrderedNumberArray[uint64]
 		// bids, _      = gocast.ToSiMap(camp.Bids.GetValue(), "", false)
 		// geoBids      = parseGeoBids(billing.Money(camp.MaxBid), gocast.ToInterfaceSlice(mapDef(bids, "geo", nil)))
 		hours, err = types.HoursByString(camp.Hours.String)
@@ -119,11 +119,11 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 					for _, country := range gogeo.Countries {
 						if country.Continent == cc {
 							seted[country.Code2] = true
-							countriesArr = append(countriesArr, uint(country.ID))
+							countriesArr = append(countriesArr, uint64(country.ID))
 						}
 					}
 				default: // ** - as undefined
-					countriesArr = append(countriesArr, uint(gogeo.CountryByCode2(cc).ID))
+					countriesArr = append(countriesArr, uint64(gogeo.CountryByCode2(cc).ID))
 				}
 			}
 		}
@@ -133,7 +133,7 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 	// Languages filter
 	if len(camp.Languages) > 0 {
 		for _, lg := range camp.Languages {
-			languagesArr = append(languagesArr, languages.GetLanguageIdByCodeString(lg))
+			languagesArr = append(languagesArr, uint64(languages.GetLanguageIdByCodeString(lg)))
 		}
 		languagesArr.Sort()
 	}

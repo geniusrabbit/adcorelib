@@ -48,6 +48,11 @@ func (f *Format) TableName() string {
 	return "adv_format"
 }
 
+// RBACResourceName returns the name of the resource for the RBAC
+func (f *Format) RBACResourceName() string {
+	return "adv_format"
+}
+
 // IsStretch format
 func (f *Format) IsStretch() bool {
 	return f != nil && !f.IsFixed()
