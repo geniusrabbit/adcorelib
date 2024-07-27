@@ -25,10 +25,10 @@ type Smartlink struct {
 
 	FixedPurchasePrice billing.Money // The cost of single view
 
-	AllowedTypes      gosql.NullableOrderedNumberArray[int]
-	AllowedSources    gosql.NullableOrderedNumberArray[int]
-	DisallowedSources gosql.NullableOrderedNumberArray[int]
-	Campaigns         gosql.NullableOrderedNumberArray[int]
+	AllowedTypes      gosql.NullableOrderedNumberArray[int64]
+	AllowedSources    gosql.NullableOrderedNumberArray[int64]
+	DisallowedSources gosql.NullableOrderedNumberArray[int64]
+	Campaigns         gosql.NullableOrderedNumberArray[int64]
 	DefaultCode       map[string]string
 }
 
@@ -112,10 +112,10 @@ func (l *Smartlink) RevenueShareReduceFactor() float64 { return 0 }
 // IsAllowedSource for targeting
 func (l *Smartlink) IsAllowedSource(id uint64, types []int) bool {
 	if len(l.AllowedSources) > 0 {
-		return l.AllowedSources.IndexOf(int(id)) >= 0
+		return l.AllowedSources.IndexOf(int64(id)) >= 0
 	}
 	if len(l.DisallowedSources) > 0 {
-		return l.DisallowedSources.IndexOf(int(id)) < 0
+		return l.DisallowedSources.IndexOf(int64(id)) < 0
 	}
 	return true
 }

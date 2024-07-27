@@ -25,11 +25,14 @@ const (
 
 // Format model description
 type Format struct {
-	ID       uint64             `json:"id"`
-	Codename string             `json:"codename"`
-	Type     string             `json:"type"`
-	Title    string             `json:"title"`
-	Active   types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
+	ID       uint64 `json:"id"`
+	Codename string `json:"codename"`
+	Type     string `json:"type"`
+
+	Title       string `json:"title"`
+	Description string `json:"description"`
+
+	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
 	Width     int `json:"width,omitempty"`
 	Height    int `json:"height,omitempty"`

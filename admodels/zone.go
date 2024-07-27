@@ -27,9 +27,9 @@ type Zone struct {
 	MinECPM            float64
 	MinECPMByGeo       GeoBidSlice
 
-	AllowedTypes      gosql.NullableOrderedNumberArray[int]
-	AllowedSources    gosql.NullableOrderedNumberArray[int]
-	DisallowedSources gosql.NullableOrderedNumberArray[int]
+	AllowedTypes      gosql.NullableOrderedNumberArray[int64]
+	AllowedSources    gosql.NullableOrderedNumberArray[int64]
+	DisallowedSources gosql.NullableOrderedNumberArray[int64]
 	DefaultCode       map[string]string
 }
 
@@ -114,10 +114,10 @@ func (z *Zone) RevenueShareReduceFactor() float64 { return 0 }
 // IsAllowedSource for targeting
 func (z *Zone) IsAllowedSource(id uint64, types []int) bool {
 	if len(z.AllowedSources) > 0 {
-		return z.AllowedSources.IndexOf(int(id)) >= 0
+		return z.AllowedSources.IndexOf(int64(id)) >= 0
 	}
 	if len(z.DisallowedSources) > 0 {
-		return z.DisallowedSources.IndexOf(int(id)) < 0
+		return z.DisallowedSources.IndexOf(int64(id)) < 0
 	}
 	return true
 }

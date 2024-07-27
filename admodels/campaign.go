@@ -9,14 +9,13 @@ import (
 	"errors"
 	"log"
 	"math/rand"
-	"strings"
 	"time"
 
-	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql/v2"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/geo"
 	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/models"
 	"github.com/geniusrabbit/adcorelib/searchtypes"
@@ -85,8 +84,6 @@ type Campaign struct {
 // CampaignFromModel convert database model to specified model
 func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Campaign {
 	var (
-		countriesArr gosql.NullableOrderedNumberArray[uint64]
-		languagesArr gosql.NullableOrderedNumberArray[uint64]
 		// bids, _      = gocast.ToSiMap(camp.Bids.GetValue(), "", false)
 		// geoBids      = parseGeoBids(billing.Money(camp.MaxBid), gocast.ToInterfaceSlice(mapDef(bids, "geo", nil)))
 		hours, err = types.HoursByString(camp.Hours.String)
@@ -105,37 +102,6 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 
 	if camp.Private.IsPrivate() {
 		flags |= CampaignFlagPrivate
-	}
-
-	// Countries filter
-	if camp.Geos.Len() > 0 {
-		seted := map[string]bool{}
-		for _, cc := range camp.Geos {
-			cc = strings.ToUpper(cc)
-			if !seted[cc] {
-				seted[cc] = true
-				switch cc {
-				case "EU", "AS", "AF", "OC", "SA", "NA", "AN":
-					for _, country := range gogeo.Countries {
-						if country.Continent == cc {
-							seted[country.Code2] = true
-							countriesArr = append(countriesArr, uint64(country.ID))
-						}
-					}
-				default: // ** - as undefined
-					countriesArr = append(countriesArr, uint64(gogeo.CountryByCode2(cc).ID))
-				}
-			}
-		}
-		countriesArr.Sort()
-	}
-
-	// Languages filter
-	if len(camp.Languages) > 0 {
-		for _, lg := range camp.Languages {
-			languagesArr = append(languagesArr, uint64(languages.GetLanguageIdByCodeString(lg)))
-		}
-		languagesArr.Sort()
 	}
 
 	// Order ext bids
@@ -161,8 +127,8 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 		Zones:        camp.Zones.Ordered(),
 		Domains:      camp.Domains,
 		Categories:   camp.Categories.Ordered(),
-		Countries:    countriesArr,
-		Languages:    languagesArr,
+		Countries:    geo.CountryCodes2IDs(camp.Geos),
+		Languages:    languages.LangCodes2IDs(camp.Languages),
 		Browsers:     camp.Browsers.Ordered(),
 		Os:           camp.Os.Ordered(),
 		DeviceTypes:  camp.DeviceTypes.Ordered(),

@@ -34,11 +34,11 @@ type Zone struct {
 	FixedPurchasePrice billing.Money `json:"fixed_purchase_price,omitempty"`
 
 	// Filtering
-	AllowedFormats    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
-	AllowedTypes      gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
-	AllowedSources    gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
-	DisallowedSources gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"disallowed_sources,omitempty"` //
-	Campaigns         gosql.NullableOrderedNumberArray[int] `gorm:"type:INT[]" json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
+	AllowedFormats    gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
+	AllowedTypes      gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
+	AllowedSources    gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
+	DisallowedSources gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"disallowed_sources,omitempty"` //
+	Campaigns         gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
