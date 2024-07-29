@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/guregu/null"
+	"gorm.io/gorm"
 )
 
 // -- collection & file Many2many
@@ -29,9 +29,10 @@ type AdAssetCollection struct {
 	// Assets related to advertisement
 	Assets []*AdAsset `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_collection;foreignKey:collection_id;association_autoupdate:false"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at,omitempty"`
+	// Time marks
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database

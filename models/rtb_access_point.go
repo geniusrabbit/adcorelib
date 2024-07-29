@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
-	"github.com/guregu/null"
+	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
@@ -74,9 +74,10 @@ type RTBAccessPoint struct {
 	PrivateBrowsing int                                     `gorm:"notnull" json:"private_browsing,omitempty"`       // 0 - any, 1 - only, 2 - exclude
 	IP              int                                     `gorm:"notnull" json:"ip,omitempty"`                     // 0 - any, 1 - IPv4, 2 - IPv6
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"-"`
+	// Time marks
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database

@@ -115,7 +115,7 @@ func (f FormatField) Prepare(value any) (result any, err error) {
 
 	switch f.GetType() {
 	case FormatFieldStringType:
-		v := gocast.ToString(value)
+		v := gocast.Str(value)
 		if f.Min > 0 && len(v) < int(f.Min) {
 			err = fmt.Errorf("min length is %d", int(f.Min))
 		} else if f.Max > 0 && len(v) > int(f.Max) {
@@ -123,7 +123,7 @@ func (f FormatField) Prepare(value any) (result any, err error) {
 		}
 		result = v
 	case FormatFieldIntType:
-		v := gocast.ToInt64(value)
+		v := gocast.Int64(value)
 		if f.Min > 0 && v < int64(f.Min) {
 			err = fmt.Errorf("min value is %d", int(f.Min))
 		} else if f.Max > 0 && v > int64(f.Max) {
@@ -131,7 +131,7 @@ func (f FormatField) Prepare(value any) (result any, err error) {
 		}
 		result = v
 	case FormatFieldFloatType:
-		v := gocast.ToFloat64(value)
+		v := gocast.Float64(value)
 		if f.Min > 0 && v < f.Min {
 			err = fmt.Errorf("min value is %f.3", f.Min)
 		} else if f.Max > 0 && v > f.Min {

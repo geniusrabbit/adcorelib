@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
-	"github.com/guregu/null"
+	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
@@ -18,12 +18,18 @@ type Browser struct {
 
 	Versions gosql.NullableStringArray `gorm:"type:TEXT[]" json:"versions,omitempty"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at"`
+	// Time marks
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database
 func (m *Browser) TableName() string {
+	return `type_browser`
+}
+
+// RBACResourceName returns the name of the resource for the RBAC
+func (m *Browser) RBACResourceName() string {
 	return `type_browser`
 }

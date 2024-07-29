@@ -194,7 +194,7 @@ func (g generator) UserInfo(response adtype.Responser, it adtype.ResponserItem) 
 		// Personal information
 		Age:           user.AvgAge(),
 		Gender:        byte(user.Sex()),
-		SearchGender:  sex(gocast.ToString(imp.Get("search_gender"))),
+		SearchGender:  sex(gocast.Str(imp.Get("search_gender"))),
 		Email:         user.Email,
 		Phone:         user.GetDataItemOrDefault("phone", ""),
 		MessangerType: user.GetDataItemOrDefault("messanger_type", ""),

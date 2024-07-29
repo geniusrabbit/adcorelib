@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
-	"github.com/guregu/null"
+	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
@@ -44,9 +44,9 @@ type Application struct {
 	RevenueShare float64 `json:"revenue_share,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
 
 	// Time marks
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at,omitempty"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database

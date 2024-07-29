@@ -9,9 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/gosql/v2"
-	"github.com/guregu/null"
+	"gorm.io/gorm"
+
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // Format types...
@@ -41,9 +42,10 @@ type Format struct {
 
 	Config gosql.NullableJSON[types.FormatConfig] `gorm:"type:JSONB" json:"config,omitempty"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at,omitempty"`
+	// Time marks
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database

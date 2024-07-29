@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
-	"github.com/guregu/null"
+	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
@@ -88,9 +88,9 @@ type Ad struct {
 	Assets []*AdAsset `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_ad"`
 
 	// Time marks
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database

@@ -71,8 +71,8 @@ func getSizeByCtx(ctx *fasthttp.RequestCtx) (sw, sh, minSW, minSH int) {
 		}
 	}
 
-	sw, sh, minSW, minSH = gocast.ToInt(w), gocast.ToInt(h),
-		gocast.ToInt(minW), gocast.ToInt(minH)
+	sw, sh, minSW, minSH = gocast.Int(w), gocast.Int(h),
+		gocast.Int(minW), gocast.Int(minH)
 
 	if sw < minSW {
 		sw, minSW = minSW, sw

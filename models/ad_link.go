@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/guregu/null"
+	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
@@ -27,9 +27,9 @@ type AdLink struct {
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
 	// Time marks
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database
