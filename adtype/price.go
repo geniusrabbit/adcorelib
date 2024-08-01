@@ -46,12 +46,10 @@ func (f PriceFactor) Add(price billing.Money, it ResponserItem) (comissions bill
 	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
 		pValue := PriceSystemComission(price, it, false)
 		comissions += pValue
-		price += pValue
 	}
 	if f&TargetReducePriceFactor == TargetReducePriceFactor {
 		pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, false)
 		comissions += pValue
-		price += pValue
 	}
 	return comissions
 }
@@ -74,7 +72,6 @@ func (f PriceFactor) Remove(price billing.Money, it ResponserItem) (comissions b
 	if f&SourcePriceFactor == SourcePriceFactor {
 		pValue := PriceSourceFactors(price, it.Source(), true)
 		comissions += pValue
-		price += pValue
 	}
 	return comissions
 }

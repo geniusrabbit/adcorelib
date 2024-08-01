@@ -142,7 +142,7 @@ func (srv *Server) healthCheck(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	headers := strings.TrimSpace(ctx.Request.Header.String())
 
-	json.NewEncoder(ctx.Response.BodyWriter()).Encode(&struct {
+	_ = json.NewEncoder(ctx.Response.BodyWriter()).Encode(&struct {
 		Status  string `json:"status"`
 		Headers any    `json:"headers"`
 	}{
@@ -154,7 +154,7 @@ func (srv *Server) healthCheck(ctx *fasthttp.RequestCtx) {
 func (srv *Server) check(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetContentType("application/json")
 	ctx.Response.SetStatusCode(http.StatusOK)
-	fmt.Fprint(ctx.Response.BodyWriter(), `{"status":"ok"}`)
+	_, _ = fmt.Fprint(ctx.Response.BodyWriter(), `{"status":"ok"}`)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,18 +162,18 @@ func (srv *Server) check(ctx *fasthttp.RequestCtx) {
 ///////////////////////////////////////////////////////////////////////////////
 
 func (srv *Server) panicCallback(ctx *fasthttp.RequestCtx, rcv any) {
-	srv.logError(fmt.Errorf("server panic: %+v\n%s", rcv, debug.Stack()))
+	_ = srv.logError(fmt.Errorf("server panic: %+v\n%s", rcv, debug.Stack()))
 	if srv.debug {
 		msg := fmt.Sprintf("server painc: %v\n", rcv)
-		ctx.Write([]byte(msg))
-		ctx.Write(debug.Stack())
+		_, _ = ctx.Write([]byte(msg))
+		_, _ = ctx.Write(debug.Stack())
 	}
 	ctx.SetStatusCode(http.StatusInternalServerError)
 }
 
 func (srv *Server) initTracer() (err error) {
 	if srv.tracer, err = gtracing.InitTracer(srv.serviceName, srv.logger); err != nil {
-		srv.logError(err)
+		_ = srv.logError(err)
 	}
 	return nil
 }

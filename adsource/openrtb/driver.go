@@ -230,10 +230,10 @@ func (d *driver[ND, Rq, Rs]) ProcessResponseItem(response adtype.Responser, item
 		switch bid := ad.(type) {
 		case *adresponse.ResponseBidItem:
 			if len(bid.Bid.NURL) > 0 {
-				eventstream.WinsFromContext(response.Context()).Send(response.Context(), bid.Bid.NURL)
+				_ = eventstream.WinsFromContext(response.Context()).Send(response.Context(), bid.Bid.NURL)
 				ctxlogger.Get(response.Context()).Info("ping", zap.String("url", bid.Bid.NURL))
 			}
-			eventstream.StreamFromContext(response.Context()).
+			_ = eventstream.StreamFromContext(response.Context()).
 				Send(events.Impression, events.StatusUndefined, response, bid)
 		default:
 			// Dummy...

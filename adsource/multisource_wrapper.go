@@ -207,7 +207,6 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 
 	if items := referee.MatchRequest(request); len(items) > 0 {
 		response = adtype.BorrowResponse(request, nil, items, nil)
-		err = nil
 	} else {
 		response = adtype.NewEmptyResponse(request, wrp, err)
 	}

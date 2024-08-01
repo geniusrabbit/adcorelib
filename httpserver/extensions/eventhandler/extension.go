@@ -16,7 +16,6 @@ import (
 	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/adcorelib/gtracing"
 	"github.com/geniusrabbit/adcorelib/httpserver/wrappers/httphandler"
-	"github.com/geniusrabbit/adcorelib/openlatency"
 )
 
 const (
@@ -26,9 +25,9 @@ const (
 	trakingJSCode = "var __traking_time=new Date();"
 )
 
-type metricsAccessor interface {
-	Metrics() *openlatency.MetricsInfo
-}
+// type metricsAccessor interface {
+// 	Metrics() *openlatency.MetricsInfo
+// }
 
 // Extension of the server
 type Extension struct {
@@ -79,7 +78,8 @@ func (ext *Extension) eventSimpleHandler(name string) httphandler.ExtHTTPHandler
 			return
 		} else {
 			event.SetDateTime(int64(fasttime.UnixTimestampNano()))
-			ext.eventStream.SendEvent(ctx, &event)
+			// TODO: process error
+			_ = ext.eventStream.SendEvent(ctx, &event)
 		}
 
 		switch name {
@@ -95,7 +95,7 @@ func (ext *Extension) eventSimpleHandler(name string) httphandler.ExtHTTPHandler
 		rctx.Response.Header.Set("Expires", "Wed, 11 Nov 1998 11:11:11 GMT")
 		rctx.Response.Header.Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
 		rctx.Response.Header.Set("Pragma", "no-cache")
-		rctx.Write(dataCode)
+		_, _ = rctx.Write(dataCode)
 	}
 }
 

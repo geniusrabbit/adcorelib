@@ -112,7 +112,7 @@ func (ext *Extension) eventHandler(eventName events.Type) httphandler.ExtHTTPHan
 			rctx.SetStatusCode(http.StatusOK)
 		}
 		event.SetDateTime(int64(fasttime.UnixTimestampNano()))
-		ext.eventStream.SendEvent(ctx, &event)
+		_ = ext.eventStream.SendEvent(ctx, &event)
 	}
 }
 
@@ -140,7 +140,7 @@ func (ext *Extension) eventLeadHandler(pixelType string) httphandler.ExtHTTPHand
 			return
 		} else {
 			leadEvent.Timestamp = int64(fasttime.UnixTimestamp())
-			ext.eventStream.SendLeadEvent(ctx, &leadEvent)
+			_ = ext.eventStream.SendLeadEvent(ctx, &leadEvent)
 		}
 
 		if pixelType == "js" {
@@ -157,7 +157,7 @@ func (ext *Extension) eventLeadHandler(pixelType string) httphandler.ExtHTTPHand
 		rctx.Response.Header.Set("Expires", "Wed, 11 Nov 1998 11:11:11 GMT")
 		rctx.Response.Header.Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
 		rctx.Response.Header.Set("Pragma", "no-cache")
-		rctx.Write(dataCode)
+		_, _ = rctx.Write(dataCode)
 	}
 }
 

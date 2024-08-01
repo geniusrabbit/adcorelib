@@ -134,7 +134,7 @@ func (ext *Extension) factoryListHandler(fa factoryListAccessor) fasthttp.Reques
 		factories := fa.FactoryList()
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(http.StatusOK)
-		json.NewEncoder(ctx).Encode(map[string]any{
+		_ = json.NewEncoder(ctx).Encode(map[string]any{
 			"protocols": xtypes.SliceApply(factories, func(f adsourceaccessor.SourceFactory) any {
 				info := f.Info()
 				return map[string]any{
@@ -153,7 +153,7 @@ func (ext *Extension) factoryInfoHandler(factory adsourceaccessor.SourceFactory)
 		info := factory.Info()
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(http.StatusOK)
-		json.NewEncoder(ctx).Encode(info)
+		_ = json.NewEncoder(ctx).Encode(info)
 	}
 }
 
@@ -166,7 +166,7 @@ func (ext *Extension) sourceListHandler(sa sourceListAccessor) fasthttp.RequestH
 		}
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(http.StatusOK)
-		json.NewEncoder(ctx).Encode(xtypes.SliceApply(sources, func(s adtype.Source) any {
+		_ = json.NewEncoder(ctx).Encode(xtypes.SliceApply(sources, func(s adtype.Source) any {
 			return map[string]any{
 				"id":       s.ID(),
 				"protocol": s.Protocol(),
@@ -182,12 +182,12 @@ func (ext *Extension) sourceInfoHandler(sa adtype.SourceAccessor) fasthttp.Reque
 		if src == nil {
 			ctx.SetStatusCode(http.StatusNotFound)
 			ctx.SetContentType("application/json")
-			ctx.Write([]byte(`{"error":"source not found"}`))
+			_, _ = ctx.Write([]byte(`{"error":"source not found"}`))
 			return
 		}
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(http.StatusOK)
-		json.NewEncoder(ctx).Encode(map[string]any{
+		_ = json.NewEncoder(ctx).Encode(map[string]any{
 			"id":       src.ID(),
 			"protocol": src.Protocol(),
 		})
@@ -201,7 +201,7 @@ func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.Re
 		if src == nil {
 			ctx.SetStatusCode(http.StatusNotFound)
 			ctx.SetContentType("application/json")
-			ctx.Write([]byte(`{"error":"source not found"}`))
+			_, _ = ctx.Write([]byte(`{"error":"source not found"}`))
 			return
 		}
 		var metrics any
@@ -210,7 +210,7 @@ func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.Re
 		}
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(http.StatusOK)
-		json.NewEncoder(ctx).Encode(metrics)
+		_ = json.NewEncoder(ctx).Encode(metrics)
 	}
 }
 

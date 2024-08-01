@@ -41,8 +41,10 @@ func borrowResponseList() []adtype.ResponserItemCommon {
 }
 
 // returnResponseList back to pool
+// nolint:staticcheck
 func returnResponseList(arr []adtype.ResponserItemCommon) {
 	if arr != nil {
+		//lint:ignore SA6002 we need to reset slice
 		responseListPool.Put(arr[:0])
 	}
 }
