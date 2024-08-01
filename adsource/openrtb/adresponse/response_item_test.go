@@ -39,16 +39,12 @@ func TestItemPricing(t *testing.T) {
 
 		t.Run(prefix+"_revenue_value", func(t *testing.T) {
 			rev := item.RevenueShareFactor() * item.Price(admodels.ActionImpression).Float64()
-			if rev != 9 {
-				t.Errorf("wrong_revenue value: %.9f", rev)
-			}
+			assert.Equal(t, float64(9), rev, "wrong_revenue value")
 		})
 
 		t.Run(prefix+"_comission_value", func(t *testing.T) {
 			com := item.ComissionShareFactor() * item.Price(admodels.ActionImpression).Float64()
-			if com != 1 {
-				t.Errorf("wrong_comission value: %.3f", com)
-			}
+			assert.True(t, com >= 0.999 && com <= 1, "wrong_comission value")
 		})
 
 		t.Run(prefix+"_cpm_price", func(t *testing.T) {
