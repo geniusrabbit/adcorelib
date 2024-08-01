@@ -72,8 +72,8 @@ github.com/geniusrabbit/adstorage v0.0.0-20240721171545-f97f1e63a015 h1:U5XMIcuU
 github.com/geniusrabbit/adstorage v0.0.0-20240721171545-f97f1e63a015/go.mod h1:4Z8gOTvx1MZCBhfqgqIRZkeJPz5dHkCORJMCm9O5//c=
 github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92 h1:4zzWLdGtzQxDg6WcFpSzcfEBct6xBmGk7T26I1IlNt8=
 github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92/go.mod h1:z4vtbN4gpN4C/6fEN0gtAc9RBkqU94Y5SrVdk3xMplM=
-github.com/geniusrabbit/gosql/v2 v2.2.2 h1:JQsYD2WUUSd7s7J39rX0ZkaZD/QEdOAcuAKF99h0sUU=
-github.com/geniusrabbit/gosql/v2 v2.2.2/go.mod h1:JNMk3cdhdXMDBAjszBonP7FOx5h/v4dsyoIUPFK2mJM=
+github.com/geniusrabbit/gosql/v2 v2.3.0 h1:+hdcPh1sdydz8qud3crHgKcV2keobC8DBH8ZCW6ReoU=
+github.com/geniusrabbit/gosql/v2 v2.3.0/go.mod h1:0AfJ5CwRl/Nsuc4b/z1IcPxOhaooKvAiWFFxyvz6K4g=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f h1:mbMOz/gyI+tRNdyct8MZPYug5V5QAApwakSJNVCIFiY=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f/go.mod h1:cHgmYvQ2zN/4FrkDwWNvGkSHkfKUeFqfLI+DYPTM420=
 github.com/geniusrabbit/notificationcenter/v2 v2.3.4 h1:i/6RBsr0bDOjClZp+v287ZztXkhutfzzpHeQx8J1RZA=

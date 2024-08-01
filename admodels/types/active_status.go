@@ -32,7 +32,7 @@ var ActiveStatusNameList = []string{
 // ActiveNameToStatus converts avtivity status name to status
 func ActiveNameToStatus(name string) ActiveStatus {
 	switch name {
-	case `active`, `true`, `yes`, `1`:
+	case `active`, `true`, `yes`, `on`, `1`:
 		return StatusActive
 	default:
 		return StatusPause

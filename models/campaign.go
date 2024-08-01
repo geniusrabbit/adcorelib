@@ -8,24 +8,11 @@ package models
 import (
 	"time"
 
-	"github.com/bsm/openrtb"
 	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
 	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
-)
-
-// Device set of types
-const (
-	DeviceTypeUnknown   = openrtb.DeviceTypeUnknown
-	DeviceTypeMobile    = openrtb.DeviceTypeMobile
-	DeviceTypePC        = openrtb.DeviceTypePC
-	DeviceTypeTV        = openrtb.DeviceTypeTV
-	DeviceTypePhone     = openrtb.DeviceTypePhone
-	DeviceTypeTablet    = openrtb.DeviceTypeTablet
-	DeviceTypeConnected = openrtb.DeviceTypeConnected
-	DeviceTypeSetTopBox = openrtb.DeviceTypeSetTopBox
 )
 
 // Campaign model
@@ -56,15 +43,15 @@ type Campaign struct {
 	Context gosql.NullableJSON[map[string]any] `gorm:"type:JSONB" json:"context,omitempty"`
 
 	// Targeting scope incofrmation
-	Zones       gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"zones,omitempty"`
+	Zones       gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"zones,omitempty"`
 	Domains     gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"domains,omitempty"` // site domains or application bundels
-	Categories  gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"categories,omitempty"`
+	Categories  gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"categories,omitempty"`
 	Geos        gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"geos,omitempty"`
 	Languages   gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"languages,omitempty"`
-	Browsers    gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"browsers,omitempty"`
-	Os          gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"os,omitempty"`
-	DeviceTypes gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"device_types,omitempty"`
-	Devices     gosql.NullableNumberArray[uint64] `gorm:"type:INT[]" json:"devices,omitempty"`
+	Browsers    gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"browsers,omitempty"`
+	Os          gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"os,omitempty"`
+	DeviceTypes gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"device_types,omitempty"`
+	Devices     gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"devices,omitempty"`
 	DateStart   null.Time                         `json:"date_start,omitempty"`
 	DateEnd     null.Time                         `json:"date_end,omitempty"`
 	Hours       null.String                       `json:"hours,omitempty"`

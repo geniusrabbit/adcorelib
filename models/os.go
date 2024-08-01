@@ -9,6 +9,12 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
+type OSVersion struct {
+	Min  types.Version `json:"min"`
+	Max  types.Version `json:"max"`
+	Name string        `json:"name,omitempty"`
+}
+
 // OS model description
 type OS struct {
 	ID uint64 `json:"id"`
@@ -16,7 +22,7 @@ type OS struct {
 	Name   string             `json:"name"`
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
-	Versions gosql.NullableStringArray `gorm:"type:TEXT[]" json:"versions,omitempty"`
+	Versions gosql.NullableJSONArray[OSVersion] `gorm:"type:JSONB" json:"versions,omitempty"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`
