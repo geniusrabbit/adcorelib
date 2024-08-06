@@ -9,12 +9,16 @@ import (
 )
 
 type DeviceMaker struct {
-	ID          uint64 `json:"id"`
+	ID          uint64 `json:"id" gorm:"primaryKey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
+	// "github.com/IGLOU-EU/go-wildcard/v2" package sintax
+	MatchExp string `json:"match_exp,omitempty"`
+
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
-	Models []*DeviceModel     `json:"models,omitempty" gorm:"foreignKey:MakerID;references:ID"`
+
+	Models []*DeviceModel `json:"models,omitempty" gorm:"foreignKey:MakerID;references:ID"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`

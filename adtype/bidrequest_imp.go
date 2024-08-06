@@ -44,7 +44,7 @@ type Impression struct {
 	// Format types for impression
 	FormatTypes  types.FormatTypeBitset `json:"-"`
 	formats      []*types.Format
-	formatBitset *searchtypes.UIntBitset
+	formatBitset *searchtypes.NumberBitset[uint]
 
 	Ext map[string]any `json:"ext,omitempty"`
 }
@@ -65,7 +65,7 @@ func (i *Impression) Init(formats types.FormatsAccessor) {
 
 	i.formats = formats.FormatsBySize(w+10, h+10, minw, minh, i.FormatTypes)
 
-	i.formatBitset = searchtypes.NewUIntBitset()
+	i.formatBitset = searchtypes.NewNumberBitset[uint]()
 	for _, f := range i.formats {
 		i.formatBitset.Set(uint(f.ID))
 	}
@@ -91,7 +91,7 @@ func (i *Impression) FormatByType(tp types.FormatType) *types.Format {
 }
 
 // FormatBitset of IDs
-func (i *Impression) FormatBitset() *searchtypes.UIntBitset {
+func (i *Impression) FormatBitset() *searchtypes.NumberBitset[uint] {
 	return i.formatBitset
 }
 

@@ -49,7 +49,7 @@ type Campaign struct {
 	Geos        gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"geos,omitempty"`
 	Languages   gosql.NullableStringArray         `gorm:"type:TEXT[]" json:"languages,omitempty"`
 	Browsers    gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"browsers,omitempty"`
-	Os          gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"os,omitempty"`
+	OS          gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"os,omitempty"`
 	DeviceTypes gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"device_types,omitempty"`
 	Devices     gosql.NullableNumberArray[uint64] `gorm:"type:BIGINT[]" json:"devices,omitempty"`
 	DateStart   null.Time                         `json:"date_start,omitempty"`

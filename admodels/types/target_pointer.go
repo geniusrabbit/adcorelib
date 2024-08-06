@@ -18,7 +18,7 @@ type TargetPointer interface {
 	Formats() []*Format
 
 	// FormatBitset of IDs
-	FormatBitset() *searchtypes.UIntBitset
+	FormatBitset() *searchtypes.NumberBitset[uint]
 
 	// FormatTypeMask of formats
 	FormatTypeMask() FormatTypeBitset

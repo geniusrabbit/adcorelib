@@ -24,7 +24,7 @@ type RTBAccessPointFlags struct {
 // It means that this is entry point which contains
 // information for access and search data
 type RTBAccessPoint struct {
-	ID        uint64 `json:"id"`
+	ID        uint64 `json:"id" gorm:"primaryKey"`
 	AccountID uint64 `json:"account_id"`
 	Codename  string `json:"codename,omitempty"`
 

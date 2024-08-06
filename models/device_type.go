@@ -21,11 +21,11 @@ const (
 	DeviceTypeSetTopBox = udetect.DeviceTypeSetTopBox
 	DeviceTypeWatch     = udetect.DeviceTypeWatch
 	DeviceTypeGlasses   = udetect.DeviceTypeGlasses
-	// DeviceTypeOOH       = udetect.DeviceTypeOOH
+	DeviceTypeOOH       = udetect.DeviceTypeOOH
 )
 
 type DeviceType struct {
-	ID          uint64 `json:"id"`
+	ID          uint64 `json:"id" gorm:"primaryKey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
@@ -109,10 +109,10 @@ var DeviceTypeList = []*DeviceType{
 		Description: "Glasses device",
 		Active:      types.StatusActive,
 	},
-	// {
-	// 	ID:          uint64(DeviceTypeOOH),
-	// 	Name:        "OOH",
-	// 	Description: "Out of Home device",
-	// 	Active:      types.StatusActive,
-	// },
+	{
+		ID:          uint64(DeviceTypeOOH),
+		Name:        "OOH",
+		Description: "Out of Home device",
+		Active:      types.StatusActive,
+	},
 }

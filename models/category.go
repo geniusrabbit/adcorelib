@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -10,15 +11,15 @@ import (
 
 // Category model description
 type Category struct {
-	ID          uint64 `json:"id"`
+	ID          uint64 `json:"id" gorm:"primaryKey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
 	IABCode string `json:"iab_code"` // IAB category code of OpenRTB
 
-	ParentID uint64    `json:"parent_id"`
-	Parent   *Category `json:"parent,omitempty" gorm:"foreignKey:ParentID"`
-	Position uint64    `json:"position"`
+	ParentID sql.Null[uint64] `json:"parent_id" gorm:"column:parent_id"`
+	Parent   *Category        `json:"parent,omitempty" gorm:"foreignKey:parent_id;references:ID"`
+	Position uint64           `json:"position"`
 
 	// Is Active advertisement
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active"`

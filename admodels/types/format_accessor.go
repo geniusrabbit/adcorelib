@@ -22,5 +22,5 @@ type FormatsAccessor interface {
 	FormatByCode(code string) *Format
 
 	// DirectFormatSet to search
-	DirectFormatSet() *searchtypes.UIntBitset
+	DirectFormatSet() *searchtypes.NumberBitset[uint]
 }

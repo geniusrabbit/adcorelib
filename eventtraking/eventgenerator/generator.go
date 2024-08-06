@@ -199,7 +199,7 @@ func (g generator) UserInfo(response adtype.Responser, it adtype.ResponserItem) 
 		Phone:         user.GetDataItemOrDefault("phone", ""),
 		MessangerType: user.GetDataItemOrDefault("messanger_type", ""),
 		Messanger:     user.GetDataItemOrDefault("messanger", ""),
-		Postcode:      geo.Zip,
+		Postcode:      geo.ZIP,
 		Facebook:      user.GetDataItemOrDefault("sn.facebook", ""),
 		Twitter:       user.GetDataItemOrDefault("sn.twitter", ""),
 		Linkedin:      user.GetDataItemOrDefault("sn.linkedin", ""),

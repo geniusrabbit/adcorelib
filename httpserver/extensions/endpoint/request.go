@@ -134,7 +134,7 @@ func NewRequestFor(ctx context.Context, target admodels.Target, person personifi
 			PrivacyPolicy: 1,               // Default: 1 ("1": has a privacy policy)
 			Keywords:      "",              // Comma separated list of keywords about the site.
 			Page:          referer,         // URL of the page
-			Ref:           referer,         // Referrer URL
+			Referrer:      referer,         // Referrer URL
 			Search:        "",              // Search string that caused naviation
 			Mobile:        0,               // Mobile ("1": site is mobile optimised)
 		},

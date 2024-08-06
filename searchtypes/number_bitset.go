@@ -7,21 +7,23 @@ package searchtypes
 
 import (
 	"sort"
+
+	"golang.org/x/exp/constraints"
 )
 
-// UIntBitset any numbers
-type UIntBitset struct {
+// NumberBitset any numbers
+type NumberBitset[T constraints.Integer] struct {
 	values []uint
 	mask   uint64
 }
 
-// NewUIntBitset from numbers
-func NewUIntBitset(vals ...uint) (b *UIntBitset) {
-	return (&UIntBitset{}).Set(vals...)
+// NewNumberBitset from numbers
+func NewNumberBitset[T constraints.Integer](vals ...uint) (b *NumberBitset[T]) {
+	return (&NumberBitset[T]{}).Set(vals...)
 }
 
 // Len of the elements
-func (b *UIntBitset) Len() int {
+func (b *NumberBitset[T]) Len() int {
 	if b == nil {
 		return 0
 	}
@@ -29,12 +31,12 @@ func (b *UIntBitset) Len() int {
 }
 
 // Mask of the set
-func (b *UIntBitset) Mask() uint64 {
+func (b *NumberBitset[T]) Mask() uint64 {
 	return b.mask
 }
 
 // Values list
-func (b *UIntBitset) Values() []uint {
+func (b *NumberBitset[T]) Values() []uint {
 	if b == nil {
 		return nil
 	}
@@ -42,7 +44,7 @@ func (b *UIntBitset) Values() []uint {
 }
 
 // Set type values
-func (b *UIntBitset) Set(vals ...uint) *UIntBitset {
+func (b *NumberBitset[T]) Set(vals ...uint) *NumberBitset[T] {
 	var updated = false
 	for _, v := range vals {
 		if !b.Has(v) {
@@ -58,7 +60,7 @@ func (b *UIntBitset) Set(vals ...uint) *UIntBitset {
 }
 
 // Unset type values
-func (b *UIntBitset) Unset(vals ...uint) *UIntBitset {
+func (b *NumberBitset[T]) Unset(vals ...uint) *NumberBitset[T] {
 	newVals := b.values
 	for _, v := range vals {
 		idx := sort.Search(len(newVals), func(i int) bool {
@@ -87,11 +89,11 @@ func (b *UIntBitset) Unset(vals ...uint) *UIntBitset {
 	if len(newVals) == len(b.values) {
 		return b
 	}
-	return NewUIntBitset(newVals...)
+	return NewNumberBitset[T](newVals...)
 }
 
 // Has type in bitset
-func (b *UIntBitset) Has(v uint) bool {
+func (b *NumberBitset[T]) Has(v uint) bool {
 	if b != nil && b.mask&(1<<uint64(v%64)) != 0 {
 		idx := sort.Search(b.Len(), func(i int) bool {
 			return b.values[i] >= v
@@ -102,7 +104,7 @@ func (b *UIntBitset) Has(v uint) bool {
 }
 
 // Reset bitset value
-func (b *UIntBitset) Reset() *UIntBitset {
+func (b *NumberBitset[T]) Reset() *NumberBitset[T] {
 	b.mask = 0
 	if b.values != nil {
 		b.values = b.values[:0]
@@ -110,8 +112,8 @@ func (b *UIntBitset) Reset() *UIntBitset {
 	return b
 }
 
-// ContainsOnly items from the set
-func (b *UIntBitset) ContainsOnly(set *UIntBitset) (res bool) {
+// ContainsAllFrom items from the set
+func (b *NumberBitset[T]) ContainsAllFrom(set *NumberBitset[T]) (res bool) {
 	if set != nil && b.mask&set.mask == b.mask {
 		res = true
 		for _, v := range b.values {

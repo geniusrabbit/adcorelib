@@ -26,7 +26,7 @@ const (
 
 // Format model description
 type Format struct {
-	ID       uint64 `json:"id"`
+	ID       uint64 `json:"id" gorm:"primaryKey"`
 	Codename string `json:"codename"`
 	Type     string `json:"type"`
 

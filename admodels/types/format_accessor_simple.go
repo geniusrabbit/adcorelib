@@ -12,7 +12,7 @@ type formatLoaderFnk func() ([]*Format, error)
 type SimpleFormatAccessor struct {
 	formatList   []*Format
 	formatLoader formatLoaderFnk
-	directs      *searchtypes.UIntBitset
+	directs      *searchtypes.NumberBitset[uint]
 }
 
 // NewSimpleFormatAccessor object
@@ -100,9 +100,9 @@ func (fa *SimpleFormatAccessor) FormatByCode(code string) *Format {
 }
 
 // DirectFormatSet to search
-func (fa *SimpleFormatAccessor) DirectFormatSet() *searchtypes.UIntBitset {
+func (fa *SimpleFormatAccessor) DirectFormatSet() *searchtypes.NumberBitset[uint] {
 	if fa.directs == nil {
-		fa.directs = new(searchtypes.UIntBitset)
+		fa.directs = new(searchtypes.NumberBitset[uint])
 		for _, f := range fa.formatList {
 			if f.IsDirect() {
 				fa.directs.Set(uint(f.ID))

@@ -11,7 +11,7 @@ import (
 // AdLink to the advertisement target
 type AdLink struct {
 	// ID number of the Advertisement Link in DB
-	ID uint64 `json:"id"`
+	ID uint64 `json:"id" gorm:"primaryKey"`
 
 	// Link to the target
 	Link string `json:"link"`

@@ -110,7 +110,7 @@ func (d *driver) bidImpFormat(request *adtype.BidRequest, imp *adtype.Impression
 			(ad.Campaign.Countries.Len() > 0 && ad.Campaign.Countries.IndexOf(request.GeoID()) < 0) ||
 			(ad.Campaign.Languages.Len() > 0 && ad.Campaign.Languages.IndexOf(request.LanguageID()) < 0) ||
 			(ad.Campaign.Browsers.Len() > 0 && ad.Campaign.Browsers.IndexOf(request.BrowserID()) < 0) ||
-			(ad.Campaign.Os.Len() > 0 && ad.Campaign.Os.IndexOf(request.OSID()) < 0) ||
+			(ad.Campaign.OS.Len() > 0 && ad.Campaign.OS.IndexOf(request.OSID()) < 0) ||
 			(ad.Campaign.DeviceTypes.Len() > 0 && ad.Campaign.DeviceTypes.IndexOf(request.DeviceType()) < 0) ||
 			(ad.Campaign.Devices.Len() > 0 && ad.Campaign.Devices.IndexOf(request.DeviceID()) < 0) {
 			continue // Skip if targeting not matched

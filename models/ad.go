@@ -33,7 +33,7 @@ import (
 // Ad model describesinformation about one paticular advertisement
 type Ad struct {
 	// ID number of the Advertisement in DB
-	ID uint64 `json:"id"`
+	ID uint64 `json:"id" gorm:"primaryKey"`
 
 	// Owner Campaign of the Ad
 	Campaign   *Campaign `json:"campaign,omitempty"`

@@ -17,9 +17,13 @@ type OSVersion struct {
 
 // OS model description
 type OS struct {
-	ID uint64 `json:"id"`
+	ID uint64 `json:"id" gorm:"primaryKey"`
 
-	Name   string             `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+
+	MatchExp string `json:"match_exp,omitempty"`
+
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
 	Versions gosql.NullableJSONArray[OSVersion] `gorm:"type:JSONB" json:"versions,omitempty"`

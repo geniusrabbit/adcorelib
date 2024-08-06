@@ -59,7 +59,7 @@ type Campaign struct {
 	Links []AdLink
 
 	// Targeting
-	FormatSet   searchtypes.UIntBitset                   //
+	FormatSet   searchtypes.NumberBitset[uint]           //
 	Context     gosql.NullableJSON[map[string]any]       //
 	Keywords    gosql.NullableStringArray                //
 	Zones       gosql.NullableOrderedNumberArray[uint64] //
@@ -71,7 +71,7 @@ type Campaign struct {
 	Cities      gosql.NullableStringArray                //
 	Languages   gosql.NullableOrderedNumberArray[uint64] //
 	Browsers    gosql.NullableOrderedNumberArray[uint64] //
-	Os          gosql.NullableOrderedNumberArray[uint64] //
+	OS          gosql.NullableOrderedNumberArray[uint64] //
 	DeviceTypes gosql.NullableOrderedNumberArray[uint64] //
 	Devices     gosql.NullableOrderedNumberArray[uint64] //
 	Hours       types.Hours                              // len(24) * bitmask in week days
@@ -130,7 +130,7 @@ func CampaignFromModel(camp *models.Campaign, formats types.FormatsAccessor) *Ca
 		Countries:    geo.CountryCodes2IDs(camp.Geos),
 		Languages:    languages.LangCodes2IDs(camp.Languages),
 		Browsers:     camp.Browsers.Ordered(),
-		Os:           camp.Os.Ordered(),
+		OS:           camp.OS.Ordered(),
 		DeviceTypes:  camp.DeviceTypes.Ordered(),
 		Devices:      camp.Devices.Ordered(),
 		Hours:        hours,
@@ -260,8 +260,7 @@ func (c *Campaign) VirtualAd(pointer types.TargetPointer) *VirtualAd {
 }
 
 // VirtualAds for target
-func (c *Campaign) VirtualAds(pointer types.TargetPointer) *VirtualAds {
-	var ads *VirtualAds
+func (c *Campaign) VirtualAds(pointer types.TargetPointer) (ads *VirtualAds) {
 	for ad := range c.VirtualAdsList(pointer) {
 		if ads == nil {
 			ads = &VirtualAds{Campaign: ad.Campaign}
@@ -367,7 +366,7 @@ func (c *Campaign) TestHour(t time.Time) bool {
 // }
 
 // TestFormatSet of the campaign
-func (c *Campaign) TestFormatSet(formatIDSet *searchtypes.UIntBitset) bool {
+func (c *Campaign) TestFormatSet(formatIDSet *searchtypes.NumberBitset[uint]) bool {
 	return c.FormatSet.Mask()&formatIDSet.Mask() != 0
 }
 

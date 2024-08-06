@@ -66,7 +66,7 @@ type BidRequest struct {
 	domain            []string
 	tags              []string
 	formats           []*types.Format
-	formatBitset      searchtypes.UIntBitset
+	formatBitset      searchtypes.NumberBitset[uint]
 	formatTypeMask    types.FormatTypeBitset
 	sourceIDs         []uint64
 }
@@ -143,7 +143,7 @@ func (r *BidRequest) Formats() []*types.Format {
 }
 
 // FormatBitset of IDs
-func (r *BidRequest) FormatBitset() *searchtypes.UIntBitset {
+func (r *BidRequest) FormatBitset() *searchtypes.NumberBitset[uint] {
 	if r.formatBitset.Len() < 1 {
 		for _, f := range r.Formats() {
 			r.formatBitset.Set(uint(f.ID))

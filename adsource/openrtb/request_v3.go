@@ -211,7 +211,7 @@ func uopenrtbOpenrtbV3GeoFrom(g *udetect.Geo) *openrtb.Geo {
 		RegionFIPS104: g.RegionFIPS104, // Region of a country using FIPS 10-4
 		Metro:         g.Metro,         //
 		City:          g.City,          //
-		ZIP:           g.Zip,           //
+		ZIP:           g.ZIP,           //
 		UTCOffset:     g.UTCOffset,     // Local time as the number +/- of minutes from UTC
 		Ext:           nil,             //
 	}
@@ -233,10 +233,10 @@ func uopenrtbOpenrtbV3SiteFrom(s *udetect.Site) *openrtb.Site {
 			Domain:        s.Domain,                //
 			PrivacyPolicy: intRef(s.PrivacyPolicy), // Default: 1 ("1": has a privacy policy)
 		},
-		Page:     s.Page,   // URL of the page
-		Referrer: s.Ref,    // Referrer URL
-		Search:   s.Search, // Search string that caused naviation
-		Mobile:   s.Mobile, // Mobile ("1": site is mobile optimised)
+		Page:     s.Page,     // URL of the page
+		Referrer: s.Referrer, // Referrer URL
+		Search:   s.Search,   // Search string that caused naviation
+		Mobile:   s.Mobile,   // Mobile ("1": site is mobile optimised)
 	}
 }
 

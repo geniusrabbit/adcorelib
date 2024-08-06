@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestUIntBitset(t *testing.T) {
-	bits := NewUIntBitset(1, 3, 5, 7)
+func TestNumberBitset(t *testing.T) {
+	bits := NewNumberBitset[int](1, 3, 5, 7)
 
 	bits.Set(2)
 	if !bits.Has(2) {
@@ -24,11 +24,11 @@ func TestUIntBitset(t *testing.T) {
 	}
 }
 
-func BenchmarkUIntBitset(b *testing.B) {
+func BenchmarkNumberBitset(b *testing.B) {
 	var (
 		cursor   int
 		variants []uint
-		bits     = NewUIntBitset(1, 3)
+		bits     = NewNumberBitset[uint](1, 3)
 	)
 
 	// Init random numbers

@@ -11,7 +11,7 @@ import (
 
 // Application model describes site or mobile/desktop application
 type Application struct {
-	ID        uint64 `json:"id"` // Authoincrement key
+	ID        uint64 `json:"id" gorm:"primaryKey"` // Authoincrement key
 	AccountID uint64 `json:"account_id"`
 	CreatorID uint64 `json:"creator_id"`
 

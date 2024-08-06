@@ -28,7 +28,7 @@ type RTBSourceFlags struct {
 
 // RTBSource for SSP connect
 type RTBSource struct {
-	ID        uint64 `json:"id"`
+	ID        uint64 `json:"id" gorm:"primaryKey"`
 	AccountID uint64 `json:"account_id,omitempty"`
 
 	Title       string `json:"title,omitempty"`
