@@ -70,12 +70,8 @@ func (m *Money) SetFromFloat64(v float64) {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Value implements the driver.Valuer interface, json field interface
-func (m Money) Value() (_ driver.Value, err error) {
-	var v []byte
-	if v, err := m.MarshalJSON(); nil == err && nil != v {
-		return string(v), nil
-	}
-	return v, err
+func (m Money) Value() (driver.Value, error) {
+	return m.Int64(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
@@ -83,22 +79,22 @@ func (m *Money) Scan(value any) error {
 	var data []byte
 	switch v := value.(type) {
 	case int:
-		*m = MoneyInt(v)
+		*m = Money(v)
 		return nil
 	case int32:
-		*m = MoneyInt(v)
+		*m = Money(v)
 		return nil
 	case int64:
-		*m = MoneyInt(v)
+		*m = Money(v)
 		return nil
 	case uint:
-		*m = MoneyInt(v)
+		*m = Money(v)
 		return nil
 	case uint32:
-		*m = MoneyInt(v)
+		*m = Money(v)
 		return nil
 	case uint64:
-		*m = MoneyInt(v)
+		*m = Money(v)
 		return nil
 	case float32:
 		*m = MoneyFloat(v)
@@ -116,7 +112,19 @@ func (m *Money) Scan(value any) error {
 	default:
 		return gosql.ErrInvalidScan
 	}
-	return json.Unmarshal(data, m)
+	if bytes.ContainsAny(data, ".") {
+		if val, err := strconv.ParseFloat(string(data), 64); err == nil {
+			*m = MoneyFloat(val)
+			return nil
+		} else {
+			return err
+		}
+	}
+	val, err := strconv.ParseInt(string(data), 10, 64)
+	if err == nil {
+		*m = Money(val)
+	}
+	return err
 }
 
 // MarshalJSON implements the json.Marshaler

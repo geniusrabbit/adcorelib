@@ -12,7 +12,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
-	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // RTB price type
@@ -53,8 +52,8 @@ type RTBSource struct {
 	AuctionType           types.AuctionType `gorm:"type:AuctionType" json:"auction_type,omitempty"` // default: 0 – first price type, 1 – second price type
 
 	// Price limits
-	MinBid billing.Money `json:"min_bid,omitempty"` // Minimal bid value
-	MaxBid billing.Money `json:"max_bid,omitempty"` // Maximal bid value
+	MinBid float64 `json:"min_bid,omitempty"` // Minimal bid value
+	MaxBid float64 `json:"max_bid,omitempty"` // Maximal bid value
 
 	// Targeting filters
 	Formats         gosql.NullableStringArray               `gorm:"type:TEXT[]" json:"formats,omitempty"`         // => Filters
