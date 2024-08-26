@@ -59,9 +59,9 @@ func (rt RTBRequestType) Value() (driver.Value, error) {
 func (rt *RTBRequestType) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
-		*rt = rtbRequestTypeMapping[v[1:len(v)-1]]
+		*rt = rtbRequestTypeMapping[v]
 	case []byte:
-		*rt = rtbRequestTypeMapping[string(v[1:len(v)-1])]
+		*rt = rtbRequestTypeMapping[string(v)]
 	case nil:
 		*rt = RTBRequestTypeUndefined
 	default:

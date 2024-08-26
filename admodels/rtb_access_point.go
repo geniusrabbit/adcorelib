@@ -85,8 +85,8 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, acc *Account) (src *RTBA
 		Timeout:            cl.Timeout,
 
 		// Price limits
-		MaxBid:             cl.MaxBid,
-		FixedPurchasePrice: cl.FixedPurchasePrice,
+		MaxBid:             billing.MoneyFloat(cl.MaxBid),
+		FixedPurchasePrice: billing.MoneyFloat(cl.FixedPurchasePrice),
 
 		Filter: filter,
 	}
