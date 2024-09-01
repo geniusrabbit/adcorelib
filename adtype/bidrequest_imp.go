@@ -199,7 +199,7 @@ func (i *Impression) Set(key string, val any) {
 
 // Unset context item with keys
 func (i *Impression) Unset(keys ...string) {
-	if i.Ext != nil && len(i.Ext) > 0 {
+	if len(i.Ext) > 0 {
 		for _, key := range keys {
 			delete(i.Ext, key)
 		}
