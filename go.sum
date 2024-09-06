@@ -67,8 +67,8 @@ github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f h1:mbMOz/g
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f/go.mod h1:cHgmYvQ2zN/4FrkDwWNvGkSHkfKUeFqfLI+DYPTM420=
 github.com/geniusrabbit/notificationcenter/v2 v2.3.5 h1:b2mg80PfBUUV3LbRZqFsCEaL8Mqr66GDqgxwUvQ6Pnw=
 github.com/geniusrabbit/notificationcenter/v2 v2.3.5/go.mod h1:HCtbDlMMHcypvyMu7+MhdR52Waq5ii/4VXKmlZNUy7k=
-github.com/geniusrabbit/udetect v0.0.0-20240906120742-d500ac72bb5b h1:wkgMjzsyBF4Eoazc5ALH1KoHR+gpPyFSFfHqOv4Y0KY=
-github.com/geniusrabbit/udetect v0.0.0-20240906120742-d500ac72bb5b/go.mod h1:HThiE43ji2jevDuqFfxYUs8FauznG99cLpWiyinff9E=
+github.com/geniusrabbit/udetect v0.0.0-20240906143947-430d6eb56d3d h1:Z5MQUpY78mLnkLKc4NRLaYrQD/VKvefyTItGmPC6vL4=
+github.com/geniusrabbit/udetect v0.0.0-20240906143947-430d6eb56d3d/go.mod h1:HThiE43ji2jevDuqFfxYUs8FauznG99cLpWiyinff9E=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/golang/snappy v0.0.4 h1:yAGX7huGHXlcLOEtBnF4w7FQwA26wojNCwOYAEhLjQM=
