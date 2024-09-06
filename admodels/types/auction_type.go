@@ -50,7 +50,7 @@ func AuctionTypeNameToType(name string) AuctionType {
 	switch name {
 	case `first_price`, `first`, `1`:
 		return FirstPriceAuctionType
-	case `second_proce`, `second`, `2`:
+	case `second_price`, `second`, `2`:
 		return SecondPriceAuctionType
 	}
 	return UndefinedAuctionType
