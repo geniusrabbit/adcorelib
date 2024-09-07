@@ -57,6 +57,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -268,7 +269,7 @@ func (d *driver[ND, Rq, Rs]) Metrics() *openlatency.MetricsInfo {
 func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err error) {
 	var (
 		rtbRequest any
-		data       bytes.Buffer
+		bufData    bytes.Buffer
 	)
 
 	if d.source.Protocol == "openrtb3" {
@@ -278,16 +279,20 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 	}
 
 	// Prepare data for request
-	if err = json.NewEncoder(&data).Encode(rtbRequest); err != nil {
+	if err = json.NewEncoder(&bufData).Encode(rtbRequest); err != nil {
 		return d.netClient.NoopRequest(), err
 	}
 
-	// enc := json.NewEncoder(os.Stdout)
-	// enc.SetIndent("", "  ")
-	// enc.Encode(rtbRequest)
+	if d.source.Options.Trace != 0 {
+		ctxlogger.Get(request.Ctx).Error("trace marshal",
+			zap.String("src_url", d.source.URL))
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		_ = enc.Encode(rtbRequest)
+	}
 
 	// Create new request
-	if req, err = d.netClient.Request(d.source.Method, d.source.URL, &data); err != nil {
+	if req, err = d.netClient.Request(d.source.Method, d.source.URL, &bufData); err != nil {
 		return req, err
 	}
 
@@ -303,9 +308,11 @@ func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) 
 		if d.source.Options.Trace != 0 {
 			var data []byte
 			if data, err = io.ReadAll(r); err == nil {
+				var buf bytes.Buffer
+				_ = json.Indent(&buf, data, "", "  ")
 				ctxlogger.Get(request.Ctx).Error("trace unmarshal",
-					zap.String("src_url", d.source.URL),
-					zap.String("unmarshal_data", string(data)))
+					zap.String("src_url", d.source.URL))
+				fmt.Fprintln(os.Stdout, buf.String())
 				err = json.Unmarshal(data, &bidResp)
 			}
 		} else {
