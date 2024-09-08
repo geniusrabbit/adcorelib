@@ -16,7 +16,7 @@ func TestItemPricing(t *testing.T) {
 	var (
 		acc = &admodels.Account{
 			IDval:        1,
-			RevenueShare: 90,
+			RevenueShare: 0.9,
 		}
 		imp   = adtype.Impression{Target: &admodels.Smartlink{Acc: acc}}
 		items = []adtype.ResponserItem{newRTBResponse(acc, imp)}
@@ -59,7 +59,7 @@ func TestPriceCorrection(t *testing.T) {
 	var (
 		acc = &admodels.Account{
 			IDval:        1,
-			RevenueShare: 85,
+			RevenueShare: 0.85,
 		}
 		imp  = adtype.Impression{Target: &admodels.Smartlink{Acc: acc}}
 		item = newRTBResponse(acc, imp)

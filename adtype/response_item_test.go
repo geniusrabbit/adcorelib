@@ -14,7 +14,7 @@ func Test_ItemPricing(t *testing.T) {
 	var (
 		acc = &admodels.Account{
 			IDval:        1,
-			RevenueShare: 90,
+			RevenueShare: 0.9,
 		}
 		imp   = Impression{Target: &admodels.Smartlink{Acc: acc}}
 		items = []ResponserItem{newAdResponse(acc, imp)}
