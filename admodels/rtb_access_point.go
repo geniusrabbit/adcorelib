@@ -36,7 +36,7 @@ type RTBAccessPoint struct {
 	// Example:
 	//   1. Found advertisement with `bid=1.0$`
 	//   2. Final `bid = bid - $AdSourceComission{%} - $AdExchangeComission{%} - $RevenueShareReduce{%}`
-	RevenueShareReduce float64 // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	RevenueShareReduce float64 // % 1 -> 100%, 0.655 -> 65.5%
 
 	RPS     int // 0 – unlimit
 	Timeout int // In milliseconds
@@ -106,5 +106,5 @@ func (s *RTBAccessPoint) TestFormat(f *types.Format) bool {
 // Returns percent from 0 to 1 for reducing of the value
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
 func (s *RTBAccessPoint) RevenueShareReduceFactor() float64 {
-	return s.RevenueShareReduce / 100.
+	return s.RevenueShareReduce
 }

@@ -35,7 +35,7 @@ func (c *Account) ID() uint64 {
 // RevenueShareFactor multipler 0..1 that publisher get from system
 func (c *Account) RevenueShareFactor() float64 {
 	if c == nil {
-		zap.L().Error("company is not inited")
+		zap.L().Error("account is not inited", zap.Stack("trace"))
 		return 0
 	}
 	return c.RevenueShare / 100.

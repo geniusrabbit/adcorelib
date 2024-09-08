@@ -101,7 +101,7 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 		Filter:        filter,
 
 		Accuracy:              cl.Accuracy,
-		PriceCorrectionReduce: max(min(cl.PriceCorrectionReduce, 100), 0) / 100,
+		PriceCorrectionReduce: max(min(cl.PriceCorrectionReduce, 1.), 0.),
 
 		MinBid: billing.MoneyFloat(cl.MinBid),
 		MaxBid: billing.MoneyFloat(cl.MaxBid),

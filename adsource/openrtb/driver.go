@@ -244,7 +244,7 @@ func (d *driver[ND, Rq, Rs]) ProcessResponseItem(response adtype.Responser, item
 
 // RevenueShareReduceFactor which is a potential
 func (d *driver[ND, Rq, Rs]) RevenueShareReduceFactor() float64 {
-	return 0 // TODO: d.source.PriceCorrectionReduce / 100
+	return 1. - d.source.Account.RevenueShareFactor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -268,7 +268,7 @@ func (d *driver[ND, Rq, Rs]) Metrics() *openlatency.MetricsInfo {
 // prepare request for RTB
 func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err error) {
 	var (
-		rtbRequest any
+		rtbRequest interface{ Validate() error }
 		bufData    bytes.Buffer
 	)
 
@@ -276,6 +276,10 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 		rtbRequest = requestToRTBv3(request, d.getRequestOptions()...)
 	} else {
 		rtbRequest = requestToRTBv2(request, d.getRequestOptions()...)
+	}
+
+	if err := rtbRequest.Validate(); err != nil {
+		return d.netClient.NoopRequest(), err
 	}
 
 	// Prepare data for request
@@ -312,7 +316,7 @@ func (d *driver[ND, Rq, Rs]) unmarshal(request *adtype.BidRequest, r io.Reader) 
 				_ = json.Indent(&buf, data, "", "  ")
 				ctxlogger.Get(request.Ctx).Error("trace unmarshal",
 					zap.String("src_url", d.source.URL))
-				fmt.Fprintln(os.Stdout, buf.String())
+				fmt.Fprintln(os.Stdout, "UNMARSHAL: "+buf.String())
 				err = json.Unmarshal(data, &bidResp)
 			}
 		} else {
