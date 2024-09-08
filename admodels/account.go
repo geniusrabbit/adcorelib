@@ -24,7 +24,7 @@ type Account struct {
 	//   Account revenue share 60%
 	//   In such case the ad network have 40$
 	//   The publisher have 60$
-	RevenueShare float64 // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	RevenueShare float64 // % 1.0 -> 100%, 0.655 -> 65.5%
 }
 
 // ID of object
@@ -36,12 +36,12 @@ func (c *Account) ID() uint64 {
 func (c *Account) RevenueShareFactor() float64 {
 	if c == nil {
 		zap.L().Error("account is not inited", zap.Stack("trace"))
-		return 0
+		return 0.
 	}
-	return c.RevenueShare / 100.
+	return c.RevenueShare
 }
 
 // ComissionShareFactor which system get from publisher 0..1
 func (c *Account) ComissionShareFactor() float64 {
-	return 1 - c.RevenueShareFactor()
+	return 1. - c.RevenueShareFactor()
 }
