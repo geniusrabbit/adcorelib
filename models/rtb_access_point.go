@@ -25,7 +25,7 @@ type RTBAccessPointFlags struct {
 type RTBAccessPoint struct {
 	ID        uint64 `json:"id" gorm:"primaryKey"`
 	AccountID uint64 `json:"account_id"`
-	Codename  string `json:"codename,omitempty"`
+	Codename  string `json:"codename,omitempty" gorm:"unique_index"`
 
 	Title       string `json:"title,omitempty"`
 	Description string `json:"description,omitempty"`

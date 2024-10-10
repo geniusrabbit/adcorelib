@@ -13,6 +13,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/gosql/v2"
 	"github.com/guregu/null"
+	"gorm.io/gorm"
 )
 
 // AdAssetThumb of the file
@@ -33,7 +34,7 @@ type AdAssetMeta struct {
 
 // -- ad & file Many2many
 //
-// CREATE TABLE m2m_adv_ad_file_ad
+// CREATE TABLE m2m_adv_ad_asset
 // ( file_id               BIGINT          NOT NULL    REFERENCES  adv_ad_file(id) MATCH SIMPLE
 //                                                       ON UPDATE NO ACTION
 //                                                       ON DELETE CASCADE
@@ -67,9 +68,9 @@ type AdAsset struct {
 	Meta        gosql.NullableJSON[AdAssetMeta]     `gorm:"type:JSONB" json:"meta,omitempty"`
 	Size        int64                               `json:"size,omitempty"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at,omitempty"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database

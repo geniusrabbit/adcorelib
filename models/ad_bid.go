@@ -14,9 +14,11 @@ import (
 
 // AdBid submodel
 type AdBid struct {
-	BidPrice     billing.Money                     `json:"bid_price"`
-	Price        billing.Money                     `json:"price" validate:"notempty"`
-	LeadPrice    billing.Money                     `json:"lead_price"`
+	BidPrice  billing.Money `json:"bid_price"`
+	Price     billing.Money `json:"price" validate:"notempty"`
+	LeadPrice billing.Money `json:"lead_price"`
+
+	// Targeting options
 	Applications gosql.NullableNumberArray[uint64] `json:"apps,omitempty"`
 	Tags         gosql.NullableStringArray         `json:"tags,omitempty"`
 	Zones        gosql.NullableNumberArray[uint64] `json:"zones,omitempty"`

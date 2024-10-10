@@ -85,7 +85,7 @@ type Ad struct {
 	Hours string `json:"hours,omitempty"`
 
 	// Assets related to advertisement
-	Assets []*AdAsset `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_file_ad"`
+	Assets []*AdAsset `json:"assets,omitempty" gorm:"many2many:m2m_adv_ad_asset"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`

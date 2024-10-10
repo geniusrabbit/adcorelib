@@ -17,7 +17,7 @@ import (
 // CREATE TYPE PlatformType AS ENUM ('web', 'desktop', 'mobile', 'smart.phone', 'tablet', 'smart.tv', 'gamestation', 'smart.watch', 'vr', 'smart.glasses', 'smart.billboard')
 type PlatformType uint
 
-// Status approve
+// Platform type list
 const (
 	PlatformUndefined          PlatformType = 0
 	PlatformWeb                PlatformType = 1

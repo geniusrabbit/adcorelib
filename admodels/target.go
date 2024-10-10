@@ -24,6 +24,8 @@ type Target interface {
 	PricingModel() types.PricingModel
 
 	// AlternativeAdCode returns URL or any code (HTML, XML, etc)
+	// for alternative ad code for the target.
+	// Key represents adformat code (banner, video, direct, etc)
 	AlternativeAdCode(key string) string
 
 	// PurchasePrice gives the price of view from external resource

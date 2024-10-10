@@ -69,12 +69,12 @@ func (m *Money) SetFromFloat64(v float64) {
 // Encode/Decode
 ///////////////////////////////////////////////////////////////////////////////
 
-// Value implements the driver.Valuer interface, json field interface
+// Value implements the driver.Valuer interface
 func (m Money) Value() (driver.Value, error) {
 	return m.Int64(), nil
 }
 
-// Scan implements the driver.Valuer interface, json field interface
+// Scan implements the sql.Scanner interface
 func (m *Money) Scan(value any) error {
 	var data []byte
 	switch v := value.(type) {

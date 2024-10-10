@@ -6,8 +6,6 @@
 package admodels
 
 import (
-	"strconv"
-
 	"github.com/geniusrabbit/gosql/v2"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -17,27 +15,30 @@ import (
 
 // Smartlink model
 type Smartlink struct {
-	id       uint64
-	StringID string
+	id            uint64
+	CodenameValue string
 
 	Acc   *Account
 	AccID uint64
 
 	FixedPurchasePrice billing.Money // The cost of single view
 
+	// Filtering
 	AllowedTypes      gosql.NullableOrderedNumberArray[int64]
 	AllowedSources    gosql.NullableOrderedNumberArray[int64]
 	DisallowedSources gosql.NullableOrderedNumberArray[int64]
 	Campaigns         gosql.NullableOrderedNumberArray[int64]
-	DefaultCode       map[string]string
+
+	// DefaultCode for the target for the specified format (banner, video, direct, etc)
+	DefaultCode map[string]string
 }
 
 // SmartlinkFromModel convert database model to specified model
 func SmartlinkFromModel(zone *models.Zone, account *Account) *Smartlink {
 	return &Smartlink{
 		id:                 zone.ID,
-		StringID:           strconv.FormatUint(zone.ID, 10),
-		FixedPurchasePrice: zone.FixedPurchasePrice,
+		CodenameValue:      zone.Codename,
+		FixedPurchasePrice: billing.MoneyFloat(zone.FixedPurchasePrice),
 		Acc:                account,
 		AccID:              zone.AccountID,
 		AllowedTypes:       zone.AllowedTypes,
@@ -55,7 +56,7 @@ func (l *Smartlink) ID() uint64 {
 
 // Codename of the target (equal to tagid)
 func (l *Smartlink) Codename() string {
-	return l.StringID
+	return l.CodenameValue
 }
 
 // PricingModel of the target

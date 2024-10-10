@@ -17,7 +17,7 @@ import (
 // CREATE TYPE ApplicationType AS ENUM ('site', 'application', 'game')
 type ApplicationType uint
 
-// Status approve
+// Application type
 const (
 	ApplicationUndefined     ApplicationType = 0
 	ApplicationSite          ApplicationType = 1

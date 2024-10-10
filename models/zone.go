@@ -9,16 +9,20 @@ import (
 	"time"
 
 	"github.com/geniusrabbit/gosql/v2"
-	"github.com/guregu/null"
+	"github.com/segmentio/ksuid"
+	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
-	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // Zone model
 type Zone struct {
-	ID        uint64 `json:"id"`
-	Title     string `json:"title"`
+	ID       uint64 `json:"id"`
+	Codename string `json:"codename" gorm:"unique_index"`
+
+	Title       string `json:"title"`
+	Description string `json:"description"`
+
 	AccountID uint64 `json:"account_id,omitempty"`
 
 	Type   types.ZoneType      `gorm:"type:ZoneType" json:"type,omitempty"`
@@ -31,18 +35,20 @@ type Zone struct {
 	MinECPMByGeo gosql.NullableJSON[map[string]float64] `gorm:"type:JSONB" json:"min_ecpm_by_geo,omitempty"` // {"CODE": <ecpm>, ...}
 
 	// The cost of the traffic acceptance
-	FixedPurchasePrice billing.Money `json:"fixed_purchase_price,omitempty"`
+	FixedPurchasePrice float64 `json:"fixed_purchase_price,omitempty"`
 
 	// Filtering
-	AllowedFormats    gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"allowed_formats,omitempty"`    //
-	AllowedTypes      gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"allowed_types,omitempty"`      //
-	AllowedSources    gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"allowed_sources,omitempty"`    //
-	DisallowedSources gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"disallowed_sources,omitempty"` //
-	Campaigns         gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"campaigns,omitempty"`          // Strict campaigns targeting (smartlinks only)
+	AllowedFormats    gosql.NullableStringArray               `gorm:"type:TEXT[]" json:"allowed_formats,omitempty"`
+	AllowedTypes      gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"allowed_types,omitempty"`
+	AllowedSources    gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"allowed_sources,omitempty"`
+	DisallowedSources gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"disallowed_sources,omitempty"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt null.Time `json:"deleted_at,omitempty"`
+	// Strict campaigns targeting (smartlinks only)
+	Campaigns gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"campaigns,omitempty"`
+
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // TableName in database
@@ -62,4 +68,18 @@ func (z *Zone) RevenueShare() float64 {
 
 func (z *Zone) GetAccountID() uint64 {
 	return z.AccountID
+}
+
+// BeforeCreate hook
+func (z *Zone) BeforeCreate(tx *gorm.DB) error {
+	if z.Codename == "" {
+		id, err := ksuid.NewRandom()
+		if err != nil {
+			return err
+		}
+		z.Codename = id.String()
+	}
+	z.CreatedAt = time.Now()
+	z.UpdatedAt = z.CreatedAt
+	return nil
 }

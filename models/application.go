@@ -11,7 +11,11 @@ import (
 
 // Application model describes site or mobile/desktop application
 type Application struct {
-	ID        uint64 `json:"id" gorm:"primaryKey"` // Authoincrement key
+	ID uint64 `json:"id" gorm:"primaryKey"` // Authoincrement key
+
+	Title       string `json:"title"`
+	Description string `json:"description"`
+
 	AccountID uint64 `json:"account_id"`
 	CreatorID uint64 `json:"creator_id"`
 
@@ -32,7 +36,7 @@ type Application struct {
 	// Is private campaign type
 	Private types.PrivateStatus `gorm:"type:PrivateStatus" json:"private"`
 
-	Categories gosql.NullableNumberArray[uint] `gorm:"type:INT[]" json:"categories,omitempty"`
+	Categories gosql.NullableNumberArray[uint] `gorm:"type:BIGINT[]" json:"categories,omitempty"`
 
 	// RevenueShare it's amount of percent of the raw incode which will be shared with the publisher company
 	// For example:
@@ -42,6 +46,10 @@ type Application struct {
 	//   The publisher have 60$
 	// Optional
 	RevenueShare float64 `json:"revenue_share,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+
+	// Advertisement sources
+	AllowedSources    gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"allowed_sources,omitempty"`
+	DisallowedSources gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"disallowed_sources,omitempty"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`

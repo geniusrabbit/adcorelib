@@ -6,8 +6,6 @@
 package admodels
 
 import (
-	"strconv"
-
 	"github.com/geniusrabbit/gosql/v2"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -17,8 +15,8 @@ import (
 
 // Zone model
 type Zone struct {
-	id       uint64
-	StringID string
+	id            uint64
+	CodenameValue string
 
 	Acc   *Account
 	AccID uint64
@@ -37,8 +35,8 @@ type Zone struct {
 func ZoneFromModel(zone *models.Zone, account *Account) *Zone {
 	return &Zone{
 		id:                 zone.ID,
-		StringID:           strconv.FormatUint(zone.ID, 10),
-		FixedPurchasePrice: zone.FixedPurchasePrice,
+		CodenameValue:      zone.Codename,
+		FixedPurchasePrice: billing.MoneyFloat(zone.FixedPurchasePrice),
 		Acc:                account,
 		AccID:              zone.AccountID,
 		MinECPM:            zone.MinECPM,
@@ -57,7 +55,7 @@ func (z *Zone) ID() uint64 {
 
 // Codename of the target (equal to tagid)
 func (z *Zone) Codename() string {
-	return z.StringID
+	return z.CodenameValue
 }
 
 // PricingModel of the target
