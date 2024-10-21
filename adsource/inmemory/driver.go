@@ -30,6 +30,9 @@ func (d *driver) init() {
 // ID of the source driver
 func (d *driver) ID() uint64 { return 0 }
 
+// ObjectKey of the source driver
+func (d *driver) ObjectKey() uint64 { return d.ID() }
+
 // Protocol of the source driver
 func (d *driver) Protocol() string { return protocol }
 

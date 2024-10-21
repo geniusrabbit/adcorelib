@@ -28,8 +28,7 @@ import (
 
 type (
 	zoneAccessor interface {
-		TargetByID(uint64) (admodels.Target, error)
-		TargetByCodename(string) (admodels.Target, error)
+		ByKey(string) (admodels.Target, error)
 	}
 	getSourceAccessor interface {
 		Sources() adtype.SourceAccessor
@@ -221,7 +220,7 @@ func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.Re
 func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personification.Person, rctx *fasthttp.RequestCtx) *adtype.BidRequest {
 	var (
 		spotInfo  = strings.Split(rctx.UserValue("zone").(string), ".")
-		target, _ = ext.zoneAccessor.TargetByCodename(spotInfo[0])
+		target, _ = ext.zoneAccessor.ByKey(spotInfo[0])
 	)
 	if target == nil {
 		return nil

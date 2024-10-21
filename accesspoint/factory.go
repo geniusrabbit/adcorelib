@@ -21,6 +21,9 @@ type Platformer interface {
 	// ID of the access point
 	ID() uint64
 
+	// ObjectKey of the access point
+	ObjectKey() uint64
+
 	// Codename of the access point
 	Codename() string
 

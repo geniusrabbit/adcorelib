@@ -42,6 +42,9 @@ type Source interface {
 	// ID of the source driver
 	ID() uint64
 
+	// ObjectKey of the source driver
+	ObjectKey() uint64
+
 	// Protocol of the source driver
 	Protocol() string
 

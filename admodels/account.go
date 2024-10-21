@@ -32,6 +32,11 @@ func (c *Account) ID() uint64 {
 	return c.IDval
 }
 
+// ObjectKey of the target
+func (c *Account) ObjectKey() uint64 {
+	return c.IDval
+}
+
 // RevenueShareFactor multipler 0..1 that publisher get from system
 func (c *Account) RevenueShareFactor() float64 {
 	if c == nil {

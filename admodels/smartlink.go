@@ -59,6 +59,11 @@ func (l *Smartlink) Codename() string {
 	return l.CodenameValue
 }
 
+// ObjectKey of the target
+func (l *Smartlink) ObjectKey() string {
+	return l.CodenameValue
+}
+
 // PricingModel of the target
 func (l *Smartlink) PricingModel() types.PricingModel {
 	return types.PricingModelUndefined

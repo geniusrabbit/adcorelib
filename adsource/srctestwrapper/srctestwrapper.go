@@ -24,6 +24,11 @@ func (w *sourceTester) ID() uint64 {
 	return w.sourceInfo.ID
 }
 
+// ObjectKey of the source driver
+func (w *sourceTester) ObjectKey() uint64 {
+	return w.sourceInfo.ID
+}
+
 // Protocol of the source driver
 func (w *sourceTester) Protocol() string {
 	return w.sourceInfo.Protocol

@@ -58,6 +58,11 @@ func (z *Zone) Codename() string {
 	return z.CodenameValue
 }
 
+// ObjectKey of the target
+func (z *Zone) ObjectKey() string {
+	return z.CodenameValue
+}
+
 // PricingModel of the target
 func (z *Zone) PricingModel() types.PricingModel {
 	return types.PricingModelUndefined

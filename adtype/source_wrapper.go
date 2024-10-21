@@ -7,6 +7,9 @@ type minimalSourceWrapper struct {
 // ID of the source driver
 func (wp minimalSourceWrapper) ID() uint64 { return 0 }
 
+// ObjectKey of the source driver
+func (wp minimalSourceWrapper) ObjectKey() uint64 { return 0 }
+
 // Protocol of the source driver
 func (wp minimalSourceWrapper) Protocol() string { return "undefined" }
 

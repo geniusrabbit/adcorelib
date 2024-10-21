@@ -14,6 +14,9 @@ func (*SourceEmpty) ProcessResponseItem(Responser, ResponserItem) {}
 // ID of the source driver
 func (*SourceEmpty) ID() uint64 { return 0 }
 
+// ObjectKey of the source driver
+func (*SourceEmpty) ObjectKey() uint64 { return 0 }
+
 // Protocol of the source driver
 func (*SourceEmpty) Protocol() string { return "undefined" }
 

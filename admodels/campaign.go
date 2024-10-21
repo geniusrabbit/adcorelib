@@ -166,6 +166,11 @@ func (c *Campaign) ID() uint64 {
 	return c.id
 }
 
+// ObjectKey of the object
+func (c *Campaign) ObjectKey() uint64 {
+	return c.id
+}
+
 // Account object
 func (c *Campaign) Account() *Account {
 	return c.Acc

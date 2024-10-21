@@ -19,6 +19,9 @@ type Target interface {
 	// Codename of the target (equal to tagid)
 	Codename() string
 
+	// ObjectKey of the target
+	ObjectKey() string
+
 	// PricingModel of the target
 	// Undefined as any priceing model type
 	PricingModel() types.PricingModel

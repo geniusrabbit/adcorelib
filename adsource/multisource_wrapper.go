@@ -110,6 +110,9 @@ func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 // ID returns the ID of the source driver
 func (wrp *MultisourceWrapper) ID() uint64 { return 0 }
 
+// ObjectKey returns the object key of the source driver
+func (wrp *MultisourceWrapper) ObjectKey() uint64 { return 0 }
+
 // Protocol returns the protocol of the source driver
 func (wrp *MultisourceWrapper) Protocol() string { return "multisource" }
 

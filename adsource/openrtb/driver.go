@@ -121,6 +121,9 @@ func newDriver[ND httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclien
 // ID of source
 func (d *driver[ND, Rq, Rs]) ID() uint64 { return d.source.ID }
 
+// ObjectKey of source
+func (d *driver[ND, Rq, Rs]) ObjectKey() uint64 { return d.source.ID }
+
 // Protocol of source
 func (d *driver[ND, Rq, Rs]) Protocol() string { return d.source.Protocol }
 
