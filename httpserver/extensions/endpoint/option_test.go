@@ -17,7 +17,8 @@ func (dummySource) ProcessResponse(response adtype.Responser)       {}
 
 type dummyZoneAccessor struct{}
 
-func (dummyZoneAccessor) TargetByID(uint64) (admodels.Target, error) { return nil, nil }
+func (dummyZoneAccessor) TargetByID(uint64) (admodels.Target, error)       { return nil, nil }
+func (dummyZoneAccessor) TargetByCodename(string) (admodels.Target, error) { return nil, nil }
 
 func Test_Options(t *testing.T) {
 	server := NewExtension(

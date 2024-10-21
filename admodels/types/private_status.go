@@ -7,6 +7,7 @@ package types
 
 import (
 	"database/sql/driver"
+	"strings"
 
 	"github.com/geniusrabbit/gosql/v2"
 )
@@ -53,9 +54,9 @@ func (st PrivateStatus) Value() (driver.Value, error) {
 func (st *PrivateStatus) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
-		*st = PrivateNameToStatus(v[1 : len(v)-1])
+		*st = PrivateNameToStatus(strings.Trim(v, `"'`))
 	case []byte:
-		*st = PrivateNameToStatus(string(v[1 : len(v)-1]))
+		*st = PrivateNameToStatus(strings.Trim(string(v), `"'`))
 	case nil:
 		*st = StatusPublic
 	default:

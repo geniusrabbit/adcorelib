@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/demdxx/gocast/v2"
@@ -30,6 +29,7 @@ import (
 type (
 	zoneAccessor interface {
 		TargetByID(uint64) (admodels.Target, error)
+		TargetByCodename(string) (admodels.Target, error)
 	}
 	getSourceAccessor interface {
 		Sources() adtype.SourceAccessor
@@ -221,8 +221,7 @@ func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.Re
 func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personification.Person, rctx *fasthttp.RequestCtx) *adtype.BidRequest {
 	var (
 		spotInfo  = strings.Split(rctx.UserValue("zone").(string), ".")
-		zoneID, _ = strconv.ParseUint(spotInfo[0], 10, 64)
-		target, _ = ext.zoneAccessor.TargetByID(zoneID)
+		target, _ = ext.zoneAccessor.TargetByCodename(spotInfo[0])
 	)
 	if target == nil {
 		return nil

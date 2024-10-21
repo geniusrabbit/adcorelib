@@ -34,7 +34,7 @@ type Application struct {
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active"`
 
 	// Is private campaign type
-	Private types.PrivateStatus `gorm:"type:PrivateStatus" json:"private"`
+	Private types.PrivateStatus `gorm:"type:PrivateStatus;not null" json:"private"`
 
 	Categories gosql.NullableNumberArray[uint] `gorm:"type:BIGINT[]" json:"categories,omitempty"`
 
