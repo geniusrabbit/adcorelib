@@ -45,7 +45,7 @@ type Application struct {
 	//   In such case the ad network have 40$
 	//   The publisher have 60$
 	// Optional
-	RevenueShare float64 `json:"revenue_share,omitempty"` // % 100_00, 10000 -> 100%, 6550 -> 65.5%
+	RevenueShare float64 `json:"revenue_share,omitempty"` // % 1.0 -> 100%, 0.655 -> 65.5%
 
 	// Advertisement sources
 	AllowedSources    gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"allowed_sources,omitempty"`

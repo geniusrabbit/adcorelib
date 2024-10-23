@@ -30,6 +30,13 @@ func WithFormatAccessor(formatAccessor types.FormatsAccessor) Option {
 	}
 }
 
+// WithAppAccessor setter
+func WithAppAccessor(appAccessor appAccessor) Option {
+	return func(ext *Extension) {
+		ext.appAccessor = appAccessor
+	}
+}
+
 // WithZoneAccessor setter
 func WithZoneAccessor(zoneAccessor zoneAccessor) Option {
 	return func(ext *Extension) {

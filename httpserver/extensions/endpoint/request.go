@@ -82,7 +82,7 @@ func NewDirectRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 }
 
 // NewRequestFor person
-func NewRequestFor(ctx context.Context, target admodels.Target, person personification.Person,
+func NewRequestFor(ctx context.Context, app *admodels.Application, target admodels.Target, person personification.Person,
 	opt *RequestOptions, formatAccessor types.FormatsAccessor) *adtype.BidRequest {
 	var (
 		userInfo         = person.UserInfo()
@@ -96,6 +96,7 @@ func NewRequestFor(ctx context.Context, target admodels.Target, person personifi
 		RequestCtx: opt.Request,
 		Secure:     b2i(fasthttpext.IsSecureCF(opt.Request)),
 		Device:     userInfo.DeviceInfo(),
+		AppTarget:  app,
 		Imps: []adtype.Impression{
 			{
 				ID:          rand.UUID(), // Impression ID

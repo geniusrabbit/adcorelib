@@ -27,8 +27,11 @@ import (
 )
 
 type (
+	appAccessor interface {
+		AppByURI(uri string) (*admodels.Application, error)
+	}
 	zoneAccessor interface {
-		ByKey(string) (admodels.Target, error)
+		TargetByCodename(string) (admodels.Target, error)
 	}
 	getSourceAccessor interface {
 		Sources() adtype.SourceAccessor
@@ -57,6 +60,9 @@ type Extension struct {
 
 	// Format accessor
 	formatAccessor types.FormatsAccessor
+
+	// App data accessor
+	appAccessor appAccessor
 
 	// Zone data accessor
 	zoneAccessor zoneAccessor
@@ -219,13 +225,17 @@ func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.Re
 
 func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personification.Person, rctx *fasthttp.RequestCtx) *adtype.BidRequest {
 	var (
+		app       *admodels.Application
 		spotInfo  = strings.Split(rctx.UserValue("zone").(string), ".")
-		target, _ = ext.zoneAccessor.ByKey(spotInfo[0])
+		target, _ = ext.zoneAccessor.TargetByCodename(spotInfo[0])
 	)
 	if target == nil {
 		return nil
 	}
-	request := NewRequestFor(ctx, target, person, NewRequestOptions(rctx), ext.formatAccessor)
+	if ext.appAccessor != nil {
+		app, _ = ext.appAccessor.AppByURI(domain(string(rctx.Referer())))
+	}
+	request := NewRequestFor(ctx, app, target, person, NewRequestOptions(rctx), ext.formatAccessor)
 	if request != nil {
 		ext.prepareRequest(request)
 	}

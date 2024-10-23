@@ -57,8 +57,8 @@ github.com/frankban/quicktest v1.14.6/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7z
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
 github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
-github.com/geniusrabbit/adstorage v0.0.0-20241023085230-882ab5b682f5 h1:CGAJTfbuqp0Emxt+xthev8h5FmNIddiYDXLhQKT2wK4=
-github.com/geniusrabbit/adstorage v0.0.0-20241023085230-882ab5b682f5/go.mod h1:TfMlB4Q1uWWo8UVNvPChnX3aa1vpWGscNPJlJ//D1wI=
+github.com/geniusrabbit/adstorage v0.0.0-20241023113732-2791625fabe7 h1:CJYmtTJDE7mishoYwNNXhx9pNrOAAx/PIRSps/QUxMg=
+github.com/geniusrabbit/adstorage v0.0.0-20241023113732-2791625fabe7/go.mod h1:TfMlB4Q1uWWo8UVNvPChnX3aa1vpWGscNPJlJ//D1wI=
 github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92 h1:4zzWLdGtzQxDg6WcFpSzcfEBct6xBmGk7T26I1IlNt8=
 github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92/go.mod h1:z4vtbN4gpN4C/6fEN0gtAc9RBkqU94Y5SrVdk3xMplM=
 github.com/geniusrabbit/gosql/v2 v2.3.1 h1:pXipcITnQlOtpNmGL9gvbrAcNw/PXmcq2Z4hTQv8aEE=
