@@ -1,4 +1,4 @@
-package adtype
+package adresponse
 
 import (
 	"reflect"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,8 +17,8 @@ func Test_ItemPricing(t *testing.T) {
 			IDval:        1,
 			RevenueShare: 0.9,
 		}
-		imp   = Impression{Target: &admodels.Smartlink{Acc: acc}}
-		items = []ResponserItem{newAdResponse(acc, imp)}
+		imp   = adtype.Impression{Target: &admodels.Smartlink{Acc: acc}}
+		items = []adtype.ResponserItem{newAdResponse(acc, imp)}
 	)
 
 	for _, item := range items {
@@ -53,11 +54,11 @@ func Test_ItemPricing(t *testing.T) {
 	}
 }
 
-func newAdResponse(_ *admodels.Account, imp Impression) *ResponseAdItem {
+func newAdResponse(_ *admodels.Account, imp adtype.Impression) *ResponseAdItem {
 	return &ResponseAdItem{
 		ItemID: "1",
-		Src:    &SourceEmpty{PriceCorrectionReduce: 0},
-		Req:    &BidRequest{ID: "xxx", Imps: []Impression{imp}},
+		Src:    &adtype.SourceEmpty{PriceCorrectionReduce: 0},
+		Req:    &adtype.BidRequest{ID: "xxx", Imps: []adtype.Impression{imp}},
 		Imp:    &imp,
 		Ad: &admodels.Ad{
 			Format:      &types.Format{Width: 250, Height: 250},
@@ -70,11 +71,11 @@ func newAdResponse(_ *admodels.Account, imp Impression) *ResponseAdItem {
 		},
 		BidPrice:    billing.MoneyFloat(10.),
 		CPMBidPrice: billing.MoneyFloat(5.),
-		SecondAd:    SecondAd{},
+		SecondAd:    adtype.SecondAd{},
 	}
 }
 
-func leadPrice(item ResponserItem) billing.Money {
+func leadPrice(item adtype.ResponserItem) billing.Money {
 	switch it := item.(type) {
 	case *ResponseAdItem:
 		return it.Ad.LeadPrice

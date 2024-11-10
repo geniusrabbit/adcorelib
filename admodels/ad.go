@@ -16,25 +16,16 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/geo"
+	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/models"
 )
 
 // Errors
 var (
-	ErrUndefinedAdContext   = errors.New("[advertisement model]: undefined AD context")
-	ErrTooManyErrorsInTheAd = errors.New("[advertisement model]: too many errors")
-	ErrInvalidAdFormat      = errors.New("[advertisement model]: invalid ad format")
-)
-
-// AdFlag option state type
-type AdFlag uint8
-
-// Ad flag option types
-const (
-	AdFlagIsPremium AdFlag = 0x01
-	AdFlagActive    AdFlag = 0x02
-	AdFlagInsecure  AdFlag = 0x04
-	AdFlagAsPopover AdFlag = 0x08
+	ErrUndefinedAdContext   = errors.New("[Ad model]: undefined AD context")
+	ErrTooManyErrorsInTheAd = errors.New("[Ad model]: too many errors")
+	ErrInvalidAdFormat      = errors.New("[Ad model]: invalid ad format")
 )
 
 const (
@@ -43,7 +34,7 @@ const (
 
 // Ad model
 type Ad struct {
-	ID uint64 // Ad ID
+	ID uint64
 
 	// Data
 	Content map[string]any // Extend data
@@ -69,6 +60,7 @@ type Ad struct {
 	Budget          billing.Money //
 	DailyTestBudget billing.Money // Test money amount a day (it stops automaticaly if not profit for this amount)
 	TestBudget      billing.Money // Test money amount for the whole period
+	CurrentState    State
 	DefaultLink     string
 
 	// Targeting
@@ -143,88 +135,9 @@ func (a *Ad) Validate() error {
 	return nil
 }
 
-// SetPricingModel strategy
-func (a *Ad) SetPricingModel(pm types.PricingModel) {
-	a.PricingModel = pm
-}
-
-// SetWeight of the AD
-func (a *Ad) SetWeight(w uint8) {
-	a.Weight = w
-}
-
-// SetFrequencyCapping of the AD
-func (a *Ad) SetFrequencyCapping(frequencyCapping uint8) {
-	a.FrequencyCapping = frequencyCapping
-}
-
 func (a *Ad) ProxyURL() string {
 	return a.ContentItemString(proxyIFrameURL)
 }
-
-// // GetTotalSpent of campaign
-// func (a *Ad) GetTotalSpent() billing.Money {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.TotalSpent()
-// }
-
-// // GetSpent of campaign
-// func (a *Ad) GetSpent() billing.Money {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.Spent()
-// }
-
-// // GetTotalProfit of campaign
-// func (a *Ad) GetTotalProfit() billing.Money {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.TotalProfit()
-// }
-
-// // GetProfit of campaign
-// func (a *Ad) GetProfit() billing.Money {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.Profit()
-// }
-
-// // GetDailyBudget of campaign
-// func (a *Ad) GetDailyBudget() billing.Money {
-// 	if a.State == nil {
-// 		return a.DailyBudget
-// 	}
-// 	return a.State.DailyBudget()
-// }
-
-// // Imps returns count of impressions
-// func (a *Ad) Imps() uint64 {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.Imps()
-// }
-
-// // Clicks returns count of clicks
-// func (a *Ad) Clicks() uint64 {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.Clicks()
-// }
-
-// // Leads returns count of leads
-// func (a *Ad) Leads() uint64 {
-// 	if a.State == nil {
-// 		return 0
-// 	}
-// 	return a.State.Leads()
-// }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Check methods
@@ -253,50 +166,67 @@ func (a *Ad) TargetBid(pointer types.TargetPointer) TargetBid {
 	}
 }
 
-// // TestBudgetValues of campaign
-// func (a *Ad) TestBudgetValues() bool {
-// 	return a.Campaign.TestBudgetValue() &&
-// 		(a.GetDailyBudget() <= 0 || a.GetSpent() < a.GetDailyBudget()) &&
-// 		(a.Budget <= 0 || a.GetTotalSpent() < a.Budget)
-// }
+// TestBudgetValue returns true if budget is valid
+//
+//go:inline
+func (a *Ad) TestBudgetValue() bool {
+	return a.Campaign.TestBudgetValue() && a._TestBudgetValue()
+}
 
-// // TestProfit of the campaign
-// func (a *Ad) TestProfit() bool {
-// 	return a.Campaign.TestProfit() &&
-// 		// test daily with profit
-// 		(a.DailyTestBudget <= 0 || a.DailyTestBudget >= a.GetSpent()-a.GetProfit()) &&
-// 		// Total test with profit
-// 		(a.TestBudget <= 0 || a.TestBudget >= a.GetTotalSpent()-a.GetTotalProfit())
-// }
+//go:inline
+func (a *Ad) _TestBudgetValue() bool {
+	if a.CurrentState == nil {
+		return true
+	}
+	return true &&
+		// Total budget test
+		(a.Budget <= 0 || a.Budget >= a.CurrentState.TotalSpend()) &&
+		// Daily budget test
+		(a.DailyBudget <= 0 || a.DailyBudget >= a.CurrentState.Spend())
+}
+
+// TestTestBudgetValue returns true if test budget is valid
+//
+//go:inline
+func (a *Ad) TestTestBudgetValue() bool {
+	return a.Campaign.TestTestBudgetValue() && a._TestTestBudgetValue()
+}
+
+//go:inline
+func (a *Ad) _TestTestBudgetValue() bool {
+	if a.CurrentState == nil {
+		return true
+	}
+	return true &&
+		// Total test with profit
+		(a.TestBudget <= 0 || a.TestBudget >= a.CurrentState.TotalSpend()) &&
+		// test daily with profit
+		(a.DailyTestBudget <= 0 || a.DailyTestBudget >= a.CurrentState.Spend())
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Status methods
 ///////////////////////////////////////////////////////////////////////////////
 
 // Active ad
-func (a *Ad) Active() bool {
-	return a.Flags&AdFlagActive != 0
-}
+//
+//go:inline
+func (a *Ad) Active() bool { return a.Flags.IsActive() }
 
-// Secure ad
-func (a *Ad) Secure() bool {
-	return a.Flags&AdFlagInsecure == 0
-}
+// Secure ad target (not http)
+//
+//go:inline
+func (a *Ad) Secure() bool { return !a.Flags.IsInsecure() }
 
 // AsPopover ad
-func (a *Ad) AsPopover() bool {
-	return a.Flags&AdFlagAsPopover != 0
-}
+//
+//go:inline
+func (a *Ad) AsPopover() bool { return a.Flags.IsPopover() }
 
 // IsPremium ad
-func (a *Ad) IsPremium() bool {
-	return a.Flags&AdFlagIsPremium != 0
-}
-
-// AddFlag to model
-func (a *Ad) AddFlag(flag AdFlag) {
-	a.Flags |= flag
-}
+//
+//go:inline
+func (a *Ad) IsPremium() bool { return a.Flags.IsPremium() }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Extra errors state
@@ -352,19 +282,14 @@ func (a *Ad) Errors() []error {
 /// Internal methods
 ///////////////////////////////////////////////////////////////////////////////
 
-func (a *Ad) ecpm( /*pointer*/ types.TargetPointer /*price*/, billing.Money) billing.Money {
-	// if a.State != nil {
-	// 	if ecpm := a.State.ECPM().Value(pointer); ecpm > 0 {
-	// 		return ecpm
-	// 	}
-	// }
-
-	switch a.PricingModel {
-	case types.PricingModelCPM:
-		return a.Price * 1000
-	default:
-		return 0
+func (a *Ad) ecpm( /*pointer*/ _ types.TargetPointer, price billing.Money) billing.Money {
+	if a.PricingModel.IsCPM() {
+		return price * 1000
+	} else if a.CurrentState != nil && a.CurrentState.Views() > 0 {
+		return a.CurrentState.TotalProfit() / billing.Money(a.CurrentState.Views()) * 1000
 	}
+	// If test mode then it's equal to CPM
+	return 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -380,7 +305,7 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 	)
 
 	// Preprocess info
-	{
+	if true {
 		if hours, err = types.HoursByString(adBase.Hours); err != nil {
 			return ad, err
 		}
@@ -392,18 +317,18 @@ func parseAd(camp *Campaign, adBase *models.Ad, formats types.FormatsAccessor) (
 					Price:       bid.Price,
 					LeadPrice:   bid.LeadPrice,
 					Tags:        bid.Tags,
-					Zones:       bid.Zones,
+					Zones:       bid.Zones.Ordered(),
 					Domains:     bid.Domains,
-					Sex:         bid.Sex,
+					Sex:         bid.Sex.Ordered(),
 					Age:         0, //bid.Age,
-					Categories:  bid.Categories,
-					Countries:   nil, // bid.Countries,
+					Categories:  bid.Categories.Ordered(),
+					Countries:   geo.CountryCodes2IDs(bid.Countries),
 					Cities:      bid.Cities,
-					Languages:   nil, // bid.Languages,
-					DeviceTypes: bid.DeviceTypes,
-					Devices:     bid.Devices,
-					Os:          bid.Os,
-					Browsers:    bid.Browsers,
+					Languages:   languages.LangCodes2IDs(bid.Languages),
+					DeviceTypes: bid.DeviceTypes.Ordered(),
+					Devices:     bid.Devices.Ordered(),
+					OS:          bid.OS.Ordered(),
+					Browsers:    bid.Browsers.Ordered(),
 					Hours:       bid.Hours,
 				})
 			}

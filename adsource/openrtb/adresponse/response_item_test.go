@@ -66,7 +66,7 @@ func TestPriceCorrection(t *testing.T) {
 	)
 	price := billing.MoneyFloat(1.123)
 	price += adtype.PriceFactorFromList(adtype.SourcePriceFactor, adtype.SystemComissionPriceFactor, adtype.TargetReducePriceFactor).
-		Remove(price, item)
+		RemoveComission(price, item)
 	assert.True(t, price > 0 && price < billing.MoneyFloat(1.123))
 	assert.Equal(t, billing.MoneyFloat(1.123*0.85).Float64(), price.Float64())
 }

@@ -21,7 +21,8 @@ type Smartlink struct {
 	Acc   *Account
 	AccID uint64
 
-	FixedPurchasePrice billing.Money // The cost of single view
+	// The cost of single view
+	FixedPurchasePrice billing.Money
 
 	// Filtering
 	AllowedTypes      gosql.NullableOrderedNumberArray[int64]

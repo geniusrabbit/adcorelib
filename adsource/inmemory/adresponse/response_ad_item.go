@@ -3,7 +3,7 @@
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2024
 //
 
-package adtype
+package adresponse
 
 import (
 	"context"
@@ -12,47 +12,48 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
-// ResponseAdItem for select from storage
+// ResponseAdItem represents an advertisement item selected from storage.
 type ResponseAdItem struct {
 	Ctx    context.Context `json:"-"`
 	ItemID string          `json:"id"`
 
-	Src Source      `json:"source,omitempty"`
-	Req *BidRequest `json:"request,omitempty"`
-	Imp *Impression `json:"impression,omitempty"` // Impression Unique
+	Src adtype.Source      `json:"source,omitempty"`
+	Req *adtype.BidRequest `json:"request,omitempty"`
+	Imp *adtype.Impression `json:"impression,omitempty"` // Unique impression
 
 	Campaign *admodels.Campaign `json:"campaign,omitempty"`
 	Ad       *admodels.Ad       `json:"ad,omitempty"`
 	AdBid    *admodels.AdBid    `json:"ad_bid,omitempty"`
 	AdLink   admodels.AdLink    `json:"ad_link,omitempty"`
 
-	BidECPM     billing.Money `json:"bid_ecpm,omitempty"`   //
-	BidPrice    billing.Money `json:"bid_price,omitempty"`  // Max RTB bid price (CPM only)
-	AdPrice     billing.Money `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
-	AdLeadPrice billing.Money `json:"lead_price,omitempty"` //
-	CPMBidPrice billing.Money `json:"cpm_bid,omitempty"`    // This param can update only price predictor
-	SecondAd    SecondAd      `json:"second_ad,omitempty"`  //
+	BidECPM     billing.Money   `json:"bid_ecpm,omitempty"`   // Bid's effective CPM
+	BidPrice    billing.Money   `json:"bid_price,omitempty"`  // Max RTB bid price (CPM only)
+	AdPrice     billing.Money   `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
+	AdLeadPrice billing.Money   `json:"lead_price,omitempty"` // Lead price for the ad
+	CPMBidPrice billing.Money   `json:"cpm_bid,omitempty"`    // Updated only by price predictor
+	SecondAd    adtype.SecondAd `json:"second_ad,omitempty"`  // Secondary ad information
 }
 
-// ID of current response item (unique code of current response)
+// ID returns the unique identifier of the current response item.
 func (it *ResponseAdItem) ID() string {
 	return it.ItemID
 }
 
-// AuctionID response
+// AuctionID returns the auction identifier from the request.
 func (it *ResponseAdItem) AuctionID() string {
 	return it.Req.ID
 }
 
-// Impression place object
-func (it *ResponseAdItem) Impression() *Impression {
+// Impression returns the impression associated with the response item.
+func (it *ResponseAdItem) Impression() *adtype.Impression {
 	return it.Imp
 }
 
-// ImpressionID unique code string
+// ImpressionID returns the unique identifier of the impression.
 func (it *ResponseAdItem) ImpressionID() string {
 	if it.Imp == nil {
 		return ""
@@ -60,7 +61,7 @@ func (it *ResponseAdItem) ImpressionID() string {
 	return it.Imp.ID
 }
 
-// ExtImpressionID unique code of RTB response
+// ExtImpressionID returns the external impression identifier.
 func (it *ResponseAdItem) ExtImpressionID() string {
 	if it.Imp == nil {
 		return ""
@@ -68,7 +69,7 @@ func (it *ResponseAdItem) ExtImpressionID() string {
 	return it.Imp.ExtID
 }
 
-// ExtTargetID of the external network
+// ExtTargetID returns the external target identifier.
 func (it *ResponseAdItem) ExtTargetID() string {
 	if it.Imp == nil {
 		return ""
@@ -76,19 +77,19 @@ func (it *ResponseAdItem) ExtTargetID() string {
 	return it.Imp.ExtTargetID
 }
 
-// Source of response
-func (it *ResponseAdItem) Source() Source {
+// Source returns the source of the response.
+func (it *ResponseAdItem) Source() adtype.Source {
 	return it.Src
 }
 
-// NetworkName by source
+// NetworkName returns the network name associated with the source.
 func (it *ResponseAdItem) NetworkName() string {
 	return ""
 }
 
-// PriorityFormatType from current Ad
+// PriorityFormatType returns the primary format type from the current ad.
 func (it *ResponseAdItem) PriorityFormatType() types.FormatType {
-	// If it's the only one format type
+	// If it's the only format type
 	if formatType := it.Ad.Format.Types.HasOneType(); formatType > types.FormatUndefinedType {
 		return formatType
 	}
@@ -101,17 +102,17 @@ func (it *ResponseAdItem) PriorityFormatType() types.FormatType {
 	return intersection.FirstType()
 }
 
-// Second campaigns
-func (it *ResponseAdItem) Second() *SecondAd {
+// Second returns the secondary advertisement information.
+func (it *ResponseAdItem) Second() *adtype.SecondAd {
 	return &it.SecondAd
 }
 
-// Request information
-func (it *ResponseAdItem) Request() *BidRequest {
+// Request returns the bid request information.
+func (it *ResponseAdItem) Request() *adtype.BidRequest {
 	return it.Req
 }
 
-// AdDirectLink of the ad
+// AdDirectLink returns the direct link of the advertisement.
 func (it *ResponseAdItem) AdDirectLink() string {
 	if it.AdLink.ID == 0 {
 		it.AdLink = it.Ad.RandomAdLink()
@@ -119,14 +120,14 @@ func (it *ResponseAdItem) AdDirectLink() string {
 	return it.AdLink.Link
 }
 
-// ContentItemString from the ad
+// ContentItemString returns the content item as a string from the advertisement.
 func (it *ResponseAdItem) ContentItemString(name string) string {
 	switch name {
-	case ContentItemLink:
+	case adtype.ContentItemLink:
 		if !it.Ad.Format.IsProxy() {
 			return it.processParameters(it.AdDirectLink())
 		}
-	case ContentItemIFrameURL:
+	case adtype.ContentItemIFrameURL:
 		if it.Ad.Format.IsProxy() {
 			return it.processParameters(it.Ad.ProxyURL())
 		}
@@ -134,14 +135,14 @@ func (it *ResponseAdItem) ContentItemString(name string) string {
 	return it.processParameters(it.Ad.ContentItemString(name))
 }
 
-// ContentItem returns the ad response data
+// ContentItem returns the ad response data for the specified content item.
 func (it *ResponseAdItem) ContentItem(name string) any {
 	switch name {
-	case ContentItemLink:
+	case adtype.ContentItemLink:
 		if !it.Ad.Format.IsProxy() {
 			return it.processParameters(it.AdDirectLink())
 		}
-	case ContentItemIFrameURL:
+	case adtype.ContentItemIFrameURL:
 		if it.Ad.Format.IsProxy() {
 			return it.processParameters(it.Ad.ProxyURL())
 		}
@@ -154,37 +155,37 @@ func (it *ResponseAdItem) ContentItem(name string) any {
 	return item
 }
 
-// ContentFields from advertisement object
+// ContentFields returns the content fields from the advertisement object.
 func (it *ResponseAdItem) ContentFields() map[string]any {
 	return it.Ad.Content
 }
 
-// ViewTrackerLinks returns traking links for view action
+// ViewTrackerLinks returns tracking links for view action.
 func (it *ResponseAdItem) ViewTrackerLinks() []string {
 	return nil
 }
 
-// ClickTrackerLinks returns third-party tracker URLs to be fired on click of the URL
+// ClickTrackerLinks returns third-party tracker URLs to be fired on click of the URL.
 func (it *ResponseAdItem) ClickTrackerLinks() []string {
 	return nil
 }
 
-// MainAsset from response
+// MainAsset returns the main asset from the advertisement.
 func (it *ResponseAdItem) MainAsset() *admodels.AdAsset {
 	return it.Ad.MainAsset()
 }
 
-// Asset by name
+// Asset returns the asset with the specified name.
 func (it *ResponseAdItem) Asset(name string) *admodels.AdAsset {
 	return it.Ad.Asset(name)
 }
 
-// Assets list
+// Assets returns the list of assets from the advertisement.
 func (it *ResponseAdItem) Assets() admodels.AdAssets {
 	return it.Ad.Assets
 }
 
-// Width of AD
+// Width returns the width of the ad.
 func (it *ResponseAdItem) Width() int {
 	if it.Imp.W <= 0 {
 		return it.Imp.WMax
@@ -192,7 +193,7 @@ func (it *ResponseAdItem) Width() int {
 	return it.Imp.W
 }
 
-// Height of AD
+// Height returns the height of the ad.
 func (it *ResponseAdItem) Height() int {
 	if it.Imp.H <= 0 {
 		return it.Imp.HMax
@@ -200,7 +201,7 @@ func (it *ResponseAdItem) Height() int {
 	return it.Imp.H
 }
 
-// TargetID number
+// TargetID returns the target identifier.
 func (it *ResponseAdItem) TargetID() uint64 {
 	if it == nil || it.Imp == nil || it.Imp.Target == nil {
 		return 0
@@ -208,12 +209,12 @@ func (it *ResponseAdItem) TargetID() uint64 {
 	return it.Imp.Target.ID()
 }
 
-// TargetIDString number
+// TargetIDString returns the target identifier as a string.
 func (it *ResponseAdItem) TargetIDString() string {
 	return strconv.FormatInt(int64(it.TargetID()), 10)
 }
 
-// AdID number
+// AdID returns the advertisement identifier.
 func (it *ResponseAdItem) AdID() uint64 {
 	if it == nil || it.Ad == nil {
 		return 0
@@ -221,12 +222,12 @@ func (it *ResponseAdItem) AdID() uint64 {
 	return it.Ad.ID
 }
 
-// AdIDString References the ad to be served if the bid wins.
+// AdIDString returns the advertisement identifier as a string.
 func (it *ResponseAdItem) AdIDString() string {
 	return strconv.FormatUint(it.AdID(), 10)
 }
 
-// ProjectID number
+// ProjectID returns the project identifier.
 func (it *ResponseAdItem) ProjectID() uint64 {
 	if it == nil || it.Campaign == nil {
 		return 0
@@ -234,7 +235,7 @@ func (it *ResponseAdItem) ProjectID() uint64 {
 	return it.Campaign.ProjectID()
 }
 
-// AccountID number
+// AccountID returns the account identifier.
 func (it *ResponseAdItem) AccountID() uint64 {
 	if it == nil || it.Campaign == nil {
 		return 0
@@ -242,12 +243,12 @@ func (it *ResponseAdItem) AccountID() uint64 {
 	return it.Campaign.AccountID()
 }
 
-// CampaignIDString that appears with the Ad markup.
+// CampaignIDString returns the campaign identifier as a string.
 func (it *ResponseAdItem) CampaignIDString() string {
 	return strconv.FormatUint(it.Campaign.ID(), 10)
 }
 
-// CampaignID number
+// CampaignID returns the campaign identifier.
 func (it *ResponseAdItem) CampaignID() uint64 {
 	if it == nil || it.Campaign == nil {
 		return 0
@@ -255,14 +256,12 @@ func (it *ResponseAdItem) CampaignID() uint64 {
 	return it.Campaign.ID()
 }
 
-// CreativeIDString for reporting content issues or defects.
-// This could also be used as a reference to a creative ID
-// that is posted with an exchange.
+// CreativeIDString returns the creative identifier as a string for reporting content issues or defects.
 func (it *ResponseAdItem) CreativeIDString() string {
 	return it.AdIDString()
 }
 
-// Format object model
+// Format returns the format object model.
 func (it *ResponseAdItem) Format() *types.Format {
 	if it == nil || it.Ad == nil {
 		return nil
@@ -270,21 +269,7 @@ func (it *ResponseAdItem) Format() *types.Format {
 	return it.Ad.Format
 }
 
-// // LeadCode value
-// func (it *ResponseAdItem) LeadCode() events.Code {
-// 	return (&events.LeadCode{
-// 		AuctionID:  it.AuctionID(),
-// 		ImpAdID:    it.ID(),
-// 		SourceID:   0,
-// 		ProjectID:  0,
-// 		CampaignID: it.CampaignID(),
-// 		AdID:       it.AdID(),
-// 		Price:      it.Price(models.ActionLead).Int64(),
-// 		Timestamp:  time.Now().Unix(),
-// 	}).Pack().Compress()
-// }
-
-// PricingModel of advertisement
+// PricingModel returns the pricing model of the advertisement.
 func (it *ResponseAdItem) PricingModel() types.PricingModel {
 	if it == nil || it.Ad == nil {
 		return types.PricingModelUndefined
@@ -292,17 +277,17 @@ func (it *ResponseAdItem) PricingModel() types.PricingModel {
 	return it.Ad.PricingModel
 }
 
-// IsDirect response item
+// IsDirect returns true if the response item is direct.
 func (it *ResponseAdItem) IsDirect() bool {
 	return it != nil && it.Ad.Format.IsDirect()
 }
 
-// ActionURL for direct baners
+// ActionURL returns the action URL for direct banners.
 func (it *ResponseAdItem) ActionURL() string {
 	return it.processParameters(it.AdDirectLink())
 }
 
-// ECPM item value
+// ECPM returns the effective cost per mille of the item.
 func (it *ResponseAdItem) ECPM() billing.Money {
 	if it == nil {
 		return 0
@@ -315,9 +300,8 @@ func (it *ResponseAdItem) ECPM() billing.Money {
 	return it.BidECPM
 }
 
-// Price for specific action if supported `click`, `lead`, `view`
-// returns total price of the action
-func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...PriceFactor) (price billing.Money) {
+// Price returns the total price for a specific action, if supported (click, lead, impression).
+func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...adtype.PriceFactor) (price billing.Money) {
 	if it == nil || it.Ad == nil {
 		return 0
 	}
@@ -343,20 +327,20 @@ func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...PriceFa
 			price = it.Ad.LeadPrice
 		}
 	}
-	price += PriceFactorFromList(removeFactors...).Remove(price, it)
+	price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
 	return price
 }
 
-// SetCPMPrice update of DSP auction value
-func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {
-	price += PriceFactorFromList(includeFactors...).Add(price, it)
+// SetCPMPrice updates the DSP auction value.
+func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...adtype.PriceFactor) {
+	price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
 	if price < it.ECPM() || price < it.Ad.BidPrice {
 		it.CPMBidPrice = price
 	}
 }
 
-// CPMPrice value price value for DSP auction
-func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.Money) {
+// CPMPrice returns the price value for DSP auction.
+func (it *ResponseAdItem) CPMPrice(removeFactors ...adtype.PriceFactor) (price billing.Money) {
 	if it.CPMBidPrice > 0 {
 		price = it.CPMBidPrice
 	} else if it.PricingModel().IsCPM() {
@@ -367,20 +351,18 @@ func (it *ResponseAdItem) CPMPrice(removeFactors ...PriceFactor) (price billing.
 
 	price = it.prepareMaxBidPrice(price, true)
 
-	// Remove system commision from the price
-	price += PriceFactorFromList(removeFactors...).Remove(price, it)
+	// Remove system commission from the price
+	price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
 	return price
 }
 
-// AuctionCPMBid value price without any comission
-// Can be replaced on comission only
+// AuctionCPMBid returns the bid price without any commission.
 func (it *ResponseAdItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice(AllPriceFactors)
+	return it.CPMPrice(adtype.AllPriceFactors)
 }
 
 // PurchasePrice gives the price of view from external resource.
-// The cost of this request.
-func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
+func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ...adtype.PriceFactor) billing.Money {
 	if it == nil {
 		return 0
 	}
@@ -394,15 +376,12 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 		}
 	}
 	if len(removeFactors) == 0 {
-		removeFactors = []PriceFactor{^TargetReducePriceFactor}
+		removeFactors = []adtype.PriceFactor{^adtype.TargetReducePriceFactor}
 	}
 	switch action {
 	case admodels.ActionImpression:
-		// As we buying from some source we can consider that we will loose approximately
-		// target gate reduce factor percent, but anyway price will be higher for X% of that descepancy
-		// to protect system from overspands
 		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPM() {
-			return it.CPMPrice(removeFactors...) / 1000 // Price per One Impression
+			return it.CPMPrice(removeFactors...) / 1000 // Price per one impression
 		}
 	case admodels.ActionClick:
 		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPC() {
@@ -416,27 +395,27 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 	return 0
 }
 
-// PotentialPrice wich can be received from source but was marked as descrepancy
+// PotentialPrice returns the price which can be received from source but was marked as discrepancy.
 func (it *ResponseAdItem) PotentialPrice(action admodels.Action) billing.Money {
-	return -SourcePriceFactor.Remove(it.Price(action), it)
+	return -adtype.SourcePriceFactor.RemoveComission(it.Price(action), it)
 }
 
-// Validate item
+// Validate checks the validity of the item.
 func (it *ResponseAdItem) Validate() error {
 	return nil
 }
 
-// RevenueShareFactor amount %
+// RevenueShareFactor returns the revenue share percentage.
 func (it *ResponseAdItem) RevenueShareFactor() float64 {
 	return it.Imp.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher
+// ComissionShareFactor returns the commission share percentage which system gets from publisher.
 func (it *ResponseAdItem) ComissionShareFactor() float64 {
 	return it.Imp.ComissionShareFactor()
 }
 
-// Context value
+// Context returns or sets the context value.
 func (it *ResponseAdItem) Context(ctx ...context.Context) (c context.Context) {
 	c = it.Ctx
 	if len(ctx) > 0 {
@@ -445,7 +424,7 @@ func (it *ResponseAdItem) Context(ctx ...context.Context) (c context.Context) {
 	return c
 }
 
-// Get ext field
+// Get retrieves the value associated with the key from the context.
 func (it *ResponseAdItem) Get(key string) any {
 	if it.Ctx == nil {
 		return nil
@@ -468,13 +447,6 @@ func (it *ResponseAdItem) prepareMaxBidPrice(price billing.Money, maxIfZero bool
 func (it *ResponseAdItem) reset() {
 	*it = ResponseAdItem{}
 }
-
-// // ResetAdSpent values
-// func (it *ResponseAdItem) ResetAdSpent(amount billing.Money) {
-// 	it.Ad.State.SetSpent(amount)
-// 	it.Ad.Campaign.UpdateBalance()
-// 	it.Ad.Campaign.Company.Spent = it.Ad.Campaign.GetSpent()
-// }
 
 func (it *ResponseAdItem) processParameters(s string) string {
 	if strings.Contains(s, "${click_id}") {
@@ -504,5 +476,5 @@ func (it *ResponseAdItem) processParameters(s string) string {
 }
 
 var (
-	_ ResponserItem = &ResponseAdItem{}
+	_ adtype.ResponserItem = &ResponseAdItem{}
 )

@@ -14,24 +14,26 @@ import (
 
 func Test_AdModel(t *testing.T) {
 	ad := Ad{
-		ID:          1,
-		Content:     nil,
-		Format:      &types.Format{},
+		ID:       1,
+		Campaign: &Campaign{},
+		Format:   &types.Format{},
+		Hours:    nil,
+
+		Weight:           10,
+		FrequencyCapping: 10,
+		Flags:            AdFlagActive,
+
+		PricingModel: types.PricingModelCPM,
+
 		Bids:        nil,
 		BidPrice:    billing.MoneyFloat(0.5),
 		Price:       billing.MoneyFloat(1.5),
 		LeadPrice:   billing.MoneyFloat(32.5),
 		DailyBudget: billing.MoneyFloat(100.),
 		Budget:      billing.MoneyFloat(1000.),
-		Campaign:    &Campaign{},
-		Hours:       nil,
-	}
 
-	ad.SetPricingModel(types.PricingModelCPA)
-	ad.SetWeight(10)
-	ad.SetFrequencyCapping(10)
-	ad.AddFlag(AdFlagActive)
-	// ad.State.SetSpent(10)
+		Content: nil,
+	}
 
 	t.Run("PricingModel", func(t *testing.T) {
 		if ad.PricingModel != types.PricingModelCPA {

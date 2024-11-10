@@ -13,12 +13,12 @@ import (
 
 // NumberBitset any numbers
 type NumberBitset[T constraints.Integer] struct {
-	values []uint
+	values []T
 	mask   uint64
 }
 
 // NewNumberBitset from numbers
-func NewNumberBitset[T constraints.Integer](vals ...uint) (b *NumberBitset[T]) {
+func NewNumberBitset[T constraints.Integer](vals ...T) (b *NumberBitset[T]) {
 	return (&NumberBitset[T]{}).Set(vals...)
 }
 
@@ -36,7 +36,7 @@ func (b *NumberBitset[T]) Mask() uint64 {
 }
 
 // Values list
-func (b *NumberBitset[T]) Values() []uint {
+func (b *NumberBitset[T]) Values() []T {
 	if b == nil {
 		return nil
 	}
@@ -44,7 +44,7 @@ func (b *NumberBitset[T]) Values() []uint {
 }
 
 // Set type values
-func (b *NumberBitset[T]) Set(vals ...uint) *NumberBitset[T] {
+func (b *NumberBitset[T]) Set(vals ...T) *NumberBitset[T] {
 	var updated = false
 	for _, v := range vals {
 		if !b.Has(v) {
@@ -60,7 +60,7 @@ func (b *NumberBitset[T]) Set(vals ...uint) *NumberBitset[T] {
 }
 
 // Unset type values
-func (b *NumberBitset[T]) Unset(vals ...uint) *NumberBitset[T] {
+func (b *NumberBitset[T]) Unset(vals ...T) *NumberBitset[T] {
 	newVals := b.values
 	for _, v := range vals {
 		idx := sort.Search(len(newVals), func(i int) bool {
@@ -93,7 +93,7 @@ func (b *NumberBitset[T]) Unset(vals ...uint) *NumberBitset[T] {
 }
 
 // Has type in bitset
-func (b *NumberBitset[T]) Has(v uint) bool {
+func (b *NumberBitset[T]) Has(v T) bool {
 	if b != nil && b.mask&(1<<uint64(v%64)) != 0 {
 		idx := sort.Search(b.Len(), func(i int) bool {
 			return b.values[i] >= v

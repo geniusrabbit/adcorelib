@@ -45,6 +45,10 @@ type RTBAccessPoint struct {
 	MaxBid             billing.Money
 	FixedPurchasePrice billing.Money
 
+	// TODO
+	Budget      billing.Money
+	DailyBudget billing.Money
+
 	Filter types.BaseFilter
 }
 
@@ -87,6 +91,8 @@ func RTBAccessPointFromModel(cl *models.RTBAccessPoint, acc *Account) (src *RTBA
 		// Price limits
 		MaxBid:             billing.MoneyFloat(cl.MaxBid),
 		FixedPurchasePrice: billing.MoneyFloat(cl.FixedPurchasePrice),
+		Budget:             0,
+		DailyBudget:        0,
 
 		Filter: filter,
 	}

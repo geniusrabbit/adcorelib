@@ -31,7 +31,7 @@ type AdBid struct {
 	Languages    gosql.NullableStringArray         `json:"languages,omitempty"`
 	DeviceTypes  gosql.NullableNumberArray[uint64] `json:"device_types,omitempty"`
 	Devices      gosql.NullableNumberArray[uint64] `json:"devices,omitempty"`
-	Os           gosql.NullableNumberArray[uint64] `json:"os,omitempty"`
+	OS           gosql.NullableNumberArray[uint64] `json:"os,omitempty"`
 	Browsers     gosql.NullableNumberArray[uint64] `json:"browsers,omitempty"`
 	Hours        types.Hours                       `json:"hours,omitempty"`
 }

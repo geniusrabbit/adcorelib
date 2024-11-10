@@ -12,40 +12,29 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
-// TargetBid object
-type TargetBid struct {
-	Ad        *Ad
-	Bid       *AdBid
-	ECPM      billing.Money
-	BidPrice  billing.Money // Max price per one View (used in DSP auction)
-	Price     billing.Money // Price per one view or click
-	LeadPrice billing.Money // Price per one lead
-}
-
-// Less then other target
-func (t TargetBid) Less(tb TargetBid) bool {
-	return t.ECPM < tb.ECPM
-}
-
 // AdBid submodel
 type AdBid struct {
-	BidPrice    billing.Money                     `json:"bid_price"`
-	Price       billing.Money                     `json:"price" validate:"notempty"`
-	LeadPrice   billing.Money                     `json:"lead_price"`
-	Tags        gosql.NullableStringArray         `json:"tags,omitempty"`
-	Zones       gosql.NullableNumberArray[uint64] `json:"zones,omitempty"`
-	Domains     gosql.NullableStringArray         `json:"domains,omitempty"` // site domains or application bundels
-	Sex         gosql.NullableNumberArray[uint]   `json:"sex,omitempty"`
-	Age         uint                              `json:"age,omitempty"`
-	Categories  gosql.NullableNumberArray[uint64] `json:"categories,omitempty"`
-	Countries   gosql.NullableNumberArray[uint64] `json:"countries,omitempty"`
-	Cities      gosql.NullableStringArray         `json:"cities,omitempty"`
-	Languages   gosql.NullableNumberArray[uint64] `json:"languages,omitempty"`
-	DeviceTypes gosql.NullableNumberArray[uint64] `json:"device_types,omitempty"`
-	Devices     gosql.NullableNumberArray[uint64] `json:"devices,omitempty"`
-	Os          gosql.NullableNumberArray[uint64] `json:"os,omitempty"`
-	Browsers    gosql.NullableNumberArray[uint64] `json:"browsers,omitempty"`
-	Hours       types.Hours                       `json:"hours,omitempty"`
+	// Pricing
+	BidPrice  billing.Money `json:"bid_price"`                 // Max price per one View (used in DSP auction)
+	Price     billing.Money `json:"price" validate:"notempty"` // Price per one view or click
+	LeadPrice billing.Money `json:"lead_price"`                // Price per one lead
+	TestPrice billing.Money `json:"test_price"`                // Price for test period per one view (as CPM mode)
+
+	// Targeting
+	Tags        gosql.NullableStringArray                `json:"tags,omitempty"`
+	Zones       gosql.NullableOrderedNumberArray[uint64] `json:"zones,omitempty"`
+	Domains     gosql.NullableStringArray                `json:"domains,omitempty"` // site domains or application bundels
+	Sex         gosql.NullableOrderedNumberArray[uint]   `json:"sex,omitempty"`
+	Age         uint                                     `json:"age,omitempty"`
+	Categories  gosql.NullableOrderedNumberArray[uint64] `json:"categories,omitempty"`
+	Countries   gosql.NullableOrderedNumberArray[uint64] `json:"countries,omitempty"`
+	Cities      gosql.NullableStringArray                `json:"cities,omitempty"`
+	Languages   gosql.NullableOrderedNumberArray[uint64] `json:"languages,omitempty"`
+	DeviceTypes gosql.NullableOrderedNumberArray[uint64] `json:"device_types,omitempty"`
+	Devices     gosql.NullableOrderedNumberArray[uint64] `json:"devices,omitempty"`
+	OS          gosql.NullableOrderedNumberArray[uint64] `json:"os,omitempty"`
+	Browsers    gosql.NullableOrderedNumberArray[uint64] `json:"browsers,omitempty"`
+	Hours       types.Hours                              `json:"hours,omitempty"`
 }
 
 // Test is it suites by pointer
@@ -62,7 +51,7 @@ func (bid *AdBid) Test(pointer types.TargetPointer) bool {
 		(bid.Languages.Len() < 1 || bid.Languages.IndexOf(pointer.LanguageID()) != -1) &&
 		(bid.DeviceTypes.Len() < 1 || bid.DeviceTypes.IndexOf(pointer.DeviceType()) != -1) &&
 		(bid.Devices.Len() < 1 || bid.Devices.IndexOf(pointer.DeviceID()) != -1) &&
-		(bid.Os.Len() < 1 || bid.Os.IndexOf(pointer.OSID()) != -1) &&
+		(bid.OS.Len() < 1 || bid.OS.IndexOf(pointer.OSID()) != -1) &&
 		(bid.Browsers.Len() < 1 || bid.Browsers.IndexOf(pointer.BrowserID()) != -1) &&
 		bid.Hours.TestTime(pointer.Time())
 }
@@ -72,8 +61,8 @@ type AdBids []AdBid
 
 // Bid by pointer
 func (bids AdBids) Bid(pointer types.TargetPointer) *AdBid {
-	for i, bid := range bids {
-		if bid.Test(pointer) {
+	for i := 0; i < len(bids); i++ {
+		if bids[i].Test(pointer) {
 			return &bids[i]
 		}
 	}

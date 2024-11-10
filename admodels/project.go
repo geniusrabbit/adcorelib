@@ -9,11 +9,13 @@ import "github.com/geniusrabbit/adcorelib/billing"
 
 // Project model
 type Project struct {
-	ID           uint64
-	UserID       uint64
-	Balance      billing.Money
-	MaxDaily     billing.Money
-	Spent        billing.Money
+	ID     uint64
+	UserID uint64
+
+	Balance  billing.Money
+	MaxDaily billing.Money
+	Spent    billing.Money
+
 	RevenueShare float64 // From 0 to 1 -> 100%
 }
 

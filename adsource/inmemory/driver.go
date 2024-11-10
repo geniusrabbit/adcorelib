@@ -7,9 +7,9 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adsource/inmemory/adresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/auction"
-	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/adcorelib/rand"
 	"github.com/geniusrabbit/adcorelib/searchtypes"
 	"github.com/geniusrabbit/adstorage/accessors/campaignaccessor"
@@ -18,8 +18,9 @@ import (
 type driver struct {
 	execPool *rpool.Pool
 
-	adCampaigns *campaignaccessor.CampaignAccessor
-	adStore     atomic.Value
+	adCampaigns    *campaignaccessor.CampaignAccessor
+	balanceManager balanceManager
+	adStore        atomic.Value
 }
 
 func (d *driver) init() {
@@ -72,10 +73,11 @@ func (d *driver) Bid(request *adtype.BidRequest) adtype.Responser {
 
 // ProcessResponseItem result or error
 func (d *driver) ProcessResponseItem(resp adtype.Responser, item adtype.ResponserItem) {
-	// Reduce inmemory counters
-	adItem := item.(*adtype.ResponseAdItem)
-	adItem.Ad.Campaign.Budget -= adItem.BidECPM / 1000
-	adItem.Ad.Campaign.DailyBudget -= adItem.BidECPM / 1000
+	if d.balanceManager != nil {
+		// Reduce inmemory balance counters
+		adItem := item.(*adresponse.ResponseAdItem)
+		d.balanceManager.MakeVirtualView(false, adItem.Ad, adItem.BidECPM)
+	}
 }
 
 func (d *driver) bidImp(request *adtype.BidRequest, imp *adtype.Impression) []adtype.ResponserItemCommon {
@@ -101,26 +103,12 @@ func (d *driver) bidImpFormat(request *adtype.BidRequest, imp *adtype.Impression
 		if filter.Has(uint(ad.ID)) {
 			continue
 		}
-		if imp.BidFloor > ad.TargetBid(request).ECPM ||
-			!ad.Campaign.Hours.TestTime(fasttime.Now()) ||
-			(ad.Campaign.Keywords.Len() > 0 && ad.Campaign.Keywords.OneOf(request.Keywords())) ||
-			(ad.Campaign.Zones.Len() > 0 && ad.Campaign.Zones.IndexOf(request.TargetID()) < 0) ||
-			(ad.Campaign.Domains.Len() > 0 && ad.Campaign.Domains.OneOf(request.Domain())) ||
-			(ad.Campaign.Sex.Len() > 0 && ad.Campaign.Sex.IndexOf(request.Sex()) < 0) ||
-			(ad.Campaign.Age.Len() > 0 && ad.Campaign.Age.IndexOf(request.Age()) < 0) || // TODO range processing 0-10 years, 10-20, 20-25 & etc.
-			(ad.Campaign.Categories.Len() > 0 && ad.Campaign.Categories.IndexOf(request.GeoID()) < 0) ||
-			(ad.Campaign.Cities.Len() > 0 && ad.Campaign.Cities.IndexOf(request.City()) < 0) ||
-			(ad.Campaign.Countries.Len() > 0 && ad.Campaign.Countries.IndexOf(request.GeoID()) < 0) ||
-			(ad.Campaign.Languages.Len() > 0 && ad.Campaign.Languages.IndexOf(request.LanguageID()) < 0) ||
-			(ad.Campaign.Browsers.Len() > 0 && ad.Campaign.Browsers.IndexOf(request.BrowserID()) < 0) ||
-			(ad.Campaign.OS.Len() > 0 && ad.Campaign.OS.IndexOf(request.OSID()) < 0) ||
-			(ad.Campaign.DeviceTypes.Len() > 0 && ad.Campaign.DeviceTypes.IndexOf(request.DeviceType()) < 0) ||
-			(ad.Campaign.Devices.Len() > 0 && ad.Campaign.Devices.IndexOf(request.DeviceID()) < 0) {
+		targetBid := ad.TargetBid(request)
+		if imp.BidFloor > targetBid.ECPM || !ad.Campaign.Test(request) {
 			continue // Skip if targeting not matched
 		}
 		filter.Set(uint(ad.ID))
-		targetBid := ad.TargetBid(request)
-		res = append(res, &adtype.ResponseAdItem{
+		res = append(res, &adresponse.ResponseAdItem{
 			Ctx:         request.Ctx,
 			ItemID:      rand.UUID(),
 			Src:         d,

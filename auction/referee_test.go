@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adsource/inmemory/adresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
@@ -252,7 +253,7 @@ func BenchmarkRefereeMatch(b *testing.B) {
 }
 
 func newItem(impid string, bid int64) adtype.ResponserItem {
-	return &adtype.ResponseAdItem{
+	return &adresponse.ResponseAdItem{
 		Src:         nil,
 		Req:         nil,
 		Imp:         &adtype.Impression{ID: impid},

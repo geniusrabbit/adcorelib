@@ -331,12 +331,12 @@ func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...adtype
 			price = billing.MoneyFloat(it.Bid.Price / 1000)
 		}
 	}
-	return price + adtype.PriceFactorFromList(removeFactors...).Remove(price, it)
+	return price + adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
 }
 
 // SetCPMPrice update of DSP auction value
 func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...adtype.PriceFactor) {
-	price += adtype.PriceFactorFromList(includeFactors...).Add(price, it)
+	price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
 	if it != nil && price < it.ECPM() {
 		it.CPMBidPrice = price
 	}
@@ -353,7 +353,7 @@ func (it *ResponseBidItem) CPMPrice(removeFactors ...adtype.PriceFactor) (price 
 	if it.CPMBidPrice > 0 && it.CPMBidPrice < price {
 		price = it.CPMBidPrice
 	}
-	return price + adtype.PriceFactorFromList(removeFactors...).Remove(price, it)
+	return price + adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
 }
 
 // AuctionCPMBid value price without any comission
@@ -401,7 +401,7 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (it *ResponseBidItem) PotentialPrice(action admodels.Action) billing.Money {
-	return -adtype.SourcePriceFactor.Remove(it.Price(action), it)
+	return -adtype.SourcePriceFactor.RemoveComission(it.Price(action), it)
 }
 
 // Second campaigns

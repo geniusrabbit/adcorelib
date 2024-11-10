@@ -134,6 +134,8 @@ func (i *Impression) IsStandart() bool {
 }
 
 // RevenueShareFactor value for the publisher company
+//
+//go:inline
 func (i *Impression) RevenueShareFactor() float64 {
 	if i == nil || i.Target == nil {
 		return 0
@@ -142,6 +144,8 @@ func (i *Impression) RevenueShareFactor() float64 {
 }
 
 // ComissionShareFactor which system get from publisher from 0 to 1
+//
+//go:inline
 func (i *Impression) ComissionShareFactor() float64 {
 	if i == nil || i.Target == nil {
 		return 0

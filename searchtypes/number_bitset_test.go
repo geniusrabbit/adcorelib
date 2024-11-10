@@ -44,7 +44,7 @@ func BenchmarkNumberBitset(b *testing.B) {
 		case i%3 == 0 || i%5 == 0 || i%11 == 0:
 			bits = bits.Unset(variants[cursor])
 		default:
-			bits.Has(variants[cursor])
+			_ = bits.Has(variants[cursor])
 		}
 		if cursor++; cursor >= len(variants) {
 			cursor = 0

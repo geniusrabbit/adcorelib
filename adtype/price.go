@@ -33,8 +33,8 @@ func PriceFactorFromList(factors ...PriceFactor) (f PriceFactor) {
 	return f
 }
 
-// Add comissions to price and rеturns comissions with positive sign `+`
-func (f PriceFactor) Add(price billing.Money, it ResponserItem) (comissions billing.Money) {
+// AddComission to price and rеturns comissions with positive sign `+`
+func (f PriceFactor) AddComission(price billing.Money, it ResponserItem) (comissions billing.Money) {
 	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
@@ -54,8 +54,8 @@ func (f PriceFactor) Add(price billing.Money, it ResponserItem) (comissions bill
 	return comissions
 }
 
-// Remove comissions from price and rеturns comissions with negative sign `-`
-func (f PriceFactor) Remove(price billing.Money, it ResponserItem) (comissions billing.Money) {
+// RemoveComission from price and rеturns comissions with negative sign `-`
+func (f PriceFactor) RemoveComission(price billing.Money, it ResponserItem) (comissions billing.Money) {
 	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
