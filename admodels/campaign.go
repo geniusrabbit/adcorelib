@@ -187,21 +187,78 @@ func (c *Campaign) ProjectID() uint64 {
 
 // Test campaign by pointer target
 func (c *Campaign) Test(pointer types.TargetPointer) bool {
-	return true &&
-		c.Hours.TestTime(fasttime.Now()) &&
-		(c.Tags.Len() == 0 || c.Tags.OneOf(pointer.Tags())) &&
-		(c.Zones.Len() == 0 || c.Zones.IndexOf(pointer.TargetID()) != -1) ||
-		(c.Domains.Len() == 0 || c.Domains.OneOf(pointer.Domain())) ||
-		(c.Sex.Len() == 0 || c.Sex.IndexOf(pointer.Sex()) != -1) ||
-		(c.Age.Len() == 0 || c.Age.IndexOf(pointer.Age()) != -1) || // TODO range processing 0-10 years, 10-20, 20-25 & etc.
-		(c.Categories.Len() == 0 || c.Categories.IndexOf(pointer.GeoID()) != -1) ||
-		(c.Cities.Len() == 0 || c.Cities.IndexOf(pointer.City()) != -1) ||
-		(c.Countries.Len() == 0 || c.Countries.IndexOf(pointer.GeoID()) != -1) ||
-		(c.Languages.Len() == 0 || c.Languages.IndexOf(pointer.LanguageID()) != -1) ||
-		(c.Browsers.Len() == 0 || c.Browsers.IndexOf(pointer.BrowserID()) != -1) ||
-		(c.OS.Len() == 0 || c.OS.IndexOf(pointer.OSID()) != -1) ||
-		(c.DeviceTypes.Len() == 0 || c.DeviceTypes.IndexOf(pointer.DeviceType()) != -1) ||
-		(c.Devices.Len() == 0 || c.Devices.IndexOf(pointer.DeviceID()) != -1)
+	// Check tags
+	if c.Tags.Len() > 0 && !c.Tags.OneOf(pointer.Tags()) {
+		return false
+	}
+
+	// Check zones
+	if c.Zones.Len() > 0 && c.Zones.IndexOf(pointer.TargetID()) == -1 {
+		return false
+	}
+
+	// Check domains
+	if c.Domains.Len() > 0 && !c.Domains.OneOf(pointer.Domain()) {
+		return false
+	}
+
+	// Check gender
+	if c.Sex.Len() > 0 && c.Sex.IndexOf(pointer.Sex()) == -1 {
+		return false
+	}
+
+	// Check age (TODO: implement range processing, e.g., 0-10 years, 10-20, 20-25, etc.)
+	if c.Age.Len() > 0 && c.Age.IndexOf(pointer.Age()) == -1 {
+		return false
+	}
+
+	// Check categories
+	if c.Categories.Len() > 0 && c.Categories.IndexOf(pointer.GeoID()) == -1 {
+		return false
+	}
+
+	// Check cities
+	if c.Cities.Len() > 0 && c.Cities.IndexOf(pointer.City()) == -1 {
+		return false
+	}
+
+	// Check countries
+	if c.Countries.Len() > 0 && c.Countries.IndexOf(pointer.GeoID()) == -1 {
+		return false
+	}
+
+	// Check languages
+	if c.Languages.Len() > 0 && c.Languages.IndexOf(pointer.LanguageID()) == -1 {
+		return false
+	}
+
+	// Check browsers
+	if c.Browsers.Len() > 0 && c.Browsers.IndexOf(pointer.BrowserID()) == -1 {
+		return false
+	}
+
+	// Check operating systems
+	if c.OS.Len() > 0 && c.OS.IndexOf(pointer.OSID()) == -1 {
+		return false
+	}
+
+	// Check device types
+	if c.DeviceTypes.Len() > 0 && c.DeviceTypes.IndexOf(pointer.DeviceType()) == -1 {
+		return false
+	}
+
+	// Check devices
+	if c.Devices.Len() > 0 && c.Devices.IndexOf(pointer.DeviceID()) == -1 {
+		return false
+	}
+
+	// Check if the current time is within the campaign's active hours
+	if !c.Hours.IsAllActive() && !c.Hours.TestTime(fasttime.Now()) {
+		return false
+	}
+
+	// All checks passed
+	return true
 }
 
 // State of the campaign
@@ -350,35 +407,27 @@ func (c *Campaign) Validate() error {
 // Active campaign
 //
 //go:inline
-func (c *Campaign) Active() bool {
-	return c.Flags.IsActive()
-}
+func (c *Campaign) Active() bool { return c.Flags.IsActive() }
 
 // Deleted campaign
 //
 //go:inline
-func (c *Campaign) Deleted() bool {
-	return c.Flags.IsDeleted()
-}
+func (c *Campaign) Deleted() bool { return c.Flags.IsDeleted() }
 
 // Private campaign
 //
 //go:inline
-func (c *Campaign) Private() bool {
-	return c.Flags.IsPrivate()
-}
+func (c *Campaign) Private() bool { return c.Flags.IsPrivate() }
 
 // Premium campaign
 //
 //go:inline
-func (c *Campaign) Premium() bool {
-	return c.Flags.IsPremium()
-}
+func (c *Campaign) Premium() bool { return c.Flags.IsPremium() }
 
 // TestHour active
-func (c *Campaign) TestHour(t time.Time) bool {
-	return c.Hours.TestTime(t)
-}
+//
+//go:inline
+func (c *Campaign) TestHour(t time.Time) bool { return c.Hours.TestTime(t) }
 
 // TestFormatSet of the campaign
 //

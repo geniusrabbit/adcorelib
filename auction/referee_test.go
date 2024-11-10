@@ -245,23 +245,27 @@ func BenchmarkRefereeMatch(b *testing.B) {
 		},
 	}
 
-	for n := 0; n < b.N; n++ {
-		ref := Referee{}
-		ref.Push(tt.Scope...)
-		ref.Match(tt.Rings...)
-	}
+	b.Run(tt.Name, func(b *testing.B) {
+		for n := 0; n < b.N; n++ {
+			ref := Referee{}
+			ref.Push(tt.Scope...)
+			ref.Match(tt.Rings...)
+		}
+	})
 }
 
 func newItem(impid string, bid int64) adtype.ResponserItem {
+	camp := &admodels.Campaign{} //{Opt: [8]uint8{0, uint8(types.PricingModelCPC)}},
 	return &adresponse.ResponseAdItem{
-		Src:         nil,
-		Req:         nil,
-		Imp:         &adtype.Impression{ID: impid},
-		Campaign:    &admodels.Campaign{}, //{Opt: [8]uint8{0, uint8(types.PricingModelCPC)}},
-		Ad:          &admodels.Ad{},
-		BidECPM:     billing.MoneyInt(bid),
-		BidPrice:    0,
-		CPMBidPrice: 0,
+		Src:        nil,
+		Req:        nil,
+		Imp:        &adtype.Impression{ID: impid},
+		Campaign:   camp,
+		Ad:         &admodels.Ad{Campaign: camp},
+		PriceScope: adtype.PriceScope{BidPrice: billing.MoneyInt(bid) / 1000},
+		// BidECPM:     billing.MoneyInt(bid),
+		// BidPrice:    0,
+		// CPMBidPrice: 0,
 	}
 }
 
@@ -274,5 +278,5 @@ func newMultipleItem(bids ...titem) adtype.ResponserMultipleItem {
 }
 
 func mi(v int) billing.Money {
-	return billing.MoneyInt(int64(v))
+	return billing.MoneyInt(v)
 }

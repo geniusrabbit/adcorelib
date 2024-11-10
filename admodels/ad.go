@@ -53,9 +53,11 @@ type Ad struct {
 	Format *types.Format
 
 	// State           balance.State // Balance and counters state
-	BidPrice        billing.Money // Max price per one View (used in DSP auction)
-	Price           billing.Money // Price per one view or click
-	LeadPrice       billing.Money // Price per one lead
+	BidPrice      billing.Money // Max price per one View (used in DSP auction)
+	Price         billing.Money // Price per one view or click
+	LeadPrice     billing.Money // Price per one lead
+	TestViewPrice billing.Money // Price per one view in test mode
+
 	DailyBudget     billing.Money //
 	Budget          billing.Money //
 	DailyTestBudget billing.Money // Test money amount a day (it stops automaticaly if not profit for this amount)
@@ -139,6 +141,11 @@ func (a *Ad) ProxyURL() string {
 	return a.ContentItemString(proxyIFrameURL)
 }
 
+// ECPM returns effective cost per mille
+func (a *Ad) ECPM() billing.Money {
+	return a.ecpm(nil, a.Price)
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Check methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -189,15 +196,15 @@ func (a *Ad) _TestBudgetValue() bool {
 //
 //go:inline
 func (a *Ad) TestTestBudgetValue() bool {
-	return a.Campaign.TestTestBudgetValue() && a._TestTestBudgetValue()
+	return a.TestViewPrice > 0 && a.Campaign.TestTestBudgetValue() && a._TestTestBudgetValue()
 }
 
 //go:inline
 func (a *Ad) _TestTestBudgetValue() bool {
 	if a.CurrentState == nil {
-		return true
+		return false
 	}
-	return true &&
+	return (a.TestBudget > 0 || a.DailyTestBudget > 0) &&
 		// Total test with profit
 		(a.TestBudget <= 0 || a.TestBudget >= a.CurrentState.TotalSpend()) &&
 		// test daily with profit

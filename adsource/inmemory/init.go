@@ -27,11 +27,8 @@ func NewFactory(ctx context.Context, adCampaigns *campaignaccessor.CampaignAcces
 }
 
 func (f *factory) New(ctx context.Context) (adtype.SourceTester, error) {
-	d := &driver{
-		adCampaigns:    f.adCampaigns,
-		balanceManager: f.balanceManager,
-	}
-	d.init()
+	d := newDriver(f.adCampaigns, f.balanceManager)
+	d.reloadAds()
 	return d, nil
 }
 

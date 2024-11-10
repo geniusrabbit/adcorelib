@@ -30,12 +30,14 @@ type ResponseAdItem struct {
 	AdBid    *admodels.AdBid    `json:"ad_bid,omitempty"`
 	AdLink   admodels.AdLink    `json:"ad_link,omitempty"`
 
-	BidECPM     billing.Money   `json:"bid_ecpm,omitempty"`   // Bid's effective CPM
-	BidPrice    billing.Money   `json:"bid_price,omitempty"`  // Max RTB bid price (CPM only)
-	AdPrice     billing.Money   `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
-	AdLeadPrice billing.Money   `json:"lead_price,omitempty"` // Lead price for the ad
-	CPMBidPrice billing.Money   `json:"cpm_bid,omitempty"`    // Updated only by price predictor
-	SecondAd    adtype.SecondAd `json:"second_ad,omitempty"`  // Secondary ad information
+	PriceScope adtype.PriceScope `json:"price_scope,omitempty"`
+
+	// BidECPM billing.Money `json:"bid_ecpm,omitempty"` // Bid's effective CPM
+	// BidPrice billing.Money `json:"bid_price,omitempty"` // Max RTB bid price (CPM only)
+	// AdPrice     billing.Money   `json:"price,omitempty"`      // New price of advertisement target action (click, lead, impression)
+	// AdLeadPrice billing.Money   `json:"lead_price,omitempty"` // Lead price for the ad
+	// CPMBidPrice billing.Money   `json:"cpm_bid,omitempty"`   // Updated only by price predictor
+	SecondAd adtype.SecondAd `json:"second_ad,omitempty"` // Secondary ad information
 }
 
 // ID returns the unique identifier of the current response item.
@@ -46,6 +48,11 @@ func (it *ResponseAdItem) ID() string {
 // AuctionID returns the auction identifier from the request.
 func (it *ResponseAdItem) AuctionID() string {
 	return it.Req.ID
+}
+
+// Validate checks the validity of the item.
+func (it *ResponseAdItem) Validate() error {
+	return nil
 }
 
 // Impression returns the impression associated with the response item.
@@ -211,7 +218,7 @@ func (it *ResponseAdItem) TargetID() uint64 {
 
 // TargetIDString returns the target identifier as a string.
 func (it *ResponseAdItem) TargetIDString() string {
-	return strconv.FormatInt(int64(it.TargetID()), 10)
+	return strconv.FormatUint(it.TargetID(), 10)
 }
 
 // AdID returns the advertisement identifier.
@@ -287,46 +294,52 @@ func (it *ResponseAdItem) ActionURL() string {
 	return it.processParameters(it.AdDirectLink())
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Price calculation methods
+///////////////////////////////////////////////////////////////////////////////
+
 // ECPM returns the effective cost per mille of the item.
 func (it *ResponseAdItem) ECPM() billing.Money {
 	if it == nil {
 		return 0
 	}
-	if it.PricingModel().IsCPM() {
-		if it.CPMBidPrice > 0 {
-			return it.CPMBidPrice
-		}
-	}
-	return it.BidECPM
+	// if it.PricingModel().IsCPM() {
+	// 	if it.CPMBidPrice > 0 {
+	// 		return it.CPMBidPrice
+	// 	}
+	// }
+	// return it.BidECPM
+	return it.PriceScope.ECPM
 }
 
-// Price returns the total price for a specific action, if supported (click, lead, impression).
-func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...adtype.PriceFactor) (price billing.Money) {
+// Price returns the total price for a specific action, if supported (click, lead, view).
+func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...adtype.PriceFactor) billing.Money {
 	if it == nil || it.Ad == nil {
 		return 0
 	}
-	if price = it.AdPrice; price <= 0 {
-		price = it.Ad.Price
-	}
-	switch action {
-	case admodels.ActionImpression:
-		if !it.PricingModel().IsCPM() {
-			price = 0
-		}
-		if it.BidPrice > 0 {
-			price = it.BidPrice
-		}
-	case admodels.ActionClick:
-		if !it.PricingModel().IsCPC() {
-			price = 0
-		}
-	case admodels.ActionLead:
-		if it.AdLeadPrice > 0 {
-			price = it.AdLeadPrice
-		} else {
-			price = it.Ad.LeadPrice
-		}
-	}
+	// if price = it.AdPrice; price <= 0 {
+	// 	price = it.Ad.Price
+	// }
+	// switch action {
+	// case admodels.ActionView:
+	// 	if !it.PricingModel().IsCPM() {
+	// 		price = 0
+	// 	}
+	// 	if it.BidPrice > 0 {
+	// 		price = it.BidPrice
+	// 	}
+	// case admodels.ActionClick:
+	// 	if !it.PricingModel().IsCPC() {
+	// 		price = 0
+	// 	}
+	// case admodels.ActionLead:
+	// 	if it.AdLeadPrice > 0 {
+	// 		price = it.AdLeadPrice
+	// 	} else {
+	// 		price = it.Ad.LeadPrice
+	// 	}
+	// }
+	price := it.PriceScope.PricePerAction(action)
 	price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
 	return price
 }
@@ -334,25 +347,28 @@ func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...adtype.
 // SetCPMPrice updates the DSP auction value.
 func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...adtype.PriceFactor) {
 	price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
-	if price < it.ECPM() || price < it.Ad.BidPrice {
-		it.CPMBidPrice = price
-	}
+	// if price < it.ECPM() || price < it.Ad.BidPrice {
+	// 	it.CPMBidPrice = price
+	// }
+	it.PriceScope.SetBidPrice(price/1000, false)
 }
 
 // CPMPrice returns the price value for DSP auction.
 func (it *ResponseAdItem) CPMPrice(removeFactors ...adtype.PriceFactor) (price billing.Money) {
-	if it.CPMBidPrice > 0 {
-		price = it.CPMBidPrice
-	} else if it.PricingModel().IsCPM() {
-		price = it.Price(admodels.ActionImpression) * 1000
-	} else {
-		price = it.ECPM()
-	}
+	// if it.CPMBidPrice > 0 {
+	// 	price = it.CPMBidPrice
+	// } else if it.PricingModel().IsCPM() {
+	// 	price = it.Price(admodels.ActionImpression) * 1000
+	// } else {
+	// 	price = it.ECPM()
+	// }
 
-	price = it.prepareMaxBidPrice(price, true)
+	price = it.PriceScope.BidPrice * 1000
+	// price = it.prepareMaxBidPrice(price, true)
 
-	// Remove system commission from the price
+	// Remove commissions from the price if provided
 	price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
+
 	return price
 }
 
@@ -400,10 +416,21 @@ func (it *ResponseAdItem) PotentialPrice(action admodels.Action) billing.Money {
 	return -adtype.SourcePriceFactor.RemoveComission(it.Price(action), it)
 }
 
-// Validate checks the validity of the item.
-func (it *ResponseAdItem) Validate() error {
-	return nil
-}
+// func (it *ResponseAdItem) prepareMaxBidPrice(price billing.Money, maxIfZero bool) billing.Money {
+// 	switch {
+// 	case it.BidPrice > 0:
+// 		if price > it.BidPrice || (maxIfZero && price <= 0) {
+// 			return it.BidPrice
+// 		}
+// 	case it.Ad.BidPrice > 0 && (price > it.Ad.BidPrice || (maxIfZero && price <= 0)):
+// 		return it.Ad.BidPrice
+// 	}
+// 	return price
+// }
+
+///////////////////////////////////////////////////////////////////////////////
+// Revenue share/comission methods
+///////////////////////////////////////////////////////////////////////////////
 
 // RevenueShareFactor returns the revenue share percentage.
 func (it *ResponseAdItem) RevenueShareFactor() float64 {
@@ -414,6 +441,10 @@ func (it *ResponseAdItem) RevenueShareFactor() float64 {
 func (it *ResponseAdItem) ComissionShareFactor() float64 {
 	return it.Imp.ComissionShareFactor()
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Context methods
+///////////////////////////////////////////////////////////////////////////////
 
 // Context returns or sets the context value.
 func (it *ResponseAdItem) Context(ctx ...context.Context) (c context.Context) {
@@ -430,18 +461,6 @@ func (it *ResponseAdItem) Get(key string) any {
 		return nil
 	}
 	return it.Ctx.Value(key)
-}
-
-func (it *ResponseAdItem) prepareMaxBidPrice(price billing.Money, maxIfZero bool) billing.Money {
-	switch {
-	case it.BidPrice > 0:
-		if price > it.BidPrice || (maxIfZero && price <= 0) {
-			return it.BidPrice
-		}
-	case it.Ad.BidPrice > 0 && (price > it.Ad.BidPrice || (maxIfZero && price <= 0)):
-		return it.Ad.BidPrice
-	}
-	return price
 }
 
 func (it *ResponseAdItem) reset() {

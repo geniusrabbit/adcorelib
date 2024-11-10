@@ -24,32 +24,29 @@ func Test_ItemPricing(t *testing.T) {
 	for _, item := range items {
 		prefix := reflect.TypeOf(item).String()
 
-		t.Run(prefix+"_empty_lead_price", func(t *testing.T) {
-			if item.Price(admodels.ActionLead) != leadPrice(item) {
-				t.Error("lead_price should be empty")
-			}
+		t.Run(prefix+"_lead_price", func(t *testing.T) {
+			assert.Equal(t, leadPrice(item).Float64(), item.Price(admodels.ActionLead).Float64(), "wrong_lead_price")
 		})
 
+		// Check price per one view
 		t.Run(prefix+"_bid_price", func(t *testing.T) {
-			if item.Price(admodels.ActionImpression) != billing.MoneyFloat(10.) {
-				t.Errorf("target price must be 10, not %.3f", item.Price(admodels.ActionImpression).Float64())
-			}
+			assert.Equal(t, 10., item.Price(admodels.ActionView).Float64(), "wrong_bid_price")
 		})
 
+		// Check revenue per one view
 		t.Run(prefix+"_revenue_value", func(t *testing.T) {
-			rev := item.RevenueShareFactor() * item.Price(admodels.ActionImpression).Float64()
+			rev := item.RevenueShareFactor() * item.Price(admodels.ActionView).Float64()
 			assert.Equal(t, float64(9), rev, "wrong_revenue value")
 		})
 
+		// Check comission per one view
 		t.Run(prefix+"_comission_value", func(t *testing.T) {
-			com := item.ComissionShareFactor() * item.Price(admodels.ActionImpression).Float64()
+			com := item.ComissionShareFactor() * item.Price(admodels.ActionView).Float64()
 			assert.True(t, com >= 0.999 && com <= 1, "wrong_comission value")
 		})
 
 		t.Run(prefix+"_cpm_price", func(t *testing.T) {
-			if item.CPMPrice() != billing.MoneyFloat(5.) {
-				t.Errorf("cpm_price value: 5 != %.3f", item.CPMPrice().Float64())
-			}
+			assert.Equal(t, 5000., item.CPMPrice().Float64(), "wrong_cpm_price")
 		})
 	}
 }
@@ -69,16 +66,23 @@ func newAdResponse(_ *admodels.Account, imp adtype.Impression) *ResponseAdItem {
 			Budget:      billing.MoneyFloat(10000.),
 			Hours:       nil,
 		},
-		BidPrice:    billing.MoneyFloat(10.),
-		CPMBidPrice: billing.MoneyFloat(5.),
-		SecondAd:    adtype.SecondAd{},
+		PriceScope: adtype.PriceScope{
+			MaxBidPrice: billing.MoneyFloat(60.),
+			BidPrice:    billing.MoneyFloat(5.),
+			ViewPrice:   billing.MoneyFloat(10.),
+			ClickPrice:  billing.MoneyFloat(0.),
+			LeadPrice:   billing.MoneyFloat(120.),
+		},
+		// BidPrice:    billing.MoneyFloat(10.),
+		// CPMBidPrice: billing.MoneyFloat(5.),
+		SecondAd: adtype.SecondAd{},
 	}
 }
 
 func leadPrice(item adtype.ResponserItem) billing.Money {
 	switch it := item.(type) {
 	case *ResponseAdItem:
-		return it.Ad.LeadPrice
+		return it.PriceScope.LeadPrice
 	}
 	return 0
 }
