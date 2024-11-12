@@ -46,7 +46,7 @@ type Campaign struct {
 	DailyBudget     billing.Money
 	Budget          billing.Money
 	MaxBid          billing.Money // Max bid for the campaign (in RTB auction)
-	CurrentState    State
+	CurrentState    State         `json:"-"`
 
 	// List of ads
 	Ads   []*Ad
@@ -187,6 +187,11 @@ func (c *Campaign) ProjectID() uint64 {
 
 // Test campaign by pointer target
 func (c *Campaign) Test(pointer types.TargetPointer) bool {
+	// Skip if invalid campaign
+	if c == nil || c.Acc == nil {
+		return false
+	}
+
 	// Check tags
 	if c.Tags.Len() > 0 && !c.Tags.OneOf(pointer.Tags()) {
 		return false

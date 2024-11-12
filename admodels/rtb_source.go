@@ -66,7 +66,7 @@ type RTBSource struct {
 
 // RTBSourceFromModel convert database model to specified model
 func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
-	if acc == nil {
+	if cl == nil {
 		return nil
 	}
 
