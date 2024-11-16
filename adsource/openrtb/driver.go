@@ -53,7 +53,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -65,6 +64,7 @@ import (
 
 	"github.com/bsm/openrtb"
 	"github.com/demdxx/gocast/v2"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
@@ -282,12 +282,14 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 	}
 
 	if err := rtbRequest.Validate(); err != nil {
-		return d.netClient.NoopRequest(), err
+		return d.netClient.NoopRequest(),
+			errors.Wrap(err, fmt.Sprintf("source[%s]: %d", d.source.Protocol, d.source.ID))
 	}
 
 	// Prepare data for request
 	if err = json.NewEncoder(&bufData).Encode(rtbRequest); err != nil {
-		return d.netClient.NoopRequest(), err
+		return d.netClient.NoopRequest(),
+			errors.Wrap(err, fmt.Sprintf("source[%s]: %d", d.source.Protocol, d.source.ID))
 	}
 
 	if d.source.Options.Trace != 0 {
