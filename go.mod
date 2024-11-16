@@ -17,7 +17,7 @@ require (
 	github.com/geniusrabbit/gosql/v2 v2.3.1
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
 	github.com/geniusrabbit/notificationcenter/v2 v2.3.7
-	github.com/geniusrabbit/udetect v0.0.0-20241023092756-7e74dfa7d154
+	github.com/geniusrabbit/udetect v0.0.0-20241116115730-b4f061e50395
 	github.com/google/uuid v1.6.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
