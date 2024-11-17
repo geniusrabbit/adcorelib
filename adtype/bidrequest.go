@@ -597,3 +597,15 @@ func (r *BidRequest) Time() time.Time {
 func (r *BidRequest) Validate() error {
 	return nil
 }
+
+// Release request after using
+func (r *BidRequest) Release() {
+	type releaser interface {
+		Release()
+	}
+	if r != nil && r.Request != nil {
+		if r, ok := r.Request.(releaser); ok {
+			r.Release()
+		}
+	}
+}

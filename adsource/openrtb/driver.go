@@ -57,6 +57,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -281,6 +282,20 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 		rtbRequest = requestToRTBv2(request, d.getRequestOptions()...)
 	}
 
+	if d.source.Options.Trace != 0 {
+		ctxlogger.Get(request.Ctx).Error("trace marshal", zap.String("src_url", d.source.URL))
+		fmt.Println("===================: 1", reflect.TypeOf(rtbRequest))
+		if request.Request != nil {
+			enc := json.NewEncoder(os.Stdout)
+			enc.SetIndent("", "  ")
+			_ = enc.Encode(request.Request)
+			fmt.Println("===================: 2", reflect.TypeOf(request.Request))
+		}
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		_ = enc.Encode(rtbRequest)
+	}
+
 	if err := rtbRequest.Validate(); err != nil {
 		return d.netClient.NoopRequest(),
 			errors.Wrap(err, fmt.Sprintf("source[%s]: %d", d.source.Protocol, d.source.ID))
@@ -290,14 +305,6 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 	if err = json.NewEncoder(&bufData).Encode(rtbRequest); err != nil {
 		return d.netClient.NoopRequest(),
 			errors.Wrap(err, fmt.Sprintf("source[%s]: %d", d.source.Protocol, d.source.ID))
-	}
-
-	if d.source.Options.Trace != 0 {
-		ctxlogger.Get(request.Ctx).Error("trace marshal",
-			zap.String("src_url", d.source.URL))
-		enc := json.NewEncoder(os.Stdout)
-		enc.SetIndent("", "  ")
-		_ = enc.Encode(rtbRequest)
 	}
 
 	// Create new request

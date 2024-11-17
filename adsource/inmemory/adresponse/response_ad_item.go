@@ -463,6 +463,13 @@ func (it *ResponseAdItem) Get(key string) any {
 	return it.Ctx.Value(key)
 }
 
+// Release the response item and all linked objects.
+func (it *ResponseAdItem) Release() {
+	if it != nil {
+		it.reset()
+	}
+}
+
 func (it *ResponseAdItem) reset() {
 	*it = ResponseAdItem{}
 }

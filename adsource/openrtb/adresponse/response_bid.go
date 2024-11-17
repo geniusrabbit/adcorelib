@@ -290,6 +290,23 @@ func (r *BidResponse) newBidReplacer(bid *openrtb.Bid) *strings.Replacer {
 	)
 }
 
+// Release response and all linked objects
+func (r *BidResponse) Release() {
+	if r == nil {
+		return
+	}
+	if r.Req != nil {
+		r.Req.Release()
+		r.Req = nil
+	}
+	r.ads = r.ads[:0]
+	r.optimalBids = r.optimalBids[:0]
+	r.Application = nil
+	r.Target = nil
+	r.BidResponse.SeatBid = r.BidResponse.SeatBid[:0]
+	r.BidResponse.Ext = r.BidResponse.Ext[:0]
+}
+
 func decodePopMarkup(data []byte) (val string, err error) {
 	var item struct {
 		URL string `xml:"popunderAd>url"`

@@ -129,6 +129,13 @@ func (r *Response) Get(key string) any {
 	return r.context.Value(key)
 }
 
+// Release response and all linked objects
+func (r *Response) Release() {
+	if r != nil {
+		r.reset()
+	}
+}
+
 func (r *Response) reset() {
 	r.items = r.items[:0]
 	r.err = nil

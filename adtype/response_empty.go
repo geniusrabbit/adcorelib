@@ -157,6 +157,9 @@ func (r *ResponseEmpty) Get(key string) (res any) {
 	return res
 }
 
+// Release response and all linked objects
+func (r *ResponseEmpty) Release() {}
+
 var (
 	_ ResponserItemCommon = (*ResponseEmpty)(nil)
 	_ Responser           = (*ResponseEmpty)(nil)
