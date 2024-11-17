@@ -110,11 +110,13 @@ func (r *BidResponse) Prepare() {
 
 		for _, format := range imp.Formats() {
 			if bid.ImpID != imp.IDByFormat(format) {
+				fmt.Println("=====> SKIP", bid.ImpID, imp.IDByFormat(format))
 				continue
 			}
 			switch {
 			case format.IsNative():
 				native, err := decodeNativeMarkup([]byte(bid.AdMarkup))
+				fmt.Println("=====>", native, err)
 				// TODO parse native request
 				if err == nil {
 					r.ads = append(r.ads, &ResponseBidItem{

@@ -7,6 +7,7 @@ package adtype
 
 import (
 	openrtbnreq "github.com/bsm/openrtb/native/request"
+	openrtbnreq3 "github.com/bsm/openrtb/v3/native/request"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -176,8 +177,20 @@ func (i *Impression) PlacementType() openrtbnreq.PlacementTypeID {
 }
 
 // RTBNativeRequest object
-func (i *Impression) RTBNativeRequest() (r *openrtbnreq.Request) {
-	r, _ = i.Request.(*openrtbnreq.Request)
+func (i *Impression) RTBNativeRequest() *openrtbnreq.Request {
+	r, ok := i.Request.(*openrtbnreq.Request)
+	if !ok {
+		return nil
+	}
+	return r
+}
+
+// RTBNativeRequestV3 object
+func (i *Impression) RTBNativeRequestV3() *openrtbnreq3.Request {
+	r, ok := i.Request.(*openrtbnreq3.Request)
+	if !ok {
+		return nil
+	}
 	return r
 }
 
