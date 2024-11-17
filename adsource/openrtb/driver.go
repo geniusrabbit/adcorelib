@@ -284,6 +284,17 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 
 	if d.source.Options.Trace != 0 {
 		ctxlogger.Get(request.Ctx).Error("trace marshal", zap.String("src_url", d.source.URL))
+		for _, imp := range request.Imps {
+			fmt.Println("===================", imp.ID)
+			for _, format := range imp.Formats() {
+				fmt.Println("===================", format.Codename, format.ID)
+				if format.Config != nil {
+					enc := json.NewEncoder(os.Stdout)
+					enc.SetIndent("", "  ")
+					enc.Encode(format.Config)
+				}
+			}
+		}
 		fmt.Println("===================: 1", reflect.TypeOf(rtbRequest))
 		if request.Request != nil {
 			enc := json.NewEncoder(os.Stdout)
