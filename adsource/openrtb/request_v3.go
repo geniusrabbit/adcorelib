@@ -2,6 +2,7 @@ package openrtb
 
 import (
 	"encoding/json"
+	"fmt"
 
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 	"github.com/bsm/openrtb/v3"
@@ -138,7 +139,9 @@ func openrtbV3NativeRequest(req *adtype.BidRequest, imp *adtype.Impression, form
 
 func openrtbV3NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *types.Format) []openrtbnreq.Asset {
 	assets := make([]openrtbnreq.Asset, 0, len(format.Config.Assets)+len(format.Config.Fields))
+	fmt.Println("> openrtbV3NativeAssets-3", format.Config)
 	for _, asset := range format.Config.Assets {
+		fmt.Println("> LOG ASSET-3", asset)
 		if !asset.IsVideoSupport() || asset.IsImageSupport() {
 			// By default we suppose that this is image
 			var typeid openrtbnreq.ImageTypeID
@@ -160,8 +163,9 @@ func openrtbV3NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *t
 					Mimes:     asset.AllowedTypes,
 				},
 			})
+		} else {
+			// TODO add video tag support
 		}
-		// TODO add video tag support
 	}
 	for _, field := range format.Config.Fields {
 		if asset, ok := openrtbV3NativeFieldAsset(&field); ok {
