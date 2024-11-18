@@ -6,34 +6,35 @@
 package adresponse
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"encoding/xml"
 	"fmt"
-	"net/url"
 	"strings"
 
 	openrtb "github.com/bsm/openrtb"
-	natresp "github.com/bsm/openrtb/native/response"
-	"golang.org/x/net/html/charset"
+	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
 )
 
 // BidResponse RTB record
 type BidResponse struct {
-	Src         adtype.Source
+	context context.Context
+
 	Req         *adtype.BidRequest
+	Src         adtype.Source
 	Application *admodels.Application
 	Target      admodels.Target
+
 	BidResponse openrtb.BidResponse
-	context     context.Context
+
 	optimalBids []*openrtb.Bid
 	ads         []adtype.ResponserItemCommon
+
+	// TODO: add errors list
 }
 
 // AuctionID response
@@ -110,16 +111,13 @@ func (r *BidResponse) Prepare() {
 
 		for _, format := range imp.Formats() {
 			if bid.ImpID != imp.IDByFormat(format) {
-				fmt.Println("=====> SKIP", bid.ImpID, imp.IDByFormat(format))
 				continue
 			}
 			switch {
 			case format.IsNative():
 				native, err := decodeNativeMarkup([]byte(bid.AdMarkup))
-				fmt.Println("=====>", native, err)
-				// TODO parse native request
 				if err == nil {
-					r.ads = append(r.ads, &ResponseBidItem{
+					bidItem := &ResponseBidItem{
 						ItemID:     imp.ID,
 						Src:        r.Src,
 						Req:        r.Req,
@@ -129,7 +127,19 @@ func (r *BidResponse) Prepare() {
 						Bid:        bid,
 						Native:     native,
 						ActionLink: native.Link.URL,
-					})
+					}
+					if nativeRequestV2 := imp.RTBNativeRequest(); nativeRequestV2 != nil {
+						bidItem.Data = extractNativeV2Data(nativeRequestV2, native)
+					} else if nativeRequestV3 := imp.RTBNativeRequestV3(); nativeRequestV3 != nil {
+						bidItem.Data = extractNativeV3Data(nativeRequestV3, native)
+					}
+					r.ads = append(r.ads, bidItem)
+				} else {
+					ctxlogger.Get(r.Context()).Debug(
+						"Failed to decode native markup",
+						zap.String("markup", bid.AdMarkup),
+						zap.Error(err),
+					)
 				}
 			case format.IsBanner() || format.IsProxy():
 				r.ads = append(r.ads, &ResponseBidItem{
@@ -230,10 +240,11 @@ func (r *BidResponse) OptimalBids() []*openrtb.Bid {
 		}
 	}
 
-	r.optimalBids = make([]*openrtb.Bid, 0, len(bids))
+	optimalBids := make([]*openrtb.Bid, 0, len(bids))
 	for _, b := range bids {
-		r.optimalBids = append(r.optimalBids, b)
+		optimalBids = append(optimalBids, b)
 	}
+	r.optimalBids = optimalBids
 	return r.optimalBids
 }
 
@@ -307,71 +318,6 @@ func (r *BidResponse) Release() {
 	r.Target = nil
 	r.BidResponse.SeatBid = r.BidResponse.SeatBid[:0]
 	r.BidResponse.Ext = r.BidResponse.Ext[:0]
-}
-
-func decodePopMarkup(data []byte) (val string, err error) {
-	var item struct {
-		URL string `xml:"popunderAd>url"`
-	}
-	decoder := xml.NewDecoder(bytes.NewReader(data))
-	decoder.CharsetReader = charset.NewReaderLabel
-	if err = decoder.Decode(&item); err == nil {
-		val = item.URL
-	}
-	return val, err
-}
-
-func customDirectURL(data []byte) (val string, err error) {
-	var item struct {
-		URL         string `json:"url"`
-		LandingPage string `json:"landingpage"`
-		Link        string `json:"link"`
-	}
-	if err = json.Unmarshal(data, &item); err == nil {
-		val = max(item.URL, item.LandingPage, item.Link)
-	}
-	return val, err
-}
-
-func decodeNativeMarkup(data []byte) (*natresp.Response, error) {
-	var (
-		native struct {
-			Native natresp.Response `json:"native"`
-		}
-		err error
-	)
-	if bytes.Contains(data, []byte(`"native"`)) {
-		err = json.Unmarshal(data, &native)
-	} else {
-		err = json.Unmarshal(data, &native.Native)
-	}
-	if err != nil {
-		err = json.Unmarshal(data, &native.Native)
-	}
-	if err != nil {
-		return nil, err
-	}
-	return &native.Native, nil
-}
-
-func bannerFormatType(markup string) types.FormatType {
-	if strings.HasPrefix(markup, "http://") ||
-		strings.HasPrefix(markup, "https://") ||
-		(strings.HasPrefix(markup, "//") && !strings.ContainsAny(markup, "\n\t")) ||
-		strings.Contains(markup, "<iframe") {
-		return types.FormatProxyType
-	}
-	return types.FormatBannerType
-}
-
-func prepareURL(surl string, replacer *strings.Replacer) string {
-	if surl == "" {
-		return surl
-	}
-	if u, err := url.QueryUnescape(surl); err == nil {
-		surl = u
-	}
-	return replacer.Replace(surl)
 }
 
 var (

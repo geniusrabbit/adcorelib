@@ -20,10 +20,6 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
-type responseDataAccessor interface {
-	Get(key string) any
-}
-
 // ResponseBidItem value
 type ResponseBidItem struct {
 	ItemID string
