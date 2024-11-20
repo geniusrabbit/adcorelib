@@ -57,7 +57,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -234,12 +233,19 @@ func (d *driver[ND, Rq, Rs]) ProcessResponseItem(response adtype.Responser, item
 	for _, ad := range response.Ads() {
 		switch bid := ad.(type) {
 		case *adresponse.ResponseBidItem:
+			if bid.Source().ID() != d.ID() {
+				ctxlogger.Get(response.Context()).Debug("bid source mismatch",
+					zap.Uint64("source_id", bid.Source().ID()),
+					zap.Uint64("driver_id", d.ID()),
+				)
+				continue
+			}
 			if len(bid.Bid.NURL) > 0 {
 				_ = eventstream.WinsFromContext(response.Context()).Send(response.Context(), bid.Bid.NURL)
 				ctxlogger.Get(response.Context()).Info("ping", zap.String("url", bid.Bid.NURL))
 			}
 			_ = eventstream.StreamFromContext(response.Context()).
-				Send(events.Impression, events.StatusUndefined, response, bid)
+				Send(events.SourceWin, events.StatusUndefined, response, bid)
 		default:
 			// Dummy...
 		}
@@ -284,24 +290,6 @@ func (d *driver[ND, Rq, Rs]) request(request *adtype.BidRequest) (req Rq, err er
 
 	if d.source.Options.Trace != 0 {
 		ctxlogger.Get(request.Ctx).Error("trace marshal", zap.String("src_url", d.source.URL))
-		for _, imp := range request.Imps {
-			fmt.Println("===================", imp.ID)
-			for _, format := range imp.Formats() {
-				fmt.Println("===================", format.Codename, format.ID)
-				if format.Config != nil {
-					enc := json.NewEncoder(os.Stdout)
-					enc.SetIndent("", "  ")
-					enc.Encode(format.Config)
-				}
-			}
-		}
-		fmt.Println("===================: 1", reflect.TypeOf(rtbRequest))
-		if request.Request != nil {
-			enc := json.NewEncoder(os.Stdout)
-			enc.SetIndent("", "  ")
-			_ = enc.Encode(request.Request)
-			fmt.Println("===================: 2", reflect.TypeOf(request.Request))
-		}
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
 		_ = enc.Encode(rtbRequest)
