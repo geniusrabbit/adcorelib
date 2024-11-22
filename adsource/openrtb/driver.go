@@ -99,7 +99,7 @@ type driver[NetDriver httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpc
 	source *admodels.RTBSource
 
 	// Request headers
-	Headers map[string]string
+	headers map[string]string
 
 	// Client of HTTP requests
 	netClient NetDriver
@@ -109,7 +109,7 @@ func newDriver[ND httpclient.Driver[Rq, Rs], Rq httpclient.Request, Rs httpclien
 	source.MinimalWeight = max(source.MinimalWeight, defaultMinWeight)
 	return &driver[ND, Rq, Rs]{
 		source:    source,
-		Headers:   source.Headers.DataOr(nil),
+		headers:   source.Headers.DataOr(nil),
 		netClient: netClient,
 		latencyMetrics: prometheuswrapper.NewWrapperDefault("adsource_",
 			[]string{"id", "protocol", "driver"},
@@ -167,7 +167,7 @@ func (d *driver[ND, Rq, Rs]) RequestStrategy() adtype.RequestStrategy {
 
 // Bid request for standart system filter
 func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Responser) {
-	beginTime := time.Now().UnixNano()
+	beginTime := fasttime.UnixTimestampNano()
 	d.rpsCurrent.Inc(1)
 	d.latencyMetrics.BeginQuery()
 
@@ -177,7 +177,7 @@ func (d *driver[ND, Rq, Rs]) Bid(request *adtype.BidRequest) (response adtype.Re
 	}
 
 	resp, err := d.netClient.Do(httpRequest)
-	d.latencyMetrics.UpdateQueryLatency(time.Duration(time.Now().UnixNano() - beginTime))
+	d.latencyMetrics.UpdateQueryLatency(time.Duration(fasttime.UnixTimestampNano() - beginTime))
 
 	if err != nil {
 		d.processHTTPReponse(resp, err)
@@ -241,11 +241,17 @@ func (d *driver[ND, Rq, Rs]) ProcessResponseItem(response adtype.Responser, item
 				continue
 			}
 			if len(bid.Bid.NURL) > 0 {
-				_ = eventstream.WinsFromContext(response.Context()).Send(response.Context(), bid.Bid.NURL)
 				ctxlogger.Get(response.Context()).Info("ping", zap.String("url", bid.Bid.NURL))
+				err := eventstream.WinsFromContext(response.Context()).Send(response.Context(), bid.Bid.NURL)
+				if err != nil {
+					ctxlogger.Get(response.Context()).Error("ping error", zap.Error(err))
+				}
 			}
-			_ = eventstream.StreamFromContext(response.Context()).
+			err := eventstream.StreamFromContext(response.Context()).
 				Send(events.SourceWin, events.StatusUndefined, response, bid)
+			if err != nil {
+				ctxlogger.Get(response.Context()).Error("send win event", zap.Error(err))
+			}
 		default:
 			// Dummy...
 		}
@@ -405,7 +411,7 @@ func (d *driver[ND, Rq, Rs]) fillRequest(request *adtype.BidRequest, httpReq Rq)
 		strconv.FormatInt(openlatency.RequestInitTime(request.Time()), 10))
 
 	// Fill default headers
-	for key, value := range d.Headers {
+	for key, value := range d.headers {
 		httpReq.SetHeader(key, value)
 	}
 }
