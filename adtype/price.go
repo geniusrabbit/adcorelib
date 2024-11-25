@@ -38,16 +38,16 @@ func (f PriceFactor) AddComission(price billing.Money, it ResponserItem) (comiss
 	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
-	if f&SourcePriceFactor == SourcePriceFactor {
+	if f&SourcePriceFactor != 0 {
 		pValue := PriceSourceFactors(price, it.Source(), false)
 		comissions += pValue
 		price += pValue
 	}
-	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
+	if f&SystemComissionPriceFactor != 0 {
 		pValue := PriceSystemComission(price, it, false)
 		comissions += pValue
 	}
-	if f&TargetReducePriceFactor == TargetReducePriceFactor {
+	if f&TargetReducePriceFactor != 0 {
 		pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, false)
 		comissions += pValue
 	}
@@ -59,17 +59,17 @@ func (f PriceFactor) RemoveComission(price billing.Money, it ResponserItem) (com
 	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
-	if f&TargetReducePriceFactor == TargetReducePriceFactor {
+	if f&TargetReducePriceFactor != 0 {
 		pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, true)
 		comissions += pValue
 		price += pValue
 	}
-	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
+	if f&SystemComissionPriceFactor != 0 {
 		pValue := PriceSystemComission(price, it, true)
 		comissions += pValue
 		price += pValue
 	}
-	if f&SourcePriceFactor == SourcePriceFactor {
+	if f&SourcePriceFactor != 0 {
 		pValue := PriceSourceFactors(price, it.Source(), true)
 		comissions += pValue
 	}
@@ -81,13 +81,13 @@ func PriceSourceFactors(price billing.Money, src Source, remove bool) billing.Mo
 	if src == nil || price <= 0 {
 		return 0
 	}
-	if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
-		if remove {
-			return price/100*billing.Money((1-reduce)*100) - price
-		}
-		return price / 100 * billing.Money(reduce*100)
-	}
-	return 0
+	// if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
+	// 	if remove {
+	// 		return price/100*billing.Money((1-reduce)*100) - price
+	// 	}
+	// 	return price / 100 * billing.Money(reduce*100)
+	// }
+	return AdjustPrice(price, src.PriceCorrectionReduceFactor(), remove)
 }
 
 // PriceSystemComission = 1. - `TrafficSourceComission`
@@ -95,25 +95,44 @@ func PriceSystemComission(price billing.Money, item systemComissionFactorer, rem
 	if item == nil || price <= 0 {
 		return 0
 	}
-	if reduce := item.ComissionShareFactor(); reduce > 0 {
-		if remove {
-			return price/100*billing.Money((1-reduce)*100) - price
-		}
-		return price / 100 * billing.Money(reduce*100)
-	}
-	return 0
+	// if reduce := item.ComissionShareFactor(); reduce > 0 {
+	// 	if remove {
+	// 		return price/100*billing.Money((1-reduce)*100) - price
+	// 	}
+	// 	return price / 100 * billing.Money(reduce*100)
+	// }
+	return AdjustPrice(price, item.ComissionShareFactor(), remove)
 }
 
-// PriceRevenueShareReduceFactors cirrection to reduce descreancy
+// PriceRevenueShareReduceFactors correction to reduce descreancy
 func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerFactorer, remove bool) billing.Money {
 	if rs == nil || price <= 0 {
 		return 0
 	}
-	if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
-		if remove {
-			return price/100*billing.Money((1-reduce)*100) - price
-		}
-		return price / 100 * billing.Money(reduce*100)
+	// if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
+	// 	if remove {
+	// 		return price/100*billing.Money((1-reduce)*100) - price
+	// 	}
+	// 	return price / 100 * billing.Money(reduce*100)
+	// }
+	return AdjustPrice(price, rs.RevenueShareReduceFactor(), remove)
+}
+
+func AdjustPrice(price billing.Money, factor float64, remove bool) billing.Money {
+	if price <= 0 || factor <= 0 {
+		return 0
 	}
-	return 0
+
+	fPrice := price.Float64()
+
+	if remove {
+		// Calculate the original price by dividing by (1 + factor)
+		originalPrice := fPrice / (1 + factor)
+		adjustment := fPrice - originalPrice
+		return -billing.MoneyFloat(adjustment) // Round to the nearest integer
+	}
+
+	// Calculate adjustment for adding commission
+	adjustment := fPrice * factor
+	return billing.MoneyFloat(adjustment) // Round to the nearest integer
 }

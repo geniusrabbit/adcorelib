@@ -7,6 +7,7 @@ package adtype
 
 import (
 	"context"
+	"errors"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -20,6 +21,10 @@ const (
 	ContentItemIFrameURL        = "iframe_url"
 	ContentItemNotifyWinURL     = "notify_win_url"
 	ContentItemNotifyDisplayURL = "notify_display_url"
+)
+
+var (
+	ErrNewAuctionBidIsHigherThenMaxBid = errors.New("new auction bid is higher then max bid")
 )
 
 // ResponserItemCommon interface
@@ -39,8 +44,9 @@ type ResponserItemCommon interface {
 	// ExtTargetID of the external network
 	ExtTargetID() string
 
-	// AuctionCPMBid value price without any comission
-	AuctionCPMBid() billing.Money
+	// InternalAuctionCPMBid value provides maximal possible price without any comission
+	// According to this value the system can choice the best item for the auction
+	InternalAuctionCPMBid() billing.Money
 
 	// PriorityFormatType from current Ad
 	PriorityFormatType() types.FormatType
@@ -86,9 +92,6 @@ type ResponserItem interface {
 	// MainAsset from response
 	MainAsset() *admodels.AdAsset
 
-	// Asset by name
-	Asset(name string) *admodels.AdAsset
-
 	// Assets list
 	Assets() admodels.AdAssets
 
@@ -108,18 +111,19 @@ type ResponserItem interface {
 	// returns total price of the action
 	Price(action admodels.Action, removeFactors ...PriceFactor) billing.Money
 
-	// SetCPMPrice update of DSP auction value
-	SetCPMPrice(price billing.Money, includeFactors ...PriceFactor)
-
-	// CPMPrice value price value for DSP auction
-	CPMPrice(removeFactors ...PriceFactor) billing.Money
-
-	// PurchasePrice gives the price of view from external resource.
-	// The cost of this request.
+	// PurchasePrice gives the price of action from external resource.
+	// The cost of this request for the network.
 	PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money
 
 	// PotentialPrice wich can be received from source but was marked as descrepancy
 	PotentialPrice(action admodels.Action) billing.Money
+
+	// SetAuctionCPMBid value for external sources auction the system will pay
+	SetAuctionCPMBid(price billing.Money, includeFactors ...PriceFactor) error
+
+	// AuctionCPMBid value provides price for external sources
+	// The prive what we can pay for the action to the external source
+	AuctionCPMBid(removeFactors ...PriceFactor) billing.Money
 
 	// Second campaigns
 	Second() *SecondAd

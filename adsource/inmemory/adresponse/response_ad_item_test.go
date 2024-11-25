@@ -45,8 +45,8 @@ func Test_ItemPricing(t *testing.T) {
 			assert.True(t, com >= 0.999 && com <= 1, "wrong_comission value")
 		})
 
-		t.Run(prefix+"_cpm_price", func(t *testing.T) {
-			assert.Equal(t, 5000., item.CPMPrice().Float64(), "wrong_cpm_price")
+		t.Run(prefix+"_auction_cpm_price", func(t *testing.T) {
+			assert.Equal(t, 5000., item.AuctionCPMBid().Float64(), "wrong_cpm_price")
 		})
 	}
 }
@@ -73,8 +73,6 @@ func newAdResponse(_ *admodels.Account, imp adtype.Impression) *ResponseAdItem {
 			ClickPrice:  billing.MoneyFloat(0.),
 			LeadPrice:   billing.MoneyFloat(120.),
 		},
-		// BidPrice:    billing.MoneyFloat(10.),
-		// CPMBidPrice: billing.MoneyFloat(5.),
 		SecondAd: adtype.SecondAd{},
 	}
 }

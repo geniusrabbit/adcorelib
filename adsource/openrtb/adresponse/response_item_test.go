@@ -47,9 +47,9 @@ func TestItemPricing(t *testing.T) {
 			assert.True(t, com >= 0.999 && com <= 1, "wrong_comission value")
 		})
 
-		t.Run(prefix+"_cpm_price", func(t *testing.T) {
-			if item.CPMPrice() != billing.MoneyFloat(5.) {
-				t.Errorf("cpm_price value: 5 != %.3f", item.CPMPrice().Float64())
+		t.Run(prefix+"_auction_cpm_price", func(t *testing.T) {
+			if item.AuctionCPMBid() != billing.MoneyFloat(5.) {
+				t.Errorf("cpm_price value: 5 != %.3f", item.AuctionCPMBid().Float64())
 			}
 		})
 	}
@@ -73,13 +73,18 @@ func TestPriceCorrection(t *testing.T) {
 
 func newRTBResponse(_ *admodels.Account, imp adtype.Impression) *ResponseBidItem {
 	return &ResponseBidItem{
-		ItemID:      "1",
-		Src:         &adtype.SourceEmpty{PriceCorrectionReduce: 0},
-		Req:         &adtype.BidRequest{ID: "xxx", Imps: []adtype.Impression{imp}},
-		Imp:         &imp,
-		Bid:         &openrtb.Bid{Price: 60},
-		BidPrice:    billing.MoneyFloat(10.),
-		CPMBidPrice: billing.MoneyFloat(5.),
-		SecondAd:    adtype.SecondAd{},
+		ItemID:   "1",
+		Src:      &adtype.SourceEmpty{PriceCorrectionReduce: 0},
+		Req:      &adtype.BidRequest{ID: "xxx", Imps: []adtype.Impression{imp}},
+		Imp:      &imp,
+		Bid:      &openrtb.Bid{Price: 60},
+		SecondAd: adtype.SecondAd{},
+		PriceScope: adtype.PriceScopeView{
+			TestViewBudget: false,
+			MaxBidPrice:    billing.MoneyFloat(10.),
+			BidPrice:       billing.MoneyFloat(5.),
+			ViewPrice:      billing.MoneyFloat(10.),
+			ECPM:           billing.MoneyFloat(10.),
+		},
 	}
 }

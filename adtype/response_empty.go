@@ -100,23 +100,9 @@ func (r ResponseEmpty) Item(impid string) ResponserItemCommon {
 	return nil
 }
 
-// Price of whole response
-func (r ResponseEmpty) Price() billing.Money {
-	return 0
-}
-
-// LeadPrice summ
-func (r ResponseEmpty) LeadPrice() billing.Money {
-	return 0
-}
-
-// CPMBid value
-func (r ResponseEmpty) CPMBid() billing.Money {
-	return 0
-}
-
-// AuctionCPMBid value price without any comission
-func (r ResponseEmpty) AuctionCPMBid() billing.Money {
+// InternalAuctionCPMBid value provides maximal possible price without any comission
+// According to this value the system can choice the best item for the auction
+func (r ResponseEmpty) InternalAuctionCPMBid() billing.Money {
 	return 0
 }
 

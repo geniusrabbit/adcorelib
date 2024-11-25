@@ -91,12 +91,7 @@ func (a *Ad) ContentItemString(name string) string {
 
 // MainAsset field
 func (a *Ad) MainAsset() *AdAsset {
-	return a.Asset(types.FormatAssetMain)
-}
-
-// Asset by name
-func (a *Ad) Asset(name string) *AdAsset {
-	return a.Assets.Asset(name)
+	return a.Assets.Asset(types.FormatAssetMain)
 }
 
 // RandomAdLink from ad model
@@ -128,7 +123,7 @@ func (a *Ad) Validate() error {
 	}
 	for _, asset := range a.Format.Config.Assets {
 		if asset.IsRequired() {
-			if a.Asset(asset.GetName()) == nil {
+			if a.Assets.Asset(asset.GetName()) == nil {
 				return fmt.Errorf(`[Advertisement model] asset "%s" is not present in Ad%d format "%s"`,
 					asset.GetName(), a.ID, a.Format.Codename)
 			}

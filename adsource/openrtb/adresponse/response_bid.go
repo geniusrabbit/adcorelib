@@ -31,6 +31,8 @@ type BidResponse struct {
 
 	BidResponse openrtb.BidResponse
 
+	bidRespBidCount int
+
 	optimalBids []*openrtb.Bid
 	ads         []adtype.ResponserItemCommon
 
@@ -54,13 +56,15 @@ func (r *BidResponse) Source() adtype.Source {
 
 // Prepare bid response
 func (r *BidResponse) Prepare() {
+	r.bidRespBidCount = 0
+
 	// Prepare URLs and markup for response
 	for i, seat := range r.BidResponse.SeatBid {
 		for i, bid := range seat.Bid {
 			if imp := r.Req.ImpressionByIDvariation(bid.ImpID); imp != nil {
 				// Prepare date for bid W/H
 				if bid.W == 0 && bid.H == 0 {
-					bid.W, bid.H = imp.W, imp.H
+					bid.W, bid.H = imp.Width, imp.Height
 				}
 
 				if imp.IsDirect() {
@@ -83,6 +87,7 @@ func (r *BidResponse) Prepare() {
 		}
 
 		r.BidResponse.SeatBid[i] = seat
+		r.bidRespBidCount += len(seat.Bid)
 	} // end for
 
 	for _, bid := range r.OptimalBids() {
@@ -105,6 +110,13 @@ func (r *BidResponse) Prepare() {
 				RespFormat: format,
 				Bid:        bid,
 				ActionLink: bid.AdMarkup,
+				PriceScope: adtype.PriceScopeView{
+					TestViewBudget: false,
+					MaxBidPrice:    billing.MoneyFloat(bid.Price),
+					BidPrice:       billing.MoneyFloat(bid.Price),
+					ViewPrice:      billing.MoneyFloat(bid.Price),
+					ECPM:           billing.MoneyFloat(bid.Price),
+				},
 			})
 			continue
 		}
@@ -127,6 +139,13 @@ func (r *BidResponse) Prepare() {
 						Bid:        bid,
 						Native:     native,
 						ActionLink: native.Link.URL,
+						PriceScope: adtype.PriceScopeView{
+							TestViewBudget: false,
+							MaxBidPrice:    billing.MoneyFloat(bid.Price),
+							BidPrice:       billing.MoneyFloat(bid.Price),
+							ViewPrice:      billing.MoneyFloat(bid.Price),
+							ECPM:           billing.MoneyFloat(bid.Price),
+						},
 					}
 					if nativeRequestV2 := imp.RTBNativeRequest(); nativeRequestV2 != nil {
 						bidItem.Data = extractNativeV2Data(nativeRequestV2, native)
@@ -150,6 +169,13 @@ func (r *BidResponse) Prepare() {
 					FormatType: bannerFormatType(bid.AdMarkup),
 					RespFormat: format,
 					Bid:        bid,
+					PriceScope: adtype.PriceScopeView{
+						TestViewBudget: false,
+						MaxBidPrice:    billing.MoneyFloat(bid.Price),
+						BidPrice:       billing.MoneyFloat(bid.Price),
+						ViewPrice:      billing.MoneyFloat(bid.Price),
+						ECPM:           billing.MoneyFloat(bid.Price),
+					},
 				})
 			}
 			break
@@ -177,20 +203,9 @@ func (r *BidResponse) Item(impid string) adtype.ResponserItemCommon {
 	return nil
 }
 
-// Price for response
-func (r *BidResponse) Price() billing.Money {
-	var price billing.Money
-	for _, seat := range r.BidResponse.SeatBid {
-		for _, bid := range seat.Bid {
-			price += billing.MoneyFloat(bid.Price)
-		}
-	}
-	return price
-}
-
 // Count bids
 func (r *BidResponse) Count() int {
-	return len(r.Bids())
+	return r.bidRespBidCount
 }
 
 // Validate response
@@ -214,17 +229,6 @@ func (r *BidResponse) Error() error {
 	return r.Validate()
 }
 
-// Bids list
-func (r *BidResponse) Bids() []*openrtb.Bid {
-	result := make([]*openrtb.Bid, 0, len(r.BidResponse.SeatBid))
-	for _, seat := range r.BidResponse.SeatBid {
-		for _, bid := range seat.Bid {
-			result = append(result, &bid)
-		}
-	}
-	return result
-}
-
 // OptimalBids list (the most expensive)
 func (r *BidResponse) OptimalBids() []*openrtb.Bid {
 	if len(r.optimalBids) > 0 {
@@ -246,31 +250,6 @@ func (r *BidResponse) OptimalBids() []*openrtb.Bid {
 	}
 	r.optimalBids = optimalBids
 	return r.optimalBids
-}
-
-// BidPosition returns index from OpenRTB bid
-func (r *BidResponse) BidPosition(b *openrtb.Bid) int {
-	idx := 0
-	for _, seat := range r.BidResponse.SeatBid {
-		for _, bid := range seat.Bid {
-			if bid.ImpID == b.ImpID {
-				return idx
-			}
-			idx++
-		}
-	}
-	return -1
-}
-
-// UpdateBid object
-func (r *BidResponse) UpdateBid(b *openrtb.Bid) {
-	for _, seat := range r.BidResponse.SeatBid {
-		for j, bid := range seat.Bid {
-			if bid.ImpID == b.ImpID {
-				seat.Bid[j] = *b
-			}
-		}
-	}
 }
 
 // Context of response

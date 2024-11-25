@@ -28,12 +28,12 @@ type Impression struct {
 	Count             int             `json:"cnt,omitempty"`                 // Count of places for multiple banners
 
 	// Sizes and position on the screen
-	X    int `json:"x,omitempty"`  // Position on the site screen
-	Y    int `json:"y,omitempty"`  //
-	W    int `json:"w,omitempty"`  //
-	H    int `json:"h,omitempty"`  //
-	WMax int `json:"wm,omitempty"` //
-	HMax int `json:"hm,omitempty"` //
+	X         int `json:"x,omitempty"`
+	Y         int `json:"y,omitempty"`
+	Width     int `json:"w,omitempty"`
+	Height    int `json:"h,omitempty"`
+	WidthMax  int `json:"wm,omitempty"`
+	HeightMax int `json:"hm,omitempty"`
 
 	// Additional identifiers
 	SubID1 string `json:"subid1,omitempty"`
@@ -52,7 +52,7 @@ type Impression struct {
 
 // Init internal information
 func (i *Impression) Init(formats types.FormatsAccessor) {
-	var w, h, minw, minh = i.WMax, i.HMax, i.W, i.H
+	var w, h, minw, minh = i.WidthMax, i.HeightMax, i.Width, i.Height
 	if w <= 0 && h <= 0 {
 		w, h = minw, minh
 		minw, minh = minw-(minw/3), minh/3
@@ -152,6 +152,21 @@ func (i *Impression) ComissionShareFactor() float64 {
 		return 0
 	}
 	return i.Target.ComissionShareFactor()
+}
+
+// PurchasePrice return the price of need to pay for the action
+// to the connected network or application if price is fixed
+func (i *Impression) PurchasePrice(action admodels.Action) billing.Money {
+	if i == nil {
+		return 0
+	}
+	if action.IsImpression() && i.PurchaseViewPrice > 0 {
+		return i.PurchaseViewPrice
+	}
+	if i.Target != nil {
+		return i.Target.PurchasePrice(action)
+	}
+	return 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////

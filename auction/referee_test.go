@@ -65,11 +65,11 @@ func testBids(bids []billing.Money, res []adtype.ResponserItemCommon) bool {
 		return false
 	}
 
-	sort.Slice(newRes, func(i, j int) bool { return newRes[i].AuctionCPMBid() < newRes[j].AuctionCPMBid() })
+	sort.Slice(newRes, func(i, j int) bool { return newRes[i].InternalAuctionCPMBid() < newRes[j].InternalAuctionCPMBid() })
 	sort.Slice(bids, func(i, j int) bool { return bids[i] < bids[j] })
 
 	for i, b := range bids {
-		if b != newRes[i].AuctionCPMBid() {
+		if b != newRes[i].InternalAuctionCPMBid() {
 			return false
 		}
 	}
@@ -84,13 +84,13 @@ func respToBids(res []adtype.ResponserItemCommon) (bids []tsItem) {
 				bids = append(bids, tsItem{
 					Multi: true,
 					ImpID: it.ImpressionID(),
-					Bid:   it.AuctionCPMBid(),
+					Bid:   it.InternalAuctionCPMBid(),
 				})
 			}
 		default:
 			bids = append(bids, tsItem{
 				ImpID: it.ImpressionID(),
-				Bid:   it.AuctionCPMBid(),
+				Bid:   it.InternalAuctionCPMBid(),
 			})
 		}
 	}

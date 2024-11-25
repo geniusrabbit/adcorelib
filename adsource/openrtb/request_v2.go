@@ -57,8 +57,8 @@ func openrtbV2ImpressionByFormat(req *adtype.BidRequest, imp *adtype.Impression,
 
 	switch {
 	case format.IsBanner() || format.IsProxy():
-		w, h := imp.W, imp.H
-		wm, wh := imp.WMax, imp.HMax
+		w, h := imp.Width, imp.Height
+		wm, wh := imp.WidthMax, imp.HeightMax
 		if w < 1 && h < 1 {
 			w, h = format.Width, format.Height
 		}

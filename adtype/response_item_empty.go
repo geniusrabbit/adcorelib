@@ -31,8 +31,9 @@ func (*ResponseItemEmpty) ExtImpressionID() string { return "" }
 // ExtTargetID of the external network
 func (*ResponseItemEmpty) ExtTargetID() string { return "" }
 
-// AuctionCPMBid value price without any comission
-func (*ResponseItemEmpty) AuctionCPMBid() billing.Money { return 0 }
+// InternalAuctionCPMBid value provides maximal possible price without any comission
+// According to this value the system can choice the best item for the auction
+func (*ResponseItemEmpty) InternalAuctionCPMBid() billing.Money { return 0 }
 
 // PriorityFormatType from current Ad
 func (*ResponseItemEmpty) PriorityFormatType() types.FormatType { return 0 }
@@ -96,12 +97,6 @@ func (*ResponseItemEmpty) Price(action admodels.Action, removeFactors ...PriceFa
 	return 0
 }
 
-// SetCPMPrice update of DSP auction value
-func (*ResponseItemEmpty) SetCPMPrice(price billing.Money, includeFactors ...PriceFactor) {}
-
-// CPMPrice value price value for DSP auction
-func (*ResponseItemEmpty) CPMPrice(removeFactors ...PriceFactor) billing.Money { return 0 }
-
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
 func (*ResponseItemEmpty) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
@@ -112,6 +107,15 @@ func (*ResponseItemEmpty) PurchasePrice(action admodels.Action, removeFactors ..
 func (*ResponseItemEmpty) PotentialPrice(action admodels.Action) billing.Money {
 	return 0
 }
+
+// SetAuctionCPMBid value for external sources auction the system will pay
+func (*ResponseItemEmpty) SetAuctionCPMBid(price billing.Money, includeFactors ...PriceFactor) error {
+	return nil
+}
+
+// AuctionCPMBid value provides price for external sources
+// The prive what we can pay for the action to the external source
+func (*ResponseItemEmpty) AuctionCPMBid(removeFactors ...PriceFactor) billing.Money { return 0 }
 
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }

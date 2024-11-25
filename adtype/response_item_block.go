@@ -61,10 +61,11 @@ func (i *ResponseItemBlock) Price(action admodels.Action) (price billing.Money) 
 	return price
 }
 
-// AuctionCPMBid value price without any comission
-func (i *ResponseItemBlock) AuctionCPMBid() (bid billing.Money) {
+// InternalAuctionCPMBid value provides maximal possible price without any comission
+// According to this value the system can choice the best item for the auction
+func (i *ResponseItemBlock) InternalAuctionCPMBid() (bid billing.Money) {
 	for _, it := range i.Items {
-		bid += it.AuctionCPMBid()
+		bid += it.InternalAuctionCPMBid()
 	}
 	return bid
 }

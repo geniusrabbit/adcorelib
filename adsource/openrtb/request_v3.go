@@ -2,7 +2,6 @@ package openrtb
 
 import (
 	"encoding/json"
-	"fmt"
 
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 	"github.com/bsm/openrtb/v3"
@@ -57,8 +56,8 @@ func openrtbV3ImpressionByFormat(req *adtype.BidRequest, imp *adtype.Impression,
 
 	switch {
 	case format.IsBanner() || format.IsProxy():
-		w, h := imp.W, imp.H
-		wm, wh := imp.WMax, imp.HMax
+		w, h := imp.Width, imp.Height
+		wm, wh := imp.WidthMax, imp.HeightMax
 		if w < 1 && h < 1 {
 			w, h = format.Width, format.Height
 		}
@@ -139,9 +138,7 @@ func openrtbV3NativeRequest(req *adtype.BidRequest, imp *adtype.Impression, form
 
 func openrtbV3NativeAssets(_ *adtype.BidRequest, _ *adtype.Impression, format *types.Format) []openrtbnreq.Asset {
 	assets := make([]openrtbnreq.Asset, 0, len(format.Config.Assets)+len(format.Config.Fields))
-	fmt.Println("> openrtbV3NativeAssets-3", format.Config)
 	for _, asset := range format.Config.Assets {
-		fmt.Println("> LOG ASSET-3", asset)
 		if !asset.IsVideoSupport() || asset.IsImageSupport() {
 			// By default we suppose that this is image
 			var typeid openrtbnreq.ImageTypeID

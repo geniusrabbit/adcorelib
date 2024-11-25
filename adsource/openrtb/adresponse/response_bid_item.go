@@ -22,32 +22,30 @@ import (
 
 // ResponseBidItem value
 type ResponseBidItem struct {
-	ItemID string
+	ItemID string `json:"id"`
 
 	// Request and impression data
-	Src adtype.Source
-	Req *adtype.BidRequest
-	Imp *adtype.Impression
+	Src adtype.Source      `json:"source,omitempty"`
+	Req *adtype.BidRequest `json:"request,omitempty"`
+	Imp *adtype.Impression `json:"impression,omitempty"`
 
 	// Format of response advertisement item
-	FormatType types.FormatType
-	RespFormat *types.Format
+	FormatType types.FormatType `json:"format_type,omitempty"`
+	RespFormat *types.Format    `json:"format,omitempty"`
 
 	// External response data from RTB source
-	Bid        *openrtb.Bid
-	Native     *natresp.Response
-	ActionLink string
+	Bid        *openrtb.Bid      `json:"bid,omitempty"`
+	Native     *natresp.Response `json:"native,omitempty"`
+	ActionLink string            `json:"action_link,omitempty"`
 
-	// External bidding price
-	BidPrice    billing.Money // Bid price per one action (can be updated by price predictor)
-	CPMBidPrice billing.Money // This param can update only price predictor
+	PriceScope adtype.PriceScopeView `json:"price_scope,omitempty"`
 
 	// Competitive second AD
-	SecondAd adtype.SecondAd
+	SecondAd adtype.SecondAd `json:"second_ad,omitempty"`
 
-	Data    responseDataAccessor
-	assets  admodels.AdAssets
-	context context.Context
+	Data    responseDataAccessor `json:"data,omitempty"`
+	assets  admodels.AdAssets    `json:"-"`
+	context context.Context      `json:"-"`
 }
 
 // ID of current response item (unique code of current response)
@@ -188,12 +186,7 @@ func (it *ResponseBidItem) MainAsset() *admodels.AdAsset {
 	return nil
 }
 
-// Asset by name
-func (it *ResponseBidItem) Asset(name string) *admodels.AdAsset {
-	return it.Assets().Asset(name)
-}
-
-// Assets list
+// Assets returns list of the advertisement
 func (it *ResponseBidItem) Assets() (assets admodels.AdAssets) {
 	if it.assets != nil || it.Format().Config == nil {
 		return it.assets
@@ -308,53 +301,36 @@ func (it *ResponseBidItem) ECPM() billing.Money {
 	if it == nil || it.Bid == nil {
 		return 0
 	}
-	if it.PricingModel().IsCPM() && it.CPMBidPrice > 0 {
-		return it.CPMBidPrice
-	}
-	return billing.MoneyFloat(it.Bid.Price)
+	// if it.PricingModel().IsCPM() && it.CPMBidPrice > 0 {
+	// 	return it.CPMBidPrice
+	// }
+	// return billing.MoneyFloat(it.Bid.Price)
+	return it.PriceScope.ECPM
 }
 
 // Price for specific action if supported `click`, `lead`, `view`
 // returns total price of the action
-func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...adtype.PriceFactor) (price billing.Money) {
+func (it *ResponseBidItem) Price(action admodels.Action, removeFactors ...adtype.PriceFactor) billing.Money {
 	if it == nil || it.Bid == nil {
 		return 0
 	}
-	if action.IsImpression() {
-		if it.BidPrice > 0 {
-			price = it.BidPrice
-		} else {
-			price = billing.MoneyFloat(it.Bid.Price / 1000)
-		}
-	}
-	return price + adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
+	// if action.IsImpression() {
+	// 	if it.BidPrice > 0 {
+	// 		price = it.BidPrice
+	// 	} else {
+	// 		price = billing.MoneyFloat(it.Bid.Price / 1000)
+	// 	}
+	// }
+	// return price + adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
+	price := it.PriceScope.PricePerAction(action)
+	price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
+	return price
 }
 
-// SetCPMPrice update of DSP auction value
-func (it *ResponseBidItem) SetCPMPrice(price billing.Money, includeFactors ...adtype.PriceFactor) {
-	price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
-	if it != nil && price < it.ECPM() {
-		it.CPMBidPrice = price
-	}
-}
-
-// CPMPrice value price value for DSP auction
-func (it *ResponseBidItem) CPMPrice(removeFactors ...adtype.PriceFactor) (price billing.Money) {
-	if it.PricingModel().IsCPM() {
-		price = it.Price(admodels.ActionImpression) * 1000
-	} else {
-		price = it.ECPM()
-	}
-	// Here we have check for the price from the source wasn't exceeded the ad aficiency price
-	if it.CPMBidPrice > 0 && it.CPMBidPrice < price {
-		price = it.CPMBidPrice
-	}
-	return price + adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
-}
-
-// AuctionCPMBid value price without any comission
-func (it *ResponseBidItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice(adtype.AllPriceFactors)
+// InternalAuctionCPMBid value provides maximal possible price without any comission
+// According to this value the system can choice the best item for the auction
+func (it *ResponseBidItem) InternalAuctionCPMBid() billing.Money {
+	return it.AuctionCPMBid(adtype.AllPriceFactors)
 }
 
 // PurchasePrice gives the price of view from external resource.
@@ -364,13 +340,8 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 		return 0
 	}
 	// Some sources can have the fixed price of buying
-	if action.IsImpression() && it.Imp.PurchaseViewPrice > 0 {
-		return it.Imp.PurchaseViewPrice
-	}
-	if it.Imp.Target != nil {
-		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
-			return pPrice
-		}
+	if pPrice := it.Imp.PurchasePrice(action); pPrice > 0 {
+		return pPrice
 	}
 	if len(removeFactors) == 0 {
 		removeFactors = []adtype.PriceFactor{^adtype.TargetReducePriceFactor}
@@ -381,7 +352,7 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 		// target gate reduce factor percent, but anyway price will be higher for X% of that descepancy
 		// to protect system from overspands
 		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPM() {
-			return it.CPMPrice(removeFactors...) / 1000 // Price per One Impression
+			return it.AuctionCPMBid(removeFactors...) / 1000 // Price per One Impression
 		}
 	case admodels.ActionClick:
 		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPC() {
@@ -398,6 +369,29 @@ func (it *ResponseBidItem) PurchasePrice(action admodels.Action, removeFactors .
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (it *ResponseBidItem) PotentialPrice(action admodels.Action) billing.Money {
 	return -adtype.SourcePriceFactor.RemoveComission(it.Price(action), it)
+}
+
+// SetAuctionCPMBid value for external sources auction the system will pay
+func (it *ResponseBidItem) SetAuctionCPMBid(price billing.Money, includeFactors ...adtype.PriceFactor) error {
+	if len(includeFactors) > 0 {
+		price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
+	}
+	if !it.PriceScope.SetBidPrice(price/1000, false) {
+		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
+	}
+	return nil
+}
+
+// AuctionCPMBid value provides price for external sources
+// The prive what we can pay for the action to the external source
+func (it *ResponseBidItem) AuctionCPMBid(removeFactors ...adtype.PriceFactor) billing.Money {
+	price := it.PriceScope.BidPrice * 1000
+
+	// Remove commissions from the price if provided
+	if len(removeFactors) > 0 {
+		price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
+	}
+	return price
 }
 
 // Second campaigns

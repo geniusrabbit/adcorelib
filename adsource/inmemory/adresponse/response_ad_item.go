@@ -182,11 +182,6 @@ func (it *ResponseAdItem) MainAsset() *admodels.AdAsset {
 	return it.Ad.MainAsset()
 }
 
-// Asset returns the asset with the specified name.
-func (it *ResponseAdItem) Asset(name string) *admodels.AdAsset {
-	return it.Ad.Asset(name)
-}
-
 // Assets returns the list of assets from the advertisement.
 func (it *ResponseAdItem) Assets() admodels.AdAssets {
 	return it.Ad.Assets
@@ -194,18 +189,18 @@ func (it *ResponseAdItem) Assets() admodels.AdAssets {
 
 // Width returns the width of the ad.
 func (it *ResponseAdItem) Width() int {
-	if it.Imp.W <= 0 {
-		return it.Imp.WMax
+	if it.Imp.Width <= 0 {
+		return it.Imp.WidthMax
 	}
-	return it.Imp.W
+	return it.Imp.Width
 }
 
 // Height returns the height of the ad.
 func (it *ResponseAdItem) Height() int {
-	if it.Imp.H <= 0 {
-		return it.Imp.HMax
+	if it.Imp.Height <= 0 {
+		return it.Imp.HeightMax
 	}
-	return it.Imp.H
+	return it.Imp.Height
 }
 
 // TargetID returns the target identifier.
@@ -344,37 +339,10 @@ func (it *ResponseAdItem) Price(action admodels.Action, removeFactors ...adtype.
 	return price
 }
 
-// SetCPMPrice updates the DSP auction value.
-func (it *ResponseAdItem) SetCPMPrice(price billing.Money, includeFactors ...adtype.PriceFactor) {
-	price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
-	// if price < it.ECPM() || price < it.Ad.BidPrice {
-	// 	it.CPMBidPrice = price
-	// }
-	it.PriceScope.SetBidPrice(price/1000, false)
-}
-
-// CPMPrice returns the price value for DSP auction.
-func (it *ResponseAdItem) CPMPrice(removeFactors ...adtype.PriceFactor) (price billing.Money) {
-	// if it.CPMBidPrice > 0 {
-	// 	price = it.CPMBidPrice
-	// } else if it.PricingModel().IsCPM() {
-	// 	price = it.Price(admodels.ActionImpression) * 1000
-	// } else {
-	// 	price = it.ECPM()
-	// }
-
-	price = it.PriceScope.BidPrice * 1000
-	// price = it.prepareMaxBidPrice(price, true)
-
-	// Remove commissions from the price if provided
-	price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
-
-	return price
-}
-
-// AuctionCPMBid returns the bid price without any commission.
-func (it *ResponseAdItem) AuctionCPMBid() billing.Money {
-	return it.CPMPrice(adtype.AllPriceFactors)
+// InternalAuctionCPMBid value provides maximal possible price without any comission
+// According to this value the system can choice the best item for the auction
+func (it *ResponseAdItem) InternalAuctionCPMBid() billing.Money {
+	return it.AuctionCPMBid(adtype.AllPriceFactors)
 }
 
 // PurchasePrice gives the price of view from external resource.
@@ -383,13 +351,8 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 		return 0
 	}
 	// Some sources can have the fixed price of buying
-	if action.IsImpression() && it.Imp.PurchaseViewPrice > 0 {
-		return it.Imp.PurchaseViewPrice
-	}
-	if it.Imp.Target != nil {
-		if pPrice := it.Imp.Target.PurchasePrice(action); pPrice > 0 {
-			return pPrice
-		}
+	if pPrice := it.Imp.PurchasePrice(action); pPrice > 0 {
+		return pPrice
 	}
 	if len(removeFactors) == 0 {
 		removeFactors = []adtype.PriceFactor{^adtype.TargetReducePriceFactor}
@@ -397,7 +360,7 @@ func (it *ResponseAdItem) PurchasePrice(action admodels.Action, removeFactors ..
 	switch action {
 	case admodels.ActionImpression:
 		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPM() {
-			return it.CPMPrice(removeFactors...) / 1000 // Price per one impression
+			return it.AuctionCPMBid(removeFactors...) / 1000 // Price per one impression
 		}
 	case admodels.ActionClick:
 		if it.Imp.Target.PricingModel().Or(it.PricingModel()).IsCPC() {
@@ -416,17 +379,28 @@ func (it *ResponseAdItem) PotentialPrice(action admodels.Action) billing.Money {
 	return -adtype.SourcePriceFactor.RemoveComission(it.Price(action), it)
 }
 
-// func (it *ResponseAdItem) prepareMaxBidPrice(price billing.Money, maxIfZero bool) billing.Money {
-// 	switch {
-// 	case it.BidPrice > 0:
-// 		if price > it.BidPrice || (maxIfZero && price <= 0) {
-// 			return it.BidPrice
-// 		}
-// 	case it.Ad.BidPrice > 0 && (price > it.Ad.BidPrice || (maxIfZero && price <= 0)):
-// 		return it.Ad.BidPrice
-// 	}
-// 	return price
-// }
+// SetAuctionCPMBid value for external sources auction the system will pay
+func (it *ResponseAdItem) SetAuctionCPMBid(price billing.Money, includeFactors ...adtype.PriceFactor) error {
+	if len(includeFactors) > 0 {
+		price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
+	}
+	if !it.PriceScope.SetBidPrice(price/1000, false) {
+		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
+	}
+	return nil
+}
+
+// AuctionCPMBid value provides price for external sources
+// The prive what we can pay for the action to the external source
+func (it *ResponseAdItem) AuctionCPMBid(removeFactors ...adtype.PriceFactor) billing.Money {
+	price := it.PriceScope.BidPrice * 1000
+
+	// Remove commissions from the price if provided
+	if len(removeFactors) > 0 {
+		price += adtype.PriceFactorFromList(removeFactors...).RemoveComission(price, it)
+	}
+	return price
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Revenue share/comission methods
