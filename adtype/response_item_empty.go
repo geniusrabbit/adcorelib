@@ -92,19 +92,27 @@ func (*ResponseItemEmpty) ClickTrackerLinks() []string { return nil }
 // NetworkName by source
 func (*ResponseItemEmpty) NetworkName() string { return "" }
 
-// Price summ
-func (*ResponseItemEmpty) Price(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
+// ECPM item value
+func (*ResponseItemEmpty) ECPM() billing.Money { return 0 }
+
+// Price per specific action type (view, click, lead, etc)
+func (*ResponseItemEmpty) Price(action admodels.Action) billing.Money {
 	return 0
 }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
-func (*ResponseItemEmpty) PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money {
+func (*ResponseItemEmpty) PurchasePrice(action admodels.Action) billing.Money {
 	return 0
 }
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (*ResponseItemEmpty) PotentialPrice(action admodels.Action) billing.Money {
+	return 0
+}
+
+// FinalPrice returns final price for the item which is including all possible commissions with all corrections
+func (*ResponseItemEmpty) FinalPrice(action admodels.Action) billing.Money {
 	return 0
 }
 
@@ -121,21 +129,20 @@ func (*ResponseItemEmpty) AuctionCPMBid(removeFactors ...PriceFactor) billing.Mo
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }
 
 // RevenuePercent money
-func (*ResponseItemEmpty) RevenuePercent() float64 { return 0 }
+// func (*ResponseItemEmpty) RevenuePercent() float64 { return 0 }
 
 // PotentialPercent money
 func (*ResponseItemEmpty) PotentialPercent() float64 { return 0 }
 
-// ECPM item value
-func (*ResponseItemEmpty) ECPM() billing.Money { return 0 }
+// SourceCorrectionFactor value for the source
+func (it *ResponseItemEmpty) SourceCorrectionFactor() float64 { return 0 }
 
-// RevenueShareFactor returns the multipler for company
-// revenue calculation per action from 0 to 1
-func (*ResponseItemEmpty) RevenueShareFactor() float64 { return 0 }
+// TargetCorrectionFactor value for the target
+func (it *ResponseItemEmpty) TargetCorrectionFactor() float64 { return 0 }
 
-// ComissionShareFactor returns the multipler for commission
+// CommissionShareFactor returns the multipler for commission
 // calculation which system get from user revenue from 0 to 1
-func (*ResponseItemEmpty) ComissionShareFactor() float64 { return 0 }
+func (*ResponseItemEmpty) CommissionShareFactor() float64 { return 0 }
 
 // IsDirect AD type
 func (*ResponseItemEmpty) IsDirect() bool { return false }

@@ -1,4 +1,4 @@
-package adtype
+package price
 
 import (
 	"github.com/geniusrabbit/adcorelib/admodels"
@@ -6,9 +6,6 @@ import (
 )
 
 type PriceScopeView struct {
-	// TestViewBudget represents the flag for the test budget usage for the view price.
-	TestViewBudget bool `json:"test_budget,omitempty"`
-
 	// MaxBidPrice represents the maximum price for the bid on the auction.
 	MaxBidPrice billing.Money `json:"max_bid_price,omitempty"`
 

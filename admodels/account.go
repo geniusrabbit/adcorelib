@@ -72,7 +72,7 @@ func (c *Account) RevenueShareFactor() float64 {
 	return c.RevenueShare
 }
 
-// ComissionShareFactor which system get from publisher 0..1
-func (c *Account) ComissionShareFactor() float64 {
+// CommissionShareFactor which system get from publisher 0..1
+func (c *Account) CommissionShareFactor() float64 {
 	return 1. - c.RevenueShareFactor()
 }

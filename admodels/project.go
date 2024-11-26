@@ -24,7 +24,7 @@ func (p *Project) RevenueShareFactor() float64 {
 	return p.RevenueShare
 }
 
-// ComissionShareFactor which system get from publisher 0..1
-func (p *Project) ComissionShareFactor() float64 {
+// CommissionShareFactor which system get from publisher 0..1
+func (p *Project) CommissionShareFactor() float64 {
 	return 1.0 - p.RevenueShare
 }

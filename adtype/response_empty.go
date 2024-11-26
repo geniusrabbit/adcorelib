@@ -9,7 +9,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
-// ResponseEmpty object
+// ResponseEmpty object represents empty response and response item
 type ResponseEmpty struct {
 	ItemID  string
 	Req     *BidRequest
@@ -30,7 +30,7 @@ func (r ResponseEmpty) ID() string {
 	return r.ItemID
 }
 
-// AuctionID response
+// AuctionID returns ID of the current auction
 func (r ResponseEmpty) AuctionID() string {
 	if r.Req == nil {
 		return ""
@@ -38,7 +38,7 @@ func (r ResponseEmpty) AuctionID() string {
 	return r.Req.ID
 }
 
-// AuctionType of request
+// AuctionType returns type of the auction (first price, second price, etc)
 func (r ResponseEmpty) AuctionType() types.AuctionType {
 	if r.Req == nil {
 		return types.UndefinedAuctionType
@@ -46,7 +46,7 @@ func (r ResponseEmpty) AuctionType() types.AuctionType {
 	return r.Req.AuctionType
 }
 
-// Source of response
+// Source returns source of the response
 func (r ResponseEmpty) Source() Source {
 	return r.Src
 }
@@ -56,7 +56,7 @@ func (r ResponseEmpty) PriorityFormatType() types.FormatType {
 	return types.FormatUndefinedType
 }
 
-// Request information
+// Request returns the original request object
 func (r ResponseEmpty) Request() *BidRequest {
 	return r.Req
 }
@@ -87,7 +87,7 @@ func (r ResponseEmpty) ExtTargetID() string {
 	if r.Imp == nil {
 		return ""
 	}
-	return r.Imp.ExtTargetID
+	return r.Imp.ExternalTargetID
 }
 
 // Ads list

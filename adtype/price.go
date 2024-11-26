@@ -5,8 +5,8 @@ import (
 )
 
 type systemComissionFactorer interface {
-	// ComissionShareFactor which system get from publisher 0..1
-	ComissionShareFactor() float64
+	// CommissionShareFactor which system get from publisher 0..1
+	CommissionShareFactor() float64
 }
 
 type revenueShareReducerFactorer interface {
@@ -44,7 +44,7 @@ func (f PriceFactor) AddComission(price billing.Money, it ResponserItem) (comiss
 		price += pValue
 	}
 	if f&SystemComissionPriceFactor != 0 {
-		pValue := PriceSystemComission(price, it, false)
+		pValue := PriceSystemCommission(price, it, false)
 		comissions += pValue
 	}
 	if f&TargetReducePriceFactor != 0 {
@@ -65,7 +65,7 @@ func (f PriceFactor) RemoveComission(price billing.Money, it ResponserItem) (com
 		price += pValue
 	}
 	if f&SystemComissionPriceFactor != 0 {
-		pValue := PriceSystemComission(price, it, true)
+		pValue := PriceSystemCommission(price, it, true)
 		comissions += pValue
 		price += pValue
 	}
@@ -81,27 +81,15 @@ func PriceSourceFactors(price billing.Money, src Source, remove bool) billing.Mo
 	if src == nil || price <= 0 {
 		return 0
 	}
-	// if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
-	// 	if remove {
-	// 		return price/100*billing.Money((1-reduce)*100) - price
-	// 	}
-	// 	return price / 100 * billing.Money(reduce*100)
-	// }
 	return AdjustPrice(price, src.PriceCorrectionReduceFactor(), remove)
 }
 
-// PriceSystemComission = 1. - `TrafficSourceComission`
-func PriceSystemComission(price billing.Money, item systemComissionFactorer, remove bool) billing.Money {
+// PriceSystemCommission = 1. - `TrafficSourceCommission`
+func PriceSystemCommission(price billing.Money, item systemComissionFactorer, remove bool) billing.Money {
 	if item == nil || price <= 0 {
 		return 0
 	}
-	// if reduce := item.ComissionShareFactor(); reduce > 0 {
-	// 	if remove {
-	// 		return price/100*billing.Money((1-reduce)*100) - price
-	// 	}
-	// 	return price / 100 * billing.Money(reduce*100)
-	// }
-	return AdjustPrice(price, item.ComissionShareFactor(), remove)
+	return AdjustPrice(price, item.CommissionShareFactor(), remove)
 }
 
 // PriceRevenueShareReduceFactors correction to reduce descreancy
@@ -109,12 +97,6 @@ func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerF
 	if rs == nil || price <= 0 {
 		return 0
 	}
-	// if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
-	// 	if remove {
-	// 		return price/100*billing.Money((1-reduce)*100) - price
-	// 	}
-	// 	return price / 100 * billing.Money(reduce*100)
-	// }
 	return AdjustPrice(price, rs.RevenueShareReduceFactor(), remove)
 }
 

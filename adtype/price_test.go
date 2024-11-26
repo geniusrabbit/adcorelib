@@ -13,7 +13,7 @@ type revenueShareReduceTest struct {
 	RevenueShareReduce float64
 }
 
-func (r *revenueShareReduceTest) ComissionShareFactor() float64 {
+func (r *revenueShareReduceTest) CommissionShareFactor() float64 {
 	return r.ComissionShare
 }
 
@@ -35,7 +35,7 @@ func TestPriceCorrection(t *testing.T) {
 	if assert.Equal(t, billing.MoneyFloat(testNumber/1.1), price, "source price factor") {
 
 		// Price correction for system comission
-		price += PriceSystemComission(price, item, true)
+		price += PriceSystemCommission(price, item, true)
 
 		if assert.Equal(t, billing.MoneyFloat(testNumber/1.1/1.05), price, "system comission") {
 			// Price correction for revenue share reduce

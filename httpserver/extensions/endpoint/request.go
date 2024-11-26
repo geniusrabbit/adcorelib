@@ -83,7 +83,7 @@ func NewDirectRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 	}
 }
 
-// NewRequestFor person
+// NewRequestFor specific person
 func NewRequestFor(ctx context.Context, app *admodels.Application, target admodels.Target, person personification.Person,
 	opt *RequestOptions, formatAccessor types.FormatsAccessor) *adtype.BidRequest {
 	var (
@@ -102,7 +102,6 @@ func NewRequestFor(ctx context.Context, app *admodels.Application, target admode
 		Imps: []adtype.Impression{
 			{
 				ID:          rand.UUID(), // Impression ID
-				ExtTargetID: "",
 				Target:      target,
 				FormatTypes: directTypeMask(opt.Width == -1 && opt.Height == -1),
 				Count:       minInt(opt.Count, 1),

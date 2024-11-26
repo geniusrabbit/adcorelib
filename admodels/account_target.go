@@ -25,9 +25,9 @@ func (c AccountTarget) RevenueShareFactor() float64 {
 	return c.Acc.RevenueShareFactor()
 }
 
-// ComissionShareFactor of current target
-func (c AccountTarget) ComissionShareFactor() float64 {
-	return c.Acc.ComissionShareFactor()
+// CommissionShareFactor of current target
+func (c AccountTarget) CommissionShareFactor() float64 {
+	return c.Acc.CommissionShareFactor()
 }
 
 // Account object

@@ -2,6 +2,7 @@ package events
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -98,40 +99,40 @@ func newEvent() Event {
 		PublisherAccount:  1122,
 		AdvertiserAccount: 99,
 		// Source
-		AuctionID:    "1234-123456-123456-1234",
-		ImpID:        "1234-123456-123456-1234",
-		ImpAdID:      "1234-123456-123456-1234",
-		ExtAuctionID: "1234-123456-123456-1234",
-		ExtImpID:     "1234-123456-123456-1234",
-		ExtTargetID:  "codename",
-		Source:       1,
-		Network:      "google.inc",
-		AccessPoint:  0,
+		AuctionID:     "1234-123456-123456-1234",
+		ImpID:         "1234-123456-123456-1234",
+		ImpAdID:       "1234-123456-123456-1234",
+		ExtAuctionID:  "1234-123456-123456-1234",
+		ExtImpID:      "1234-123456-123456-1234",
+		ExtTargetID:   "codename",
+		SourceID:      1,
+		Network:       "google.inc",
+		AccessPointID: 0,
 		// State Location
-		Platform:    1,
-		Domain:      "domain.com",
-		Application: 11,
-		Zone:        12,
-		Campaign:    1992,
-		AdID:        12222,
-		AdW:         101,
-		AdH:         22,
-		SourceURL:   "http://as.com",
-		WinURL:      "http://win.com",
-		URL:         "http://win.com",
-		Jumper:      110,
-		FormatID:    1,
+		Platform:      1,
+		Domain:        "domain.com",
+		ApplicationID: 11,
+		ZoneID:        12,
+		CampaignID:    1992,
+		AdID:          12222,
+		AdWidth:       101,
+		AdHeight:      22,
+		SourceURL:     "http://as.com",
+		WinURL:        "http://win.com",
+		URL:           "http://win.com",
+		JumperID:      110,
+		FormatID:      1,
 		// Money
-		PricingModel:       1,
-		PurchaseViewPrice:  2000,
-		PurchaseClickPrice: 1000,
-		PurchaseLeadPrice:  1000,
-		ViewPrice:          1000,
-		ClickPrice:         1000,
-		LeadPrice:          19992,
-		Competitor:         100,
-		CompetitorSource:   1000,
-		CompetitorECPM:     1000000,
+		PricingModel:         1,
+		PurchaseViewPrice:    2000,
+		PurchaseClickPrice:   1000,
+		PurchaseLeadPrice:    1000,
+		ViewPrice:            1000,
+		ClickPrice:           1000,
+		LeadPrice:            19992,
+		CompetitorCampaignID: 100,
+		CompetitorSourceID:   1000,
+		CompetitorECPM:       1000000,
 		// User IDENTITY
 		UDID:        "1234-123456-123456-1234",
 		UUID:        "1234-123456-123456-1234",
@@ -139,7 +140,7 @@ func newEvent() Event {
 		Fingerprint: "1234-123456-123456-1234",
 		ETag:        "etaGddk*dk0a",
 		// Targeting
-		Carrier:         11,
+		CarrierID:       11,
 		Country:         "US",
 		City:            "Boston",
 		Latitude:        "1000",
@@ -150,9 +151,9 @@ func newEvent() Event {
 		Page:            "",
 		UserAgent:       "UA1",
 		DeviceType:      1,
-		Device:          1,
-		OS:              122,
-		Browser:         12,
+		DeviceID:        1,
+		OSID:            122,
+		BrowserID:       12,
 		Categories:      "sss,ddd",
 		Adblock:         1,
 		PrivateBrowsing: 1,
@@ -161,8 +162,8 @@ func newEvent() Event {
 		Backup:          1,
 		X:               10,
 		Y:               10,
-		W:               10,
-		H:               10,
+		Width:           10,
+		Height:          10,
 		// SubIDs
 		SubID1: "sub1",
 		SubID2: "sub2-period",
@@ -170,4 +171,12 @@ func newEvent() Event {
 		SubID4: "sub4-some-category",
 		SubID5: "sub5-user_id",
 	}
+}
+
+func fixNumberString(n, def string) string {
+	n = strings.TrimSpace(n)
+	if strings.Trim(n, "0123456789") != "" {
+		n = def
+	}
+	return n
 }

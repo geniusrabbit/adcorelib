@@ -13,25 +13,25 @@ This project contains common library packages for advertising software.
 
 ### Prices Math
 
-- **ComissionShareFactor**: Represents the internal commission of the system.
+- **CommissionShareFactor**: Represents the internal commission of the system.
 - **RevenueShareFactor**: Represents the revenue of the publisher or advertiser.
 
 RevenueShareFactor is calculated as:
 
 ```js
-RevenueShareFactor = 1.0 - ComissionShareFactor
+RevenueShareFactor = 1.0 - CommissionShareFactor
 ```
 
 For example, if:
 
-- ComissionShareFactor = 10% (0.1)
+- CommissionShareFactor = 10% (0.1)
 - RevenueShareFactor = 90% (0.9)
 - RevenueShareReduce = 10%
 
 The new price calculation:
 
 ```js
-newPrice = (price * (1 - RevenueShareReduce)) - (price * ComissionShareFactor)
+newPrice = (price * (1 - RevenueShareReduce)) - (price * CommissionShareFactor)
 ```
 
 For example:
@@ -44,13 +44,13 @@ newPrice = price * (1 - 0.1) * (1 - 0.1) = 0.81
 
 **Source:**
 
-- `ComissionShareFactor` and `RevenueShareReduce`
-  - `newPrice = (price * (1 - RevenueShareReduce)) - (price * ComissionShareFactor)`
+- `CommissionShareFactor` and `RevenueShareReduce`
+  - `newPrice = (price * (1 - RevenueShareReduce)) - (price * CommissionShareFactor)`
 
 **Target (Zone + Site, AccessPoint{DSP}):**
 
-- `ComissionShareFactor` and `RevenueShareReduce`
-  - `publisherPrice = price - (price * ComissionShareFactor) - (price * RevenueShareReduce)`
+- `CommissionShareFactor` and `RevenueShareReduce`
+  - `publisherPrice = price - (price * CommissionShareFactor) - (price * RevenueShareReduce)`
 
 If the target has a fixed view price, that value can be used instead. If the target is an AccessPoint, `RevenueShareReduce` will reduce discrepancy.
 

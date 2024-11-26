@@ -1,4 +1,4 @@
-package adtype
+package price
 
 import (
 	"github.com/geniusrabbit/adcorelib/admodels"

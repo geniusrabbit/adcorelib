@@ -18,8 +18,8 @@ import (
 // Impression target
 type Impression struct {
 	ID                string          `json:"id,omitempty"`                  // Internal impression ID
-	ExtID             string          `json:"extid,omitempty"`               // External impression ID (ImpID)
-	ExtTargetID       string          `json:"exttrgid"`                      // External zone ID (tagid)
+	ExternalID        string          `json:"extid,omitempty"`               // External impression ID (ImpID)
+	ExternalTargetID  string          `json:"exttrgid"`                      // External zone ID (tagid)
 	Request           any             `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
 	Target            admodels.Target `json:"target,omitempty"`              //
 	BidFloor          billing.Money   `json:"bid_floor,omitempty"`           //
@@ -144,14 +144,14 @@ func (i *Impression) RevenueShareFactor() float64 {
 	return i.Target.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher from 0 to 1
+// CommissionShareFactor which system get from publisher from 0 to 1
 //
 //go:inline
-func (i *Impression) ComissionShareFactor() float64 {
+func (i *Impression) CommissionShareFactor() float64 {
 	if i == nil || i.Target == nil {
 		return 0
 	}
-	return i.Target.ComissionShareFactor()
+	return i.Target.CommissionShareFactor()
 }
 
 // PurchasePrice return the price of need to pay for the action

@@ -13,10 +13,9 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/geniusrabbit/adcorelib/admodels"
-	"github.com/geniusrabbit/adcorelib/adsource/inmemory/adresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/price"
 )
 
 type titem struct {
@@ -255,17 +254,13 @@ func BenchmarkRefereeMatch(b *testing.B) {
 }
 
 func newItem(impid string, bid int64) adtype.ResponserItem {
-	camp := &admodels.Campaign{} //{Opt: [8]uint8{0, uint8(types.PricingModelCPC)}},
-	return &adresponse.ResponseAdItem{
-		Src:        nil,
-		Req:        nil,
-		Imp:        &adtype.Impression{ID: impid},
-		Campaign:   camp,
-		Ad:         &admodels.Ad{Campaign: camp},
-		PriceScope: adtype.PriceScope{BidPrice: billing.MoneyInt(bid) / 1000},
-		// BidECPM:     billing.MoneyInt(bid),
-		// BidPrice:    0,
-		// CPMBidPrice: 0,
+	return &adtype.ResponseItemBlank{
+		Src: nil,
+		Imp: &adtype.Impression{ID: impid},
+		PriceScope: price.PriceScope{
+			ECPM:     billing.MoneyInt(bid),
+			BidPrice: billing.MoneyInt(bid) / 1000,
+		},
 	}
 }
 

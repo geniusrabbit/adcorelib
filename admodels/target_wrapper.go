@@ -34,8 +34,8 @@ func (tw VirtualTarget) PurchasePrice(a Action) billing.Money { return tw.trg.Pu
 // RevenueShareFactor of current target
 func (tw VirtualTarget) RevenueShareFactor() float64 { return tw.trg.RevenueShareFactor() }
 
-// ComissionShareFactor of current target
-func (tw VirtualTarget) ComissionShareFactor() float64 { return tw.trg.ComissionShareFactor() }
+// CommissionShareFactor of current target
+func (tw VirtualTarget) CommissionShareFactor() float64 { return tw.trg.CommissionShareFactor() }
 
 // Account object
 func (tw VirtualTarget) Account() *Account { return tw.trg.Account() }

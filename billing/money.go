@@ -31,11 +31,15 @@ const (
 type Money int64
 
 // MoneyFloat object
+//
+//go:inline
 func MoneyFloat[T constraints.Float](amount T) Money {
 	return Money(math.Floor(float64(amount)*moneyFloatDelimeter + .5))
 }
 
 // MoneyInt object
+//
+//go:inline
 func MoneyInt[T constraints.Integer](amount T) Money {
 	return Money(int64(amount) * moneyIntDelimeter)
 }
@@ -46,21 +50,29 @@ func (m Money) String() string {
 }
 
 // Float64 value from money
+//
+//go:inline
 func (m Money) Float64() float64 {
 	return float64(m) / moneyFloatDelimeter
 }
 
 // Int64 value from money
+//
+//go:inline
 func (m Money) Int64() int64 {
 	return int64(m)
 }
 
 // SetFromInt64 value
+//
+//go:inline
 func (m *Money) SetFromInt64(v int64) {
 	*m = MoneyInt(v)
 }
 
 // SetFromFloat64 value
+//
+//go:inline
 func (m *Money) SetFromFloat64(v float64) {
 	*m = MoneyFloat(v)
 }

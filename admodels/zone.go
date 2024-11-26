@@ -104,9 +104,9 @@ func (z *Zone) RevenueShareFactor() float64 {
 	return z.Acc.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher
-func (z *Zone) ComissionShareFactor() float64 {
-	return z.Acc.ComissionShareFactor()
+// CommissionShareFactor which system get from publisher
+func (z *Zone) CommissionShareFactor() float64 {
+	return z.Acc.CommissionShareFactor()
 }
 
 // RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy

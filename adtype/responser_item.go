@@ -109,14 +109,17 @@ type ResponserItem interface {
 
 	// Price for specific action if supported `click`, `lead`, `view`
 	// returns total price of the action
-	Price(action admodels.Action, removeFactors ...PriceFactor) billing.Money
+	Price(action admodels.Action) billing.Money
 
 	// PurchasePrice gives the price of action from external resource.
 	// The cost of this request for the network.
-	PurchasePrice(action admodels.Action, removeFactors ...PriceFactor) billing.Money
+	PurchasePrice(action admodels.Action) billing.Money
 
 	// PotentialPrice wich can be received from source but was marked as descrepancy
 	PotentialPrice(action admodels.Action) billing.Money
+
+	// FinalPrice returns final price for the item which is including all possible commissions with all corrections
+	FinalPrice(action admodels.Action) billing.Money
 
 	// SetAuctionCPMBid value for external sources auction the system will pay
 	SetAuctionCPMBid(price billing.Money, includeFactors ...PriceFactor) error
@@ -133,11 +136,17 @@ type ResponserItem interface {
 
 	// RevenueShareFactor returns the multipler for company
 	// revenue calculation per action from 0 to 1
-	RevenueShareFactor() float64
+	// RevenueShareFactor() float64
 
-	// ComissionShareFactor returns the multipler for commission
+	// CommissionShareFactor returns the multipler for commission
 	// calculation which system get from user revenue from 0 to 1
-	ComissionShareFactor() float64
+	CommissionShareFactor() float64
+
+	// SourceCorrectionFactor value for the source
+	SourceCorrectionFactor() float64
+
+	// TargetCorrectionFactor value for the target
+	TargetCorrectionFactor() float64
 
 	// IsDirect AD type
 	IsDirect() bool

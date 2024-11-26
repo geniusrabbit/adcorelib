@@ -20,8 +20,8 @@ func PrepareURL(url string, event *events.Event) string {
 		"{aucid}", event.AuctionID,
 		"{auctype}", types.AuctionType(event.AuctionType).Name(),
 		"{platform}", types.PlatformType(event.Platform).Name(),
-		"{zone_id}", gocast.Str(event.Zone),
-		"{jumper_id}", gocast.Str(event.Jumper),
+		"{zone_id}", gocast.Str(event.ZoneID),
+		"{jumper_id}", gocast.Str(event.JumperID),
 		"{pm}", types.PricingModel(event.PricingModel).Name(),
 		"{udid}", event.UDID,
 		"{uuid}", event.UUID,
@@ -29,13 +29,13 @@ func PrepareURL(url string, event *events.Event) string {
 		"{fingerprint}", event.Fingerprint,
 		"{etag}", event.ETag,
 		"{ip}", event.IPString,
-		"{carrier_id}", gocast.Str(event.Carrier),
+		"{carrier_id}", gocast.Str(event.CarrierID),
 		"{latitude}", event.Latitude,
 		"{longitude}", event.Longitude,
 		"{device_type}", types.PlatformType(event.DeviceType).Name(),
-		"{device_id}", gocast.Str(event.Device),
-		"{os_id}", gocast.Str(event.OS),
-		"{browser_id}", gocast.Str(event.Browser),
+		"{device_id}", gocast.Str(event.DeviceID),
+		"{os_id}", gocast.Str(event.OSID),
+		"{browser_id}", gocast.Str(event.BrowserID),
 	)
 	return replacer.Replace(url)
 }

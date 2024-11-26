@@ -7,6 +7,7 @@ package eventgenerator
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -73,6 +74,18 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		accessPointID = response.Request().AccessPoint.ID()
 	}
 
+	fmt.Println(">> EVENT", event, status, "\n\t",
+		"PurchaseViewPrice", fmt.Sprintf("%.7f", it.PurchasePrice(admodels.ActionView).Float64()), "\n\t",
+		"PurchaseClickPrice", fmt.Sprintf("%.7f", it.PurchasePrice(admodels.ActionClick).Float64()), "\n\t",
+		"PurchaseLeadPrice", fmt.Sprintf("%.7f", it.PurchasePrice(admodels.ActionLead).Float64()), "\n\t",
+		"PotentialViewPrice", fmt.Sprintf("%.7f", it.PotentialPrice(admodels.ActionView).Float64()), "\n\t",
+		"PotentialClickPrice", fmt.Sprintf("%.7f", it.PotentialPrice(admodels.ActionClick).Float64()), "\n\t",
+		"PotentialLeadPrice", fmt.Sprintf("%.7f", it.PotentialPrice(admodels.ActionLead).Float64()), "\n\t",
+		"ViewPrice", fmt.Sprintf("%.7f", it.Price(admodels.ActionView).Float64()), "\n\t",
+		"ClickPrice", fmt.Sprintf("%.7f", it.Price(admodels.ActionClick).Float64()), "\n\t",
+		"LeadPrice", fmt.Sprintf("%.7f", it.Price(admodels.ActionLead).Float64()), "\n\t",
+	)
+
 	return &events.Event{
 		Time:     time.Now().UnixNano(),
 		Delay:    0,
@@ -85,43 +98,43 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		PublisherAccount:  imp.AccountID(), // -- // --
 		AdvertiserAccount: it.AccountID(),  // -- // --
 		// Source
-		AuctionID:    r.ID,                          // ID of last auction
-		AuctionType:  uint8(response.AuctionType()), // Aution type 1 - First price, 2 - Second price
-		ImpID:        it.ImpressionID(),             // Sub ID of request for paticular impression spot
-		ImpAdID:      it.ID(),                       // Specific ID for paticular ad impression
-		ExtAuctionID: r.ExtID,                       // External auction ID
-		ExtImpID:     it.ExtImpressionID(),          // External auction Imp ID
-		Source:       sourceID,                      // Advertisement Source ID
-		Network:      it.NetworkName(),              // Source Network Name or Domain (Cross sails)
-		AccessPoint:  accessPointID,                 // Access Point ID to own Advertisement
+		AuctionID:     r.ID,                          // ID of last auction
+		AuctionType:   uint8(response.AuctionType()), // Aution type 1 - First price, 2 - Second price
+		ImpID:         it.ImpressionID(),             // Sub ID of request for paticular impression spot
+		ImpAdID:       it.ID(),                       // Specific ID for paticular ad impression
+		ExtAuctionID:  r.ExtID,                       // External auction ID
+		ExtImpID:      it.ExtImpressionID(),          // External auction Imp ID
+		SourceID:      sourceID,                      // Advertisement Source ID
+		Network:       it.NetworkName(),              // Source Network Name or Domain (Cross sails)
+		AccessPointID: accessPointID,                 // Access Point ID to own Advertisement
 		// State Location
-		Platform:    0,                 // Where displaid? 0 – undefined, 1 – web site, 2 – native app, 3 – game
-		Domain:      r.DomainName(),    //
-		Application: uint64(r.AppID()), // Place target
-		Zone:        zoneID,            // -- // --
-		Campaign:    it.CampaignID(),   // Campaign info
-		FormatID:    it.Format().ID,    // Format object ID
-		AdID:        it.AdID(),         // -- // --
-		AdW:         it.Width(),        // -- // --
-		AdH:         it.Height(),       // -- // --
-		SourceURL:   "",                // Advertisement source URL (iframe, image, video, direct)
-		WinURL:      "",                // Win URL used for RTB confirmation
-		URL:         it.ActionURL(),    // Non modified target URL
-		Jumper:      0,                 // Jumper Page ID
+		Platform:      0,                 // Where displaid? 0 – undefined, 1 – web site, 2 – native app, 3 – game
+		Domain:        r.DomainName(),    //
+		ApplicationID: uint64(r.AppID()), // Place target
+		ZoneID:        zoneID,            // -- // --
+		CampaignID:    it.CampaignID(),   // Campaign info
+		FormatID:      it.Format().ID,    // Format object ID
+		AdID:          it.AdID(),         // -- // --
+		AdWidth:       it.Width(),        // -- // --
+		AdHeight:      it.Height(),       // -- // --
+		SourceURL:     "",                // Advertisement source URL (iframe, image, video, direct)
+		WinURL:        "",                // Win URL used for RTB confirmation
+		URL:           it.ActionURL(),    // Non modified target URL
+		JumperID:      0,                 // Jumper Page ID
 		// Money
-		PricingModel:        it.PricingModel().UInt(),                        // Display As CPM/CPC/CPA/CPI
-		PurchaseViewPrice:   it.PurchasePrice(admodels.ActionView).Int64(),   // Price of of the view of source traffic cost
-		PurchaseClickPrice:  it.PurchasePrice(admodels.ActionClick).Int64(),  // Price of of the click of source traffic cost
-		PurchaseLeadPrice:   it.PurchasePrice(admodels.ActionLead).Int64(),   // Price of of the lead of source traffic cost
-		PotentialViewPrice:  it.PotentialPrice(admodels.ActionView).Int64(),  // Price of of the view of source traffic cost
-		PotentialClickPrice: it.PotentialPrice(admodels.ActionClick).Int64(), // Price of of the click of source traffic cost
-		PotentialLeadPrice:  it.PotentialPrice(admodels.ActionLead).Int64(),  // Price of of the lead of source traffic cost
-		ViewPrice:           it.Price(admodels.ActionView).Int64(),           // Price per view
-		ClickPrice:          it.Price(admodels.ActionClick).Int64(),          // Price per click
-		LeadPrice:           it.Price(admodels.ActionLead).Int64(),           // Price per lead
-		Competitor:          it.Second().GetCampaignID(),                     // Competitor compaign ID
-		CompetitorSource:    it.Second().GetSourceID(),                       // Competitor source ID
-		CompetitorECPM:      it.Second().GetECPM().Float64(),                 // Competitor ECPM or auction
+		PricingModel:         it.PricingModel().UInt(),                        // Display As CPM/CPC/CPA/CPI
+		PurchaseViewPrice:    it.PurchasePrice(admodels.ActionView).Int64(),   // Price of of the view of source traffic cost
+		PurchaseClickPrice:   it.PurchasePrice(admodels.ActionClick).Int64(),  // Price of of the click of source traffic cost
+		PurchaseLeadPrice:    it.PurchasePrice(admodels.ActionLead).Int64(),   // Price of of the lead of source traffic cost
+		PotentialViewPrice:   it.PotentialPrice(admodels.ActionView).Int64(),  // Price of of the view of source traffic cost including descrepancy correction
+		PotentialClickPrice:  it.PotentialPrice(admodels.ActionClick).Int64(), // Price of of the click of source traffic cost including descrepancy correction
+		PotentialLeadPrice:   it.PotentialPrice(admodels.ActionLead).Int64(),  // Price of of the lead of source traffic cost including descrepancy correction
+		ViewPrice:            it.Price(admodels.ActionView).Int64(),           // Price per view with total comissions and with descrepancy correction
+		ClickPrice:           it.Price(admodels.ActionClick).Int64(),          // Price per click with total comissions and with descrepancy correction
+		LeadPrice:            it.Price(admodels.ActionLead).Int64(),           // Price per lead with total comissions and with descrepancy correction
+		CompetitorCampaignID: it.Second().GetCampaignID(),                     // Competitor compaign ID
+		CompetitorSourceID:   it.Second().GetSourceID(),                       // Competitor source ID
+		CompetitorECPM:       it.Second().GetECPM().Float64(),                 // Competitor ECPM or auction
 		// User IDENTITY
 		UDID:        r.DeviceInfo().IFA,         // Unique Device ID (IDFA)
 		UUID:        r.UserInfo().ID,            // User
@@ -129,16 +142,16 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		Fingerprint: r.UserInfo().FingerPrintID, //
 		ETag:        r.UserInfo().ETag,          //
 		// Targeting
-		Carrier:         r.CarrierInfo().ID,
+		CarrierID:       r.CarrierInfo().ID,
 		Country:         r.GeoInfo().Country,
 		City:            r.GeoInfo().City,
 		Language:        r.BrowserInfo().PrimaryLanguage,
 		Referer:         r.BrowserInfo().Ref,
 		IPString:        r.GeoInfo().IP.String(),
 		UserAgent:       r.BrowserInfo().UA,
-		Device:          r.DeviceInfo().ID,
-		OS:              r.DeviceInfo().OS.ID,
-		Browser:         uint(r.BrowserInfo().ID),
+		DeviceID:        r.DeviceInfo().ID,
+		OSID:            r.DeviceInfo().OS.ID,
+		BrowserID:       uint(r.BrowserInfo().ID),
 		Categories:      "",
 		Adblock:         b2u(r.IsAdblock()),
 		PrivateBrowsing: b2u(r.IsPrivateBrowsing()),
@@ -147,8 +160,8 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		Backup:          0,
 		X:               imp.X,
 		Y:               imp.Y,
-		W:               r.Width(),
-		H:               r.Height(),
+		Width:           r.Width(),
+		Height:          r.Height(),
 
 		SubID1: imp.SubID1,
 		SubID2: imp.SubID2,

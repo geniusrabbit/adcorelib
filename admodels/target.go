@@ -37,8 +37,8 @@ type Target interface {
 	// RevenueShareFactor of current target from 0 to 1
 	RevenueShareFactor() float64
 
-	// ComissionShareFactor of current target from 0 to 1
-	ComissionShareFactor() float64
+	// CommissionShareFactor of current target from 0 to 1
+	CommissionShareFactor() float64
 
 	// RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy
 	// Returns percent from 0 to 1 for reducing of the value

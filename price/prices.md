@@ -3,7 +3,7 @@
 ## Function list
 
 * [RevenueShareFactor](#revenuesharefactor)
-* [ComissionShareFactor](#comissionsharefactor)
+* [CommissionShareFactor](#commissionsharefactor)
 * [RevenueShareReduceFactor](#revenuesharereducefactor)
 * [PriceCorrectionReduceFactor](#pricecorrectionreducefactor)
 
@@ -13,13 +13,13 @@ All factors are calculated as a percentage from 0 to 1.
 
 The percentage of revenue that the owner of the Zone/SmartLink/AdAccessPoint receives.
 
-## ComissionShareFactor
+## CommissionShareFactor
 
-The percentage of revenue that the ad network receives.
+The percentage of revenue that the AdNetwork receives.
 
 ## RevenueShareReduceFactor
 
-Correction factor of the target endpoint. The percentage of revenue that the owner of the Zone/SmartLink/AdAccessPoint will be excluded as potential descrepancy.
+Correction factor of the target endpoint. The percentage of revenue that the owner of the `Zone`/`SmartLink`/`AdAccessPoint` will be excluded as potential descrepancy.
 
 ## PriceCorrectionReduceFactor
 

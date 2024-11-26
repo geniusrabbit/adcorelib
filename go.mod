@@ -17,7 +17,7 @@ require (
 	github.com/geniusrabbit/gosql/v2 v2.3.1
 	github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f
 	github.com/geniusrabbit/notificationcenter/v2 v2.3.7
-	github.com/geniusrabbit/udetect v0.0.0-20241122135453-dcebdb09c349
+	github.com/geniusrabbit/udetect v0.0.0-20241125135617-1dc5a0e98da2
 	github.com/google/uuid v1.6.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
@@ -33,7 +33,6 @@ require (
 	go.elastic.co/ecszap v1.0.3
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
-	golang.org/x/net v0.31.0
 	gorm.io/gorm v1.25.12
 )
 
@@ -80,6 +79,7 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
+	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241118233622-e639e219e697 // indirect

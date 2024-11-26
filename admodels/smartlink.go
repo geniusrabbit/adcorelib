@@ -106,9 +106,9 @@ func (l *Smartlink) RevenueShareFactor() float64 {
 	return l.Acc.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher
-func (l *Smartlink) ComissionShareFactor() float64 {
-	return l.Acc.ComissionShareFactor()
+// CommissionShareFactor which system get from publisher
+func (l *Smartlink) CommissionShareFactor() float64 {
+	return l.Acc.CommissionShareFactor()
 }
 
 // RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy
