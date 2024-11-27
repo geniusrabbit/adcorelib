@@ -36,7 +36,7 @@ func Test_AdModel(t *testing.T) {
 	}
 
 	t.Run("PricingModel", func(t *testing.T) {
-		if ad.PricingModel != types.PricingModelCPA {
+		if ad.PricingModel != types.PricingModelCPM {
 			t.Error("Wrong pricing model")
 		}
 	})

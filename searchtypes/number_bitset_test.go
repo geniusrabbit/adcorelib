@@ -7,7 +7,7 @@ import (
 )
 
 func TestNumberBitset(t *testing.T) {
-	bits := NewNumberBitset[int](1, 3, 5, 7)
+	bits := NewNumberBitset[uint](1, 3, 5, 7)
 
 	bits.Set(2)
 	if !bits.Has(2) {
