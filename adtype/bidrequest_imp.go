@@ -22,7 +22,7 @@ type Impression struct {
 	ExternalTargetID  string          `json:"exttrgid"`                      // External zone ID (tagid)
 	Request           any             `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
 	Target            admodels.Target `json:"target,omitempty"`              //
-	BidFloor          billing.Money   `json:"bid_floor,omitempty"`           //
+	BidFloorCPM       billing.Money   `json:"bid_floor,omitempty"`           //
 	PurchaseViewPrice billing.Money   `json:"purchase_view_price,omitempty"` //
 	Pos               int             `json:"pos,omitempty"`                 // 5.4 Ad Position
 	Count             int             `json:"cnt,omitempty"`                 // Count of places for multiple banners

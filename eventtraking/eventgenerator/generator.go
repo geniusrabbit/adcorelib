@@ -93,10 +93,12 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		Service:  g.service, // Service
 		Event:    event,     // Action code (tech param, Do not store)
 		Status:   status,    //
+
 		// Accounts link information
 		Project:           0,               // Project network ID
 		PublisherAccount:  imp.AccountID(), // -- // --
 		AdvertiserAccount: it.AccountID(),  // -- // --
+
 		// Source
 		AuctionID:     r.ID,                          // ID of last auction
 		AuctionType:   uint8(response.AuctionType()), // Aution type 1 - First price, 2 - Second price
@@ -107,6 +109,7 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		SourceID:      sourceID,                      // Advertisement Source ID
 		Network:       it.NetworkName(),              // Source Network Name or Domain (Cross sails)
 		AccessPointID: accessPointID,                 // Access Point ID to own Advertisement
+
 		// State Location
 		Platform:      0,                 // Where displaid? 0 – undefined, 1 – web site, 2 – native app, 3 – game
 		Domain:        r.DomainName(),    //
@@ -121,26 +124,30 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		WinURL:        "",                // Win URL used for RTB confirmation
 		URL:           it.ActionURL(),    // Non modified target URL
 		JumperID:      0,                 // Jumper Page ID
+
 		// Money
 		PricingModel:         it.PricingModel().UInt(),                        // Display As CPM/CPC/CPA/CPI
+		TestPriceMode:        it.PriceTestMode(),                              // Test price mode
 		PurchaseViewPrice:    it.PurchasePrice(admodels.ActionView).Int64(),   // Price of of the view of source traffic cost
 		PurchaseClickPrice:   it.PurchasePrice(admodels.ActionClick).Int64(),  // Price of of the click of source traffic cost
 		PurchaseLeadPrice:    it.PurchasePrice(admodels.ActionLead).Int64(),   // Price of of the lead of source traffic cost
 		PotentialViewPrice:   it.PotentialPrice(admodels.ActionView).Int64(),  // Price of of the view of source traffic cost including descrepancy correction
 		PotentialClickPrice:  it.PotentialPrice(admodels.ActionClick).Int64(), // Price of of the click of source traffic cost including descrepancy correction
 		PotentialLeadPrice:   it.PotentialPrice(admodels.ActionLead).Int64(),  // Price of of the lead of source traffic cost including descrepancy correction
-		ViewPrice:            it.Price(admodels.ActionView).Int64(),           // Price per view with total comissions and with descrepancy correction
-		ClickPrice:           it.Price(admodels.ActionClick).Int64(),          // Price per click with total comissions and with descrepancy correction
-		LeadPrice:            it.Price(admodels.ActionLead).Int64(),           // Price per lead with total comissions and with descrepancy correction
+		ViewPrice:            it.FinalPrice(admodels.ActionView).Int64(),      // Price per view with total comissions and with descrepancy correction
+		ClickPrice:           it.FinalPrice(admodels.ActionClick).Int64(),     // Price per click with total comissions and with descrepancy correction
+		LeadPrice:            it.FinalPrice(admodels.ActionLead).Int64(),      // Price per lead with total comissions and with descrepancy correction
 		CompetitorCampaignID: it.Second().GetCampaignID(),                     // Competitor compaign ID
 		CompetitorSourceID:   it.Second().GetSourceID(),                       // Competitor source ID
 		CompetitorECPM:       it.Second().GetECPM().Float64(),                 // Competitor ECPM or auction
+
 		// User IDENTITY
 		UDID:        r.DeviceInfo().IFA,         // Unique Device ID (IDFA)
 		UUID:        r.UserInfo().ID,            // User
 		SessionID:   r.UserInfo().SessionID,     // -- // --
 		Fingerprint: r.UserInfo().FingerPrintID, //
 		ETag:        r.UserInfo().ETag,          //
+
 		// Targeting
 		CarrierID:       r.CarrierInfo().ID,
 		Country:         r.GeoInfo().Country,

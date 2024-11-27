@@ -3,24 +3,73 @@ package admodels
 import (
 	"math/rand"
 
+	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // TargetBid object
 type TargetBid struct {
-	Ad        *Ad
-	Bid       *AdBid
-	ECPM      billing.Money
-	BidPrice  billing.Money // Max price per one View (used in DSP auction)
-	Price     billing.Money // Price per one view or click
-	LeadPrice billing.Money // Price per one lead
+	TestMode bool
+
+	Ad *Ad
+	// Bid *AdBid
+
+	ECPM          billing.Money
+	BidPrice      billing.Money // Max price per one View (used in DSP auction)
+	TestViewPrice billing.Money // Price for test period per one view (as CPM mode)
+	Price         billing.Money // Price per one view or click
+	LeadPrice     billing.Money // Price per one lead
 }
 
 // Less then other target
-func (t TargetBid) Less(tb TargetBid) bool {
+func (t *TargetBid) Less(tb TargetBid) bool {
 	return t.ECPM < tb.ECPM
 }
 
+// FixedPurchasePrice returns fixed price for the target action
+func (t *TargetBid) PricePerAction(action Action) billing.Money {
+	switch action {
+	case ActionView:
+		if t.TestMode && t.TestViewPrice > 0 {
+			return t.TestViewPrice
+		}
+		if t.Ad.PricingModel.IsCPM() {
+			return t.Price
+		}
+	case ActionClick:
+		if t.Ad.PricingModel.IsCPC() {
+			return t.Price
+		}
+	case ActionLead:
+		if t.Ad.PricingModel.IsCPA() {
+			return t.LeadPrice
+		}
+	}
+	return 0
+}
+
+// MaxBidPrice returns max bid price for the target
+func (t *TargetBid) MaxBidPrice() billing.Money {
+	if t.BidPrice > 0 {
+		return t.BidPrice
+	}
+	if t.Ad.Campaign.MaxBid > 0 {
+		return t.Ad.Campaign.MaxBid
+	}
+	return gocast.IfThen(t.ECPM > 0, t.ECPM/1000, t.PricePerAction(ActionView))
+}
+
+// CalcBidPrice returns calculated bid price for the target
+func (t *TargetBid) CalcBidPrice() (bidPrice billing.Money) {
+	if t.BidPrice > 0 {
+		bidPrice = t.BidPrice
+	} else {
+		bidPrice = t.PricePerAction(ActionView)
+	}
+	return min(bidPrice, t.MaxBidPrice())
+}
+
+// TargetBidList object list representation
 type TargetBidList []TargetBid
 
 // Random target from list

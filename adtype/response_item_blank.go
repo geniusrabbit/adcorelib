@@ -115,9 +115,26 @@ func (it *ResponseItemBlank) FixedPurchasePrice(action admodels.Action) billing.
 // ECPM returns the effective cost per mille of the item.
 func (it *ResponseItemBlank) ECPM() billing.Money { return it.PriceScope.ECPM }
 
+// PriceTestMode returns true if the price is in test mode
+func (it *ResponseItemBlank) PriceTestMode() bool { return it.PriceScope.TestMode }
+
 // Price per specific action type (view, click, lead, etc)
 func (it *ResponseItemBlank) Price(action admodels.Action) billing.Money {
 	return it.PriceScope.PricePerAction(action)
+}
+
+// BidPrice returns bid price for the external auction source.
+// The current bid price will be adjusted according to the source correction factor and the commission share factor
+func (it *ResponseItemBlank) BidPrice() billing.Money {
+	return it.PriceScope.BidPrice
+}
+
+// SetBidPrice value for external sources auction the system will pay
+func (it *ResponseItemBlank) SetBidPrice(bid billing.Money) error {
+	if !it.PriceScope.SetBidPrice(bid, false) {
+		return ErrNewAuctionBidIsHigherThenMaxBid
+	}
+	return nil
 }
 
 // PurchasePrice gives the price of view from external resource.
@@ -151,18 +168,6 @@ func (it *ResponseItemBlank) SetAuctionCPMBid(price billing.Money, includeFactor
 		return ErrNewAuctionBidIsHigherThenMaxBid
 	}
 	return nil
-}
-
-// AuctionCPMBid value provides price for external sources
-// The prive what we can pay for the action to the external source
-func (it *ResponseItemBlank) AuctionCPMBid(removeFactors ...PriceFactor) billing.Money {
-	price := it.PriceScope.BidPrice * 1000
-
-	// Remove commissions from the price if provided
-	if len(removeFactors) > 0 {
-		price += PriceFactorFromList(removeFactors...).RemoveComission(price, it)
-	}
-	return price
 }
 
 // Second campaigns

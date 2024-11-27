@@ -475,7 +475,7 @@ func (c *Campaign) TestTestBudgetValue() bool {
 		// Total test with profit
 		(c.TestBudget <= 0 || c.TestBudget >= c.CurrentState.TotalSpend()) &&
 		// test daily with profit
-		(c.DailyTestBudget <= 0 || c.DailyTestBudget >= c.CurrentState.Spend())
+		(c.DailyTestBudget <= 0 || c.DailyTestBudget >= c.CurrentState.TestSpend())
 }
 
 // TestBudgetValue return true if budget is valid

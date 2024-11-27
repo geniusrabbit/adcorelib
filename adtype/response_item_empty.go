@@ -95,10 +95,20 @@ func (*ResponseItemEmpty) NetworkName() string { return "" }
 // ECPM item value
 func (*ResponseItemEmpty) ECPM() billing.Money { return 0 }
 
+// PriceTestMode returns true if the price is in test mode
+func (*ResponseItemEmpty) PriceTestMode() bool { return false }
+
 // Price per specific action type (view, click, lead, etc)
 func (*ResponseItemEmpty) Price(action admodels.Action) billing.Money {
 	return 0
 }
+
+// BidPrice returns bid price for the external auction source.
+// The current bid price will be adjusted according to the source correction factor and the commission share factor
+func (*ResponseItemEmpty) BidPrice() billing.Money { return 0 }
+
+// SetBidPrice value for external sources auction the system will pay
+func (*ResponseItemEmpty) SetBidPrice(price billing.Money) error { return nil }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
@@ -120,10 +130,6 @@ func (*ResponseItemEmpty) FinalPrice(action admodels.Action) billing.Money {
 func (*ResponseItemEmpty) SetAuctionCPMBid(price billing.Money, includeFactors ...PriceFactor) error {
 	return nil
 }
-
-// AuctionCPMBid value provides price for external sources
-// The prive what we can pay for the action to the external source
-func (*ResponseItemEmpty) AuctionCPMBid(removeFactors ...PriceFactor) billing.Money { return 0 }
 
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }

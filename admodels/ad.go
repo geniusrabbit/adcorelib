@@ -147,25 +147,35 @@ func (a *Ad) ECPM() billing.Money {
 
 // TargetBid by targeting pointer
 func (a *Ad) TargetBid(pointer types.TargetPointer) TargetBid {
+	testMode := a.IsTestMode()
 	if bid := a.Bids.Bid(pointer); bid != nil {
 		return TargetBid{
-			Ad:        a,
-			Bid:       bid,
-			BidPrice:  bid.BidPrice,
-			Price:     bid.Price,
-			LeadPrice: bid.LeadPrice,
-			ECPM:      a.ecpm(pointer, bid.Price),
+			// Bid:           bid,
+			TestMode:      testMode,
+			Ad:            a,
+			BidPrice:      bid.BidPrice,
+			TestViewPrice: a.TestViewPrice,
+			Price:         bid.Price,
+			LeadPrice:     bid.LeadPrice,
+			ECPM:          a.ecpm(pointer, bid.Price),
 		}
 	}
 
 	return TargetBid{
-		Ad:        a,
-		Bid:       nil,
-		BidPrice:  a.BidPrice,
-		Price:     a.Price,
-		LeadPrice: a.LeadPrice,
-		ECPM:      a.ecpm(pointer, a.Price),
+		// Bid:           nil,
+		TestMode:      testMode,
+		Ad:            a,
+		BidPrice:      a.BidPrice,
+		TestViewPrice: a.TestViewPrice,
+		Price:         a.Price,
+		LeadPrice:     a.LeadPrice,
+		ECPM:          a.ecpm(pointer, a.Price),
 	}
+}
+
+// TestMode returns true if test mode is active
+func (a *Ad) IsTestMode() bool {
+	return !a.PricingModel.IsCPM() && a.TestTestBudgetValue() && a.ECPM() < a.TestViewPrice*1000
 }
 
 // TestBudgetValue returns true if budget is valid
@@ -203,7 +213,7 @@ func (a *Ad) _TestTestBudgetValue() bool {
 		// Total test with profit
 		(a.TestBudget <= 0 || a.TestBudget >= a.CurrentState.TotalSpend()) &&
 		// test daily with profit
-		(a.DailyTestBudget <= 0 || a.DailyTestBudget >= a.CurrentState.Spend())
+		(a.DailyTestBudget <= 0 || a.DailyTestBudget >= a.CurrentState.TestSpend())
 }
 
 ///////////////////////////////////////////////////////////////////////////////

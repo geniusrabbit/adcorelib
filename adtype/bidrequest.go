@@ -89,9 +89,7 @@ func (r *BidRequest) String() (res string) {
 
 // ProjectID returns the Project ID associated with the BidRequest.
 // Currently returns 0 as a placeholder.
-func (r *BidRequest) ProjectID() uint64 {
-	return 0
-}
+func (r *BidRequest) ProjectID() uint64 { return 0 }
 
 // Init initializes the BidRequest with basic information.
 // It resets the formats slice and format bitset,
@@ -109,14 +107,10 @@ func (r *BidRequest) Init(formats types.FormatsAccessor) {
 }
 
 // HTTPRequest returns the underlying HTTP request context.
-func (r *BidRequest) HTTPRequest() *fasthttp.RequestCtx {
-	return r.RequestCtx
-}
+func (r *BidRequest) HTTPRequest() *fasthttp.RequestCtx { return r.RequestCtx }
 
 // ServiceDomain returns the domain of the service handling the request.
-func (r *BidRequest) ServiceDomain() string {
-	return string(r.RequestCtx.URI().Host())
-}
+func (r *BidRequest) ServiceDomain() string { return string(r.RequestCtx.URI().Host()) }
 
 // SetSourceFilter sets the source filter IDs for the BidRequest.
 // It replaces any existing source IDs with the provided ones.
@@ -175,9 +169,7 @@ func (r *BidRequest) FormatTypeMask() types.FormatTypeBitset {
 }
 
 // Size returns the width and height of the area of visibility for the ad.
-func (r *BidRequest) Size() (width, height int) {
-	return r.Width(), r.Height()
-}
+func (r *BidRequest) Size() (w, h int) { return r.Width(), r.Height() }
 
 // Width returns the width of the device's browser.
 // Returns 0 if device or browser information is unavailable.
@@ -385,8 +377,8 @@ func (r *BidRequest) Ages() [2]uint {
 		}
 	}
 	return [2]uint{
-		uint(r.User.AgeStart),
 		uint(r.User.AgeEnd),
+		uint(r.User.AgeStart),
 	}
 }
 
@@ -414,19 +406,13 @@ func (r *BidRequest) Categories() []uint64 {
 }
 
 // IsSecure checks if the request is made over a secure connection.
-func (r *BidRequest) IsSecure() bool {
-	return r.Secure == 1
-}
+func (r *BidRequest) IsSecure() bool { return r.Secure == 1 }
 
 // IsAdblock checks if the user has an ad blocker enabled.
-func (r *BidRequest) IsAdblock() bool {
-	return r.Adblock == 1
-}
+func (r *BidRequest) IsAdblock() bool { return r.Adblock == 1 }
 
 // IsPrivateBrowsing checks if the user is in private browsing mode.
-func (r *BidRequest) IsPrivateBrowsing() bool {
-	return r.PrivateBrowsing == 1
-}
+func (r *BidRequest) IsPrivateBrowsing() bool { return r.PrivateBrowsing == 1 }
 
 // SiteInfo returns the site information associated with the BidRequest.
 // If the site is unavailable, it returns the default site information.
@@ -442,9 +428,7 @@ func (r *BidRequest) SiteInfo() *udetect.Site {
 }
 
 // AppInfo returns the application information associated with the BidRequest.
-func (r *BidRequest) AppInfo() *udetect.App {
-	return r.App
-}
+func (r *BidRequest) AppInfo() *udetect.App { return r.App }
 
 // UserInfo returns the user information associated with the BidRequest.
 // It initializes default values if user or geographical information is missing.
@@ -527,12 +511,12 @@ func (r *BidRequest) BrowserInfo() *udetect.Browser {
 func (r *BidRequest) MinECPM() (minBid billing.Money) {
 	for _, imp := range r.Imps {
 		if minBid == 0 {
-			minBid = imp.BidFloor
-		} else if imp.BidFloor > 0 && minBid < imp.BidFloor {
-			minBid = imp.BidFloor
+			minBid = max(imp.BidFloorCPM, 0)
+		} else if imp.BidFloorCPM > 0 && minBid < imp.BidFloorCPM {
+			minBid = imp.BidFloorCPM
 		}
 	}
-	return
+	return minBid
 }
 
 // GeoInfo returns the geographical information associated with the BidRequest.
@@ -578,7 +562,6 @@ func (r *BidRequest) Unset(keys ...string) {
 	if r.Ext == nil {
 		return
 	}
-
 	for _, key := range keys {
 		delete(r.Ext, key)
 	}
@@ -618,15 +601,11 @@ func (r *BidRequest) ImpressionByIDvariation(id string) *Impression {
 }
 
 // Time returns the timestamp of the BidRequest.
-func (r *BidRequest) Time() time.Time {
-	return r.Timemark
-}
+func (r *BidRequest) Time() time.Time { return r.Timemark }
 
 // Validate performs validation on the BidRequest.
 // Currently, it always returns nil, but can be extended to include validation logic.
-func (r *BidRequest) Validate() error {
-	return nil
-}
+func (r *BidRequest) Validate() error { return nil }
 
 // Release releases any resources associated with the BidRequest.
 // If the original request implements the releaser interface, it calls the Release method.

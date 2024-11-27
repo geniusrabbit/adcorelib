@@ -21,8 +21,21 @@ type priceCalculatorItem interface {
 	// FixedPurchasePrice returns fixed price for the target action
 	FixedPurchasePrice(action admodels.Action) billing.Money
 
+	// BidPrice returns bid price for the external auction source.
+	// The current bid price will be adjusted according to the source correction factor and the commission share factor
+	BidPrice() billing.Money
+
 	// Price returns price for the target action (view, click, lead, etc)
 	Price(action admodels.Action) billing.Money
+}
+
+// CalculateNewBidPrice returns new bid price for the target with system comission and with source corrections
+func CalculateNewBidPrice(price billing.Money, item priceCalculatorItem) billing.Money {
+	return billing.MoneyFloat(
+		price.Float64() /
+			(1 + item.CommissionShareFactor()) /
+			(1 + item.SourceCorrectionFactor()),
+	)
 }
 
 // CalculatePurchasePrice returns purchase price for the target whithout system comission and with any corrections
@@ -34,9 +47,14 @@ func CalculatePurchasePrice(item priceCalculatorItem, action admodels.Action) bi
 	if fixedPrice := item.FixedPurchasePrice(action); fixedPrice > 0 {
 		return fixedPrice
 	}
-	price := item.Price(action).Float64()
+	if action == admodels.ActionView {
+		if bidPrice := item.BidPrice(); bidPrice > 0 {
+			return bidPrice
+		}
+	}
+	price := item.Price(action)
 	return billing.MoneyFloat(
-		price /
+		price.Float64() /
 			(1. + item.SourceCorrectionFactor()) /
 			(1. + item.TargetCorrectionFactor()) /
 			(1. + item.CommissionShareFactor()),
@@ -51,7 +69,11 @@ func CalculatePurchasePrice(item priceCalculatorItem, action admodels.Action) bi
 //
 //go:inline
 func CalculatePotentialPrice(item priceCalculatorItem, action admodels.Action) billing.Money {
-	return item.Price(action)
+	val := item.Price(action)
+	if val == 0 && action.IsView() {
+		val = item.ECPM()
+	}
+	return val
 }
 
 // CalculateFinalPrice returns final price for the item which is including all possible commissions with all corrections
