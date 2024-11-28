@@ -99,11 +99,6 @@ func (z *Zone) SetAccount(acc *Account) {
 	z.Acc = acc
 }
 
-// RevenueShareFactor amount %
-func (z *Zone) RevenueShareFactor() float64 {
-	return z.Acc.RevenueShareFactor()
-}
-
 // CommissionShareFactor which system get from publisher
 func (z *Zone) CommissionShareFactor() float64 {
 	return z.Acc.CommissionShareFactor()

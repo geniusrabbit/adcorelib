@@ -63,16 +63,11 @@ func (c *Account) Spend() billing.Money {
 	return c.CurrentState.Spend()
 }
 
-// RevenueShareFactor multipler 0..1 that publisher get from system
-func (c *Account) RevenueShareFactor() float64 {
+// CommissionShareFactor which system get from publisher 0..1
+func (c *Account) CommissionShareFactor() float64 {
 	if c == nil {
 		zap.L().Error("account is not inited", zap.Stack("trace"))
 		return 0.
 	}
-	return c.RevenueShare
-}
-
-// CommissionShareFactor which system get from publisher 0..1
-func (c *Account) CommissionShareFactor() float64 {
-	return 1. - c.RevenueShareFactor()
+	return 1. - c.RevenueShare
 }

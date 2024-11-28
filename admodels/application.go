@@ -44,14 +44,6 @@ func (a *Application) ObjectKey() string {
 	return a.URI
 }
 
-// RevenueShareFactor amount %
-func (a *Application) RevenueShareFactor() float64 {
-	if a.RevenueShare > 0 {
-		return a.RevenueShare
-	}
-	return a.Account.RevenueShareFactor()
-}
-
 // CommissionShareFactor which system get from publisher
 func (a *Application) CommissionShareFactor() float64 {
 	if a.RevenueShare > 0 {

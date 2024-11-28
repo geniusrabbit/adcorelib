@@ -101,11 +101,6 @@ func (l *Smartlink) SetAccount(acc *Account) {
 	l.Acc = acc
 }
 
-// RevenueShareFactor amount of % which company get from publisher
-func (l *Smartlink) RevenueShareFactor() float64 {
-	return l.Acc.RevenueShareFactor()
-}
-
 // CommissionShareFactor which system get from publisher
 func (l *Smartlink) CommissionShareFactor() float64 {
 	return l.Acc.CommissionShareFactor()

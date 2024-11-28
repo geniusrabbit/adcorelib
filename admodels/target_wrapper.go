@@ -31,9 +31,6 @@ func (tw VirtualTarget) PricingModel() types.PricingModel { return tw.trg.Pricin
 // PurchasePrice gives the price of view from external resource
 func (tw VirtualTarget) PurchasePrice(a Action) billing.Money { return tw.trg.PurchasePrice(a) }
 
-// RevenueShareFactor of current target
-func (tw VirtualTarget) RevenueShareFactor() float64 { return tw.trg.RevenueShareFactor() }
-
 // CommissionShareFactor of current target
 func (tw VirtualTarget) CommissionShareFactor() float64 { return tw.trg.CommissionShareFactor() }
 

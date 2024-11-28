@@ -7,7 +7,6 @@ package eventgenerator
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -73,18 +72,6 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 	if response.Request().AccessPoint != nil {
 		accessPointID = response.Request().AccessPoint.ID()
 	}
-
-	fmt.Println(">> EVENT", event, status, "\n\t",
-		"PurchaseViewPrice", fmt.Sprintf("%.7f", it.PurchasePrice(admodels.ActionView).Float64()), "\n\t",
-		"PurchaseClickPrice", fmt.Sprintf("%.7f", it.PurchasePrice(admodels.ActionClick).Float64()), "\n\t",
-		"PurchaseLeadPrice", fmt.Sprintf("%.7f", it.PurchasePrice(admodels.ActionLead).Float64()), "\n\t",
-		"PotentialViewPrice", fmt.Sprintf("%.7f", it.PotentialPrice(admodels.ActionView).Float64()), "\n\t",
-		"PotentialClickPrice", fmt.Sprintf("%.7f", it.PotentialPrice(admodels.ActionClick).Float64()), "\n\t",
-		"PotentialLeadPrice", fmt.Sprintf("%.7f", it.PotentialPrice(admodels.ActionLead).Float64()), "\n\t",
-		"ViewPrice", fmt.Sprintf("%.7f", it.Price(admodels.ActionView).Float64()), "\n\t",
-		"ClickPrice", fmt.Sprintf("%.7f", it.Price(admodels.ActionClick).Float64()), "\n\t",
-		"LeadPrice", fmt.Sprintf("%.7f", it.Price(admodels.ActionLead).Float64()), "\n\t",
-	)
 
 	return &events.Event{
 		Time:     time.Now().UnixNano(),

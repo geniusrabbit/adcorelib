@@ -20,11 +20,6 @@ func (c AccountTarget) Size() (w, h int) {
 	return w, h
 }
 
-// RevenueShareFactor of current target
-func (c AccountTarget) RevenueShareFactor() float64 {
-	return c.Acc.RevenueShareFactor()
-}
-
 // CommissionShareFactor of current target
 func (c AccountTarget) CommissionShareFactor() float64 {
 	return c.Acc.CommissionShareFactor()

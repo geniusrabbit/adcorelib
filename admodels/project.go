@@ -19,11 +19,6 @@ type Project struct {
 	RevenueShare float64 // From 0 to 1 -> 100%
 }
 
-// RevenueShareFactor amount %
-func (p *Project) RevenueShareFactor() float64 {
-	return p.RevenueShare
-}
-
 // CommissionShareFactor which system get from publisher 0..1
 func (p *Project) CommissionShareFactor() float64 {
 	return 1.0 - p.RevenueShare

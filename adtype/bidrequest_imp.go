@@ -134,16 +134,6 @@ func (i *Impression) IsStandart() bool {
 		i.FormatTypes.Is(types.FormatBannerHTML5Type)
 }
 
-// RevenueShareFactor value for the publisher company
-//
-//go:inline
-func (i *Impression) RevenueShareFactor() float64 {
-	if i == nil || i.Target == nil {
-		return 0
-	}
-	return i.Target.RevenueShareFactor()
-}
-
 // CommissionShareFactor which system get from publisher from 0 to 1
 //
 //go:inline

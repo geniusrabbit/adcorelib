@@ -34,9 +34,6 @@ type Target interface {
 	// PurchasePrice gives the price of view from external resource
 	PurchasePrice(action Action) billing.Money
 
-	// RevenueShareFactor of current target from 0 to 1
-	RevenueShareFactor() float64
-
 	// CommissionShareFactor of current target from 0 to 1
 	CommissionShareFactor() float64
 
