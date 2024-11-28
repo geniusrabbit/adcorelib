@@ -50,6 +50,7 @@ type Subprotocol struct {
 type Platform struct {
 	Name         string          `json:"name,omitempty"`
 	Protocol     string          `json:"protocol"`
+	AllProtocols []string        `json:"all_protocols,omitempty"`
 	Versions     []string        `json:"versions,omitempty"`
 	Description  string          `json:"description,omitempty"`
 	Docs         []Documentation `json:"docs,omitempty"`

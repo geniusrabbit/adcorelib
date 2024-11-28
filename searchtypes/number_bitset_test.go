@@ -7,7 +7,7 @@ import (
 )
 
 func TestNumberBitset(t *testing.T) {
-	bits := NewNumberBitset[int](1, 3, 5, 7)
+	bits := NewNumberBitset[uint](1, 3, 5, 7)
 
 	bits.Set(2)
 	if !bits.Has(2) {
@@ -44,7 +44,7 @@ func BenchmarkNumberBitset(b *testing.B) {
 		case i%3 == 0 || i%5 == 0 || i%11 == 0:
 			bits = bits.Unset(variants[cursor])
 		default:
-			bits.Has(variants[cursor])
+			_ = bits.Has(variants[cursor])
 		}
 		if cursor++; cursor >= len(variants) {
 			cursor = 0

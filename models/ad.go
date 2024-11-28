@@ -113,3 +113,11 @@ func (a *Ad) Stringify() string {
 func (a *Ad) RBACResourceName() string {
 	return "adv_ad"
 }
+
+// OwnerAccountID of the advertisement
+func (a *Ad) OwnerAccountID() uint64 {
+	if a.Campaign != nil {
+		return a.Campaign.AccountID
+	}
+	return 0
+}

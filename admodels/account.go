@@ -11,12 +11,17 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
+type AccountBalanceState interface {
+	Balance() billing.Money
+	Spend() billing.Money
+}
+
 // Account model
 type Account struct {
-	IDval    uint64        // Authoincrement key
-	Balance  billing.Money //
-	MaxDaily billing.Money //
-	Spent    billing.Money // Daily spent
+	IDval uint64 // Authoincrement key
+
+	MaxDaily     billing.Money
+	CurrentState AccountBalanceState
 
 	// RevenueShare it's amount of percent of the raw incode which will be shared with the publisher company
 	// For example:
@@ -37,6 +42,27 @@ func (c *Account) ObjectKey() uint64 {
 	return c.IDval
 }
 
+// DailyBudget of the account
+func (c *Account) DailyBudget() billing.Money {
+	return c.MaxDaily
+}
+
+// Balance of the account
+func (c *Account) Balance() billing.Money {
+	if c.CurrentState == nil {
+		return 0
+	}
+	return c.CurrentState.Balance()
+}
+
+// Spend of the account
+func (c *Account) Spend() billing.Money {
+	if c.CurrentState == nil {
+		return 0
+	}
+	return c.CurrentState.Spend()
+}
+
 // RevenueShareFactor multipler 0..1 that publisher get from system
 func (c *Account) RevenueShareFactor() float64 {
 	if c == nil {
@@ -46,7 +72,7 @@ func (c *Account) RevenueShareFactor() float64 {
 	return c.RevenueShare
 }
 
-// ComissionShareFactor which system get from publisher 0..1
-func (c *Account) ComissionShareFactor() float64 {
+// CommissionShareFactor which system get from publisher 0..1
+func (c *Account) CommissionShareFactor() float64 {
 	return 1. - c.RevenueShareFactor()
 }

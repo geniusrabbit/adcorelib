@@ -22,8 +22,9 @@ type Campaign struct {
 	Title string `json:"title"`
 
 	// Owner/moderator Company of the Campaign
-	AccountID uint64 `json:"account_id"`
-	CreatorID uint64 `json:"creator_id"`
+	AccountID   uint64 `json:"account_id"`
+	CreatorID   uint64 `json:"creator_id"`
+	ModeratorID uint64 `json:"moderator_id"`
 
 	// Status of the campaign
 	Status types.ApproveStatus `gorm:"type:ApproveStatus" json:"status"`

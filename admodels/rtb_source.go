@@ -57,12 +57,16 @@ type RTBSource struct {
 	MinBid billing.Money // Minimal bid value
 	MaxBid billing.Money // Maximal bid value
 
+	// TODO
+	Budget      billing.Money // Budget for this source
+	DailyBudget billing.Money // Daily budget for this source
+
 	Config gosql.NullableJSON[any]
 }
 
 // RTBSourceFromModel convert database model to specified model
 func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
-	if acc == nil {
+	if cl == nil {
 		return nil
 	}
 

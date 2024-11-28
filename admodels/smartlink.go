@@ -21,7 +21,8 @@ type Smartlink struct {
 	Acc   *Account
 	AccID uint64
 
-	FixedPurchasePrice billing.Money // The cost of single view
+	// The cost of single view
+	FixedPurchasePrice billing.Money
 
 	// Filtering
 	AllowedTypes      gosql.NullableOrderedNumberArray[int64]
@@ -105,9 +106,9 @@ func (l *Smartlink) RevenueShareFactor() float64 {
 	return l.Acc.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher
-func (l *Smartlink) ComissionShareFactor() float64 {
-	return l.Acc.ComissionShareFactor()
+// CommissionShareFactor which system get from publisher
+func (l *Smartlink) CommissionShareFactor() float64 {
+	return l.Acc.CommissionShareFactor()
 }
 
 // RevenueShareReduceFactor correction factor to reduce target proce of the access point to avoid descrepancy

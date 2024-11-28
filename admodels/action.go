@@ -21,24 +21,29 @@ func (a Action) String() string {
 }
 
 // Int value of action
-func (a Action) Int() int {
-	return int(a)
-}
+//
+//go:inline
+func (a Action) Int() int { return int(a) }
 
 // IsImpression action type
-func (a Action) IsImpression() bool {
-	return a == ActionImpression
-}
+//
+//go:inline
+func (a Action) IsImpression() bool { return a == ActionImpression }
+
+// IsView action type
+//
+//go:inline
+func (a Action) IsView() bool { return a == ActionView }
 
 // IsClick action type
-func (a Action) IsClick() bool {
-	return a == ActionClick
-}
+//
+//go:inline
+func (a Action) IsClick() bool { return a == ActionClick }
 
 // IsLead action type
-func (a Action) IsLead() bool {
-	return a == ActionLead
-}
+//
+//go:inline
+func (a Action) IsLead() bool { return a == ActionLead }
 
 // Campaign actions
 const (

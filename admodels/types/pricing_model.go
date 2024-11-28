@@ -65,21 +65,29 @@ func (pm PricingModel) Name() string {
 }
 
 // IsCPM model
+//
+//go:inline
 func (pm PricingModel) IsCPM() bool {
 	return pm == PricingModelCPM
 }
 
 // IsCPC model
+//
+//go:inline
 func (pm PricingModel) IsCPC() bool {
 	return pm == PricingModelCPC
 }
 
 // IsCPA model
+//
+//go:inline
 func (pm PricingModel) IsCPA() bool {
 	return pm == PricingModelCPA
 }
 
 // UInt value
+//
+//go:inline
 func (pm PricingModel) UInt() uint {
 	return uint(pm)
 }

@@ -5,8 +5,8 @@ import (
 )
 
 type systemComissionFactorer interface {
-	// ComissionShareFactor which system get from publisher 0..1
-	ComissionShareFactor() float64
+	// CommissionShareFactor which system get from publisher 0..1
+	CommissionShareFactor() float64
 }
 
 type revenueShareReducerFactorer interface {
@@ -33,43 +33,43 @@ func PriceFactorFromList(factors ...PriceFactor) (f PriceFactor) {
 	return f
 }
 
-// Add comissions to price and rеturns comissions with positive sign `+`
-func (f PriceFactor) Add(price billing.Money, it ResponserItem) (comissions billing.Money) {
+// AddComission to price and rеturns comissions with positive sign `+`
+func (f PriceFactor) AddComission(price billing.Money, it ResponserItem) (comissions billing.Money) {
 	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
-	if f&SourcePriceFactor == SourcePriceFactor {
+	if f&SourcePriceFactor != 0 {
 		pValue := PriceSourceFactors(price, it.Source(), false)
 		comissions += pValue
 		price += pValue
 	}
-	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
-		pValue := PriceSystemComission(price, it, false)
+	if f&SystemComissionPriceFactor != 0 {
+		pValue := PriceSystemCommission(price, it, false)
 		comissions += pValue
 	}
-	if f&TargetReducePriceFactor == TargetReducePriceFactor {
+	if f&TargetReducePriceFactor != 0 {
 		pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, false)
 		comissions += pValue
 	}
 	return comissions
 }
 
-// Remove comissions from price and rеturns comissions with negative sign `-`
-func (f PriceFactor) Remove(price billing.Money, it ResponserItem) (comissions billing.Money) {
+// RemoveComission from price and rеturns comissions with negative sign `-`
+func (f PriceFactor) RemoveComission(price billing.Money, it ResponserItem) (comissions billing.Money) {
 	if f == NonePriceFactor || price <= 0 {
 		return 0
 	}
-	if f&TargetReducePriceFactor == TargetReducePriceFactor {
+	if f&TargetReducePriceFactor != 0 {
 		pValue := PriceRevenueShareReduceFactors(price, it.Impression().Target, true)
 		comissions += pValue
 		price += pValue
 	}
-	if f&SystemComissionPriceFactor == SystemComissionPriceFactor {
-		pValue := PriceSystemComission(price, it, true)
+	if f&SystemComissionPriceFactor != 0 {
+		pValue := PriceSystemCommission(price, it, true)
 		comissions += pValue
 		price += pValue
 	}
-	if f&SourcePriceFactor == SourcePriceFactor {
+	if f&SourcePriceFactor != 0 {
 		pValue := PriceSourceFactors(price, it.Source(), true)
 		comissions += pValue
 	}
@@ -81,39 +81,40 @@ func PriceSourceFactors(price billing.Money, src Source, remove bool) billing.Mo
 	if src == nil || price <= 0 {
 		return 0
 	}
-	if reduce := src.PriceCorrectionReduceFactor(); reduce > 0 {
-		if remove {
-			return price/100*billing.Money((1-reduce)*100) - price
-		}
-		return price / 100 * billing.Money(reduce*100)
-	}
-	return 0
+	return AdjustPrice(price, src.PriceCorrectionReduceFactor(), remove)
 }
 
-// PriceSystemComission = 1. - `TrafficSourceComission`
-func PriceSystemComission(price billing.Money, item systemComissionFactorer, remove bool) billing.Money {
+// PriceSystemCommission = 1. - `TrafficSourceCommission`
+func PriceSystemCommission(price billing.Money, item systemComissionFactorer, remove bool) billing.Money {
 	if item == nil || price <= 0 {
 		return 0
 	}
-	if reduce := item.ComissionShareFactor(); reduce > 0 {
-		if remove {
-			return price/100*billing.Money((1-reduce)*100) - price
-		}
-		return price / 100 * billing.Money(reduce*100)
-	}
-	return 0
+	return AdjustPrice(price, item.CommissionShareFactor(), remove)
 }
 
-// PriceRevenueShareReduceFactors cirrection to reduce descreancy
+// PriceRevenueShareReduceFactors correction to reduce descreancy
 func PriceRevenueShareReduceFactors(price billing.Money, rs revenueShareReducerFactorer, remove bool) billing.Money {
 	if rs == nil || price <= 0 {
 		return 0
 	}
-	if reduce := rs.RevenueShareReduceFactor(); reduce > 0 {
-		if remove {
-			return price/100*billing.Money((1-reduce)*100) - price
-		}
-		return price / 100 * billing.Money(reduce*100)
+	return AdjustPrice(price, rs.RevenueShareReduceFactor(), remove)
+}
+
+func AdjustPrice(price billing.Money, factor float64, remove bool) billing.Money {
+	if price <= 0 || factor <= 0 {
+		return 0
 	}
-	return 0
+
+	fPrice := price.Float64()
+
+	if remove {
+		// Calculate the original price by dividing by (1 + factor)
+		originalPrice := fPrice / (1 + factor)
+		adjustment := fPrice - originalPrice
+		return -billing.MoneyFloat(adjustment) // Round to the nearest integer
+	}
+
+	// Calculate adjustment for adding commission
+	adjustment := fPrice * factor
+	return billing.MoneyFloat(adjustment) // Round to the nearest integer
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
-// ResponseEmpty object
+// ResponseEmpty object represents empty response and response item
 type ResponseEmpty struct {
 	ItemID  string
 	Req     *BidRequest
@@ -30,7 +30,7 @@ func (r ResponseEmpty) ID() string {
 	return r.ItemID
 }
 
-// AuctionID response
+// AuctionID returns ID of the current auction
 func (r ResponseEmpty) AuctionID() string {
 	if r.Req == nil {
 		return ""
@@ -38,7 +38,7 @@ func (r ResponseEmpty) AuctionID() string {
 	return r.Req.ID
 }
 
-// AuctionType of request
+// AuctionType returns type of the auction (first price, second price, etc)
 func (r ResponseEmpty) AuctionType() types.AuctionType {
 	if r.Req == nil {
 		return types.UndefinedAuctionType
@@ -46,7 +46,7 @@ func (r ResponseEmpty) AuctionType() types.AuctionType {
 	return r.Req.AuctionType
 }
 
-// Source of response
+// Source returns source of the response
 func (r ResponseEmpty) Source() Source {
 	return r.Src
 }
@@ -56,7 +56,7 @@ func (r ResponseEmpty) PriorityFormatType() types.FormatType {
 	return types.FormatUndefinedType
 }
 
-// Request information
+// Request returns the original request object
 func (r ResponseEmpty) Request() *BidRequest {
 	return r.Req
 }
@@ -87,7 +87,7 @@ func (r ResponseEmpty) ExtTargetID() string {
 	if r.Imp == nil {
 		return ""
 	}
-	return r.Imp.ExtTargetID
+	return r.Imp.ExternalTargetID
 }
 
 // Ads list
@@ -100,23 +100,9 @@ func (r ResponseEmpty) Item(impid string) ResponserItemCommon {
 	return nil
 }
 
-// Price of whole response
-func (r ResponseEmpty) Price() billing.Money {
-	return 0
-}
-
-// LeadPrice summ
-func (r ResponseEmpty) LeadPrice() billing.Money {
-	return 0
-}
-
-// CPMBid value
-func (r ResponseEmpty) CPMBid() billing.Money {
-	return 0
-}
-
-// AuctionCPMBid value price without any comission
-func (r ResponseEmpty) AuctionCPMBid() billing.Money {
+// InternalAuctionCPMBid value provides maximal possible price without any comission
+// According to this value the system can choice the best item for the auction
+func (r ResponseEmpty) InternalAuctionCPMBid() billing.Money {
 	return 0
 }
 
@@ -156,6 +142,9 @@ func (r *ResponseEmpty) Get(key string) (res any) {
 	}
 	return res
 }
+
+// Release response and all linked objects
+func (r *ResponseEmpty) Release() {}
 
 var (
 	_ ResponserItemCommon = (*ResponseEmpty)(nil)

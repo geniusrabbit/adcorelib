@@ -30,6 +30,9 @@ type Platformer interface {
 	// Protocol name of the access point
 	Protocol() string
 
+	// IsProtocolSupported check if protocol is supported
+	IsProtocolSupported(protocol string) bool
+
 	// HTTPHandler of the raw HTTP request
 	HTTPHandler(ctx context.Context, rctx *fasthttp.RequestCtx) adtype.Responser
 }

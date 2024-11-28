@@ -21,18 +21,20 @@ import (
 
 // RequestOptions prepare
 type RequestOptions struct {
-	Debug   bool
-	Request *fasthttp.RequestCtx
-	Count   int
-	X, Y    int
-	W, WMax int
-	H, HMax int
-	Page    string
-	SubID1  string
-	SubID2  string
-	SubID3  string
-	SubID4  string
-	SubID5  string
+	Debug     bool
+	Request   *fasthttp.RequestCtx
+	Count     int
+	X, Y      int
+	Width     int
+	WidthMax  int
+	Height    int
+	HeightMax int
+	Page      string
+	SubID1    string
+	SubID2    string
+	SubID3    string
+	SubID4    string
+	SubID5    string
 }
 
 // NewRequestOptions prepare
@@ -43,20 +45,20 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		debug, _         = strconv.ParseBool(string(queryArgs.Peek("debug")))
 	)
 	return &RequestOptions{
-		Debug:   debug,
-		Request: ctx,
-		X:       gocast.Int(string(queryArgs.Peek("x"))),
-		Y:       gocast.Int(string(queryArgs.Peek("y"))),
-		W:       minW,
-		WMax:    ifPositiveNumber(w, -1),
-		H:       minH,
-		HMax:    ifPositiveNumber(h, -1),
-		SubID1:  peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
-		SubID2:  peekOneFromQuery(queryArgs, "subid2", "s2"),
-		SubID3:  peekOneFromQuery(queryArgs, "subid3", "s3"),
-		SubID4:  peekOneFromQuery(queryArgs, "subid4", "s4"),
-		SubID5:  peekOneFromQuery(queryArgs, "subid5", "s5"),
-		Count:   gocast.Int(peekOneFromQuery(queryArgs, "count")),
+		Debug:     debug,
+		Request:   ctx,
+		X:         gocast.Int(string(queryArgs.Peek("x"))),
+		Y:         gocast.Int(string(queryArgs.Peek("y"))),
+		Width:     minW,
+		WidthMax:  ifPositiveNumber(w, -1),
+		Height:    minH,
+		HeightMax: ifPositiveNumber(h, -1),
+		SubID1:    peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
+		SubID2:    peekOneFromQuery(queryArgs, "subid2", "s2"),
+		SubID3:    peekOneFromQuery(queryArgs, "subid3", "s3"),
+		SubID4:    peekOneFromQuery(queryArgs, "subid4", "s4"),
+		SubID5:    peekOneFromQuery(queryArgs, "subid5", "s5"),
+		Count:     gocast.Int(peekOneFromQuery(queryArgs, "count")),
 	}
 }
 
@@ -71,8 +73,8 @@ func NewDirectRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		Request: ctx,
 		X:       gocast.Int(string(queryArgs.Peek("x"))),
 		Y:       gocast.Int(string(queryArgs.Peek("y"))),
-		W:       -1,
-		H:       -1,
+		Width:   -1,
+		Height:  -1,
 		SubID1:  peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
 		SubID2:  peekOneFromQuery(queryArgs, "subid2", "s2"),
 		SubID3:  peekOneFromQuery(queryArgs, "subid3", "s3"),
@@ -81,7 +83,7 @@ func NewDirectRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 	}
 }
 
-// NewRequestFor person
+// NewRequestFor specific person
 func NewRequestFor(ctx context.Context, app *admodels.Application, target admodels.Target, person personification.Person,
 	opt *RequestOptions, formatAccessor types.FormatsAccessor) *adtype.BidRequest {
 	var (
@@ -100,16 +102,15 @@ func NewRequestFor(ctx context.Context, app *admodels.Application, target admode
 		Imps: []adtype.Impression{
 			{
 				ID:          rand.UUID(), // Impression ID
-				ExtTargetID: "",
 				Target:      target,
-				FormatTypes: directTypeMask(opt.W == -1 && opt.H == -1),
+				FormatTypes: directTypeMask(opt.Width == -1 && opt.Height == -1),
 				Count:       minInt(opt.Count, 1),
 				X:           opt.X,
 				Y:           opt.Y,
-				W:           opt.W,
-				H:           opt.H,
-				WMax:        opt.WMax,
-				HMax:        opt.HMax,
+				Width:       opt.Width,
+				Height:      opt.Height,
+				WidthMax:    opt.WidthMax,
+				HeightMax:   opt.HeightMax,
 				SubID1:      opt.SubID1,
 				SubID2:      opt.SubID2,
 				SubID3:      opt.SubID3,

@@ -45,4 +45,7 @@ type Responser interface {
 
 	// Get context item by key
 	Get(key string) any
+
+	// Release response and all linked objects
+	Release()
 }

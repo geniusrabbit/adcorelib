@@ -13,9 +13,9 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/price"
 )
 
 type titem struct {
@@ -64,11 +64,11 @@ func testBids(bids []billing.Money, res []adtype.ResponserItemCommon) bool {
 		return false
 	}
 
-	sort.Slice(newRes, func(i, j int) bool { return newRes[i].AuctionCPMBid() < newRes[j].AuctionCPMBid() })
+	sort.Slice(newRes, func(i, j int) bool { return newRes[i].InternalAuctionCPMBid() < newRes[j].InternalAuctionCPMBid() })
 	sort.Slice(bids, func(i, j int) bool { return bids[i] < bids[j] })
 
 	for i, b := range bids {
-		if b != newRes[i].AuctionCPMBid() {
+		if b != newRes[i].InternalAuctionCPMBid() {
 			return false
 		}
 	}
@@ -83,13 +83,13 @@ func respToBids(res []adtype.ResponserItemCommon) (bids []tsItem) {
 				bids = append(bids, tsItem{
 					Multi: true,
 					ImpID: it.ImpressionID(),
-					Bid:   it.AuctionCPMBid(),
+					Bid:   it.InternalAuctionCPMBid(),
 				})
 			}
 		default:
 			bids = append(bids, tsItem{
 				ImpID: it.ImpressionID(),
-				Bid:   it.AuctionCPMBid(),
+				Bid:   it.InternalAuctionCPMBid(),
 			})
 		}
 	}
@@ -244,23 +244,23 @@ func BenchmarkRefereeMatch(b *testing.B) {
 		},
 	}
 
-	for n := 0; n < b.N; n++ {
-		ref := Referee{}
-		ref.Push(tt.Scope...)
-		ref.Match(tt.Rings...)
-	}
+	b.Run(tt.Name, func(b *testing.B) {
+		for n := 0; n < b.N; n++ {
+			ref := Referee{}
+			ref.Push(tt.Scope...)
+			ref.Match(tt.Rings...)
+		}
+	})
 }
 
 func newItem(impid string, bid int64) adtype.ResponserItem {
-	return &adtype.ResponseAdItem{
-		Src:         nil,
-		Req:         nil,
-		Imp:         &adtype.Impression{ID: impid},
-		Campaign:    &admodels.Campaign{}, //{Opt: [8]uint8{0, uint8(types.PricingModelCPC)}},
-		Ad:          &admodels.Ad{},
-		BidECPM:     billing.MoneyInt(bid),
-		BidPrice:    0,
-		CPMBidPrice: 0,
+	return &adtype.ResponseItemBlank{
+		Src: nil,
+		Imp: &adtype.Impression{ID: impid},
+		PriceScope: price.PriceScope{
+			ECPM:     billing.MoneyInt(bid),
+			BidPrice: billing.MoneyInt(bid) / 1000,
+		},
 	}
 }
 
@@ -273,5 +273,5 @@ func newMultipleItem(bids ...titem) adtype.ResponserMultipleItem {
 }
 
 func mi(v int) billing.Money {
-	return billing.MoneyInt(int64(v))
+	return billing.MoneyInt(v)
 }

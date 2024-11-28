@@ -52,10 +52,10 @@ func (a *Application) RevenueShareFactor() float64 {
 	return a.Account.RevenueShareFactor()
 }
 
-// ComissionShareFactor which system get from publisher
-func (a *Application) ComissionShareFactor() float64 {
+// CommissionShareFactor which system get from publisher
+func (a *Application) CommissionShareFactor() float64 {
 	if a.RevenueShare > 0 {
 		return (1.0 - a.RevenueShare)
 	}
-	return a.Account.ComissionShareFactor()
+	return a.Account.CommissionShareFactor()
 }

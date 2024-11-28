@@ -28,7 +28,7 @@ func (l equipmentSlice) Less(i, j int) bool {
 
 func avgBid(mit adtype.ResponserMultipleItem, it adtype.ResponserItemCommon) billing.Money {
 	if mit != nil {
-		return mit.AuctionCPMBid() / billing.Money(mit.Count())
+		return mit.InternalAuctionCPMBid() / billing.Money(mit.Count())
 	}
-	return it.AuctionCPMBid()
+	return it.InternalAuctionCPMBid()
 }
