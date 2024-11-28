@@ -52,17 +52,4 @@ func Test_AdModel(t *testing.T) {
 			t.Error("Wrong frequency capping of model")
 		}
 	})
-
-	// t.Run("PricePerModel", func(t *testing.T) {
-	// 	if ad.PricePerModel() != ad.LeadPrice {
-	// 		t.Errorf("This is CPA campaign and price should be %.3f not %.3f",
-	// 			ad.LeadPrice.Float64(), ad.PricePerModel().Float64())
-	// 	}
-	// })
-
-	// t.Run("Budget", func(t *testing.T) {
-	// 	if !ad.TestBudgetValues() {
-	// 		t.Error("Budget must be valid")
-	// 	}
-	// })
 }
