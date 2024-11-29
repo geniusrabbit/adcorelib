@@ -48,9 +48,9 @@ type Event struct {
 	Status   uint8  `thrift:",7" json:"st,omitempty"`  // Status: 0 - undefined, 1 - success, 2 - failed, 3 - compromised
 
 	// Accounts link information
-	Project           uint64 `thrift:",8"  json:"pr,omitempty"`  // Project network ID
-	PublisherAccount  uint64 `thrift:",9"  json:"pcb,omitempty"` // -- // --
-	AdvertiserAccount uint64 `thrift:",10" json:"acv,omitempty"` // -- // --
+	ProjectID           uint64 `thrift:",8"  json:"pr,omitempty"`  // Project network ID
+	PublisherAccountID  uint64 `thrift:",9"  json:"pcb,omitempty"` // -- // --
+	AdvertiserAccountID uint64 `thrift:",10" json:"acv,omitempty"` // -- // --
 
 	// Source
 	AuctionID     string `thrift:",11" json:"auc,omitempty"`     // Internal Auction ID
@@ -93,61 +93,62 @@ type Event struct {
 	//  3) If we are buying the traffic for CPA
 	//		LeadPrice = 20$ - Have to pay advertiser
 	//		PurchaseViewPrice = 10$ - Have to pay to the source
-	PricingModel  uint `thrift:",36" json:"pm,omitempty"`  // Display As CPM/CPC/CPA/CPI
-	TestPriceMode bool `thrift:",37" json:"tpm,omitempty"` // Test price mode
+	PricingModel  uint    `thrift:",36" json:"pm,omitempty"`   // Display As CPM/CPC/CPA/CPI
+	TestPriceMode bool    `thrift:",37" json:"tpm,omitempty"`  // Test price mode
+	ECPM          float64 `thrift:",38" json:"ecpm,omitempty"` // Effective Cost per Mille
 	// Prurchase price from SSP or other TRAFFIC sources (menetisation of income requests)
 	// We are buying the place of advertisement display
-	PurchaseViewPrice    int64   `thrift:",38" json:"pvpr,omitempty"`   // Price of the view of source traffic cost
-	PurchaseClickPrice   int64   `thrift:",39" json:"pcpr,omitempty"`   // Price of the click of source traffic cost
-	PurchaseLeadPrice    int64   `thrift:",40" json:"plpr,omitempty"`   // Price of the lead of source traffic cost
-	PotentialViewPrice   int64   `thrift:",41" json:"ptvpr,omitempty"`  // Price of the view of source of ads oitential
-	PotentialClickPrice  int64   `thrift:",42" json:"ptcpr,omitempty"`  // Price of the click of source of ads oitential
-	PotentialLeadPrice   int64   `thrift:",43" json:"ptlpr,omitempty"`  // Price of the lead of source of ads oitential
-	ViewPrice            int64   `thrift:",44" json:"vpr,omitempty"`    // Price per view
-	ClickPrice           int64   `thrift:",45" json:"cpr,omitempty"`    // Price per click
-	LeadPrice            int64   `thrift:",46" json:"lpr,omitempty"`    // Price per lead
-	CompetitorCampaignID uint64  `thrift:",47" json:"cmid,omitempty"`   // Competitor compaign ID
-	CompetitorSourceID   uint64  `thrift:",48" json:"cmsrc,omitempty"`  // Competitor source ID
-	CompetitorECPM       float64 `thrift:",49" json:"cmecpm,omitempty"` // Competitor ECPM or auction
+	PurchaseViewPrice    int64   `thrift:",39" json:"pvpr,omitempty"`   // Price of the view of source traffic cost
+	PurchaseClickPrice   int64   `thrift:",40" json:"pcpr,omitempty"`   // Price of the click of source traffic cost
+	PurchaseLeadPrice    int64   `thrift:",41" json:"plpr,omitempty"`   // Price of the lead of source traffic cost
+	PotentialViewPrice   int64   `thrift:",42" json:"ptvpr,omitempty"`  // Price of the view of source of ads oitential
+	PotentialClickPrice  int64   `thrift:",43" json:"ptcpr,omitempty"`  // Price of the click of source of ads oitential
+	PotentialLeadPrice   int64   `thrift:",44" json:"ptlpr,omitempty"`  // Price of the lead of source of ads oitential
+	ViewPrice            int64   `thrift:",45" json:"vpr,omitempty"`    // Price per view
+	ClickPrice           int64   `thrift:",46" json:"cpr,omitempty"`    // Price per click
+	LeadPrice            int64   `thrift:",47" json:"lpr,omitempty"`    // Price per lead
+	CompetitorCampaignID uint64  `thrift:",48" json:"cmid,omitempty"`   // Competitor compaign ID
+	CompetitorSourceID   uint64  `thrift:",49" json:"cmsrc,omitempty"`  // Competitor source ID
+	CompetitorECPM       float64 `thrift:",50" json:"cmecpm,omitempty"` // Competitor ECPM or auction
 
 	// User IDENTITY
-	UDID        string `thrift:",50" json:"udi,omitempty"` // Unique Device ID (IDFA)
-	UUID        string `thrift:",51" json:"uui,omitempty"` // User
-	SessionID   string `thrift:",52" json:"ses,omitempty"` // -- // --
-	Fingerprint string `thrift:",53" json:"fpr,omitempty"` // -- // --
-	ETag        string `thrift:",54" json:"etg,omitempty"` // -- // --
+	UDID        string `thrift:",51" json:"udi,omitempty"` // Unique Device ID (IDFA)
+	UUID        string `thrift:",52" json:"uui,omitempty"` // User
+	SessionID   string `thrift:",53" json:"ses,omitempty"` // -- // --
+	Fingerprint string `thrift:",54" json:"fpr,omitempty"` // -- // --
+	ETag        string `thrift:",55" json:"etg,omitempty"` // -- // --
 
 	// Targeting
-	CarrierID       uint   `thrift:",55" json:"car,omitempty"`  // -- // --
-	Country         string `thrift:",56" json:"cc,omitempty"`   // Country Code ISO-2
-	City            string `thrift:",57" json:"ct,omitempty"`   // City Code
-	Latitude        string `thrift:",58" json:"lt,omitempty"`   // -- // --
-	Longitude       string `thrift:",59" json:"lg,omitempty"`   // -- // --
-	Language        string `thrift:",60" json:"lng,omitempty"`  // en-US
-	IPString        string `thrift:",61" json:"ip,omitempty"`   // -- // --
-	Referer         string `thrift:",62" json:"ref,omitempty"`  // Referal link
-	Page            string `thrift:",63" json:"page,omitempty"` // Page link
-	UserAgent       string `thrift:",64" json:"ua,omitempty"`   // -- // --
-	DeviceType      uint   `thrift:",65" json:"dvt,omitempty"`  // Device type 0 - Undefined, 1 - Desktop, etc.
-	DeviceID        uint   `thrift:",66" json:"dv,omitempty"`   // Device ID
-	OSID            uint   `thrift:",67" json:"os,omitempty"`   // OS ID
-	BrowserID       uint   `thrift:",68" json:"br,omitempty"`   // Browser ID
-	Categories      string `thrift:",69" json:"c,omitempty"`    // -- // --
-	Adblock         uint   `thrift:",70" json:"ab,omitempty"`   // Ext params
-	PrivateBrowsing uint   `thrift:",71" json:"prv,omitempty"`  // Private Mode
-	Robot           uint   `thrift:",72" json:"rt,omitempty"`   // Robot traffic
-	Proxy           uint   `thrift:",73" json:"pt,omitempty"`   // Proxy traffic
-	Backup          uint   `thrift:",74" json:"bt,omitempty"`   // Backup Display Type
-	X               int    `thrift:",75" json:"x,omitempty"`    // X - coord of addisplay or click position
-	Y               int    `thrift:",76" json:"y,omitempty"`    // Y - coord of addisplay or click position
-	Width           int    `thrift:",77" json:"w,omitempty"`    // Width - available space
-	Height          int    `thrift:",78" json:"h,omitempty"`    // Height - available space
+	CarrierID       uint   `thrift:",56" json:"car,omitempty"`  // -- // --
+	Country         string `thrift:",57" json:"cc,omitempty"`   // Country Code ISO-2
+	City            string `thrift:",58" json:"ct,omitempty"`   // City Code
+	Latitude        string `thrift:",59" json:"lt,omitempty"`   // -- // --
+	Longitude       string `thrift:",60" json:"lg,omitempty"`   // -- // --
+	Language        string `thrift:",61" json:"lng,omitempty"`  // en-US
+	IPString        string `thrift:",62" json:"ip,omitempty"`   // -- // --
+	Referer         string `thrift:",63" json:"ref,omitempty"`  // Referal link
+	Page            string `thrift:",64" json:"page,omitempty"` // Page link
+	UserAgent       string `thrift:",65" json:"ua,omitempty"`   // -- // --
+	DeviceType      uint   `thrift:",66" json:"dvt,omitempty"`  // Device type 0 - Undefined, 1 - Desktop, etc.
+	DeviceID        uint   `thrift:",67" json:"dv,omitempty"`   // Device ID
+	OSID            uint   `thrift:",68" json:"os,omitempty"`   // OS ID
+	BrowserID       uint   `thrift:",69" json:"br,omitempty"`   // Browser ID
+	Categories      string `thrift:",70" json:"c,omitempty"`    // -- // --
+	Adblock         uint   `thrift:",71" json:"ab,omitempty"`   // Ext params
+	PrivateBrowsing uint   `thrift:",72" json:"prv,omitempty"`  // Private Mode
+	Robot           uint   `thrift:",73" json:"rt,omitempty"`   // Robot traffic
+	Proxy           uint   `thrift:",74" json:"pt,omitempty"`   // Proxy traffic
+	Backup          uint   `thrift:",75" json:"bt,omitempty"`   // Backup Display Type
+	X               int    `thrift:",76" json:"x,omitempty"`    // X - coord of addisplay or click position
+	Y               int    `thrift:",77" json:"y,omitempty"`    // Y - coord of addisplay or click position
+	Width           int    `thrift:",78" json:"w,omitempty"`    // Width - available space
+	Height          int    `thrift:",79" json:"h,omitempty"`    // Height - available space
 
-	SubID1 string `thrift:",79" json:"sd1,omitempty"`
-	SubID2 string `thrift:",80" json:"sd2,omitempty"`
-	SubID3 string `thrift:",81" json:"sd3,omitempty"`
-	SubID4 string `thrift:",82" json:"sd4,omitempty"`
-	SubID5 string `thrift:",83" json:"sd5,omitempty"`
+	SubID1 string `thrift:",80" json:"sd1,omitempty"`
+	SubID2 string `thrift:",81" json:"sd2,omitempty"`
+	SubID3 string `thrift:",82" json:"sd3,omitempty"`
+	SubID4 string `thrift:",83" json:"sd4,omitempty"`
+	SubID5 string `thrift:",84" json:"sd5,omitempty"`
 }
 
 // String imprlementation of Stringer interface

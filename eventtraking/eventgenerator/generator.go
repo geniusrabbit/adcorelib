@@ -82,9 +82,9 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		Status:   status,    //
 
 		// Accounts link information
-		Project:           0,               // Project network ID
-		PublisherAccount:  imp.AccountID(), // -- // --
-		AdvertiserAccount: it.AccountID(),  // -- // --
+		ProjectID:           0,               // Project network ID
+		PublisherAccountID:  imp.AccountID(), // -- // --
+		AdvertiserAccountID: it.AccountID(),  // -- // --
 
 		// Source
 		AuctionID:     r.ID,                          // ID of last auction
@@ -98,23 +98,24 @@ func (g generator) Event(event events.Type, status uint8, response adtype.Respon
 		AccessPointID: accessPointID,                 // Access Point ID to own Advertisement
 
 		// State Location
-		Platform:      0,                 // Where displaid? 0 – undefined, 1 – web site, 2 – native app, 3 – game
-		Domain:        r.DomainName(),    //
-		ApplicationID: uint64(r.AppID()), // Place target
-		ZoneID:        zoneID,            // -- // --
-		CampaignID:    it.CampaignID(),   // Campaign info
-		FormatID:      it.Format().ID,    // Format object ID
-		AdID:          it.AdID(),         // -- // --
-		AdWidth:       it.Width(),        // -- // --
-		AdHeight:      it.Height(),       // -- // --
-		SourceURL:     "",                // Advertisement source URL (iframe, image, video, direct)
-		WinURL:        "",                // Win URL used for RTB confirmation
-		URL:           it.ActionURL(),    // Non modified target URL
-		JumperID:      0,                 // Jumper Page ID
+		Platform:      0,               // Where displaid? 0 – undefined, 1 – web site, 2 – native app, 3 – game
+		Domain:        r.DomainName(),  //
+		ApplicationID: r.AppID(),       // Place target
+		ZoneID:        zoneID,          // -- // --
+		CampaignID:    it.CampaignID(), // Campaign info
+		FormatID:      it.Format().ID,  // Format object ID
+		AdID:          it.AdID(),       // -- // --
+		AdWidth:       it.Width(),      // -- // --
+		AdHeight:      it.Height(),     // -- // --
+		SourceURL:     "",              // Advertisement source URL (iframe, image, video, direct)
+		WinURL:        "",              // Win URL used for RTB confirmation
+		URL:           it.ActionURL(),  // Non modified target URL
+		JumperID:      0,               // Jumper Page ID
 
 		// Money
 		PricingModel:         it.PricingModel().UInt(),                        // Display As CPM/CPC/CPA/CPI
 		TestPriceMode:        it.PriceTestMode(),                              // Test price mode
+		ECPM:                 it.ECPM().Float64(),                             // Effective Cost Per Mille (1000 views)
 		PurchaseViewPrice:    it.PurchasePrice(admodels.ActionView).Int64(),   // Price of of the view of source traffic cost
 		PurchaseClickPrice:   it.PurchasePrice(admodels.ActionClick).Int64(),  // Price of of the click of source traffic cost
 		PurchaseLeadPrice:    it.PurchasePrice(admodels.ActionLead).Int64(),   // Price of of the lead of source traffic cost
