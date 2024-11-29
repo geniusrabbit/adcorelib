@@ -153,6 +153,9 @@ func (*ResponseItemEmpty) CommissionShareFactor() float64 { return 0 }
 // IsDirect AD type
 func (*ResponseItemEmpty) IsDirect() bool { return false }
 
+// IsBackup indicates whether the advertisement is a backup ad type.
+func (*ResponseItemEmpty) IsBackup() bool { return false }
+
 // ActionURL returns target resource link for direct and banner click as well
 func (*ResponseItemEmpty) ActionURL() string { return "" }
 

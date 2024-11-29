@@ -414,6 +414,12 @@ func (r *BidRequest) IsAdblock() bool { return r.Adblock == 1 }
 // IsPrivateBrowsing checks if the user is in private browsing mode.
 func (r *BidRequest) IsPrivateBrowsing() bool { return r.PrivateBrowsing == 1 }
 
+// IsRobot checks if the user is a robot.
+func (r *BidRequest) IsRobot() bool { return false }
+
+// IsProxy checks if the user is using a proxy.
+func (r *BidRequest) IsProxy() bool { return false }
+
 // SiteInfo returns the site information associated with the BidRequest.
 // If the site is unavailable, it returns the default site information.
 // Returns nil if neither site nor app information is available.
