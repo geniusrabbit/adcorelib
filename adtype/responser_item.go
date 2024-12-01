@@ -110,6 +110,9 @@ type ResponserItem interface {
 	// Source returns the source information of the advertisement response.
 	Source() Source
 
+	// ImpressionTrackerLinks returns traking links for impression action
+	ImpressionTrackerLinks() []string
+
 	// ViewTrackerLinks returns a slice of tracking URLs for view actions.
 	ViewTrackerLinks() []string
 

@@ -94,6 +94,9 @@ func (*ResponseItemBlank) Asset(name string) *admodels.AdAsset { return nil }
 // Assets list
 func (*ResponseItemBlank) Assets() admodels.AdAssets { return nil }
 
+// ImpressionTrackerLinks returns traking links for impression action
+func (*ResponseItemBlank) ImpressionTrackerLinks() []string { return nil }
+
 // ViewTrackerLinks returns traking links for view action
 func (*ResponseItemBlank) ViewTrackerLinks() []string { return nil }
 

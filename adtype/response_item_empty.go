@@ -83,6 +83,9 @@ func (*ResponseItemEmpty) Assets() admodels.AdAssets { return nil }
 // Source of response
 func (*ResponseItemEmpty) Source() Source { return nil }
 
+// ImpressionTrackerLinks returns traking links for impression action
+func (*ResponseItemEmpty) ImpressionTrackerLinks() []string { return nil }
+
 // ViewTrackerLinks returns traking links for view action
 func (*ResponseItemEmpty) ViewTrackerLinks() []string { return nil }
 
