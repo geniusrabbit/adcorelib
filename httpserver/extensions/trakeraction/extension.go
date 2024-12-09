@@ -89,20 +89,25 @@ func (ext *Extension) eventHandler(eventName events.Type) httphandler.ExtHTTPHan
 			// TODO: Log event as unappropriate
 			// s.Render.DirectBidResponse(nil, ctx)
 			rctx.SetStatusCode(http.StatusBadRequest)
-			ctxlogger.Get(ctx).Error("event handler", zap.Error(err),
+			ctxlogger.Get(ctx).Error("event handler",
+				zap.String("handler", eventName.String()),
 				zap.String("event", event.Event.String()),
-				zap.String("event_expected", eventName.String()),
+				zap.Error(err),
 			)
 			return
 		}
 
+		// Set custom price for the event
 		if priceVal, _ := rctx.QueryArgs().GetUfloat("price"); priceVal > 0 {
 			event.PurchaseViewPrice = billing.MoneyFloat(priceVal).Int64()
 			if event.PurchaseViewPrice > event.ViewPrice {
 				// Something went wrong
 				ctxlogger.Get(ctx).Error("invalid win price, greater then original",
+					zap.String("handler", eventName.String()),
+					zap.String("event", event.Event.String()),
 					zap.Float64("view_price", billing.Money(event.ViewPrice).Float64()),
-					zap.Float64("purchase_view_price", billing.Money(event.PurchaseViewPrice).Float64()))
+					zap.Float64("purchase_view_price", billing.Money(event.PurchaseViewPrice).Float64()),
+				)
 			}
 		}
 
@@ -111,8 +116,15 @@ func (ext *Extension) eventHandler(eventName events.Type) httphandler.ExtHTTPHan
 		} else {
 			rctx.SetStatusCode(http.StatusOK)
 		}
+
 		event.SetDateTime(int64(fasttime.UnixTimestampNano()))
-		_ = ext.eventStream.SendEvent(ctx, &event)
+		if err = ext.eventStream.SendEvent(ctx, &event); err != nil {
+			ctxlogger.Get(ctx).Error("send event handler",
+				zap.String("handler", eventName.String()),
+				zap.String("event", event.Event.String()),
+				zap.Error(err),
+			)
+		}
 	}
 }
 
@@ -134,13 +146,24 @@ func (ext *Extension) eventLeadHandler(pixelType string) httphandler.ExtHTTPHand
 		}
 
 		if err != nil {
-			ctxlogger.Get(ctx).Error("event handler lead", zap.Error(err),
-				zap.String("auction_id", leadEvent.AuctionID))
+			ctxlogger.Get(ctx).Error(
+				"unpack event handler",
+				zap.String("handler", "lead"),
+				zap.String("auction_id", leadEvent.AuctionID),
+				zap.Error(err),
+			)
 			rctx.SetStatusCode(http.StatusBadRequest)
 			return
 		} else {
 			leadEvent.Timestamp = int64(fasttime.UnixTimestamp())
-			_ = ext.eventStream.SendLeadEvent(ctx, &leadEvent)
+			if err = ext.eventStream.SendLeadEvent(ctx, &leadEvent); err != nil {
+				ctxlogger.Get(ctx).Error(
+					"send event handler",
+					zap.String("handler", "lead"),
+					zap.String("auction_id", leadEvent.AuctionID),
+					zap.Error(err),
+				)
+			}
 		}
 
 		if pixelType == "js" {

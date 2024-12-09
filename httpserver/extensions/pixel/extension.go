@@ -25,10 +25,6 @@ const (
 	trakingJSCode = "var __traking_time=new Date();"
 )
 
-// type metricsAccessor interface {
-// 	Metrics() *openlatency.MetricsInfo
-// }
-
 // Extension of the server
 type Extension struct {
 	// Wrapper of extended handler to default
@@ -72,14 +68,20 @@ func (ext *Extension) eventSimpleHandler(name string) httphandler.ExtHTTPHandler
 		}
 
 		if err != nil {
-			ctxlogger.Get(ctx).Error("event handler "+name, zap.Error(err),
-				zap.String("event", event.Event.String()))
-			rctx.SetStatusCode(http.StatusBadRequest)
-			return
+			ctxlogger.Get(ctx).Error("unpack event handler",
+				zap.String("handler", name),
+				zap.String("event", event.Event.String()),
+				zap.Error(err),
+			)
 		} else {
 			event.SetDateTime(int64(fasttime.UnixTimestampNano()))
-			// TODO: process error
-			_ = ext.eventStream.SendEvent(ctx, &event)
+			if err = ext.eventStream.SendEvent(ctx, &event); err != nil {
+				ctxlogger.Get(ctx).Error("send event handler",
+					zap.String("handler", name),
+					zap.String("event", event.Event.String()),
+					zap.Error(err),
+				)
+			}
 		}
 
 		switch name {
