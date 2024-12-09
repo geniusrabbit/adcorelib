@@ -77,8 +77,8 @@ github.com/geniusrabbit/gosql/v2 v2.3.1 h1:pXipcITnQlOtpNmGL9gvbrAcNw/PXmcq2Z4hT
 github.com/geniusrabbit/gosql/v2 v2.3.1/go.mod h1:0AfJ5CwRl/Nsuc4b/z1IcPxOhaooKvAiWFFxyvz6K4g=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f h1:mbMOz/gyI+tRNdyct8MZPYug5V5QAApwakSJNVCIFiY=
 github.com/geniusrabbit/hourstable v0.0.0-20190430155716-2ecc19b9622f/go.mod h1:cHgmYvQ2zN/4FrkDwWNvGkSHkfKUeFqfLI+DYPTM420=
-github.com/geniusrabbit/notificationcenter/v2 v2.3.7 h1:3pIIrCjA0T0eUm2ygnweXajjie/NLhy5xP8LCIUQpR0=
-github.com/geniusrabbit/notificationcenter/v2 v2.3.7/go.mod h1:Fz9Yzm70nu5oloaIoAH1svn51X+P3NXAkfbbLOTtJyo=
+github.com/geniusrabbit/notificationcenter/v2 v2.3.8 h1:7qrplVHz07NPg7qVI6FskXbZprfNfk5G4yEiEL8zAFM=
+github.com/geniusrabbit/notificationcenter/v2 v2.3.8/go.mod h1:Kq07HQ8EhtbGgYOHx7y2eJ5+KHoPf7xF/Xv8nghkbSI=
 github.com/geniusrabbit/udetect v0.0.0-20241125135617-1dc5a0e98da2 h1:uj/uKACXywkXB1DWQh9LVw0dH/B/0zQk0uwcVZNplyk=
 github.com/geniusrabbit/udetect v0.0.0-20241125135617-1dc5a0e98da2/go.mod h1:RXsXAB1dZc5ht0x2w4addGPJaCAib1X7Ucn0NSiQRpM=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
