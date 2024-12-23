@@ -1,6 +1,6 @@
 //
-// @project geniusrabbit::archivarious 2017 - 2018, 2021
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2018, 2021
+// @project geniusrabbit::archivarious 2017 - 2018, 2021, 2024
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2018, 2021, 2024
 //
 
 package pixelgenerator
@@ -12,20 +12,24 @@ import (
 	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 )
 
+type EventType interface {
+	Pack() events.Code
+}
+
 // PixelGenerator object
-type PixelGenerator struct {
+type PixelGenerator[EventT EventType, LeadT fmt.Stringer] struct {
 	hostname string
 }
 
 // NewPixelGenerator object
-func NewPixelGenerator(hostname string) PixelGenerator {
-	return PixelGenerator{
+func NewPixelGenerator[EventT EventType, LeadT fmt.Stringer](hostname string) PixelGenerator[EventT, LeadT] {
+	return PixelGenerator[EventT, LeadT]{
 		hostname: hostname,
 	}
 }
 
 // Event generates pixel URL with event registration
-func (g PixelGenerator) Event(ev *events.Event, js bool) (a string, err error) {
+func (g PixelGenerator[EventT, LeadT]) Event(ev EventT, js bool) (a string, err error) {
 	var (
 		code = ev.Pack().Compress().URLEncode()
 		u    = url.Values{"i": []string{code.String()}}
@@ -43,7 +47,7 @@ func (g PixelGenerator) Event(ev *events.Event, js bool) (a string, err error) {
 
 // EventDirect can be used in case of traking `direct` or `no-traking` ad type.
 // Pixel must automaticaly redirect to `u` param after pixel will be registered
-func (g PixelGenerator) EventDirect(ev *events.Event, direct string) (a string, err error) {
+func (g PixelGenerator[EventT, LeadT]) EventDirect(ev EventT, direct string) (a string, err error) {
 	var (
 		code = ev.Pack().Compress().URLEncode()
 		u    = url.Values{
@@ -58,6 +62,6 @@ func (g PixelGenerator) EventDirect(ev *events.Event, direct string) (a string, 
 }
 
 // Lead URL traking for lead type of event
-func (g PixelGenerator) Lead(lead *events.LeadCode) (string, error) {
+func (g PixelGenerator[EventT, LeadT]) Lead(lead LeadT) (string, error) {
 	return fmt.Sprintf("//%s/lead?l=%s", g.hostname, url.QueryEscape(lead.String())), nil
 }

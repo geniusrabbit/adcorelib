@@ -28,3 +28,12 @@ const (
 	AccessPointFail          Type = "ap.fail"
 	AccessPointSkip          Type = "ap.skip"
 )
+
+// Event status
+const (
+	StatusUndefined   = 0
+	StatusSuccess     = 1
+	StatusFailed      = 2
+	StatusCompromised = 3
+	StatusCustom      = 4 // User code
+)

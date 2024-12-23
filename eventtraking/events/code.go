@@ -17,6 +17,9 @@ import (
 	"github.com/geniusrabbit/adcorelib/msgpack/types"
 )
 
+// EventUnpacFunc function
+type EventUnpacFunc func(code Code) Code
+
 // LZ4BlockMaxSize constant
 const LZ4BlockMaxSize = 64 << 10
 

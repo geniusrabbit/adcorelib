@@ -75,7 +75,9 @@ type Extension struct {
 func NewExtension(opts ...Option) *Extension {
 	ext := &Extension{}
 	for _, opt := range opts {
-		opt(ext)
+		if opt != nil {
+			opt(ext)
+		}
 	}
 	return ext
 }

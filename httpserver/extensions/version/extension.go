@@ -19,6 +19,11 @@ func WithContext(ctx context.Context, ver *Version) context.Context {
 	return version.WithContext(ctx, ver)
 }
 
+// Get version from context
+func Get(ctx context.Context) *Version {
+	return version.Get(ctx)
+}
+
 // Extension for version printing
 type Extension struct {
 	Path string

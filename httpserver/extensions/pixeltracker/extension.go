@@ -1,4 +1,4 @@
-package pixel
+package pixeltracker
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventgenerator"
 	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
 	"github.com/geniusrabbit/adcorelib/fasttime"
@@ -25,18 +26,24 @@ const (
 	trakingJSCode = "var __traking_time=new Date();"
 )
 
+// EventType object for event basic type interface
+type EventType = eventgenerator.EventType
+
 // Extension of the server
-type Extension struct {
+type Extension[EventT EventType] struct {
 	// Wrapper of extended handler to default
 	handlerWrapper *httphandler.HTTPHandlerWrapper
 
 	// Event stream interface sends data into the queue
 	eventStream eventstream.Stream
+
+	// Event allocator
+	eventAllocator eventgenerator.Allocator[EventT]
 }
 
 // NewExtension with options
-func NewExtension(opts ...Option) *Extension {
-	ext := &Extension{}
+func NewExtension[EventT EventType](opts ...Option[EventT]) *Extension[EventT] {
+	ext := &Extension[EventT]{}
 	for _, opt := range opts {
 		opt(ext)
 	}
@@ -44,7 +51,7 @@ func NewExtension(opts ...Option) *Extension {
 }
 
 // InitRouter of the HTTP server
-func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tracer opentracing.Tracer) {
+func (ext *Extension[EventT]) InitRouter(ctx context.Context, router *router.Router, tracer opentracing.Tracer) {
 	// Pixel traking section
 	router.GET("/t/px.gif",
 		ext.handlerWrapper.Metrics("traking.pixel.gif", ext.eventSimpleHandler("gif")))
@@ -52,12 +59,12 @@ func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tra
 		ext.handlerWrapper.Metrics("traking.pixel.js", ext.eventSimpleHandler("js")))
 }
 
-func (ext *Extension) eventSimpleHandler(name string) httphandler.ExtHTTPHandler {
+func (ext *Extension[EventT]) eventSimpleHandler(name string) httphandler.ExtHTTPHandler {
 	handlerCode := "postback.event." + name
 	return func(ctx context.Context, rctx *fasthttp.RequestCtx) {
 		var (
 			pixelData = rctx.QueryArgs().Peek("i")
-			event     events.Event
+			event     = ext.eventAllocator()
 			err       = event.Unpack(pixelData, decodeEvents)
 			span, _   = gtracing.StartSpanFromFastContext(rctx, handlerCode)
 			dataCode  []byte
@@ -70,7 +77,7 @@ func (ext *Extension) eventSimpleHandler(name string) httphandler.ExtHTTPHandler
 		if err != nil {
 			ctxlogger.Get(ctx).Error("unpack event handler",
 				zap.String("handler", name),
-				zap.String("event", event.Event.String()),
+				zap.String("event", event.EventType().String()),
 				zap.Error(err),
 			)
 		} else {
@@ -78,7 +85,7 @@ func (ext *Extension) eventSimpleHandler(name string) httphandler.ExtHTTPHandler
 			if err = ext.eventStream.SendEvent(ctx, &event); err != nil {
 				ctxlogger.Get(ctx).Error("send event handler",
 					zap.String("handler", name),
-					zap.String("event", event.Event.String()),
+					zap.String("event", event.EventType().String()),
 					zap.Error(err),
 				)
 			}

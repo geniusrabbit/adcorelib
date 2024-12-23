@@ -18,16 +18,21 @@ import (
 
 var errInvalidResponse = errors.New(`response object can't be nil`)
 
-// Stream accessor
+type (
+	EventType    = eventgenerator.EventType
+	UserInfoType = eventgenerator.UserInfoType
+)
+
+// Stream accessor interface for the event tracking
 type Stream interface {
 	// SendEvent native action
-	SendEvent(ctx context.Context, event *events.Event) error
+	SendEvent(ctx context.Context, event any) error
 
 	// Send response
 	Send(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) error
 
 	// SendLeadEvent as lead code type
-	SendLeadEvent(ctx context.Context, event *events.LeadCode) error
+	SendLeadEvent(ctx context.Context, event any) error
 
 	// SendSourceSkip event for the response
 	SendSourceSkip(response adtype.Responser) error
@@ -51,15 +56,15 @@ type Stream interface {
 	SendAccessPointFail(response adtype.Responser) error
 }
 
-type stream struct {
+type stream[EventT EventType, UserInfoT UserInfoType] struct {
 	events    nc.Publisher
 	userInfo  nc.Publisher
-	generator eventgenerator.Generator
+	generator eventgenerator.Generator[EventT, UserInfoT]
 }
 
 // New stream object
-func New(events, userInfo nc.Publisher, generator eventgenerator.Generator) Stream {
-	return &stream{
+func New[EventT EventType, UserInfoT UserInfoType](events, userInfo nc.Publisher, generator eventgenerator.Generator[EventT, UserInfoT]) Stream {
+	return &stream[EventT, UserInfoT]{
 		events:    events,
 		userInfo:  userInfo,
 		generator: generator,
@@ -67,54 +72,55 @@ func New(events, userInfo nc.Publisher, generator eventgenerator.Generator) Stre
 }
 
 // SendEvent native action
-func (s *stream) SendEvent(ctx context.Context, event *events.Event) error {
+func (s *stream[EventT, UserInfoT]) SendEvent(ctx context.Context, event any) error {
 	return s.events.Publish(ctx, event)
 }
 
 // Send response
-func (s *stream) Send(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) (err error) {
+func (s *stream[EventT, UserInfoT]) Send(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) (err error) {
 	if response == nil {
 		return errInvalidResponse
 	}
+
 	var (
-		info *events.UserInfo
+		info UserInfoT
 		ctx  = response.Context()
 	)
+
 	for _, event := range s.generator.Events(event, status, response, it) {
 		if err = s.SendEvent(ctx, event); err != nil {
-			break
+			return err
 		}
 	}
-	if err == nil {
-		if info, err = s.generator.UserInfo(response, it); info != nil && err == nil {
-			err = s.userInfo.Publish(ctx, info)
-		}
+
+	if info, err = s.generator.UserInfo(response, it); err == nil {
+		err = s.userInfo.Publish(ctx, info)
 	}
 	return err
 }
 
 // SendLeadEvent as lead code type
-func (s *stream) SendLeadEvent(ctx context.Context, event *events.LeadCode) error {
+func (s *stream[EventT, UserInfoT]) SendLeadEvent(ctx context.Context, event any) error {
 	return s.events.Publish(ctx, event)
 }
 
 // SendSourceSkip event for the response
-func (s *stream) SendSourceSkip(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendSourceSkip(response adtype.Responser) error {
 	return s.Send(events.SourceSkip, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendSourceNoBid event for the response
-func (s *stream) SendSourceNoBid(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendSourceNoBid(response adtype.Responser) error {
 	return s.Send(events.SourceNoBid, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendSourceFail event for the response
-func (s *stream) SendSourceFail(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendSourceFail(response adtype.Responser) error {
 	return s.Send(events.SourceFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointBid event for the response
-func (s *stream) SendAccessPointBid(response adtype.Responser, it ...adtype.ResponserItem) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointBid(response adtype.Responser, it ...adtype.ResponserItem) error {
 	for _, item := range it {
 		err := s.Send(events.AccessPointBid, events.StatusSuccess, response, item)
 		if err != nil {
@@ -125,16 +131,16 @@ func (s *stream) SendAccessPointBid(response adtype.Responser, it ...adtype.Resp
 }
 
 // SendAccessPointSkip event for the response
-func (s *stream) SendAccessPointSkip(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointSkip(response adtype.Responser) error {
 	return s.Send(events.AccessPointSkip, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointNoBid event for the response
-func (s *stream) SendAccessPointNoBid(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointNoBid(response adtype.Responser) error {
 	return s.Send(events.AccessPointNoBid, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointFail event for the response
-func (s *stream) SendAccessPointFail(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointFail(response adtype.Responser) error {
 	return s.Send(events.AccessPointFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
 }
