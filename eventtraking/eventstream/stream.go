@@ -93,8 +93,10 @@ func (s *stream[EventT, UserInfoT]) Send(event events.Type, status uint8, respon
 		}
 	}
 
-	if info, err = s.generator.UserInfo(response, it); err == nil {
-		err = s.userInfo.Publish(ctx, info)
+	if s.userInfo != nil { // Send user info if it's possible
+		if info, err = s.generator.UserInfo(response, it); err == nil {
+			err = s.userInfo.Publish(ctx, info)
+		}
 	}
 	return err
 }
