@@ -124,13 +124,7 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 
 // TestFormat available in filter
 func (fl *BaseFilter) TestFormat(f *Format) bool {
-	found := len(fl.Formats) < 1
-	for _, code := range fl.Formats {
-		if f.Codename == code {
-			return true
-		}
-	}
-	return found
+	return len(fl.Formats) < 1 || fl.Formats.IndexOf(f.Codename) >= 0
 }
 
 func (fl *BaseFilter) checkUintArr(v uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
