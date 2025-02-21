@@ -3,7 +3,6 @@ package types
 import (
 	"database/sql/driver"
 	"fmt"
-	"reflect"
 )
 
 var ErrInvalidParseVersion = fmt.Errorf("invalid parse version")
@@ -57,7 +56,6 @@ func (v Version) Value() (driver.Value, error) {
 
 // Scan implements the driver.Valuer interface, json field interface
 func (v *Version) Scan(value any) error {
-	fmt.Println("Scan", value, reflect.TypeOf(value))
 	switch t := value.(type) {
 	case nil:
 		*v = Version{}
