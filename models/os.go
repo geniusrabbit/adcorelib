@@ -1,32 +1,36 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
-	"github.com/geniusrabbit/gosql/v2"
 	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
-type OSVersion struct {
-	Min  types.Version `json:"min"`
-	Max  types.Version `json:"max"`
-	Name string        `json:"name,omitempty"`
-}
-
 // OS model description
 type OS struct {
 	ID uint64 `json:"id" gorm:"primaryKey"`
 
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
+	Name        string        `json:"name"`
+	Version     types.Version `json:"version,omitempty"`
+	Description string        `json:"description,omitempty"`
 
-	MatchExp string `json:"match_exp,omitempty"`
+	YearRelease    int `json:"year_release,omitempty"`
+	YearEndSupport int `json:"year_end_support,omitempty"`
+
+	// Match expressions
+	MatchNameExp       string `json:"match_name_exp,omitempty"`
+	MatchUserAgentExp  string `json:"match_ua_exp,omitempty"`
+	MatchVersionMinExp string `json:"match_ver_min_exp,omitempty"`
+	MatchVersionMaxExp string `json:"match_ver_max_exp,omitempty"`
 
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
-	Versions gosql.NullableJSONArray[OSVersion] `gorm:"type:JSONB" json:"versions,omitempty"`
+	ParentID sql.Null[uint64] `json:"parent_id,omitempty"`
+	Parent   *OS              `json:"parent,omitempty" gorm:"foreignKey:ParentID;references:ID"`
+	Versions []*OS            `json:"versions,omitempty" gorm:"foreignKey:ParentID;references:ID"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`

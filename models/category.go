@@ -17,9 +17,10 @@ type Category struct {
 
 	IABCode string `json:"iab_code"` // IAB category code of OpenRTB
 
-	ParentID sql.Null[uint64] `json:"parent_id" gorm:"column:parent_id"`
-	Parent   *Category        `json:"parent,omitempty" gorm:"foreignKey:parent_id;references:ID"`
-	Position uint64           `json:"position"`
+	ParentID  sql.Null[uint64] `json:"parent_id" gorm:"column:parent_id"`
+	Parent    *Category        `json:"parent,omitempty" gorm:"foreignKey:parent_id;references:ID"`
+	Childrens []*Category      `json:"childrens,omitempty" gorm:"foreignKey:parent_id;references:ID"`
+	Position  uint64           `json:"position"`
 
 	// Is Active advertisement
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active"`
