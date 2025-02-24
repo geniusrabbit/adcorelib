@@ -6,33 +6,31 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
-	"github.com/geniusrabbit/gosql/v2"
 )
-
-type DeviceModelVersion struct {
-	Min  types.Version `json:"min"`
-	Max  types.Version `json:"max"`
-	Name string        `json:"name,omitempty"`
-}
 
 type DeviceModel struct {
 	ID          uint64 `json:"id" gorm:"primaryKey"`
+	Codename    string `json:"codename" gorm:"unique"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
-	MatchExp string `json:"match_exp,omitempty"`
+	ParentID uint64       `json:"parent_id,omitempty"`
+	Parent   *DeviceModel `json:"parent,omitempty" gorm:"foreignKey:ParentID;references:ID"`
 
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
+	MatchExp string `json:"match_exp,omitempty"`
+
 	// Link to device maker
-	MakerID uint64       `json:"maker_id"`
-	Maker   *DeviceMaker `json:"maker,omitempty" gorm:"foreignKey:MakerID;references:ID"`
+	MakerCodename string       `json:"maker_codename,omitempty"`
+	Maker         *DeviceMaker `json:"maker,omitempty" gorm:"foreignKey:MakerCodename;references:Codename"`
 
 	// Device type
-	TypeID uint64      `json:"type_id"`
-	Type   *DeviceType `json:"type,omitempty" gorm:"foreignKey:TypeID;references:ID"`
+	TypeCodename string      `json:"type_codename,omitempty"`
+	Type         *DeviceType `json:"type,omitempty" gorm:"foreignKey:TypeCodename;references:Codename"`
 
-	Versions gosql.NullableJSONArray[DeviceModelVersion] `json:"versions,omitempty" gorm:"type:jsonb"`
+	// Versions of the model
+	Versions []*DeviceModel `json:"versions,omitempty" gorm:"foreignKey:ParentID;references:ID"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`

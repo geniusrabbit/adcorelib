@@ -26,6 +26,7 @@ const (
 
 type DeviceType struct {
 	ID          uint64 `json:"id" gorm:"primaryKey"`
+	Codename    string `json:"codename" gorm:"unique"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
@@ -51,66 +52,77 @@ func (m *DeviceType) RBACResourceName() string {
 var DeviceTypeList = []*DeviceType{
 	{
 		ID:          uint64(DeviceTypeUnknown),
+		Codename:    "unknown",
 		Name:        "Unknown",
 		Description: "Unknown device type",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeMobile),
+		Codename:    "mobile",
 		Name:        "Mobile",
 		Description: "Mobile device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypePC),
+		Codename:    "pc",
 		Name:        "PC",
 		Description: "Personal Computer",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeTV),
+		Codename:    "tv",
 		Name:        "TV",
 		Description: "TV device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypePhone),
+		Codename:    "phone",
 		Name:        "Phone",
 		Description: "Phone device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeTablet),
+		Codename:    "tablet",
 		Name:        "Tablet",
 		Description: "Tablet device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeConnected),
+		Codename:    "connected",
 		Name:        "Connected",
 		Description: "Connected device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeSetTopBox),
+		Codename:    "settopbox",
 		Name:        "SetTopBox",
 		Description: "SetTopBox device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeWatch),
+		Codename:    "watch",
 		Name:        "Watch",
 		Description: "Watch device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeGlasses),
+		Codename:    "glasses",
 		Name:        "Glasses",
 		Description: "Glasses device",
 		Active:      types.StatusActive,
 	},
 	{
 		ID:          uint64(DeviceTypeOOH),
+		Codename:    "ooh",
 		Name:        "OOH",
 		Description: "Out of Home device",
 		Active:      types.StatusActive,
