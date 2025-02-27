@@ -12,16 +12,16 @@ import (
 // Device set of types
 const (
 	DeviceTypeUnknown   = udetect.DeviceTypeUnknown
-	DeviceTypeMobile    = udetect.DeviceTypeMobile
-	DeviceTypePC        = udetect.DeviceTypePC
-	DeviceTypeTV        = udetect.DeviceTypeTV
-	DeviceTypePhone     = udetect.DeviceTypePhone
-	DeviceTypeTablet    = udetect.DeviceTypeTablet
-	DeviceTypeConnected = udetect.DeviceTypeConnected
-	DeviceTypeSetTopBox = udetect.DeviceTypeSetTopBox
-	DeviceTypeWatch     = udetect.DeviceTypeWatch
-	DeviceTypeGlasses   = udetect.DeviceTypeGlasses
-	DeviceTypeOOH       = udetect.DeviceTypeOOH
+	DeviceTypeMobile    = udetect.DeviceTypeMobile    // Mobile/Tablet
+	DeviceTypePC        = udetect.DeviceTypePC        // Desktop
+	DeviceTypeTV        = udetect.DeviceTypeTV        // TV
+	DeviceTypePhone     = udetect.DeviceTypePhone     // SmartPhone, SmallScreen
+	DeviceTypeTablet    = udetect.DeviceTypeTablet    // Tablet
+	DeviceTypeConnected = udetect.DeviceTypeConnected // Console, EReader, Watch
+	DeviceTypeSetTopBox = udetect.DeviceTypeSetTopBox // MediaHub
+	DeviceTypeWatch     = udetect.DeviceTypeWatch     // SmartWatch
+	DeviceTypeGlasses   = udetect.DeviceTypeGlasses   // Glasses
+	DeviceTypeOOH       = udetect.DeviceTypeOOH       // Out of Home - Billboards, Kiosks, etc.
 )
 
 type DeviceType struct {
@@ -96,7 +96,7 @@ var DeviceTypeList = []*DeviceType{
 		ID:          uint64(DeviceTypeConnected),
 		Codename:    "connected",
 		Name:        "Connected",
-		Description: "Connected device",
+		Description: "Connected device (Console, EReader)",
 		Active:      types.StatusActive,
 	},
 	{

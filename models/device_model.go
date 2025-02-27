@@ -17,6 +17,8 @@ type DeviceModel struct {
 	ParentID uint64       `json:"parent_id,omitempty"`
 	Parent   *DeviceModel `json:"parent,omitempty" gorm:"foreignKey:ParentID;references:ID"`
 
+	YearRelease int `json:"year_release,omitempty"`
+
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 
 	MatchExp string `json:"match_exp,omitempty"`
