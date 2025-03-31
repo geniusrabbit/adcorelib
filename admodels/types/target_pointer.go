@@ -29,6 +29,9 @@ type TargetPointer interface {
 	// Tags list
 	Tags() []string
 
+	// AppID of the specific point
+	AppID() uint64
+
 	// TargetID of the specific point
 	TargetID() uint64
 

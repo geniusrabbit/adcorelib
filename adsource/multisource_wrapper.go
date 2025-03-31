@@ -46,9 +46,8 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"go.uber.org/zap"
 
-	"github.com/geniusrabbit/adcorelib/adsource/experiments"
 	"github.com/geniusrabbit/adcorelib/adtype"
-	"github.com/geniusrabbit/adcorelib/auction"
+	"github.com/geniusrabbit/adcorelib/auction/trafaret"
 	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
 	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
@@ -66,12 +65,14 @@ const (
 	minimalParallelRequests = 1
 )
 
+type respItem struct {
+	priority float32
+	resp     adtype.Responser
+}
+
 // MultisourceWrapper describes the abstraction which can control where to send requests
 // and how to handle responses from different sources.
 type MultisourceWrapper struct {
-	// Main source which is called every time
-	baseSource experiments.SourceWrapper
-
 	// Source list of external platforms
 	sources adtype.SourceAccessor
 
@@ -90,10 +91,10 @@ type MultisourceWrapper struct {
 
 // NewMultisourceWrapper initializes a new MultisourceWrapper with the given options
 func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
-	var wrp MultisourceWrapper
+	wrp := new(MultisourceWrapper)
 
 	for _, opt := range options {
-		opt(&wrp)
+		opt(wrp)
 	}
 
 	if wrp.sources == nil {
@@ -104,7 +105,7 @@ func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 	wrp.maxParallelRequest = max(wrp.maxParallelRequest, minimalParallelRequests)
 	wrp.execpool = rpool.NewPool(rpool.WithMaxTasksCount(wrp.maxParallelRequest))
 
-	return &wrp, nil
+	return wrp, nil
 }
 
 // ID returns the ID of the source driver
@@ -125,12 +126,11 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		return adtype.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
 	}
 	var (
-		count   = wrp.maxParallelRequest
-		tube    = make(chan adtype.Responser, count)
-		span, _ = gtracing.StartSpanFromContext(request.Ctx, "ssp.bid")
-		referee auction.Referee
-		timeout bool
-		err     error
+		count    = wrp.maxParallelRequest
+		queue    = make(chan respItem, count)
+		span, _  = gtracing.StartSpanFromContext(request.Ctx, "ssp.bid")
+		trafaret trafaret.Filler
+		err      error
 	)
 
 	if span != nil {
@@ -143,36 +143,29 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		}()
 	}
 
-	// Base request to internal DB
-	if src := wrp.getMainSource(); wrp.testSource(src, request) {
-		startTime := fasttime.UnixTimestampNano()
-		resp := src.Bid(request)
-		wrp.metrics.IncrementBidRequestCount(src, request, time.Duration(startTime-fasttime.UnixTimestampNano()))
-
-		// Store bidding information
-		wrp.sourceResponseLog(request, resp)
-
-		if resp.Error() == nil {
-			referee.Push(resp.Ads()...)
-			// TODO update minimal bids by response
-			// TODO release response
-		} else {
-			wrp.metrics.IncrementBidErrorCount(src, request, resp.Error())
-		}
-	}
+	// Ensure that the queue is closed when the function exits
+	defer close(queue)
 
 	// Source request loop
-	iterator := wrp.sources.Iterator(request)
-	for src := iterator.Next(); src != nil; src = iterator.Next() {
-		if !wrp.testSource(src, request) {
-			continue
-		}
+	for prior, src := range wrp.sources.Iterator(request) {
 		count--
 		wrp.execpool.Go(func() {
 			startTime := fasttime.UnixTimestampNano()
+
+			// Send request to the source for the advertising
 			resp := src.Bid(request)
-			wrp.metrics.IncrementBidRequestCount(src, request, time.Duration(startTime-fasttime.UnixTimestampNano()))
-			tube <- resp
+
+			// Update metrics
+			wrp.metrics.IncrementBidRequestCount(src,
+				request, time.Duration(startTime-fasttime.UnixTimestampNano()))
+
+			// Send response to the channel if it is still open
+			select {
+			case queue <- respItem{priority: prior, resp: resp}:
+				// Successfully sent to the channel
+			default:
+				// Channel is closed or full, skip sending
+			}
 
 			// Store bidding information
 			wrp.sourceResponseLog(request, resp)
@@ -186,32 +179,48 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		}
 	}
 
-	// Auction loop
+	// Auction loop processing with timeout
 	if count < wrp.maxParallelRequest {
 		timer := time.NewTimer(wrp.requestTimeout)
+		defer func() {
+			if !timer.Stop() {
+				select {
+				case <-timer.C: // Drain the channel if the timer already fired
+				default:
+				}
+			}
+		}()
+
 		for ; count < wrp.maxParallelRequest; count++ {
 			select {
-			case resp := <-tube:
-				if respErr := resp.Error(); respErr != nil {
+			case item := <-queue:
+				if respErr := item.resp.Error(); respErr != nil {
 					err = respErr
 				} else {
-					referee.Push(resp.Ads()...)
+					trafaret.Push(item.priority, item.resp.Ads()...)
 				}
 			case <-timer.C:
 				count = wrp.maxParallelRequest
-				timeout = true
+			case <-request.Done():
+				count = wrp.maxParallelRequest
 			}
-		}
-
-		if !timeout {
-			timer.Stop()
 		}
 	}
 
-	if items := referee.MatchRequest(request); len(items) > 0 {
-		response = adtype.BorrowResponse(request, nil, items, nil)
-	} else {
-		response = adtype.NewEmptyResponse(request, wrp, err)
+	// Prepare response
+	{
+		var items []adtype.ResponserItemCommon
+		for _, imp := range request.Imps {
+			if impItems := trafaret.Fill(imp.ID, imp.Count); len(impItems) > 0 {
+				items = append(items, impItems...)
+			}
+		}
+
+		if len(items) == 0 {
+			response = adtype.NewEmptyResponse(request, wrp, err)
+		} else {
+			response = adtype.BorrowResponse(request, nil, items, nil)
+		}
 	}
 
 	return response
@@ -256,9 +265,6 @@ func (wrp *MultisourceWrapper) SetRequestTimeout(timeout time.Duration) {
 	if wrp.requestTimeout != timeout {
 		wrp.requestTimeout = timeout
 		wrp.sources.SetTimeout(timeout)
-		if wrp.baseSource != nil {
-			wrp.baseSource.SetTimeout(timeout)
-		}
 	}
 }
 
@@ -317,17 +323,7 @@ func (wrp *MultisourceWrapper) processAdResponse(response adtype.Responser, ad a
 	}
 }
 
-func (wrp *MultisourceWrapper) testSource(src adtype.Source, request *adtype.BidRequest) bool {
-	return src != nil && request.SourceFilterCheck(src.ID()) && src.Test(request)
-}
-
-func (wrp *MultisourceWrapper) getMainSource() adtype.Source {
-	if wrp.baseSource == nil {
-		return nil
-	}
-	return wrp.baseSource.Next()
-}
-
+//go:inline
 func isNil(v any) bool {
 	switch vv := v.(type) {
 	case nil:

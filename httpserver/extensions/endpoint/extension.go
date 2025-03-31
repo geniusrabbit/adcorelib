@@ -23,7 +23,6 @@ import (
 	"github.com/geniusrabbit/adcorelib/net/fasthttp/middleware"
 	"github.com/geniusrabbit/adcorelib/openlatency"
 	"github.com/geniusrabbit/adcorelib/personification"
-	"github.com/geniusrabbit/adstorage/accessors/adsourceaccessor"
 )
 
 type (
@@ -37,7 +36,7 @@ type (
 		Sources() adtype.SourceAccessor
 	}
 	factoryListAccessor interface {
-		FactoryList() []adsourceaccessor.SourceFactory
+		FactoryList() []adtype.SourceFactory
 	}
 	sourceListAccessor interface {
 		SourceList() ([]adtype.Source, error)
@@ -142,7 +141,7 @@ func (ext *Extension) factoryListHandler(fa factoryListAccessor) fasthttp.Reques
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(http.StatusOK)
 		_ = json.NewEncoder(ctx).Encode(map[string]any{
-			"protocols": xtypes.SliceApply(factories, func(f adsourceaccessor.SourceFactory) any {
+			"protocols": xtypes.SliceApply(factories, func(f adtype.SourceFactory) any {
 				info := f.Info()
 				return map[string]any{
 					"protocol":    info.Protocol,
@@ -155,7 +154,7 @@ func (ext *Extension) factoryListHandler(fa factoryListAccessor) fasthttp.Reques
 	}
 }
 
-func (ext *Extension) factoryInfoHandler(factory adsourceaccessor.SourceFactory) fasthttp.RequestHandler {
+func (ext *Extension) factoryInfoHandler(factory adtype.SourceFactory) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		info := factory.Info()
 		ctx.SetContentType("application/json")
