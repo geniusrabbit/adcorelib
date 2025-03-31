@@ -65,8 +65,8 @@ type RTBSource struct {
 	Categories      gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"categories,omitempty"`       //
 	Countries       gosql.NullableStringArray               `gorm:"type:TEXT[]" json:"countries,omitempty"`       //
 	Languages       gosql.NullableStringArray               `gorm:"type:TEXT[]" json:"languages,omitempty"`       //
-	Applications    gosql.NullableOrderedNumberArray[int64] `gorm:"column:apps;type:INT[]" json:"apps,omitempty"` //
 	Domains         gosql.NullableStringArray               `gorm:"type:TEXT[]" json:"domains,omitempty"`         //
+	Applications    gosql.NullableOrderedNumberArray[int64] `gorm:"column:apps;type:INT[]" json:"apps,omitempty"` //
 	Zones           gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"zones,omitempty"`            //
 	ExternalZones   gosql.NullableOrderedNumberArray[int64] `gorm:"type:INT[]" json:"external_zones,omitempty"`   //
 	Secure          int                                     `json:"secure,omitempty"`                             // 0 - any, 1 - only, 2 - exclude

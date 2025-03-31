@@ -613,6 +613,11 @@ func (r *BidRequest) Time() time.Time { return r.Timemark }
 // Currently, it always returns nil, but can be extended to include validation logic.
 func (r *BidRequest) Validate() error { return nil }
 
+// Done returns a channel that is closed when the context of the BidRequest is done.
+func (r *BidRequest) Done() <-chan struct{} {
+	return r.Ctx.Done()
+}
+
 // Release releases any resources associated with the BidRequest.
 // If the original request implements the releaser interface, it calls the Release method.
 func (r *BidRequest) Release() {

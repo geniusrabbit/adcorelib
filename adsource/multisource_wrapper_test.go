@@ -40,13 +40,11 @@ import (
 	"time"
 
 	"github.com/demdxx/rpool/v2"
-	"github.com/geniusrabbit/adcorelib/adsource/experiments"
 	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 func TestMultisourceWrapper_sourceResponseLog(t *testing.T) {
 	type fields struct {
-		baseSource         experiments.SourceWrapper
 		sources            adtype.SourceAccessor
 		execpool           *rpool.Pool
 		requestTimeout     time.Duration
@@ -67,7 +65,6 @@ func TestMultisourceWrapper_sourceResponseLog(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			wrp := &MultisourceWrapper{
-				baseSource:         tt.fields.baseSource,
 				sources:            tt.fields.sources,
 				execpool:           tt.fields.execpool,
 				requestTimeout:     tt.fields.requestTimeout,

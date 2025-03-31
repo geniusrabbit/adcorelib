@@ -5,7 +5,7 @@
 
 package admodels
 
-// AccountTarget wrapper for replac of epsent target object
+// AccountTarget wrapper for replace of epsent target object
 type AccountTarget struct {
 	Acc *Account
 }

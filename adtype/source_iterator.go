@@ -1,12 +1,12 @@
 package adtype
 
-import "time"
+import (
+	"iter"
+	"time"
+)
 
-// SourceIterator returns next source from the scope
-type SourceIterator interface {
-	// Next returns source interface according to strategy
-	Next() Source
-}
+// SourceIterator is a source iterator
+type SourceIterator = iter.Seq2[float32, Source]
 
 // SourceAccessor preoritise the source access
 type SourceAccessor interface {

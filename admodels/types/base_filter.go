@@ -20,8 +20,9 @@ const (
 	FieldCategories
 	FieldCountries
 	FieldLanguages
-	FieldZones
 	FieldDomains
+	FieldApps
+	FieldZones
 )
 
 // BaseFilter object
@@ -35,8 +36,9 @@ type BaseFilter struct {
 	Categories      gosql.NullableOrderedNumberArray[uint64]
 	Countries       gosql.NullableOrderedNumberArray[uint64]
 	Languages       gosql.NullableOrderedNumberArray[uint64]
-	Zones           gosql.NullableOrderedNumberArray[uint64]
 	Domains         gosql.StringArray
+	Apps            gosql.NullableOrderedNumberArray[uint64]
+	Zones           gosql.NullableOrderedNumberArray[uint64]
 	Secure          int8 // 0 - any, 1 - only, 2 - exclude
 	Adblock         int8 // 0 - any, 1 - only, 2 - exclude
 	PrivateBrowsing int8 // 0 - any, 1 - only, 2 - exclude
@@ -77,6 +79,8 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 		case gosql.NullableStringArray:
 			fl.Languages, positive = LanguageFilter(vl)
 		}
+	case FieldApps:
+		fl.Apps, positive = IDArrayFilter(gocast.AnySlice[int64](data))
 	case FieldZones:
 		fl.Zones, positive = IDArrayFilter(gocast.AnySlice[int64](data))
 	case FieldDomains:
@@ -119,7 +123,9 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 		fl.multyCheckUintArr(t.Categories(), FieldCategories, fl.Categories) &&
 		fl.checkUintArr(t.GeoID(), FieldCountries, fl.Countries) &&
 		fl.checkUintArr(t.LanguageID(), FieldLanguages, fl.Languages) &&
-		fl.checkUintArr(t.TargetID(), FieldZones, fl.Zones)
+		fl.checkUintArr(t.TargetID(), FieldZones, fl.Zones) &&
+		fl.checkUintArr(t.AppID(), FieldApps, fl.Apps) &&
+		fl.checkStringArr(t.Domain(), FieldDomains, fl.Domains)
 }
 
 // TestFormat available in filter
@@ -135,6 +141,10 @@ func (fl *BaseFilter) multyCheckUintArr(v []uint64, off uint64, arr gosql.Nullab
 	return arr.Len() < 1 || arr.OneOf(v) == (fl.excludeMask&(1<<off) == 0)
 }
 
+func (fl *BaseFilter) checkStringArr(v []string, off uint64, arr gosql.StringArray) bool {
+	return arr.Len() < 1 || arr.OneOf(v) == (fl.excludeMask&(1<<off) == 0)
+}
+
 // Reset filter object
 func (fl *BaseFilter) Reset() {
 	fl.excludeMask = 0
@@ -146,8 +156,9 @@ func (fl *BaseFilter) Reset() {
 	fl.Categories = fl.Categories[:0]
 	fl.Countries = fl.Countries[:0]
 	fl.Languages = fl.Languages[:0]
-	fl.Zones = fl.Zones[:0]
 	fl.Domains = fl.Domains[:0]
+	fl.Apps = fl.Apps[:0]
+	fl.Zones = fl.Zones[:0]
 	fl.Secure = 0
 	fl.Adblock = 0
 	fl.PrivateBrowsing = 0
