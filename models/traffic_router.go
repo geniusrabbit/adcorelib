@@ -15,6 +15,7 @@ type TrafficRouter struct {
 	ID        uint64 `json:"id"`
 	AccountID uint64 `json:"account_id"`
 
+	Title   string  `json:"title"`
 	Percent float64 `json:"percent"`
 
 	Description string              `json:"description"`
