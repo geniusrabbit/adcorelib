@@ -22,16 +22,17 @@ type TrafficRouter struct {
 	Status      types.ApproveStatus `gorm:"type:ApproveStatus" json:"status,omitempty"`
 	Active      types.ActiveStatus  `json:"active"`
 
+	// Target RTB`s and sources of the Advertisement
 	RTBSourceIDs gosql.NumberArray[uint64] `gorm:"type:BIGINT[]" json:"rtb_source_ids"`
 
 	// Targeting filters
 	Formats         gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"formats,omitempty"`            // => Filters
-	DeviceTypes     gosql.NullableOrderedNumberArray[int64]  `gorm:"type:BIGINT[]" json:"device_types,omitempty"`     //
-	Devices         gosql.NullableOrderedNumberArray[int64]  `gorm:"type:BIGINT[]" json:"devices,omitempty"`          //
-	OS              gosql.NullableOrderedNumberArray[int64]  `gorm:"type:BIGINT[]" json:"os,omitempty"`               //
-	Browsers        gosql.NullableOrderedNumberArray[int64]  `gorm:"type:BIGINT[]" json:"browsers,omitempty"`         //
-	Carriers        gosql.NullableOrderedNumberArray[int64]  `gorm:"type:BIGINT[]" json:"carriers,omitempty"`         //
-	Categories      gosql.NullableOrderedNumberArray[int64]  `gorm:"type:BIGINT[]" json:"categories,omitempty"`       //
+	DeviceTypes     gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"device_types,omitempty"`     //
+	Devices         gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"devices,omitempty"`          //
+	OS              gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"os,omitempty"`               //
+	Browsers        gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"browsers,omitempty"`         //
+	Carriers        gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"carriers,omitempty"`         //
+	Categories      gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"categories,omitempty"`       //
 	Countries       gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"countries,omitempty"`          //
 	Languages       gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"languages,omitempty"`          //
 	Domains         gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"domains,omitempty"`            //
