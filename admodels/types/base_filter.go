@@ -52,19 +52,19 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 	case FieldFormat:
 		fl.Formats, _ = data.(gosql.StringArray)
 	case FieldDeviceTypes:
-		fl.DeviceTypes, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
+		fl.DeviceTypes, positive = IDArrayFilterAny(data, "Invalid type for DeviceTypes")
 	case FieldDevices:
-		fl.Devices, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
+		fl.Devices, positive = IDArrayFilterAny(data, "Invalid type for Devices")
 	case FieldOS:
-		fl.OS, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
+		fl.OS, positive = IDArrayFilterAny(data, "Invalid type for OS")
 	case FieldBrowsers:
-		fl.Browsers, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
+		fl.Browsers, positive = IDArrayFilterAny(data, "Invalid type for Browsers")
 	case FieldCategories:
-		fl.Categories, positive = IDArrayFilter(data.(gosql.NullableOrderedNumberArray[int64]))
+		fl.Categories, positive = IDArrayFilterAny(data, "Invalid type for Categories")
 	case FieldCountries:
 		switch vl := data.(type) {
-		case gosql.NullableOrderedNumberArray[int64]:
-			fl.Countries, positive = IDArrayFilter(vl)
+		case []int64, []uint64:
+			fl.Countries, positive = IDArrayFilterAny(vl, "")
 		case gosql.StringArray:
 			fl.Countries, positive = CountryFilter(gosql.NullableStringArray(vl))
 		case gosql.NullableStringArray:
@@ -72,8 +72,8 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 		}
 	case FieldLanguages:
 		switch vl := data.(type) {
-		case gosql.NullableOrderedNumberArray[int64]:
-			fl.Languages, positive = IDArrayFilter(vl)
+		case []int64, []uint64:
+			fl.Languages, positive = IDArrayFilterAny(vl, "")
 		case gosql.StringArray:
 			fl.Languages, positive = LanguageFilter(gosql.NullableStringArray(vl))
 		case gosql.NullableStringArray:

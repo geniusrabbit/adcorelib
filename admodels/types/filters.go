@@ -44,6 +44,27 @@ func IDArrayFilter(arr gosql.NullableOrderedNumberArray[int64]) (narr gosql.Null
 	return narr, executed
 }
 
+// IDArrayFilterAny array which could be or positive (include) or negative (exclude)
+func IDArrayFilterAny(v any, panicMsg string) (gosql.NullableOrderedNumberArray[uint64], bool) {
+	switch vl := v.(type) {
+	case gosql.NullableOrderedNumberArray[int64]:
+		return IDArrayFilter(gosql.NullableOrderedNumberArray[int64](vl))
+	case gosql.NullableOrderedNumberArray[uint64]:
+		return gosql.NullableOrderedNumberArray[uint64](vl), true
+	case []int:
+		return IntArrayToUint64(vl), true
+	case []int64:
+		return IDArrayFilter(gosql.NullableOrderedNumberArray[int64](vl))
+	case []uint64:
+		return gosql.NullableOrderedNumberArray[uint64](vl), true
+	default:
+		if panicMsg != "" {
+			panic(panicMsg)
+		}
+	}
+	return nil, false
+}
+
 // StringArrayFilter array
 func StringArrayFilter(arr gosql.NullableStringArray) (gosql.StringArray, bool) {
 	if arr.Len() < 1 {
