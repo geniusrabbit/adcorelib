@@ -24,14 +24,14 @@ func (DummyClient) Detect(ctx context.Context, req *udetect.Request) (*udetect.R
 		},
 		Device: &udetect.Device{
 			Browser: &udetect.Browser{
-				DNT:             int(req.DNT),
-				LMT:             int(req.LMT),
-				Adblock:         int(req.Adblock),
+				DNT:             req.DNT,
+				LMT:             req.LMT,
+				Adblock:         req.Adblock,
 				Languages:       req.Languages,
 				PrimaryLanguage: req.PrimaryLanguage,
 				UA:              req.UA,
 				Ref:             req.Ref,
-				JS:              int(req.JS),
+				JS:              req.JS,
 				Width:           req.Width,
 				Height:          req.Height,
 				FlashVer:        req.FlashVer,

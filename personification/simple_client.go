@@ -4,9 +4,11 @@ import (
 	"context"
 	"strings"
 
-	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
 	useragent "github.com/mileusna/useragent"
+	"golang.org/x/exp/constraints"
+
+	"github.com/geniusrabbit/udetect"
 )
 
 type Item struct {
@@ -43,15 +45,15 @@ func (s *SimpleClient) Detect(ctx context.Context, req *udetect.Request) (*udete
 				ID:              uint64(s.browserGet(ua.Name)),
 				Name:            ua.Name,
 				Version:         ua.Version,
-				DNT:             int(req.DNT),
-				LMT:             int(req.LMT),
-				Adblock:         int(req.Adblock),
-				IsRobot:         b2i(ua.Bot),
+				DNT:             req.DNT,
+				LMT:             req.LMT,
+				Adblock:         req.Adblock,
+				IsRobot:         b2i[int8](ua.Bot),
 				Languages:       req.Languages,
 				PrimaryLanguage: req.PrimaryLanguage,
+				JS:              req.JS,
 				UA:              req.UA,
 				Ref:             req.Ref,
-				JS:              int(req.JS),
 				Width:           req.Width,
 				Height:          req.Height,
 				FlashVer:        req.FlashVer,
@@ -98,7 +100,7 @@ func deviceType(ua *useragent.UserAgent) udetect.DeviceType {
 }
 
 func isEmpty(uid uuid.UUID) bool {
-	for i := 0; i < len(uid); i++ {
+	for i := range len(uid) {
 		if uid[i] != 0 {
 			return false
 		}
@@ -106,7 +108,7 @@ func isEmpty(uid uuid.UUID) bool {
 	return true
 }
 
-func b2i(b bool) int {
+func b2i[R constraints.Integer | constraints.Float](b bool) R {
 	if b {
 		return 1
 	}

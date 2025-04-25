@@ -91,12 +91,28 @@ func NewRequestFor(ctx context.Context, app *admodels.Application, target admode
 		ageStart, ageEnd = userInfo.Ages()
 		referer          = string(opt.Request.Referer())
 		requestID        = rand.UUID()
+		stateFlags       adtype.BidRequestFlags
 	)
+	if fasthttpext.IsSecureCF(opt.Request) {
+		stateFlags |= adtype.BidRequestFlagSecure
+	}
+	if brwsr := userInfo.DeviceInfo().Browser; brwsr != nil {
+		if brwsr.IsRobot == 1 {
+			stateFlags |= adtype.BidRequestFlagBot
+		}
+		if brwsr.PrivateBrowsing == 1 {
+			stateFlags |= adtype.BidRequestFlagPrivateBrowsing
+		}
+		if brwsr.Adblock == 1 {
+			stateFlags |= adtype.BidRequestFlagAdblock
+		}
+	}
+
 	req := &adtype.BidRequest{
 		ID:         requestID,
 		Debug:      opt.Debug,
 		RequestCtx: opt.Request,
-		Secure:     b2i(fasthttpext.IsSecureCF(opt.Request)),
+		StateFlags: stateFlags,
 		Device:     userInfo.DeviceInfo(),
 		AppTarget:  app,
 		Imps: []adtype.Impression{
@@ -133,11 +149,11 @@ func NewRequestFor(ctx context.Context, app *admodels.Application, target admode
 			ExtID:         "",              // External ID
 			Domain:        domain(referer), //
 			Cat:           nil,             // Array of categories
-			PrivacyPolicy: 1,               // Default: 1 ("1": has a privacy policy)
+			PrivacyPolicy: 0,               // Default: 1 ("1": has a privacy policy)
 			Keywords:      "",              // Comma separated list of keywords about the site.
 			Page:          referer,         // URL of the page
 			Referrer:      referer,         // Referrer URL
-			Search:        "",              // Search string that caused naviation
+			Search:        "",              // Search string that caused navigation
 			Mobile:        0,               // Mobile ("1": site is mobile optimised)
 		},
 		Person:   person,

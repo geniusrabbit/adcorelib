@@ -36,6 +36,22 @@ const (
 	NativeAssetSponsored        // Sponsored asset
 )
 
+// BidRequestFlags defines flags for bid requests.
+type BidRequestFlags uint8
+
+const (
+	// BidRequestFlagAdblock indicates if adblock is enabled
+	BidRequestFlagAdblock BidRequestFlags = 1 << iota
+	// BidRequestFlagPrivateBrowsing indicates if private browsing is enabled
+	BidRequestFlagPrivateBrowsing
+	// BidRequestFlagSecure indicates if the request is secure
+	BidRequestFlagSecure
+	// BidRequestFlagBot indicates if the request is from a bot
+	BidRequestFlagBot
+	// BidRequestFlagProxy indicates if the request is from a proxy
+	BidRequestFlagProxy
+)
+
 // BidRequest represents a bid request in the ad system.
 // It contains all necessary information for processing an ad bid.
 type BidRequest struct {
@@ -51,17 +67,15 @@ type BidRequest struct {
 	Person      personification.Person `json:"-"`                      // Personification data
 	Imps        []Impression           `json:"imps,omitempty"`         // List of impressions
 
-	AppTarget       *admodels.Application `json:"app_target,omitempty"` // Target application
-	Device          *udetect.Device       `json:"device,omitempty"`     // Device information
-	App             *udetect.App          `json:"app,omitempty"`        // App information
-	Site            *udetect.Site         `json:"site,omitempty"`       // Site information
-	User            *User                 `json:"user,omitempty"`       // User information
-	Secure          int                   `json:"secure,omitempty"`     // Security flag (1 if secure)
-	Adblock         int                   `json:"adb,omitempty"`        // Adblock flag (1 if adblock enabled)
-	PrivateBrowsing int                   `json:"pb,omitempty"`         // Private browsing flag (1 if enabled)
-	Ext             map[string]any        `json:"ext,omitempty"`        // Additional extensions
-	Timemark        time.Time             `json:"timemark,omitempty"`   // Timestamp of the request
-	Tracer          any                   `json:"-"`                    // Tracing information
+	AppTarget  *admodels.Application `json:"app_target,omitempty"` // Target application
+	Device     *udetect.Device       `json:"device,omitempty"`     // Device information
+	App        *udetect.App          `json:"app,omitempty"`        // App information
+	Site       *udetect.Site         `json:"site,omitempty"`       // Site information
+	User       *User                 `json:"user,omitempty"`       // User information
+	StateFlags BidRequestFlags       `json:"flags"`                // State flags for the request
+	Ext        map[string]any        `json:"ext,omitempty"`        // Additional extensions
+	Timemark   time.Time             `json:"timemark,omitempty"`   // Timestamp of the request
+	Tracer     any                   `json:"-"`                    // Tracing information
 
 	// Internal caches for efficient access
 	targetIDs         []uint64                       // Cached target IDs
@@ -406,19 +420,19 @@ func (r *BidRequest) Categories() []uint64 {
 }
 
 // IsSecure checks if the request is made over a secure connection.
-func (r *BidRequest) IsSecure() bool { return r.Secure == 1 }
+func (r *BidRequest) IsSecure() bool { return r.StateFlags&BidRequestFlagSecure != 0 }
 
 // IsAdblock checks if the user has an ad blocker enabled.
-func (r *BidRequest) IsAdblock() bool { return r.Adblock == 1 }
+func (r *BidRequest) IsAdblock() bool { return r.StateFlags&BidRequestFlagAdblock != 0 }
 
 // IsPrivateBrowsing checks if the user is in private browsing mode.
-func (r *BidRequest) IsPrivateBrowsing() bool { return r.PrivateBrowsing == 1 }
+func (r *BidRequest) IsPrivateBrowsing() bool { return r.StateFlags&BidRequestFlagPrivateBrowsing != 0 }
 
 // IsRobot checks if the user is a robot.
-func (r *BidRequest) IsRobot() bool { return false }
+func (r *BidRequest) IsRobot() bool { return r.StateFlags&BidRequestFlagBot != 0 }
 
 // IsProxy checks if the user is using a proxy.
-func (r *BidRequest) IsProxy() bool { return false }
+func (r *BidRequest) IsProxy() bool { return r.StateFlags&BidRequestFlagProxy != 0 }
 
 // SiteInfo returns the site information associated with the BidRequest.
 // If the site is unavailable, it returns the default site information.
