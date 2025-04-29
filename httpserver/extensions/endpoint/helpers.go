@@ -100,10 +100,3 @@ func ifPositiveNumber(v1, v2 int) int {
 func isEmptyNumString(s string) bool {
 	return s == "" || s == "0"
 }
-
-func b2i(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
-}
