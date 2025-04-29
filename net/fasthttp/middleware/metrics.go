@@ -75,9 +75,14 @@ func CollectSimpleMetrics(metric string, next fasthttp.RequestHandler) fasthttp.
 	return func(ctx *fasthttp.RequestCtx) {
 		start := time.Now()
 		metricsCount.Inc()
+
 		next(ctx)
+
 		duration := time.Since(start)
 		statusCode := strconv.Itoa(ctx.Response.StatusCode())
-		metricTiming.WithLabelValues(string(ctx.Method()), statusCode).Observe(duration.Seconds())
+
+		metricTiming.
+			WithLabelValues(string(ctx.Method()), statusCode).
+			Observe(duration.Seconds())
 	}
 }

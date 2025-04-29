@@ -51,6 +51,13 @@ func WithSpy(spy middleware.Spy) Option {
 	}
 }
 
+// WithURLQueryPattern setter
+func WithURLQueryPattern(pattern string) Option {
+	return func(ext *Extension) {
+		ext.URLQueryPattern = pattern
+	}
+}
+
 // WithSendpoints setter
 func WithSendpoints(endpoints ...Endpoint) Option {
 	return func(ext *Extension) {

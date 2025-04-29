@@ -11,6 +11,8 @@ import (
 	"github.com/fasthttp/router"
 	"github.com/geniusrabbit/udetect"
 	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
@@ -66,29 +68,45 @@ type Extension struct {
 	// Zone data accessor
 	zoneAccessor zoneAccessor
 
+	// URL query pattern like `/b/{endpoint}/{zone}` by default
+	URLQueryPattern string
+
 	// List of endpoints of classic executors
 	endpoints []Endpoint
+
+	// Metrics
+	adRequestCountMetrics *prometheus.CounterVec
 }
 
 // NewExtension with options
 func NewExtension(opts ...Option) *Extension {
-	ext := &Extension{}
+	ext := &Extension{
+		adRequestCountMetrics: promauto.NewCounterVec(prometheus.CounterOpts{
+			Name: "ad_request_count",
+			Help: "Count of Ad requests",
+		}, []string{"endpoint", "zone", "adblock", "robot", "secure", "private", "proxy"}),
+	}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(ext)
 		}
 	}
+
 	return ext
 }
 
 // InitRouter of the HTTP server
 func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tracer opentracing.Tracer) {
 	routeWrapper := httptraceroute.Wrap(router, tracer)
+	urlPattern := gocast.Or(ext.URLQueryPattern, "/b/{endpoint}/{zone}")
 
 	// Ad handler request
 	for _, endpoint := range ext.endpoints {
-		routeWrapper.GET("/b/"+endpoint.Codename()+"/{zone}",
-			ext.handlerWrapper.SpyMetrics("endpoint."+endpoint.Codename(), ext.spy,
+		endpointCode := endpoint.Codename()
+		pattern := strings.ReplaceAll(urlPattern, "{endpoint}", endpointCode)
+
+		routeWrapper.GET(pattern,
+			ext.handlerWrapper.SpyMetrics("endpoint."+endpointCode, ext.spy,
 				// Double wrap to evoid potential `endpoint` relink
 				func(endpoint Endpoint) httphandler.ExtHTTPSpyHandler {
 					return func(ctx context.Context, req *fasthttp.RequestCtx, person personification.Person) {
@@ -128,9 +146,29 @@ func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tra
 func (ext *Extension) endpointRequestHandler(ctx context.Context, req *fasthttp.RequestCtx, person personification.Person, endpoint Endpoint) {
 	bidRequest := ext.requestByHTTPRequest(ctx, person, req)
 	if bidRequest == nil {
+
+		// Collect metrics
+		ext.adRequestCountMetrics.WithLabelValues(
+			endpoint.Codename(),
+			strings.Split(req.UserValue("zone").(string), ".")[0],
+			"", "", "", "", "",
+		).Inc()
+
 		req.SetStatusCode(http.StatusNotFound)
 		return
 	}
+
+	// Collect metrics
+	ext.adRequestCountMetrics.WithLabelValues(
+		endpoint.Codename(),
+		bidRequest.Imps[0].Target.Codename(),
+		b2sbool(bidRequest.IsAdblock()),
+		b2sbool(bidRequest.IsRobot()),
+		b2sbool(bidRequest.IsSecure()),
+		b2sbool(bidRequest.IsPrivateBrowsing()),
+		b2sbool(bidRequest.IsProxy()),
+	).Inc()
+
 	response := endpoint.Handle(ext.source, bidRequest)
 	ext.source.ProcessResponse(response)
 }
@@ -279,4 +317,11 @@ func (ext *Extension) prepareRequest(request *adtype.BidRequest) {
 			IP: request.RequestCtx.RemoteIP(),
 		}
 	}
+}
+
+func b2sbool(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
 }
