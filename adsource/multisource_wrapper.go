@@ -39,6 +39,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/demdxx/rpool/v2"
@@ -126,11 +127,12 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		return adtype.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
 	}
 	var (
-		count    = wrp.maxParallelRequest
-		queue    = make(chan respItem, count)
-		span, _  = gtracing.StartSpanFromContext(request.Ctx, "ssp.bid")
-		trafaret trafaret.Filler
-		err      error
+		count         = wrp.maxParallelRequest
+		isQueueClosed atomic.Bool
+		queue         = make(chan respItem, count)
+		span, _       = gtracing.StartSpanFromContext(request.Ctx, "ssp.bid")
+		trafaret      trafaret.Filler
+		err           error
 	)
 
 	if span != nil {
@@ -144,12 +146,22 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 	}
 
 	// Ensure that the queue is closed when the function exits
-	defer close(queue)
+	defer func() {
+		isQueueClosed.Store(true)
+		close(queue)
+	}()
 
 	// Source request loop
 	for prior, src := range wrp.sources.Iterator(request) {
 		count--
+		if isQueueClosed.Load() {
+			break
+		}
 		wrp.execpool.Go(func() {
+			if isQueueClosed.Load() {
+				return
+			}
+
 			startTime := fasttime.UnixTimestampNano()
 
 			// Send request to the source for the advertising
@@ -159,12 +171,14 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 			wrp.metrics.IncrementBidRequestCount(src,
 				request, time.Duration(startTime-fasttime.UnixTimestampNano()))
 
-			// Send response to the channel if it is still open
-			select {
-			case queue <- respItem{priority: prior, resp: resp}:
-				// Successfully sent to the channel
-			default:
-				// Channel is closed or full, skip sending
+			if !isQueueClosed.Load() {
+				// Send response to the channel if it is still open
+				select {
+				case queue <- respItem{priority: prior, resp: resp}:
+					// Successfully sent to the channel
+				default:
+					// Channel is closed or full, skip sending
+				}
 			}
 
 			// Store bidding information
