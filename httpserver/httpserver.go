@@ -82,7 +82,9 @@ func (srv *Server) Listen(ctx context.Context, address string) (err error) {
 	}
 
 	p := fastp.NewPrometheus("fasthttp")
-	srv.httpServer.Handler = p.WrapHandler(srv.newRouter(ctx))
+	srv.httpServer.Handler = srv.corsHandler(
+		p.WrapHandler(srv.newRouter(ctx)),
+	)
 
 	srv.httpConnection, err = net.Listen("tcp4", address)
 	if err != nil {
@@ -160,6 +162,21 @@ func (srv *Server) check(ctx *fasthttp.RequestCtx) {
 ///////////////////////////////////////////////////////////////////////////////
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
+
+// CORS handler adds CORS headers to the response for all requests including fetch
+func (srv *Server) corsHandler(next fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+		ctx.Response.Header.Set("Access-Control-Allow-Methods", "HEAD,GET,POST,PUT,PATCH,OPTIONS")
+		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
+		ctx.Response.Header.Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+		if string(ctx.Method()) == "OPTIONS" {
+			ctx.SetStatusCode(http.StatusNoContent)
+			return
+		}
+		next(ctx)
+	}
+}
 
 func (srv *Server) panicCallback(ctx *fasthttp.RequestCtx, rcv any) {
 	_ = srv.logError(fmt.Errorf("server panic: %+v\n%s", rcv, debug.Stack()))
