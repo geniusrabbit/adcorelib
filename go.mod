@@ -18,7 +18,6 @@ require (
 	github.com/geniusrabbit/notificationcenter/v2 v2.4.0
 	github.com/geniusrabbit/udetect v0.0.0-20250425134628-4a4f1fa5c991
 	github.com/google/uuid v1.6.0
-	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
 	github.com/nats-io/nats.go v1.41.2
 	github.com/opentracing/opentracing-go v1.2.0
@@ -84,12 +83,12 @@ require (
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250422160041-2d3770c4ea7f // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250422160041-2d3770c4ea7f // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250428153025-10db94c68c34 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250428153025-10db94c68c34 // indirect
 	google.golang.org/grpc v1.72.0 // indirect
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20250422160041-2d3770c4ea7f
+replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20250428153025-10db94c68c34
