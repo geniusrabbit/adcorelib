@@ -8,19 +8,29 @@ package types
 // FormatTypeBitset of types
 type FormatTypeBitset uint
 
-// FormatTypeBitsetEmpty by default
-const FormatTypeBitsetEmpty FormatTypeBitset = 0
+const (
+	// FormatTypeBitsetEmpty by default
+	FormatTypeBitsetEmpty FormatTypeBitset = 0
+	// FormatTypeBitsetDirect for direct type
+	FormatTypeBitsetDirect FormatTypeBitset = 1 << FormatTypeBitset(FormatDirectType)
+)
 
 // NewFormatTypeBitset from types
 func NewFormatTypeBitset(types ...FormatType) *FormatTypeBitset {
 	return new(FormatTypeBitset).Set(types...)
 }
 
-// Set type values
+// Set format type values
 func (b *FormatTypeBitset) Set(types ...FormatType) *FormatTypeBitset {
 	for _, t := range types {
 		*b |= 1 << FormatTypeBitset(t)
 	}
+	return b
+}
+
+// SetOne format type value
+func (b *FormatTypeBitset) SetOne(t FormatType) *FormatTypeBitset {
+	*b = 1 << FormatTypeBitset(t)
 	return b
 }
 
@@ -29,6 +39,12 @@ func (b *FormatTypeBitset) SetBitset(bitset ...FormatTypeBitset) *FormatTypeBits
 	for _, v := range bitset {
 		*b |= v
 	}
+	return b
+}
+
+// SetOneBitset set one bitset
+func (b *FormatTypeBitset) SetOneBitset(bitset FormatTypeBitset) *FormatTypeBitset {
+	*b = bitset
 	return b
 }
 

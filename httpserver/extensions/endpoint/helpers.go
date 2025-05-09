@@ -6,8 +6,6 @@ import (
 
 	"github.com/demdxx/gocast/v2"
 	"github.com/valyala/fasthttp"
-
-	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 func peekOneFromQuery(query *fasthttp.Args, keys ...string) string {
@@ -17,13 +15,6 @@ func peekOneFromQuery(query *fasthttp.Args, keys ...string) string {
 		}
 	}
 	return ""
-}
-
-func directTypeMask(is bool) types.FormatTypeBitset {
-	if is {
-		return *types.NewFormatTypeBitset(types.FormatDirectType)
-	}
-	return types.FormatTypeBitsetEmpty
 }
 
 func domain(surl string) (name string) {
@@ -83,13 +74,7 @@ func getSizeByCtx(ctx *fasthttp.RequestCtx) (sw, sh, minSW, minSH int) {
 	return sw, sh, minSW, minSH
 }
 
-func minInt(v1, v2 int) int {
-	if v1 > 0 {
-		return v1
-	}
-	return v2
-}
-
+//go:inline
 func ifPositiveNumber(v1, v2 int) int {
 	if v1 > 0 {
 		return v1
@@ -97,6 +82,15 @@ func ifPositiveNumber(v1, v2 int) int {
 	return v2
 }
 
+//go:inline
 func isEmptyNumString(s string) bool {
 	return s == "" || s == "0"
+}
+
+//go:inline
+func b2sbool(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
 }

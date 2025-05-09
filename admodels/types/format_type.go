@@ -58,6 +58,14 @@ var FormatMapping = map[string]FormatType{
 	`custom`:    FormatCustomType,
 }
 
+// FormatTypeByName returns format type by name
+func FormatTypeByName(name string) FormatType {
+	if t, ok := FormatMapping[name]; ok {
+		return t
+	}
+	return FormatInvalidType
+}
+
 // Name by format type
 func (t FormatType) Name() string {
 	switch t {

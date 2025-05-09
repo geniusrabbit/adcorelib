@@ -89,7 +89,7 @@ func (b *NumberBitset[T]) Unset(vals ...T) *NumberBitset[T] {
 	if len(newVals) == len(b.values) {
 		return b
 	}
-	return NewNumberBitset[T](newVals...)
+	return NewNumberBitset(newVals...)
 }
 
 // Has type in bitset

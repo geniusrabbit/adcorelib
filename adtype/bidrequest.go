@@ -109,13 +109,20 @@ func (r *BidRequest) ProjectID() uint64 { return 0 }
 // It resets the formats slice and format bitset,
 // and initializes each impression using the provided formats accessor.
 func (r *BidRequest) Init(formats types.FormatsAccessor) {
-	if r.formats != nil {
-		r.formats = r.formats[:0]
-	}
+	r.formats = r.formats[:0]
+	r.formatTypeMask.Reset()
 	r.formatBitset.Reset()
 
+	// Initialize each impression with the provided formats
 	r.ImpressionUpdate(func(imp *Impression) bool {
-		imp.Init(formats)
+		imp.InitFormats(formats)
+		for _, f := range imp.Formats() {
+			if !r.formatBitset.Has(uint(f.ID)) {
+				r.formats = append(r.formats, f)
+				r.formatTypeMask.SetOneBitset(f.Types)
+			}
+			r.formatBitset.Set(uint(f.ID))
+		}
 		return true
 	})
 }
@@ -154,31 +161,18 @@ func (r *BidRequest) SourceFilterCheck(id uint64) bool {
 // Formats returns the list of formats associated with the BidRequest.
 // If the formats slice is empty, it aggregates formats from all impressions.
 func (r *BidRequest) Formats() []*types.Format {
-	if len(r.formats) < 1 {
-		for _, imp := range r.Imps {
-			r.formats = append(r.formats, imp.Formats()...)
-		}
-	}
 	return r.formats
 }
 
 // FormatBitset returns a bitset representing the format IDs in the BidRequest.
 // It populates the bitset if it's currently empty.
 func (r *BidRequest) FormatBitset() *searchtypes.NumberBitset[uint] {
-	if r.formatBitset.Len() < 1 {
-		for _, f := range r.Formats() {
-			r.formatBitset.Set(uint(f.ID))
-		}
-	}
 	return &r.formatBitset
 }
 
 // FormatTypeMask returns a bitmask representing the types of formats in the BidRequest.
 // It populates the mask if it's currently empty.
 func (r *BidRequest) FormatTypeMask() types.FormatTypeBitset {
-	if r.formatTypeMask.IsEmpty() {
-		r.formatTypeMask.SetFromFormats(r.Formats()...)
-	}
 	return r.formatTypeMask
 }
 
@@ -206,16 +200,19 @@ func (r *BidRequest) Height() int {
 // Tags returns a list of tags associated with the BidRequest.
 // It aggregates keywords from the user and site information.
 func (r *BidRequest) Tags() []string {
+	if r == nil {
+		return nil
+	}
 	if r.tags != nil {
 		return r.tags
 	}
-	if r != nil {
-		if r.User != nil && len(r.User.Keywords) > 0 {
-			r.tags = strings.Split(r.User.Keywords, ",")
-		}
-		if r.Site != nil && len(r.Site.Keywords) > 0 {
-			r.tags = append(r.tags, strings.Split(r.Site.Keywords, ",")...)
-		}
+	// Extract tags from user and site information
+	if r.User != nil && len(r.User.Keywords) > 0 {
+		r.tags = strings.Split(r.User.Keywords, ",")
+	}
+	// Extract tags from site information
+	if r.Site != nil && len(r.Site.Keywords) > 0 {
+		r.tags = append(r.tags, strings.Split(r.Site.Keywords, ",")...)
 	}
 	return r.tags
 }
@@ -266,8 +263,7 @@ func (r *BidRequest) Domain() []string {
 	if r.domain == nil {
 		if r.Site != nil {
 			r.domain = r.Site.DomainPrepared()
-		}
-		if r.App != nil {
+		} else if r.App != nil {
 			r.domain = r.App.DomainPrepared()
 		}
 	}
@@ -276,13 +272,14 @@ func (r *BidRequest) Domain() []string {
 
 // DomainName returns the primary domain name of the site or the bundle name of the app.
 func (r *BidRequest) DomainName() string {
-	if r != nil {
-		if r.Site != nil {
-			return r.Site.Domain
-		}
-		if r.App != nil {
-			return r.App.Bundle
-		}
+	if r == nil {
+		return ""
+	}
+	if r.Site != nil {
+		return r.Site.Domain
+	}
+	if r.App != nil {
+		return r.App.Bundle
 	}
 	return ""
 }

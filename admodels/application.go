@@ -13,7 +13,7 @@ import (
 // Application model
 type Application struct {
 	ID        uint64   // Authoincrement key
-	Account   *Account // Who have this company
+	Account   *Account // Account which application belongs to
 	AccountID uint64   //
 
 	URI      string                // Unical application identificator

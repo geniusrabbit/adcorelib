@@ -44,15 +44,27 @@ type Impression struct {
 
 	// Format types for impression
 	FormatTypes  types.FormatTypeBitset `json:"-"`
+	FormatCodes  []string               `json:"-"`
 	formats      []*types.Format
-	formatBitset *searchtypes.NumberBitset[uint]
+	formatBitset searchtypes.NumberBitset[uint]
 
 	Ext map[string]any `json:"ext,omitempty"`
 }
 
+// InitFormats initialize formats by size and types or by codes
+func (i *Impression) InitFormats(formats types.FormatsAccessor) {
+	if i == nil {
+		return
+	}
+	if len(i.FormatCodes) > 0 {
+		i.InitFormatsByCodes(i.FormatCodes, formats)
+	} else {
+		i.InitFormatsBySizeAndTypes(i.WidthMax, i.HeightMax, i.Width, i.Height, i.FormatTypes, formats)
+	}
+}
+
 // Init internal information
-func (i *Impression) Init(formats types.FormatsAccessor) {
-	var w, h, minw, minh = i.WidthMax, i.HeightMax, i.Width, i.Height
+func (i *Impression) InitFormatsBySizeAndTypes(w, h, minw, minh int, formatTypes types.FormatTypeBitset, formats types.FormatsAccessor) {
 	if w <= 0 && h <= 0 {
 		w, h = minw, minh
 		minw, minh = minw-(minw/3), minh/3
@@ -64,15 +76,37 @@ func (i *Impression) Init(formats types.FormatsAccessor) {
 		minh = h - (h / 5)
 	}
 
+	// Extract formats by size
 	i.formats = formats.FormatsBySize(w+10, h+10, minw, minh, i.FormatTypes)
 
-	i.formatBitset = searchtypes.NewNumberBitset[uint]()
-	for _, f := range i.formats {
-		i.formatBitset.Set(uint(f.ID))
-	}
-
+	// Update format types
+	i.formatBitset.Reset()
 	if i.FormatTypes.IsEmpty() {
-		i.FormatTypes = *types.NewFormatTypeBitset().SetFromFormats(i.formats...)
+		for _, f := range i.formats {
+			i.FormatTypes.SetBitset(f.Types)
+			i.formatBitset.Set(uint(f.ID))
+		}
+	} else {
+		for _, f := range i.formats {
+			i.formatBitset.Set(uint(f.ID))
+		}
+	}
+}
+
+func (i *Impression) InitFormatsByCodes(codes []string, formats types.FormatsAccessor) {
+	if len(codes) < 1 {
+		return
+	}
+	i.formats = i.formats[:0]
+	i.formatBitset.Reset()
+	i.FormatTypes.Reset()
+
+	for _, code := range codes {
+		if f := formats.FormatByCode(code); f != nil {
+			i.FormatTypes.SetBitset(f.Types)
+			i.formats = append(i.formats, f)
+			i.formatBitset.Set(uint(f.ID))
+		}
 	}
 }
 
@@ -93,7 +127,7 @@ func (i *Impression) FormatByType(tp types.FormatType) *types.Format {
 
 // FormatBitset of IDs
 func (i *Impression) FormatBitset() *searchtypes.NumberBitset[uint] {
-	return i.formatBitset
+	return &i.formatBitset
 }
 
 // IDByFormat return specific ID to link format

@@ -9,7 +9,6 @@ import (
 	"github.com/demdxx/gocast/v2"
 	"github.com/demdxx/xtypes"
 	"github.com/fasthttp/router"
-	"github.com/geniusrabbit/udetect"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -145,8 +144,8 @@ func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tra
 
 func (ext *Extension) endpointRequestHandler(ctx context.Context, req *fasthttp.RequestCtx, person personification.Person, endpoint Endpoint) {
 	bidRequest := ext.requestByHTTPRequest(ctx, person, req)
-	if bidRequest == nil {
 
+	if bidRequest == nil {
 		// Collect metrics
 		ext.adRequestCountMetrics.WithLabelValues(
 			endpoint.Codename(),
@@ -271,57 +270,13 @@ func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personifi
 	if target == nil {
 		return nil
 	}
+
+	// Get application by referer
 	if ext.appAccessor != nil {
 		app, _ = ext.appAccessor.AppByURI(domain(string(rctx.Referer())))
 	}
-	request := NewRequestFor(ctx, app, target, person, NewRequestOptions(rctx), ext.formatAccessor)
-	if request != nil {
-		ext.prepareRequest(request)
-	}
-	return request
-}
 
-func (ext *Extension) prepareRequest(request *adtype.BidRequest) {
-	// BigBrother, tell me! Who is it?
-	var (
-		query    = request.RequestCtx.QueryArgs()
-		keywords = peekOneFromQuery(query, "keywords", "keyword", "kw")
-	)
-
-	if request.Person != nil {
-		// Fill user info
-		ui := request.Person.UserInfo()
-		request.User = &adtype.User{
-			ID:            ui.UUID(),
-			SessionID:     ui.SessionID(),
-			FingerPrintID: ui.Fingerprint(),
-			ETag:          ui.ETag(),
-			Keywords:      keywords,
-			Geo:           ui.GeoInfo(),
-		}
-		request.Device = ui.DeviceInfo()
-		if ui != nil && ui.User != nil {
-			request.User.AgeStart = ui.User.AgeStart
-			request.User.AgeEnd = ui.User.AgeEnd
-		}
-	} else {
-		request.User = &adtype.User{
-			FingerPrintID: "",
-			Keywords:      keywords,
-		}
-	}
-
-	// Fill GEO info
-	if request.User.Geo == nil {
-		request.User.Geo = &udetect.Geo{
-			IP: request.RequestCtx.RemoteIP(),
-		}
-	}
-}
-
-func b2sbool(b bool) string {
-	if b {
-		return "1"
-	}
-	return "0"
+	// Create request for the target
+	return NewRequestFor(ctx, app, target, person,
+		NewRequestOptions(rctx), ext.formatAccessor)
 }

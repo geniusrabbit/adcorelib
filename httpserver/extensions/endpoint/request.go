@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"strconv"
 	"time"
 
-	"github.com/demdxx/gocast/v2"
 	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
 
@@ -19,72 +17,11 @@ import (
 	"github.com/geniusrabbit/adcorelib/rand"
 )
 
-// RequestOptions prepare
-type RequestOptions struct {
-	Debug     bool
-	Request   *fasthttp.RequestCtx
-	Count     int
-	X, Y      int
-	Width     int
-	WidthMax  int
-	Height    int
-	HeightMax int
-	Page      string
-	SubID1    string
-	SubID2    string
-	SubID3    string
-	SubID4    string
-	SubID5    string
-}
-
-// NewRequestOptions prepare
-func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
-	var (
-		queryArgs        = ctx.QueryArgs()
-		w, h, minW, minH = getSizeByCtx(ctx)
-		debug, _         = strconv.ParseBool(string(queryArgs.Peek("debug")))
-	)
-	return &RequestOptions{
-		Debug:     debug,
-		Request:   ctx,
-		X:         gocast.Int(string(queryArgs.Peek("x"))),
-		Y:         gocast.Int(string(queryArgs.Peek("y"))),
-		Width:     minW,
-		WidthMax:  ifPositiveNumber(w, -1),
-		Height:    minH,
-		HeightMax: ifPositiveNumber(h, -1),
-		SubID1:    peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
-		SubID2:    peekOneFromQuery(queryArgs, "subid2", "s2"),
-		SubID3:    peekOneFromQuery(queryArgs, "subid3", "s3"),
-		SubID4:    peekOneFromQuery(queryArgs, "subid4", "s4"),
-		SubID5:    peekOneFromQuery(queryArgs, "subid5", "s5"),
-		Count:     gocast.Int(peekOneFromQuery(queryArgs, "count")),
-	}
-}
-
-// NewDirectRequestOptions prepare
-func NewDirectRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
-	var (
-		queryArgs = ctx.QueryArgs()
-		debug, _  = strconv.ParseBool(string(queryArgs.Peek("debug")))
-	)
-	return &RequestOptions{
-		Debug:   debug,
-		Request: ctx,
-		X:       gocast.Int(string(queryArgs.Peek("x"))),
-		Y:       gocast.Int(string(queryArgs.Peek("y"))),
-		Width:   -1,
-		Height:  -1,
-		SubID1:  peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
-		SubID2:  peekOneFromQuery(queryArgs, "subid2", "s2"),
-		SubID3:  peekOneFromQuery(queryArgs, "subid3", "s3"),
-		SubID4:  peekOneFromQuery(queryArgs, "subid4", "s4"),
-		SubID5:  peekOneFromQuery(queryArgs, "subid5", "s5"),
-	}
-}
-
 // NewRequestFor specific person
-func NewRequestFor(ctx context.Context, app *admodels.Application, target admodels.Target, person personification.Person,
+func NewRequestFor(ctx context.Context,
+	app *admodels.Application,
+	target admodels.Target,
+	person personification.Person,
 	opt *RequestOptions, formatAccessor types.FormatsAccessor) *adtype.BidRequest {
 	var (
 		userInfo         = person.UserInfo()
@@ -119,8 +56,9 @@ func NewRequestFor(ctx context.Context, app *admodels.Application, target admode
 			{
 				ID:          rand.UUID(), // Impression ID
 				Target:      target,
-				FormatTypes: directTypeMask(opt.Width == -1 && opt.Height == -1),
-				Count:       minInt(opt.Count, 1),
+				FormatTypes: opt.GetFormatTypes(),
+				FormatCodes: opt.FormatCodes,
+				Count:       max(opt.Count, 1),
 				X:           opt.X,
 				Y:           opt.Y,
 				Width:       opt.Width,
@@ -150,7 +88,7 @@ func NewRequestFor(ctx context.Context, app *admodels.Application, target admode
 			Domain:        domain(referer), //
 			Cat:           nil,             // Array of categories
 			PrivacyPolicy: 0,               // Default: 1 ("1": has a privacy policy)
-			Keywords:      "",              // Comma separated list of keywords about the site.
+			Keywords:      opt.Keywords,    // Comma separated list of keywords about the site.
 			Page:          referer,         // URL of the page
 			Referrer:      referer,         // Referrer URL
 			Search:        "",              // Search string that caused navigation
