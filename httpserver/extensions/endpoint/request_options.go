@@ -36,7 +36,7 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		queryArgs        = ctx.QueryArgs()
 		w, h, minW, minH = getSizeByCtx(ctx)
 		debug, _         = strconv.ParseBool(string(queryArgs.Peek("debug")))
-		formats          = strings.Trim(string(queryArgs.Peek("format")), ", \t\n\r")
+		formats          = strings.Trim(string(queryArgs.Peek("adformat")), ", \t\n\r")
 		formatCodes      []string
 		formatTypes      = strings.Trim(string(queryArgs.Peek("type")), ", \t\n\r")
 		formatTypeCodes  []string
