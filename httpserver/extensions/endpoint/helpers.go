@@ -94,3 +94,7 @@ func b2sbool(b bool) string {
 	}
 	return "0"
 }
+
+func isNotEmptyString(s string) bool {
+	return s != ""
+}

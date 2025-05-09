@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/demdxx/gocast/v2"
+	"github.com/demdxx/xtypes"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/valyala/fasthttp"
 )
@@ -41,15 +42,17 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		formatTypes      = strings.Trim(string(queryArgs.Peek("type")), ", \t\n\r")
 		formatTypeCodes  []string
 	)
-	if formats == "auto" || formats == "all" {
-		formatCodes = nil
-	} else {
-		formatCodes = strings.Split(formats, ",")
+	if formats != "" && formats != "auto" && formats != "all" {
+		formatCodes = xtypes.SliceApply(
+			strings.Split(formats, ","),
+			strings.TrimSpace,
+		).Filter(isNotEmptyString)
 	}
-	if formatTypes == "auto" || formatTypes == "all" {
-		formatTypeCodes = nil
-	} else {
-		formatTypeCodes = strings.Split(formatTypes, ",")
+	if formatTypes != "" && formatTypes != "auto" && formatTypes != "all" {
+		formatTypeCodes = xtypes.SliceApply(
+			strings.Split(formatTypes, ","),
+			strings.TrimSpace,
+		).Filter(isNotEmptyString)
 	}
 	return &RequestOptions{
 		Debug:       debug,
