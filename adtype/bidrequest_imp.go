@@ -83,7 +83,7 @@ func (i *Impression) InitFormatsBySizeAndTypes(w, h, minw, minh int, formatTypes
 	i.formatBitset.Reset()
 	if i.FormatTypes.IsEmpty() {
 		for _, f := range i.formats {
-			i.FormatTypes.SetBitset(f.Types)
+			i.FormatTypes.SetOneBitset(f.Types)
 			i.formatBitset.Set(uint(f.ID))
 		}
 	} else {
@@ -103,7 +103,7 @@ func (i *Impression) InitFormatsByCodes(codes []string, formats types.FormatsAcc
 
 	for _, code := range codes {
 		if f := formats.FormatByCode(code); f != nil {
-			i.FormatTypes.SetBitset(f.Types)
+			i.FormatTypes.SetOneBitset(f.Types)
 			i.formats = append(i.formats, f)
 			i.formatBitset.Set(uint(f.ID))
 		}

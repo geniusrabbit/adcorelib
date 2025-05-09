@@ -120,8 +120,8 @@ func (r *BidRequest) Init(formats types.FormatsAccessor) {
 			if !r.formatBitset.Has(uint(f.ID)) {
 				r.formats = append(r.formats, f)
 				r.formatTypeMask.SetOneBitset(f.Types)
+				r.formatBitset.Set(uint(f.ID))
 			}
-			r.formatBitset.Set(uint(f.ID))
 		}
 		return true
 	})

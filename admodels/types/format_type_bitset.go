@@ -30,7 +30,9 @@ func (b *FormatTypeBitset) Set(types ...FormatType) *FormatTypeBitset {
 
 // SetOne format type value
 func (b *FormatTypeBitset) SetOne(t FormatType) *FormatTypeBitset {
-	*b = 1 << FormatTypeBitset(t)
+	if t != FormatInvalidType && t != FormatUndefinedType {
+		*b |= 1 << FormatTypeBitset(t)
+	}
 	return b
 }
 
@@ -44,7 +46,7 @@ func (b *FormatTypeBitset) SetBitset(bitset ...FormatTypeBitset) *FormatTypeBits
 
 // SetOneBitset set one bitset
 func (b *FormatTypeBitset) SetOneBitset(bitset FormatTypeBitset) *FormatTypeBitset {
-	*b = bitset
+	*b |= bitset
 	return b
 }
 
