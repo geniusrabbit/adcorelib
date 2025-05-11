@@ -1,12 +1,15 @@
-//
-// @project GeniusRabbit corelib 2016 – 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019
-//
-
-package admodels
+package adtype
 
 // Action type
 type Action int
+
+// Campaign actions
+const (
+	ActionImpression Action = 1
+	ActionView       Action = 1
+	ActionClick      Action = 2
+	ActionLead       Action = 3
+)
 
 func (a Action) String() string {
 	switch a {
@@ -44,14 +47,6 @@ func (a Action) IsClick() bool { return a == ActionClick }
 //
 //go:inline
 func (a Action) IsLead() bool { return a == ActionLead }
-
-// Campaign actions
-const (
-	ActionImpression Action = 1
-	ActionView       Action = 1
-	ActionClick      Action = 2
-	ActionLead       Action = 3
-)
 
 // LeadAcceptCoef delimiter magic value
 const (

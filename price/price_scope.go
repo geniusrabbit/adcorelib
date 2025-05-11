@@ -1,7 +1,7 @@
 package price
 
 import (
-	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
@@ -29,13 +29,13 @@ type PriceScope struct {
 }
 
 // PricePerAction returns the price for the action type.
-func (ps *PriceScope) PricePerAction(actionType admodels.Action) billing.Money {
+func (ps *PriceScope) PricePerAction(actionType adtype.Action) billing.Money {
 	switch actionType {
-	case admodels.ActionView:
+	case adtype.ActionView:
 		return ps.ViewPrice
-	case admodels.ActionClick:
+	case adtype.ActionClick:
 		return ps.ClickPrice
-	case admodels.ActionLead:
+	case adtype.ActionLead:
 		return ps.LeadPrice
 	default:
 		return 0

@@ -20,7 +20,7 @@ import (
 // NewRequestFor specific person
 func NewRequestFor(ctx context.Context,
 	app *admodels.Application,
-	target admodels.Target,
+	target adtype.Target,
 	person personification.Person,
 	opt *RequestOptions, formatAccessor types.FormatsAccessor) *adtype.BidRequest {
 	var (

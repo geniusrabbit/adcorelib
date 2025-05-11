@@ -13,6 +13,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/geniusrabbit/adcorelib/adquery/bidresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/price"
@@ -254,7 +255,7 @@ func BenchmarkRefereeMatch(b *testing.B) {
 }
 
 func newItem(impid string, bid int64) adtype.ResponserItem {
-	return &adtype.ResponseItemBlank{
+	return &bidresponse.ResponseItemBlank{
 		Src: nil,
 		Imp: &adtype.Impression{ID: impid},
 		PriceScope: price.PriceScope{
@@ -265,7 +266,7 @@ func newItem(impid string, bid int64) adtype.ResponserItem {
 }
 
 func newMultipleItem(bids ...titem) adtype.ResponserMultipleItem {
-	block := &adtype.ResponseItemBlock{}
+	block := &bidresponse.ResponseItemBlock{}
 	for _, bid := range bids {
 		block.Items = append(block.Items, newItem(bid.ImpID, bid.Bid))
 	}

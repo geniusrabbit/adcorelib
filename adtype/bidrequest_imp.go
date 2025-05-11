@@ -9,23 +9,27 @@ import (
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 	openrtbnreq3 "github.com/bsm/openrtb/v3/native/request"
 
-	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/searchtypes"
 )
 
-// Impression target
+// Impression target object represents impression place
+// which can be used for the ad placement
 type Impression struct {
-	ID                string          `json:"id,omitempty"`                  // Internal impression ID
-	ExternalID        string          `json:"extid,omitempty"`               // External impression ID (ImpID)
-	ExternalTargetID  string          `json:"exttrgid"`                      // External zone ID (tagid)
-	Request           any             `json:"request,omitempty"`             // Contains subrequest from RTB or another protocol
-	Target            admodels.Target `json:"target,omitempty"`              //
-	BidFloorCPM       billing.Money   `json:"bid_floor,omitempty"`           //
-	PurchaseViewPrice billing.Money   `json:"purchase_view_price,omitempty"` //
-	Pos               int             `json:"pos,omitempty"`                 // 5.4 Ad Position
-	Count             int             `json:"cnt,omitempty"`                 // Count of places for multiple banners
+	ID               string `json:"id,omitempty"`    // Internal impression ID
+	ExternalID       string `json:"extid,omitempty"` // External impression ID (ImpID)
+	ExternalTargetID string `json:"exttrgid"`        // External zone/unit/spot ID (tagid)
+
+	Request any    `json:"request,omitempty"` // Contains subrequest from RTB or another protocol
+	Target  Target `json:"target,omitempty"`
+
+	BidFloorCPM       billing.Money `json:"bid_floor,omitempty"`
+	PurchaseViewPrice billing.Money `json:"purchase_view_price,omitempty"`
+
+	// Ad position
+	Pos   int `json:"pos,omitempty"` // 5.4 Ad Position
+	Count int `json:"cnt,omitempty"` // Count of places for multiple banners
 
 	// Sizes and position on the screen
 	X         int `json:"x,omitempty"`
@@ -77,22 +81,24 @@ func (i *Impression) InitFormatsBySizeAndTypes(w, h, minw, minh int, formatTypes
 	}
 
 	// Extract formats by size
-	i.formats = formats.FormatsBySize(w+10, h+10, minw, minh, i.FormatTypes)
+	i.formats = formats.FormatsBySize(w+10, h+10, minw, minh, formatTypes)
 
 	// Update format types
 	i.formatBitset.Reset()
-	if i.FormatTypes.IsEmpty() {
+	if formatTypes.IsEmpty() {
 		for _, f := range i.formats {
 			i.FormatTypes.SetOneBitset(f.Types)
 			i.formatBitset.Set(uint(f.ID))
 		}
 	} else {
+		i.FormatTypes = formatTypes
 		for _, f := range i.formats {
 			i.formatBitset.Set(uint(f.ID))
 		}
 	}
 }
 
+// InitFormatsByCodes initialize formats by codes
 func (i *Impression) InitFormatsByCodes(codes []string, formats types.FormatsAccessor) {
 	if len(codes) < 1 {
 		return
@@ -135,7 +141,7 @@ func (i *Impression) IDByFormat(format *types.Format) string {
 	return i.ID + "_" + format.Codename
 }
 
-// TargetID value
+// TargetID returns the target ID
 func (i *Impression) TargetID() uint {
 	if i == nil || i.Target == nil {
 		return 0
@@ -143,25 +149,25 @@ func (i *Impression) TargetID() uint {
 	return uint(i.Target.ID())
 }
 
-// AccountID number
+// AccountID returns the account ID
 func (i *Impression) AccountID() uint64 {
 	if i != nil && i.Target != nil {
-		return i.Target.AccountID()
+		return i.Target.Account().ID()
 	}
 	return 0
 }
 
-// IsDirect value
+// IsDirect returns true if the impression is direct
 func (i *Impression) IsDirect() bool {
 	return i.FormatTypes.Is(types.FormatDirectType)
 }
 
-// IsNative target support
+// IsNative returns true if the impression is native
 func (i *Impression) IsNative() bool {
 	return i.FormatTypes.Is(types.FormatNativeType)
 }
 
-// IsStandart target support
+// IsStandart returns true if the impression is standart
 func (i *Impression) IsStandart() bool {
 	return false ||
 		i.FormatTypes.Is(types.FormatBannerType) ||
@@ -180,17 +186,25 @@ func (i *Impression) CommissionShareFactor() float64 {
 
 // PurchasePrice return the price of need to pay for the action
 // to the connected network or application if price is fixed
-func (i *Impression) PurchasePrice(action admodels.Action) billing.Money {
+func (i *Impression) PurchasePrice(action Action) billing.Money {
 	if i == nil {
 		return 0
 	}
-	if action.IsImpression() && i.PurchaseViewPrice > 0 {
+	if action.IsView() && i.PurchaseViewPrice > 0 {
 		return i.PurchaseViewPrice
 	}
 	if i.Target != nil {
 		return i.Target.PurchasePrice(action)
 	}
 	return 0
+}
+
+// RequestObj return the request object related to the impression
+func (i *Impression) RequestObj() any {
+	if i == nil {
+		return nil
+	}
+	return i.Request
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,7 @@
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019
 //
 
-package adtype
+package bidrequest
 
 import (
 	"context"
@@ -11,30 +11,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/demdxx/xtypes"
 	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
+	"golang.org/x/exp/slices"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/personification"
-	"github.com/geniusrabbit/adcorelib/searchtypes"
 )
 
 // defaultUserdata initializes a default User with Geo set to GeoDefault
-var defaultUserdata = User{Geo: &udetect.GeoDefault, AgeStart: 0, AgeEnd: 1000}
-
-// Native asset IDs enumeration for different native ad components
-const (
-	NativeAssetUndefined = iota // Undefined asset
-	NativeAssetTitle            // Title asset
-	NativeAssetLegend           // Legend asset
-	NativeAssetMainImage        // Main image asset
-	NativeAssetIcon             // Icon asset
-	NativeAssetRating           // Rating asset
-	NativeAssetSponsored        // Sponsored asset
-)
+var defaultUserdata = adtype.User{Geo: &udetect.GeoDefault, AgeStart: 0, AgeEnd: 1000}
 
 // BidRequestFlags defines flags for bid requests.
 type BidRequestFlags uint8
@@ -55,38 +46,37 @@ const (
 // BidRequest represents a bid request in the ad system.
 // It contains all necessary information for processing an ad bid.
 type BidRequest struct {
-	Ctx context.Context `json:"-"` // Context for request handling
+	ID       string    `json:"id,omitempty"`       // Auction ID
+	ExtID    string    `json:"bidid,omitempty"`    // External Auction ID
+	Timemark time.Time `json:"timemark,omitempty"` // Timestamp of the request
 
-	ID          string                 `json:"id,omitempty"`           // Auction ID
-	ExtID       string                 `json:"bidid,omitempty"`        // External Auction ID
-	AccessPoint AccessPoint            `json:"-"`                      // Access point information
-	Debug       bool                   `json:"debug,omitempty"`        // Debug mode flag
+	Ctx   context.Context `json:"-"`               // Context for request handling
+	Debug bool            `json:"debug,omitempty"` // Debug mode flag
+
+	// Source of the request
+	AccessPoint adtype.AccessPoint `json:"-"` // Access point information
+
 	AuctionType types.AuctionType      `json:"auction_type,omitempty"` // Type of auction
 	RequestCtx  *fasthttp.RequestCtx   `json:"-"`                      // HTTP request context
 	Request     any                    `json:"-"`                      // Original request from RTB or another protocol
 	Person      personification.Person `json:"-"`                      // Personification data
-	Imps        []Impression           `json:"imps,omitempty"`         // List of impressions
+	Imps        []adtype.Impression    `json:"imps,omitempty"`         // List of impressions
 
 	AppTarget  *admodels.Application `json:"app_target,omitempty"` // Target application
 	Device     *udetect.Device       `json:"device,omitempty"`     // Device information
 	App        *udetect.App          `json:"app,omitempty"`        // App information
 	Site       *udetect.Site         `json:"site,omitempty"`       // Site information
-	User       *User                 `json:"user,omitempty"`       // User information
+	User       *adtype.User          `json:"user,omitempty"`       // User information
 	StateFlags BidRequestFlags       `json:"flags"`                // State flags for the request
 	Ext        map[string]any        `json:"ext,omitempty"`        // Additional extensions
-	Timemark   time.Time             `json:"timemark"`             // Timestamp of the request
 	Tracer     any                   `json:"-"`                    // Tracing information
 
 	// Internal caches for efficient access
-	targetIDs         []uint64                       // Cached target IDs
-	externalTargetIDs []string                       // Cached external target IDs
-	categoryArray     []uint64                       // Cached category IDs
-	domain            []string                       // Cached domains
-	tags              []string                       // Cached tags
-	formats           []*types.Format                // Cached formats
-	formatBitset      searchtypes.NumberBitset[uint] // Bitset for format IDs
-	formatTypeMask    types.FormatTypeBitset         // Bitmask for format types
-	sourceIDs         []uint64                       // Cached source IDs
+	categoryArray []uint64  // Cached category IDs
+	domain        []string  // Cached domains
+	tags          []string  // Cached tags
+	formats       AdFormats // Formats interface for accessing formats
+	sourceIDs     []uint64  // Cached source IDs
 }
 
 // String implements the fmt.Stringer interface for BidRequest.
@@ -109,19 +99,16 @@ func (r *BidRequest) ProjectID() uint64 { return 0 }
 // It resets the formats slice and format bitset,
 // and initializes each impression using the provided formats accessor.
 func (r *BidRequest) Init(formats types.FormatsAccessor) {
-	r.formats = r.formats[:0]
-	r.formatTypeMask.Reset()
-	r.formatBitset.Reset()
+	// r.formats = r.formats[:0]
+	// r.formatTypeMask.Reset()
+	// r.formatBitset.Reset()
+	r.formats.Reset()
 
 	// Initialize each impression with the provided formats
-	r.ImpressionUpdate(func(imp *Impression) bool {
+	r.ImpressionUpdate(func(imp *adtype.Impression) bool {
 		imp.InitFormats(formats)
 		for _, f := range imp.Formats() {
-			if !r.formatBitset.Has(uint(f.ID)) {
-				r.formats = append(r.formats, f)
-				r.formatTypeMask.SetOneBitset(f.Types)
-				r.formatBitset.Set(uint(f.ID))
-			}
+			r.formats.Add(f)
 		}
 		return true
 	})
@@ -140,7 +127,8 @@ func (r *BidRequest) SetSourceFilter(ids ...uint64) {
 		r.sourceIDs = r.sourceIDs[:0]
 	}
 	if len(ids) > 0 {
-		r.sourceIDs = append(r.sourceIDs, ids...)
+		r.sourceIDs = xtypes.SliceUnique(append(r.sourceIDs, ids...))
+		slices.Sort(r.sourceIDs)
 	}
 }
 
@@ -150,51 +138,14 @@ func (r *BidRequest) SourceFilterCheck(id uint64) bool {
 	if len(r.sourceIDs) < 1 {
 		return true
 	}
-	for _, sid := range r.sourceIDs {
-		if sid == id {
-			return true
-		}
-	}
-	return false
+	_, found := slices.BinarySearch(r.sourceIDs, id)
+	return found
 }
 
 // Formats returns the list of formats associated with the BidRequest.
 // If the formats slice is empty, it aggregates formats from all impressions.
-func (r *BidRequest) Formats() []*types.Format {
-	return r.formats
-}
-
-// FormatBitset returns a bitset representing the format IDs in the BidRequest.
-// It populates the bitset if it's currently empty.
-func (r *BidRequest) FormatBitset() *searchtypes.NumberBitset[uint] {
-	return &r.formatBitset
-}
-
-// FormatTypeMask returns a bitmask representing the types of formats in the BidRequest.
-// It populates the mask if it's currently empty.
-func (r *BidRequest) FormatTypeMask() types.FormatTypeBitset {
-	return r.formatTypeMask
-}
-
-// Size returns the width and height of the area of visibility for the ad.
-func (r *BidRequest) Size() (w, h int) { return r.Width(), r.Height() }
-
-// Width returns the width of the device's browser.
-// Returns 0 if device or browser information is unavailable.
-func (r *BidRequest) Width() int {
-	if r.Device == nil || r.Device.Browser == nil {
-		return 0
-	}
-	return r.Device.Browser.Width
-}
-
-// Height returns the height of the device's browser.
-// Returns 0 if device or browser information is unavailable.
-func (r *BidRequest) Height() int {
-	if r.Device == nil || r.Device.Browser == nil {
-		return 0
-	}
-	return r.Device.Browser.Height
+func (r *BidRequest) Formats() adtype.BidFormater {
+	return &r.formats
 }
 
 // Tags returns a list of tags associated with the BidRequest.
@@ -215,46 +166,6 @@ func (r *BidRequest) Tags() []string {
 		r.tags = append(r.tags, strings.Split(r.Site.Keywords, ",")...)
 	}
 	return r.tags
-}
-
-// TargetID returns the target ID if there is exactly one impression with a target.
-// Otherwise, returns 0.
-func (r *BidRequest) TargetID() uint64 {
-	if len(r.Imps) == 1 && r.Imps[0].Target != nil {
-		return r.Imps[0].Target.ID()
-	}
-	return 0
-}
-
-// TargetIDs returns a slice of target IDs associated with the BidRequest.
-func (r *BidRequest) TargetIDs() []uint64 {
-	targets, _ := r.getTargetIDs()
-	return targets
-}
-
-// ExtTargetIDs returns a slice of external target IDs associated with the BidRequest.
-func (r *BidRequest) ExtTargetIDs() []string {
-	_, extTargets := r.getTargetIDs()
-	return extTargets
-}
-
-// getTargetIDs is a helper method that retrieves both target and external target IDs.
-// It caches the results to optimize repeated access.
-func (r *BidRequest) getTargetIDs() (ids []uint64, externalIDs []string) {
-	if r.targetIDs == nil && r.externalTargetIDs == nil && len(r.Imps) > 0 {
-		for _, imp := range r.Imps {
-			if imp.Target != nil {
-				r.targetIDs = append(r.targetIDs, imp.Target.ID())
-			}
-			if imp.ExternalTargetID != "" {
-				r.externalTargetIDs = append(r.externalTargetIDs, imp.ExternalTargetID)
-			}
-		}
-		if r.targetIDs == nil {
-			r.targetIDs = []uint64{}
-		}
-	}
-	return r.targetIDs, r.externalTargetIDs
 }
 
 // Domain returns a list of domains associated with the site or app.
@@ -302,95 +213,11 @@ func (r *BidRequest) AppID() uint64 {
 	return r.AppTarget.ID
 }
 
-// GeoID returns the geographical ID associated with the user.
-// Returns 0 if geographical information is unavailable.
-func (r *BidRequest) GeoID() uint64 {
-	if r == nil || r.User == nil || r.User.Geo == nil {
-		return 0
-	}
-	return uint64(r.User.Geo.ID)
-}
-
-// GeoCode returns the country code associated with the user's geography.
-// Returns "**" if geographical information is unavailable.
-func (r *BidRequest) GeoCode() string {
-	if r == nil || r.User == nil || r.User.Geo == nil {
-		return "**"
-	}
-	return r.User.Geo.Country
-}
-
-// City returns the city associated with the user's geography.
-// Returns an empty string if geographical information is unavailable.
-func (r *BidRequest) City() string {
-	if r == nil || r.User == nil || r.User.Geo == nil {
-		return ""
-	}
-	return r.User.Geo.City
-}
-
 // LanguageID returns the language ID based on the primary language of the browser.
 func (r *BidRequest) LanguageID() uint64 {
 	return uint64(languages.GetLanguageIdByCodeString(
 		r.BrowserInfo().PrimaryLanguage,
 	))
-}
-
-// BrowserID returns the ID of the user's browser.
-// Returns 0 if device or browser information is unavailable.
-func (r *BidRequest) BrowserID() uint64 {
-	if r.Device == nil || r.Device.Browser == nil {
-		return 0
-	}
-	return r.Device.Browser.ID
-}
-
-// OSID returns the ID of the user's operating system.
-// Returns 0 if device or OS information is unavailable.
-func (r *BidRequest) OSID() uint64 {
-	if r.Device == nil || r.Device.OS == nil {
-		return 0
-	}
-	return uint64(r.Device.OS.ID)
-}
-
-// Gender returns the most relevant gender as a byte.
-// Returns '?' if gender information is unavailable or invalid.
-func (r *BidRequest) Gender() byte {
-	if r.User == nil || len(r.User.Gender) != 1 {
-		return '?'
-	}
-	return r.User.Gender[0]
-}
-
-// Age returns the most relevant age of the user.
-// Returns the starting age if AgeStart <= AgeEnd, otherwise returns AgeStart.
-func (r *BidRequest) Age() uint {
-	if r.User == nil {
-		return 0
-	}
-	if r.User.AgeStart <= r.User.AgeEnd {
-		return uint(r.User.AgeStart)
-	}
-	return uint(r.User.AgeStart)
-}
-
-// Ages returns a range of ages [AgeStart, AgeEnd].
-// If AgeStart > AgeEnd, it still returns [AgeStart, AgeEnd].
-func (r *BidRequest) Ages() [2]uint {
-	if r.User == nil {
-		return [2]uint{0, 1000}
-	}
-	if r.User.AgeStart <= r.User.AgeEnd {
-		return [2]uint{
-			uint(r.User.AgeStart),
-			uint(r.User.AgeEnd),
-		}
-	}
-	return [2]uint{
-		uint(r.User.AgeEnd),
-		uint(r.User.AgeStart),
-	}
 }
 
 // Keywords returns a slice of keywords associated with the user.
@@ -406,13 +233,6 @@ func (r *BidRequest) Keywords() []string {
 // Currently, it returns the cached categoryArray.
 // (Note: The implementation is incomplete and commented out for future development.)
 func (r *BidRequest) Categories() []uint64 {
-	// Future implementation for aggregating categories from App and Site
-	// if r.categoryArray == nil {
-	// 	if r.App != nil {
-	// 	}
-	// 	if r.Site != nil {
-	// 	}
-	// }
 	return r.categoryArray
 }
 
@@ -430,6 +250,11 @@ func (r *BidRequest) IsRobot() bool { return r.StateFlags&BidRequestFlagBot != 0
 
 // IsProxy checks if the user is using a proxy.
 func (r *BidRequest) IsProxy() bool { return r.StateFlags&BidRequestFlagProxy != 0 }
+
+// IsIPv6 checks if the user's IP address is IPv6.
+func (r *BidRequest) IsIPv6() bool {
+	return r != nil && r.User != nil && r.User.Geo != nil && r.User.Geo.IsIPv6()
+}
 
 // SiteInfo returns the site information associated with the BidRequest.
 // If the site is unavailable, it returns the default site information.
@@ -449,12 +274,12 @@ func (r *BidRequest) AppInfo() *udetect.App { return r.App }
 
 // UserInfo returns the user information associated with the BidRequest.
 // It initializes default values if user or geographical information is missing.
-func (r *BidRequest) UserInfo() *User {
+func (r *BidRequest) UserInfo() *adtype.User {
 	if r == nil {
 		return nil
 	}
 	if r.User == nil {
-		r.User = &User{}
+		r.User = &adtype.User{}
 		*r.User = defaultUserdata
 	}
 	if r.User.Geo == nil {
@@ -487,24 +312,6 @@ func (r *BidRequest) DeviceInfo() *udetect.Device {
 		*r.Device.OS = udetect.OSDefault
 	}
 	return r.Device
-}
-
-// DeviceID returns the ID of the device associated with the BidRequest.
-// Returns 0 if device information is unavailable.
-func (r *BidRequest) DeviceID() uint64 {
-	if r != nil && r.Device != nil {
-		return uint64(r.Device.ID)
-	}
-	return 0
-}
-
-// DeviceType returns the type of the device as an unsigned integer.
-// Returns 0 if device information is unavailable.
-func (r *BidRequest) DeviceType() uint64 {
-	if r == nil {
-		return 0
-	}
-	return uint64(r.DeviceInfo().DeviceType)
 }
 
 // OSInfo returns the operating system information associated with the BidRequest.
@@ -552,11 +359,6 @@ func (r *BidRequest) CarrierInfo() *udetect.Carrier {
 	return nil
 }
 
-// IsIPv6 checks if the user's IP address is IPv6.
-func (r *BidRequest) IsIPv6() bool {
-	return r != nil && r.User != nil && r.User.Geo != nil && r.User.Geo.IsIPv6()
-}
-
 // Get retrieves a value from the BidRequest's extension map by key.
 // Returns nil if the key does not exist.
 func (r *BidRequest) Get(key string) any {
@@ -584,9 +386,14 @@ func (r *BidRequest) Unset(keys ...string) {
 	}
 }
 
+// Impressions returns a slice of impressions associated with the BidRequest.
+func (r *BidRequest) Impressions() []adtype.Impression {
+	return r.Imps
+}
+
 // ImpressionUpdate applies a provided function to each impression in the BidRequest.
 // If the function returns true, the impression is updated.
-func (r *BidRequest) ImpressionUpdate(fn func(imp *Impression) bool) {
+func (r *BidRequest) ImpressionUpdate(fn func(imp *adtype.Impression) bool) {
 	for i, imp := range r.Imps {
 		if fn(&imp) {
 			r.Imps[i] = imp
@@ -596,21 +403,9 @@ func (r *BidRequest) ImpressionUpdate(fn func(imp *Impression) bool) {
 
 // ImpressionByID returns a pointer to the Impression with the specified ID.
 // Returns nil if no matching impression is found.
-func (r *BidRequest) ImpressionByID(id string) *Impression {
+func (r *BidRequest) ImpressionByID(id string) *adtype.Impression {
 	for _, im := range r.Imps {
 		if im.ID == id {
-			return &im
-		}
-	}
-	return nil
-}
-
-// ImpressionByIDvariation returns a pointer to the first Impression whose ID is a prefix of the provided ID.
-// This allows matching impressions even if the ID contains additional postfixes.
-// Returns nil if no matching impression is found.
-func (r *BidRequest) ImpressionByIDvariation(id string) *Impression {
-	for _, im := range r.Imps {
-		if strings.HasPrefix(id, im.ID) {
 			return &im
 		}
 	}

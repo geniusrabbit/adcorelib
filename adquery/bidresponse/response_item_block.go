@@ -1,15 +1,15 @@
 //
-// @project GeniusRabbit corelib 2017 - 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019
+// @project GeniusRabbit corelib 2017 - 2019, 2025
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019, 2025
 //
 
-package adtype
+package bidresponse
 
 import (
 	"context"
 
-	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
@@ -19,7 +19,7 @@ import (
 
 // ResponseItemBlock group of simple items
 type ResponseItemBlock struct {
-	Items   []ResponserItem
+	Items   []adtype.ResponserItem
 	context context.Context
 }
 
@@ -29,7 +29,7 @@ func (i *ResponseItemBlock) ID() string {
 }
 
 // Impression place object
-func (i *ResponseItemBlock) Impression() *Impression {
+func (i *ResponseItemBlock) Impression() *adtype.Impression {
 	return i.Items[0].Impression()
 }
 
@@ -54,7 +54,7 @@ func (i *ResponseItemBlock) PriorityFormatType() types.FormatType {
 }
 
 // Price of whole response
-func (i *ResponseItemBlock) Price(action admodels.Action) (price billing.Money) {
+func (i *ResponseItemBlock) Price(action adtype.Action) (price billing.Money) {
 	for _, it := range i.Items {
 		price += it.Price(action)
 	}
@@ -71,7 +71,7 @@ func (i *ResponseItemBlock) InternalAuctionCPMBid() (bid billing.Money) {
 }
 
 // Ads list
-func (i *ResponseItemBlock) Ads() []ResponserItem {
+func (i *ResponseItemBlock) Ads() []adtype.ResponserItem {
 	return i.Items
 }
 
@@ -83,7 +83,7 @@ func (i *ResponseItemBlock) Count() int {
 // Validate response
 func (i *ResponseItemBlock) Validate() (err error) {
 	if len(i.Items) < 1 {
-		return ErrResponseEmpty
+		return adtype.ErrResponseEmpty
 	}
 	for _, it := range i.Items {
 		if err = it.Validate(); nil != err {
@@ -110,5 +110,5 @@ func (i *ResponseItemBlock) Get(key string) any {
 }
 
 var (
-	_ ResponserMultipleItem = &ResponseItemBlock{}
+	_ adtype.ResponserMultipleItem = &ResponseItemBlock{}
 )

@@ -38,13 +38,13 @@ type Zone struct {
 	FixedPurchasePrice float64 `json:"fixed_purchase_price,omitempty"`
 
 	// Filtering
-	AllowedFormats    gosql.NullableStringArray               `gorm:"type:TEXT[]" json:"allowed_formats,omitempty"`
-	AllowedTypes      gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"allowed_types,omitempty"`
-	AllowedSources    gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"allowed_sources,omitempty"`
-	DisallowedSources gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"disallowed_sources,omitempty"`
+	AllowedFormats    gosql.NullableStringArray                `gorm:"type:TEXT[]" json:"allowed_formats,omitempty"`
+	AllowedTypes      gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"allowed_types,omitempty"`
+	AllowedSources    gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"allowed_sources,omitempty"`
+	DisallowedSources gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"disallowed_sources,omitempty"`
 
 	// Strict campaigns targeting (smartlinks only)
-	Campaigns gosql.NullableOrderedNumberArray[int64] `gorm:"type:BIGINT[]" json:"campaigns,omitempty"`
+	Campaigns gosql.NullableOrderedNumberArray[uint64] `gorm:"type:BIGINT[]" json:"campaigns,omitempty"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`

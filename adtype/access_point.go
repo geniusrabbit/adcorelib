@@ -7,6 +7,6 @@ package adtype
 
 // AccessPoint is the DSP source
 type AccessPoint interface {
-	// ID of source
+	// ID of the access point
 	ID() uint64
 }

@@ -16,13 +16,13 @@ import (
 // IntArrayToUint array type
 func IntArrayToUint64(arr []int) (res gosql.NullableOrderedNumberArray[uint64]) {
 	if len(arr) < 1 {
-		return
+		return res
 	}
 	for _, v := range arr {
 		res = append(res, uint64(v))
 	}
 	res.Sort()
-	return
+	return res
 }
 
 // IDArrayFilter array which could be or positive (include) or negative (exclude)

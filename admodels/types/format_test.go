@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func Test_Formats(t *testing.T) {
+func TestFormats(t *testing.T) {
 	var tests = []struct {
 		Format       Format
 		TargetFormat Format

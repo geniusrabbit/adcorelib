@@ -21,7 +21,7 @@ func (dummyAppAccessor) AppByURI(uri string) (*admodels.Application, error) { re
 
 type dummyZoneAccessor struct{}
 
-func (dummyZoneAccessor) TargetByCodename(string) (admodels.Target, error) { return nil, nil }
+func (dummyZoneAccessor) TargetByCodename(string) (adtype.Target, error) { return nil, nil }
 
 func Test_Options(t *testing.T) {
 	server := NewExtension(

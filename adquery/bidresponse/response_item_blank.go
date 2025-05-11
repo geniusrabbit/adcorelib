@@ -1,10 +1,11 @@
-package adtype
+package bidresponse
 
 import (
 	"context"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/price"
 )
@@ -12,8 +13,8 @@ import (
 // ResponseItemBlank value
 type ResponseItemBlank struct {
 	ItemID string
-	Imp    *Impression
-	Src    Source
+	Imp    *adtype.Impression
+	Src    adtype.Source
 
 	FormatVal *types.Format
 
@@ -25,7 +26,7 @@ type ResponseItemBlank struct {
 func (it *ResponseItemBlank) ID() string { return it.ItemID }
 
 // Impression place object
-func (it *ResponseItemBlank) Impression() *Impression { return it.Imp }
+func (it *ResponseItemBlank) Impression() *adtype.Impression { return it.Imp }
 
 // ImpressionID unique code string
 func (it *ResponseItemBlank) ImpressionID() string { return it.Imp.ID }
@@ -52,7 +53,7 @@ func (*ResponseItemBlank) AccountID() uint64 { return 0 }
 func (*ResponseItemBlank) CampaignID() uint64 { return 0 }
 
 // Source of response
-func (it *ResponseItemBlank) Source() Source { return it.Src }
+func (it *ResponseItemBlank) Source() adtype.Source { return it.Src }
 
 // PriorityFormatType from current Ad
 func (it *ResponseItemBlank) PriorityFormatType() types.FormatType {
@@ -111,7 +112,7 @@ func (*ResponseItemBlank) ClickTrackerLinks() []string { return nil }
 func (it *ResponseItemBlank) PricingModel() types.PricingModel { return it.PricingModelVal }
 
 // FixedPurchasePrice returns the fixed price of the action
-func (it *ResponseItemBlank) FixedPurchasePrice(action admodels.Action) billing.Money {
+func (it *ResponseItemBlank) FixedPurchasePrice(action adtype.Action) billing.Money {
 	return it.Imp.PurchasePrice(action)
 }
 
@@ -122,7 +123,7 @@ func (it *ResponseItemBlank) ECPM() billing.Money { return it.PriceScope.ECPM }
 func (it *ResponseItemBlank) PriceTestMode() bool { return it.PriceScope.TestMode }
 
 // Price per specific action type (view, click, lead, etc)
-func (it *ResponseItemBlank) Price(action admodels.Action) billing.Money {
+func (it *ResponseItemBlank) Price(action adtype.Action) billing.Money {
 	return it.PriceScope.PricePerAction(action)
 }
 
@@ -135,24 +136,24 @@ func (it *ResponseItemBlank) BidPrice() billing.Money {
 // SetBidPrice value for external sources auction the system will pay
 func (it *ResponseItemBlank) SetBidPrice(bid billing.Money) error {
 	if !it.PriceScope.SetBidPrice(bid, false) {
-		return ErrNewAuctionBidIsHigherThenMaxBid
+		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
 	}
 	return nil
 }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
-func (it *ResponseItemBlank) PurchasePrice(action admodels.Action) billing.Money {
+func (it *ResponseItemBlank) PurchasePrice(action adtype.Action) billing.Money {
 	return price.CalculatePurchasePrice(it, action)
 }
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
-func (it *ResponseItemBlank) PotentialPrice(action admodels.Action) billing.Money {
+func (it *ResponseItemBlank) PotentialPrice(action adtype.Action) billing.Money {
 	return price.CalculatePotentialPrice(it, action)
 }
 
 // FinalPrice returns final price for the item which is including all possible commissions with all corrections
-func (it *ResponseItemBlank) FinalPrice(action admodels.Action) billing.Money {
+func (it *ResponseItemBlank) FinalPrice(action adtype.Action) billing.Money {
 	return price.CalculateFinalPrice(it, action)
 }
 
@@ -163,18 +164,18 @@ func (it *ResponseItemBlank) InternalAuctionCPMBid() billing.Money {
 }
 
 // SetAuctionCPMBid value for external sources auction the system will pay
-func (it *ResponseItemBlank) SetAuctionCPMBid(price billing.Money, includeFactors ...PriceFactor) error {
+func (it *ResponseItemBlank) SetAuctionCPMBid(price billing.Money, includeFactors ...adtype.PriceFactor) error {
 	if len(includeFactors) > 0 {
-		price += PriceFactorFromList(includeFactors...).AddComission(price, it)
+		price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
 	}
 	if !it.PriceScope.SetBidPrice(price/1000, false) {
-		return ErrNewAuctionBidIsHigherThenMaxBid
+		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
 	}
 	return nil
 }
 
 // Second campaigns
-func (*ResponseItemBlank) Second() *SecondAd { return nil }
+func (*ResponseItemBlank) Second() *adtype.SecondAd { return nil }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Revenue share/comission methods
@@ -224,4 +225,4 @@ func (*ResponseItemBlank) Width() int { return 0 }
 // Height of item
 func (*ResponseItemBlank) Height() int { return 0 }
 
-var _ ResponserItem = (*ResponseItemBlank)(nil)
+var _ adtype.ResponserItem = (*ResponseItemBlank)(nil)

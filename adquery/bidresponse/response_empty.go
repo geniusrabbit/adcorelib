@@ -1,4 +1,4 @@
-package adtype
+package bidresponse
 
 import (
 	"context"
@@ -6,22 +6,23 @@ import (
 	"github.com/bsm/openrtb"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
 // ResponseEmpty object represents empty response and response item
 type ResponseEmpty struct {
 	ItemID  string
-	Req     *BidRequest
-	Src     Source
-	Imp     *Impression
+	Req     *adtype.BidRequest
+	Src     adtype.Source
+	Imp     *adtype.Impression
 	Bid     *openrtb.Bid
 	Err     error
 	context context.Context
 }
 
 // NewEmptyResponse by bid request
-func NewEmptyResponse(request *BidRequest, src Source, err error) *ResponseEmpty {
+func NewEmptyResponse(request *adtype.BidRequest, src adtype.Source, err error) *ResponseEmpty {
 	return &ResponseEmpty{Req: request, Src: src, Err: err, context: request.Ctx}
 }
 
@@ -47,7 +48,7 @@ func (r ResponseEmpty) AuctionType() types.AuctionType {
 }
 
 // Source returns source of the response
-func (r ResponseEmpty) Source() Source {
+func (r ResponseEmpty) Source() adtype.Source {
 	return r.Src
 }
 
@@ -57,12 +58,12 @@ func (r ResponseEmpty) PriorityFormatType() types.FormatType {
 }
 
 // Request returns the original request object
-func (r ResponseEmpty) Request() *BidRequest {
+func (r ResponseEmpty) Request() *adtype.BidRequest {
 	return r.Req
 }
 
 // Impression place object
-func (r ResponseEmpty) Impression() *Impression {
+func (r ResponseEmpty) Impression() *adtype.Impression {
 	return r.Imp
 }
 
@@ -91,12 +92,12 @@ func (r ResponseEmpty) ExtTargetID() string {
 }
 
 // Ads list
-func (r ResponseEmpty) Ads() []ResponserItemCommon {
+func (r ResponseEmpty) Ads() []adtype.ResponserItemCommon {
 	return nil
 }
 
 // Item by impression code
-func (r ResponseEmpty) Item(impid string) ResponserItemCommon {
+func (r ResponseEmpty) Item(impid string) adtype.ResponserItemCommon {
 	return nil
 }
 
@@ -116,7 +117,7 @@ func (r ResponseEmpty) Validate() error {
 	if r.Err != nil {
 		return r.Err
 	}
-	return ErrResponseEmpty
+	return adtype.ErrResponseEmpty
 }
 
 // Error of the response
@@ -147,6 +148,6 @@ func (r *ResponseEmpty) Get(key string) (res any) {
 func (r *ResponseEmpty) Release() {}
 
 var (
-	_ ResponserItemCommon = (*ResponseEmpty)(nil)
-	_ Responser           = (*ResponseEmpty)(nil)
+	_ adtype.ResponserItemCommon = (*ResponseEmpty)(nil)
+	_ adtype.Responser           = (*ResponseEmpty)(nil)
 )

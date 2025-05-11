@@ -1,17 +1,12 @@
-//
-// @project GeniusRabbit corelib 2017 - 2019, 2021
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019, 2021
-//
-
-package admodels
+package adtype
 
 import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
-	"github.com/geniusrabbit/adcorelib/models"
 )
 
-// Target type object
+// Target type object represents the placement of the ad
+// in the ad system. It can be a zone, smartlink, or any other
 type Target interface {
 	// ID of object (Zone OR SmartLink only)
 	ID() uint64
@@ -43,17 +38,5 @@ type Target interface {
 	RevenueShareReduceFactor() float64
 
 	// Account object
-	Account() *Account
-
-	// AccountID of current target
-	AccountID() uint64
-}
-
-// TargetFromModel convert datavase model specified model
-// which implements Target interface
-func TargetFromModel(zone *models.Zone, acc *Account) Target {
-	if zone.Type.IsSmartlink() {
-		return SmartlinkFromModel(zone, acc)
-	}
-	return ZoneFromModel(zone, acc)
+	Account() Account
 }

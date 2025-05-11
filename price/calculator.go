@@ -1,7 +1,7 @@
 package price
 
 import (
-	"github.com/geniusrabbit/adcorelib/admodels"
+	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
@@ -19,14 +19,14 @@ type priceCalculatorItem interface {
 	ECPM() billing.Money
 
 	// FixedPurchasePrice returns fixed price for the target action
-	FixedPurchasePrice(action admodels.Action) billing.Money
+	FixedPurchasePrice(action adtype.Action) billing.Money
 
 	// BidPrice returns bid price for the external auction source.
 	// The current bid price will be adjusted according to the source correction factor and the commission share factor
 	BidPrice() billing.Money
 
 	// Price returns price for the target action (view, click, lead, etc)
-	Price(action admodels.Action) billing.Money
+	Price(action adtype.Action) billing.Money
 }
 
 // CalculateNewBidPrice returns new bid price for the target with system comission and with source corrections
@@ -43,11 +43,11 @@ func CalculateNewBidPrice(price billing.Money, item priceCalculatorItem) billing
 // Formula:
 //
 //	PurchasePrice = Price - SourceCorrectionFactor[%] - TargetCorrectionFactor[%] - CommissionShareFactor[%]
-func CalculatePurchasePrice(item priceCalculatorItem, action admodels.Action) billing.Money {
+func CalculatePurchasePrice(item priceCalculatorItem, action adtype.Action) billing.Money {
 	if fixedPrice := item.FixedPurchasePrice(action); fixedPrice > 0 {
 		return fixedPrice
 	}
-	if action == admodels.ActionView {
+	if action == adtype.ActionView {
 		if bidPrice := item.BidPrice(); bidPrice > 0 {
 			return bidPrice
 		}
@@ -68,7 +68,7 @@ func CalculatePurchasePrice(item priceCalculatorItem, action admodels.Action) bi
 //	PotentialPrice = Price
 //
 //go:inline
-func CalculatePotentialPrice(item priceCalculatorItem, action admodels.Action) billing.Money {
+func CalculatePotentialPrice(item priceCalculatorItem, action adtype.Action) billing.Money {
 	val := item.Price(action)
 	if val == 0 && action.IsView() {
 		val = item.ECPM()
@@ -81,7 +81,7 @@ func CalculatePotentialPrice(item priceCalculatorItem, action admodels.Action) b
 // Formula:
 //
 //	FinalPrice = Price - SourceCorrectionFactor[%] - TargetCorrectionFactor[%]
-func CalculateFinalPrice(item priceCalculatorItem, action admodels.Action) billing.Money {
+func CalculateFinalPrice(item priceCalculatorItem, action adtype.Action) billing.Money {
 	sourceCorrection := item.SourceCorrectionFactor()
 	targetCorrection := item.TargetCorrectionFactor()
 	price := item.Price(action)

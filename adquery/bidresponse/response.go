@@ -1,27 +1,28 @@
 //
-// @project GeniusRabbit corelib 2017 - 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019
+// @project GeniusRabbit corelib 2017 - 2019, 2025
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2019, 2025
 //
 
-package adtype
+package bidresponse
 
 import (
 	"context"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // Response from different sources
 type Response struct {
-	request *BidRequest
-	source  Source
-	items   []ResponserItemCommon
+	request *adtype.BidRequest
+	source  adtype.Source
+	items   []adtype.ResponserItemCommon
 	err     error
 	context context.Context
 }
 
 // NewResponse common object
-func NewResponse(request *BidRequest, source Source, items []ResponserItemCommon, err error) *Response {
+func NewResponse(request *adtype.BidRequest, source adtype.Source, items []adtype.ResponserItemCommon, err error) *Response {
 	return &Response{
 		request: request,
 		source:  source,
@@ -29,11 +30,6 @@ func NewResponse(request *BidRequest, source Source, items []ResponserItemCommon
 		err:     err,
 		context: request.Ctx,
 	}
-}
-
-// NewErrorResponse object
-func NewErrorResponse(request *BidRequest, err error) *Response {
-	return NewResponse(request, nil, nil, err)
 }
 
 // AuctionID response
@@ -53,22 +49,22 @@ func (r *Response) AuctionType() types.AuctionType {
 }
 
 // Source of response
-func (r *Response) Source() Source {
+func (r *Response) Source() adtype.Source {
 	return r.source
 }
 
 // Request information
-func (r *Response) Request() *BidRequest {
+func (r *Response) Request() *adtype.BidRequest {
 	return r.request
 }
 
 // AddItem to response
-func (r *Response) AddItem(it ResponserItemCommon) {
+func (r *Response) AddItem(it adtype.ResponserItemCommon) {
 	r.items = append(r.items, it)
 }
 
 // Item by impression code
-func (r *Response) Item(impid string) ResponserItemCommon {
+func (r *Response) Item(impid string) adtype.ResponserItemCommon {
 	for _, it := range r.items {
 		if it.ImpressionID() == impid {
 			return it
@@ -78,7 +74,7 @@ func (r *Response) Item(impid string) ResponserItemCommon {
 }
 
 // Ads list
-func (r *Response) Ads() []ResponserItemCommon {
+func (r *Response) Ads() []adtype.ResponserItemCommon {
 	return r.items
 }
 
@@ -93,7 +89,7 @@ func (r *Response) Validate() (err error) {
 		return r.err
 	}
 	if r.Count() < 1 {
-		return ErrResponseEmpty
+		return adtype.ErrResponseEmpty
 	}
 	for _, it := range r.items {
 		if err = it.Validate(); err != nil {
@@ -145,5 +141,5 @@ func (r *Response) reset() {
 }
 
 var (
-	_ Responser = &Response{}
+	_ adtype.Responser = &Response{}
 )

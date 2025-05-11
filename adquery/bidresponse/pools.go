@@ -1,7 +1,9 @@
-package adtype
+package bidresponse
 
 import (
 	"sync"
+
+	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
 // Common pools
@@ -16,7 +18,7 @@ var (
 ///////////////////////////////////////////////////////////////////////////////
 
 // BorrowResponse object
-func BorrowResponse(request *BidRequest, source Source, items []ResponserItemCommon, err error) *Response {
+func BorrowResponse(request *adtype.BidRequest, source adtype.Source, items []adtype.ResponserItemCommon, err error) *Response {
 	resp := responsePool.Get().(*Response)
 	resp.context = request.Ctx
 	resp.request = request

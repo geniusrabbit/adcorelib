@@ -141,7 +141,7 @@ type ResponserItem interface {
 	PriceTestMode() bool
 
 	// Price returns the total price for a specific action (e.g., click, lead, view).
-	Price(action admodels.Action) billing.Money
+	Price(action Action) billing.Money
 
 	// BidPrice returns the bid price for the external auction source.
 	// The bid price is adjusted according to the source correction factor and the commission share factor.
@@ -153,14 +153,14 @@ type ResponserItem interface {
 
 	// PurchasePrice returns the price of a specific action from an external resource (e.g., site, app, RTB).
 	// This represents the cost of the request for the network.
-	PurchasePrice(action admodels.Action) billing.Money
+	PurchasePrice(action Action) billing.Money
 
 	// PotentialPrice returns the potential price that could be received from the source but was marked as a discrepancy.
-	PotentialPrice(action admodels.Action) billing.Money
+	PotentialPrice(action Action) billing.Money
 
 	// FinalPrice returns the final price for the advertisement item, including all possible commissions and corrections.
 	// This is the price that will be charged to the advertiser.
-	FinalPrice(action admodels.Action) billing.Money
+	FinalPrice(action Action) billing.Money
 
 	// Second returns a pointer to the SecondAd, representing secondary campaigns.
 	Second() *SecondAd

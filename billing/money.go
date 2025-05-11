@@ -56,10 +56,24 @@ func (m Money) Float64() float64 {
 	return float64(m) / moneyFloatDelimeter
 }
 
+// F64 value from money
+//
+//go:inline
+func (m Money) F64() float64 {
+	return float64(m) / moneyFloatDelimeter
+}
+
 // Int64 value from money
 //
 //go:inline
 func (m Money) Int64() int64 {
+	return int64(m)
+}
+
+// I64 value from money
+//
+//go:inline
+func (m Money) I64() int64 {
 	return int64(m)
 }
 
@@ -174,7 +188,9 @@ func (m *Money) DecodeValue(v any) (err error) {
 	case float32:
 		*m = MoneyFloat(float64(val))
 	case int64:
-		*m = Money(val)
+		*m = MoneyInt(val)
+	case int:
+		*m = MoneyInt(val)
 	case Money:
 		*m = val
 	default:

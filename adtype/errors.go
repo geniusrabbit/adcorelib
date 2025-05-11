@@ -10,10 +10,10 @@ import "errors"
 // Set of errors
 var (
 	// For bidding validation
-	ErrInvalidCur                = errors.New("bid currency is not valid")
+	ErrInvalidCur                = errors.New("BID currency is not valid")
 	ErrInvalidCreativeSize       = errors.New("creative size is invalid")
 	ErrInvalidViewType           = errors.New("view type is invalid")
-	ErrLowPrice                  = errors.New("bid Price is lower than floor price")
+	ErrLowPrice                  = errors.New("BID price is lower than floor price")
 	ErrResponseEmpty             = errors.New("response is empty")
 	ErrResponseInvalidType       = errors.New("invalid response type")
 	ErrResponseInvalidGroup      = errors.New("system not support group winners")

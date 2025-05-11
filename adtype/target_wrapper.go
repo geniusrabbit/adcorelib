@@ -1,4 +1,4 @@
-package admodels
+package adtype
 
 import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -35,7 +35,4 @@ func (tw VirtualTarget) PurchasePrice(a Action) billing.Money { return tw.trg.Pu
 func (tw VirtualTarget) CommissionShareFactor() float64 { return tw.trg.CommissionShareFactor() }
 
 // Account object
-func (tw VirtualTarget) Account() *Account { return tw.trg.Account() }
-
-// AccountID of current target
-func (tw VirtualTarget) AccountID() uint64 { return tw.trg.AccountID() }
+func (tw VirtualTarget) Account() Account { return tw.trg.Account() }

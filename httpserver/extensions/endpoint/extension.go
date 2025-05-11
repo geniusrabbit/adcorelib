@@ -31,7 +31,7 @@ type (
 		AppByURI(uri string) (*admodels.Application, error)
 	}
 	zoneAccessor interface {
-		TargetByCodename(string) (admodels.Target, error)
+		TargetByCodename(string) (adtype.Target, error)
 	}
 	getSourceAccessor interface {
 		Sources() adtype.SourceAccessor

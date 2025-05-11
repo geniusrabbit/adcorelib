@@ -47,6 +47,7 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"go.uber.org/zap"
 
+	"github.com/geniusrabbit/adcorelib/adquery/bidresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/auction/trafaret"
 	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
@@ -124,7 +125,7 @@ func (wrp *MultisourceWrapper) Test(request *adtype.BidRequest) bool { return tr
 // Bid handles a bid request and processes it through the appropriate sources
 func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.Responser) {
 	if wrp == nil {
-		return adtype.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
+		return bidresponse.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
 	}
 	var (
 		count         = wrp.maxParallelRequest
@@ -231,9 +232,9 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		}
 
 		if len(items) == 0 {
-			response = adtype.NewEmptyResponse(request, wrp, err)
+			response = bidresponse.NewEmptyResponse(request, wrp, err)
 		} else {
-			response = adtype.BorrowResponse(request, nil, items, nil)
+			response = bidresponse.BorrowResponse(request, nil, items, nil)
 		}
 	}
 

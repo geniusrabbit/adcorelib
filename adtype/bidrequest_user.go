@@ -9,9 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bsm/openrtb"
 	"github.com/geniusrabbit/udetect"
-	uopenrtb "github.com/geniusrabbit/udetect/openrtb"
 )
 
 // TypeSex type
@@ -109,33 +107,41 @@ func (u User) Sex() TypeSex {
 	return UserSexUndefined
 }
 
-// RTBObject of User
-func (u User) RTBObject() *openrtb.User {
-	var data []openrtb.Data
-	for _, it := range u.Data {
-		dataItem := openrtb.Data{Name: it.Name}
-		for i := 0; i < len(it.Segment); i++ {
-			dataItem.Segment = append(dataItem.Segment, openrtb.Segment{
-				Name:  it.Segment[i].Name,
-				Value: it.Segment[i].Value,
-			})
-		}
-		data = append(data, dataItem)
+// GenderSimbol returns the first letter
+func (u User) GenderSimbol() byte {
+	if u.Gender == "" {
+		return '?'
 	}
-
-	return &openrtb.User{
-		ID:         u.ID,       // Unique consumer ID of this user on the exchange
-		BuyerID:    "",         // Buyer-specific ID for the user as mapped by the exchange for the buyer. At least one of buyeruid/buyerid or id is recommended. Valid for OpenRTB 2.3.
-		BuyerUID:   "",         // Buyer-specific ID for the user as mapped by the exchange for the buyer. Same as BuyerID but valid for OpenRTB 2.2.
-		YOB:        0,          // Year of birth as a 4-digit integer.
-		Gender:     u.Gender,   // Gender ("M": male, "F" female, "O" Other)
-		Keywords:   u.Keywords, // Comma separated list of keywords, interests, or intent
-		CustomData: "",         // Optional feature to pass bidder data that was set in the exchange's cookie. The string must be in base85 cookie safe characters and be in any format. Proper JSON encoding must be used to include "escaped" quotation marks.
-		Geo:        uopenrtb.GeoFrom(u.Geo),
-		Data:       data,
-		Ext:        nil,
-	}
+	return u.Gender[0]
 }
+
+// // RTBObject of User
+// func (u User) RTBObject() *openrtb.User {
+// 	var data []openrtb.Data
+// 	for _, it := range u.Data {
+// 		dataItem := openrtb.Data{Name: it.Name}
+// 		for i := 0; i < len(it.Segment); i++ {
+// 			dataItem.Segment = append(dataItem.Segment, openrtb.Segment{
+// 				Name:  it.Segment[i].Name,
+// 				Value: it.Segment[i].Value,
+// 			})
+// 		}
+// 		data = append(data, dataItem)
+// 	}
+
+// 	return &openrtb.User{
+// 		ID:         u.ID,       // Unique consumer ID of this user on the exchange
+// 		BuyerID:    "",         // Buyer-specific ID for the user as mapped by the exchange for the buyer. At least one of buyeruid/buyerid or id is recommended. Valid for OpenRTB 2.3.
+// 		BuyerUID:   "",         // Buyer-specific ID for the user as mapped by the exchange for the buyer. Same as BuyerID but valid for OpenRTB 2.2.
+// 		YOB:        0,          // Year of birth as a 4-digit integer.
+// 		Gender:     u.Gender,   // Gender ("M": male, "F" female, "O" Other)
+// 		Keywords:   u.Keywords, // Comma separated list of keywords, interests, or intent
+// 		CustomData: "",         // Optional feature to pass bidder data that was set in the exchange's cookie. The string must be in base85 cookie safe characters and be in any format. Proper JSON encoding must be used to include "escaped" quotation marks.
+// 		Geo:        uopenrtb.GeoFrom(u.Geo),
+// 		Data:       data,
+// 		Ext:        nil,
+// 	}
+// }
 
 // SetDataItem with simple *key*, *value*
 func (u *User) SetDataItem(name, value string) {

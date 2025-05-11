@@ -4,44 +4,48 @@ import (
 	"strings"
 
 	"github.com/demdxx/gocast/v2"
+
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
 // PrepareURL by event
 func PrepareURL(url string, response Responser, it ResponserItem) string {
 	var (
-		r      = response.Request()
-		imp    = it.Impression()
-		zoneID uint64
+		req        = response.Request()
+		imp        = it.Impression()
+		targetID   uint64
+		targetCode string
 	)
 	if imp != nil && imp.Target != nil {
-		zoneID = imp.Target.ID()
+		targetID = imp.Target.ID()
+		targetCode = imp.Target.Codename()
 	}
 	replacer := strings.NewReplacer(
-		"{country}", r.GeoInfo().Country,
-		"{city}", r.GeoInfo().City,
-		"{lang}", r.BrowserInfo().PrimaryLanguage,
-		"{domain}", r.DomainName(),
+		"{country}", req.GeoInfo().Country,
+		"{city}", req.GeoInfo().City,
+		"{lang}", req.BrowserInfo().PrimaryLanguage,
+		"{domain}", req.DomainName(),
 		"{impid}", it.ImpressionID(),
 		"{aucid}", response.AuctionID(),
 		"{auctype}", response.AuctionType().Name(),
 		"{platform}", "",
-		"{zone_id}", gocast.Str(zoneID),
+		"{unit_id}", gocast.Str(targetID),
+		"{unit_code}", targetCode,
 		"{jumper_id}", "",
 		"{pm}", it.PricingModel().Name(),
-		"{udid}", r.DeviceInfo().IFA,
-		"{uuid}", r.UserInfo().ID,
-		"{sessid}", r.UserInfo().SessionID,
-		"{fingerprint}", r.UserInfo().FingerPrintID,
-		"{etag}", r.UserInfo().ETag,
-		"{ip}", r.GeoInfo().IP.String(),
+		"{udid}", req.DeviceInfo().IFA,
+		"{uuid}", req.UserInfo().ID,
+		"{sessid}", req.UserInfo().SessionID,
+		"{fingerprint}", req.UserInfo().FingerPrintID,
+		"{etag}", req.UserInfo().ETag,
+		"{ip}", req.GeoInfo().IP.String(),
 		"{carrier_id}", "",
 		"{latitude}", "",
 		"{longitude}", "",
-		"{device_type}", types.PlatformType(r.DeviceType()).Name(),
-		"{device_id}", gocast.Str(r.DeviceID()),
-		"{os_id}", gocast.Str(r.OSID()),
-		"{browser_id}", gocast.Str(r.BrowserID()),
+		"{device_type}", types.PlatformType(req.DeviceType()).Name(),
+		"{device_id}", gocast.Str(req.DeviceID()),
+		"{os_id}", gocast.Str(req.OSID()),
+		"{browser_id}", gocast.Str(req.BrowserID()),
 	)
 	return replacer.Replace(url)
 }

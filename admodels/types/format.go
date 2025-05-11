@@ -168,10 +168,12 @@ func (f *Format) IsCloned() bool {
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
+//go:inline
 func pow2(v float64) float64 {
 	return v * v
 }
 
+//go:inline
 func prepSize(v int) float64 {
 	if v < 1 {
 		return float64(math.MaxInt32)
