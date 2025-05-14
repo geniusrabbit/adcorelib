@@ -127,15 +127,15 @@ func (it *ResponseItemBlank) Price(action adtype.Action) billing.Money {
 	return it.PriceScope.PricePerAction(action)
 }
 
-// BidPrice returns bid price for the external auction source.
+// BidViewPrice returns bid price for the external auction source.
 // The current bid price will be adjusted according to the source correction factor and the commission share factor
-func (it *ResponseItemBlank) BidPrice() billing.Money {
-	return it.PriceScope.BidPrice
+func (it *ResponseItemBlank) BidViewPrice() billing.Money {
+	return it.PriceScope.BidViewPrice
 }
 
-// SetBidPrice value for external sources auction the system will pay
-func (it *ResponseItemBlank) SetBidPrice(bid billing.Money) error {
-	if !it.PriceScope.SetBidPrice(bid, false) {
+// SetBidViewPrice value for external sources auction the system will pay
+func (it *ResponseItemBlank) SetBidViewPrice(bid billing.Money) error {
+	if !it.PriceScope.SetBidViewPrice(bid, false) {
 		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
 	}
 	return nil
@@ -161,17 +161,6 @@ func (it *ResponseItemBlank) FinalPrice(action adtype.Action) billing.Money {
 // According to this value the system can choice the best item for the auction
 func (it *ResponseItemBlank) InternalAuctionCPMBid() billing.Money {
 	return price.CalculateInternalAuctionBid(it)
-}
-
-// SetAuctionCPMBid value for external sources auction the system will pay
-func (it *ResponseItemBlank) SetAuctionCPMBid(price billing.Money, includeFactors ...adtype.PriceFactor) error {
-	if len(includeFactors) > 0 {
-		price += adtype.PriceFactorFromList(includeFactors...).AddComission(price, it)
-	}
-	if !it.PriceScope.SetBidPrice(price/1000, false) {
-		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
-	}
-	return nil
 }
 
 // Second campaigns

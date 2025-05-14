@@ -104,12 +104,12 @@ func (*ResponseItemEmpty) PriceTestMode() bool { return false }
 // Price per specific action type (view, click, lead, etc)
 func (*ResponseItemEmpty) Price(action Action) billing.Money { return 0 }
 
-// BidPrice returns bid price for the external auction source.
+// BidViewPrice returns bid price for the external auction source.
 // The current bid price will be adjusted according to the source correction factor and the commission share factor
-func (*ResponseItemEmpty) BidPrice() billing.Money { return 0 }
+func (*ResponseItemEmpty) BidViewPrice() billing.Money { return 0 }
 
-// SetBidPrice value for external sources auction the system will pay
-func (*ResponseItemEmpty) SetBidPrice(price billing.Money) error { return nil }
+// SetBidViewPrice value for external sources auction the system will pay
+func (*ResponseItemEmpty) SetBidViewPrice(price billing.Money) error { return nil }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
@@ -120,11 +120,6 @@ func (*ResponseItemEmpty) PotentialPrice(action Action) billing.Money { return 0
 
 // FinalPrice returns final price for the item which is including all possible commissions with all corrections
 func (*ResponseItemEmpty) FinalPrice(action Action) billing.Money { return 0 }
-
-// SetAuctionCPMBid value for external sources auction the system will pay
-func (*ResponseItemEmpty) SetAuctionCPMBid(price billing.Money, includeFactors ...PriceFactor) error {
-	return nil
-}
 
 // Second campaigns
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }

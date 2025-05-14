@@ -21,20 +21,27 @@ type priceCalculatorItem interface {
 	// FixedPurchasePrice returns fixed price for the target action
 	FixedPurchasePrice(action adtype.Action) billing.Money
 
-	// BidPrice returns bid price for the external auction source.
+	// BidViewPrice returns bid price for the external auction source.
 	// The current bid price will be adjusted according to the source correction factor and the commission share factor
-	BidPrice() billing.Money
+	BidViewPrice() billing.Money
 
 	// Price returns price for the target action (view, click, lead, etc)
 	Price(action adtype.Action) billing.Money
 }
 
-// CalculateNewBidPrice returns new bid price for the target with system comission and with source corrections
-func CalculateNewBidPrice(price billing.Money, item priceCalculatorItem) billing.Money {
+// CalculateNewBidViewPrice returns new bid price for the target with system comission and with source corrections
+//
+// Formula:
+//
+//	NewBidViewPrice = Price + SourceCorrectionFactor[%] + TargetCorrectionFactor[%] + CommissionShareFactor[%]
+//
+//go:inline
+func CalculateNewBidViewPrice(price billing.Money, item priceCalculatorItem) billing.Money {
 	return billing.MoneyFloat(
-		price.Float64() /
-			(1 + item.CommissionShareFactor()) /
-			(1 + item.SourceCorrectionFactor()),
+		price.Float64() *
+			(1. + item.CommissionShareFactor()) *
+			(1. + item.TargetCorrectionFactor()) *
+			(1. + item.SourceCorrectionFactor()),
 	)
 }
 
@@ -48,16 +55,16 @@ func CalculatePurchasePrice(item priceCalculatorItem, action adtype.Action) bill
 		return fixedPrice
 	}
 	if action == adtype.ActionView {
-		if bidPrice := item.BidPrice(); bidPrice > 0 {
+		if bidPrice := item.BidViewPrice(); bidPrice > 0 {
 			return bidPrice
 		}
 	}
 	price := item.Price(action)
 	return billing.MoneyFloat(
-		price.Float64() /
-			(1. + item.SourceCorrectionFactor()) /
-			(1. + item.TargetCorrectionFactor()) /
-			(1. + item.CommissionShareFactor()),
+		price.Float64() *
+			max(1.-item.SourceCorrectionFactor(), 0.) *
+			max(1.-item.TargetCorrectionFactor(), 0.) *
+			max(1.-item.CommissionShareFactor(), 0.),
 	)
 }
 
@@ -91,9 +98,9 @@ func CalculateFinalPrice(item priceCalculatorItem, action adtype.Action) billing
 	}
 
 	return billing.MoneyFloat(
-		price.Float64() /
-			(1. + sourceCorrection) /
-			(1. + targetCorrection),
+		price.Float64() *
+			max(1.-sourceCorrection, 0.) *
+			max(1.-targetCorrection, 0.),
 	)
 }
 
