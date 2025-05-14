@@ -141,6 +141,12 @@ func (it *ResponseItemBlank) SetBidViewPrice(bid billing.Money) error {
 	return nil
 }
 
+// PrepareBidViewPrice prepares the price for the action
+// The price is adjusted according to the source correction factor and the commission share factor
+func (it *ResponseItemBlank) PrepareBidViewPrice(price billing.Money) billing.Money {
+	return it.PriceScope.PrepareBidViewPrice(price)
+}
+
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
 func (it *ResponseItemBlank) PurchasePrice(action adtype.Action) billing.Money {

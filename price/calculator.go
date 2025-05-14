@@ -25,6 +25,10 @@ type priceCalculatorItem interface {
 	// The current bid price will be adjusted according to the source correction factor and the commission share factor
 	BidViewPrice() billing.Money
 
+	// PrepareBidViewPrice prepares the price for the action
+	// The price is adjusted according to the source correction factor and the commission share factor
+	PrepareBidViewPrice(price billing.Money) billing.Money
+
 	// Price returns price for the target action (view, click, lead, etc)
 	Price(action adtype.Action) billing.Money
 }
@@ -59,13 +63,19 @@ func CalculatePurchasePrice(item priceCalculatorItem, action adtype.Action) bill
 			return bidPrice
 		}
 	}
-	price := item.Price(action)
-	return billing.MoneyFloat(
-		price.Float64() *
-			max(1.-item.SourceCorrectionFactor(), 0.) *
-			max(1.-item.TargetCorrectionFactor(), 0.) *
-			max(1.-item.CommissionShareFactor(), 0.),
+	var (
+		price    = item.Price(action)
+		newPrice = billing.MoneyFloat(
+			price.Float64() *
+				max(1.-item.SourceCorrectionFactor(), 0.) *
+				max(1.-item.TargetCorrectionFactor(), 0.) *
+				max(1.-item.CommissionShareFactor(), 0.),
+		)
 	)
+	if action == adtype.ActionView {
+		return item.PrepareBidViewPrice(newPrice)
+	}
+	return newPrice
 }
 
 // CalculatePotentialPrice returns the base price without any corrections or commissions
@@ -83,11 +93,7 @@ func CalculatePotentialPrice(item priceCalculatorItem, action adtype.Action) bil
 	return val
 }
 
-// CalculateFinalPrice returns final price for the item which is including all possible commissions with all corrections
-//
-// Formula:
-//
-//	FinalPrice = Price - SourceCorrectionFactor[%] - TargetCorrectionFactor[%]
+// CalculateFinalPrice returns final price for the advertiser which will be charged
 func CalculateFinalPrice(item priceCalculatorItem, action adtype.Action) billing.Money {
 	sourceCorrection := item.SourceCorrectionFactor()
 	targetCorrection := item.TargetCorrectionFactor()

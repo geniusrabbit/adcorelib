@@ -111,6 +111,10 @@ func (*ResponseItemEmpty) BidViewPrice() billing.Money { return 0 }
 // SetBidViewPrice value for external sources auction the system will pay
 func (*ResponseItemEmpty) SetBidViewPrice(price billing.Money) error { return nil }
 
+// PrepareBidViewPrice prepares the price for the action
+// The price is adjusted according to the source correction factor and the commission share factor
+func (*ResponseItemEmpty) PrepareBidViewPrice(price billing.Money) billing.Money { return price }
+
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
 func (*ResponseItemEmpty) PurchasePrice(action Action) billing.Money { return 0 }

@@ -53,3 +53,11 @@ func (ps *PriceScopeView) SetViewPrice(price billing.Money, maxIfZero bool) bool
 	ps.ViewPrice = max(price, 0)
 	return true
 }
+
+// PrepareBidViewPrice prepares the bid view price for the auction.
+func (ps *PriceScopeView) PrepareBidViewPrice(price billing.Money) billing.Money {
+	if price > ps.MaxBidViewPrice {
+		price = ps.MaxBidViewPrice
+	}
+	return price
+}

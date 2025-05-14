@@ -151,6 +151,10 @@ type ResponserItem interface {
 	// The system will pay this bid price.
 	SetBidViewPrice(price billing.Money) error
 
+	// PrepareBidViewPrice prepares the price for the action
+	// The price is adjusted according to the source correction factor and the commission share factor
+	PrepareBidViewPrice(price billing.Money) billing.Money
+
 	// PurchasePrice returns the price of a specific action from an external resource (e.g., site, app, RTB).
 	// This represents the cost of the request for the network.
 	// Without the network commission.
