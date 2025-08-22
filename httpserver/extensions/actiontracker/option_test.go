@@ -33,7 +33,7 @@ func Test_Options(t *testing.T) {
 		WithURLGenerator[*TestEvent](&urlgenerator.Generator[*TestEvent, *TestLead, *TestUserInfo]{}),
 		WithHTTPHandlerWrapper[*TestEvent](&httphandler.HTTPHandlerWrapper{}),
 		WithEventStream[*TestEvent](eventStream),
-		WithEventAllocator[*TestEvent](func() *TestEvent { return &TestEvent{} }),
+		WithEventAllocator(func() *TestEvent { return &TestEvent{} }),
 	)
 	assert.True(t, server.eventStream != nil, "invalid eventstream server initialisation")
 	assert.True(t, server.handlerWrapper != nil, "invalid handlerWrapper initialisation")

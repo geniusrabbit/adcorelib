@@ -26,6 +26,9 @@ type (
 
 // Extension of the server
 type Extension[EventT EventType] struct {
+	// Price extractor function
+	priceExtractor PriceExtractor
+
 	// Wrapper of extended handler to default
 	handlerWrapper *httphandler.HTTPHandlerWrapper
 
@@ -87,15 +90,17 @@ func (ext *Extension[EventT]) eventHandler(eventName events.Type) httphandler.Ex
 		}
 
 		// Set custom price for the event
-		if priceVal, _ := rctx.QueryArgs().GetUfloat("price"); priceVal > 0 {
-			err := event.SetEventPurchaseViewPrice(billing.MoneyFloat(priceVal).Int64())
-			if err != nil {
-				// Something went wrong
-				ctxlogger.Get(ctx).Error("new purchase price",
-					zap.String("handler", eventName.String()),
-					zap.String("event", event.EventType().String()),
-					zap.Error(err),
-				)
+		if ext.priceExtractor != nil {
+			if priceVal, _ := ext.priceExtractor(ctx, rctx); priceVal > 0 {
+				err := event.SetEventPurchaseViewPrice(billing.MoneyFloat(priceVal).Int64())
+				if err != nil {
+					// Something went wrong
+					ctxlogger.Get(ctx).Error("new purchase price",
+						zap.String("handler", eventName.String()),
+						zap.String("event", event.EventType().String()),
+						zap.Error(err),
+					)
+				}
 			}
 		}
 

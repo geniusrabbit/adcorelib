@@ -37,3 +37,17 @@ func WithEventAllocator[EventT EventType](eventAllocator eventgenerator.Allocato
 		ext.eventAllocator = eventAllocator
 	}
 }
+
+// WithCustomPriceExtractor setter
+func WithCustomPriceExtractor[EventT EventType](priceExtractor PriceExtractor) Option[EventT] {
+	return func(ext *Extension[EventT]) {
+		ext.priceExtractor = priceExtractor
+	}
+}
+
+// WithDefaultPriceExtractor setter
+func WithDefaultPriceExtractor[EventT EventType](paramName string) Option[EventT] {
+	return func(ext *Extension[EventT]) {
+		ext.priceExtractor = DefaultPriceExtractor(paramName)
+	}
+}
