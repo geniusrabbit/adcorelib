@@ -1,4 +1,4 @@
-package stdhttpclient
+package stdhttpzeroclient
 
 import (
 	"io"
@@ -9,9 +9,8 @@ import (
 // It provides methods to access the response status code, body, and to close the response body.
 // The response uses object pooling to minimize allocations.
 type Response struct {
-	HTTP    *http.Response
-	driver  *Driver  // Reference to driver for object pooling
-	request *Request // Reference to request for cleanup
+	HTTP   *http.Response
+	driver *ZeroAllocDriver // Reference to driver for object pooling
 }
 
 // StatusCode returns the HTTP status code of the response.
@@ -38,11 +37,6 @@ func (r *Response) Close() error {
 		err = r.HTTP.Body.Close()
 	}
 
-	// Return the associated request to the pool
-	if r.driver != nil && r.request != nil {
-		r.driver.releaseRequest(r.request)
-	}
-
 	// Return this response to the pool
 	if r.driver != nil {
 		r.driver.releaseResponse(r)
@@ -53,5 +47,5 @@ func (r *Response) Close() error {
 
 func (r *Response) clear() {
 	r.HTTP = nil
-	r.request = nil
+	r.driver = nil
 }

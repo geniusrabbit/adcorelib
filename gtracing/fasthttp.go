@@ -34,13 +34,12 @@ func (c fasthttpHeaderWrapper) Set(key, val string) {
 }
 
 // ForeachKey conforms to the TextMapReader interface.
-func (c fasthttpHeaderWrapper) ForeachKey(handler func(key, val string) error) (err error) {
-	c.headers.VisitAll(func(k, v []byte) {
-		if err != nil {
-			return
+func (c fasthttpHeaderWrapper) ForeachKey(handler func(key, val string) error) error {
+	for k, v := range c.headers.All() {
+		if err := handler(string(k), string(v)); err != nil {
+			return err
 		}
-		err = handler(string(k), string(v))
-	})
+	}
 	return nil
 }
 
