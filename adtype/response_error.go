@@ -7,6 +7,7 @@ package adtype
 
 import (
 	"context"
+	"iter"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
@@ -59,6 +60,11 @@ func (r *ResponseError) Item(impid string) ResponserItemCommon { return nil }
 
 // Ads list
 func (r *ResponseError) Ads() []ResponserItemCommon { return nil }
+
+// IterAds returns an iterator over the response items.
+func (r *ResponseError) IterAds() iter.Seq[ResponserItem] {
+	return func(yield func(ResponserItem) bool) {}
+}
 
 // Count of response items
 func (r *ResponseError) Count() int { return 0 }

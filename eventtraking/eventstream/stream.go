@@ -113,7 +113,12 @@ func (s *stream[EventT, UserInfoT]) SendSourceSkip(response adtype.Responser) er
 
 // SendSourceNoBid event for the response
 func (s *stream[EventT, UserInfoT]) SendSourceNoBid(response adtype.Responser) error {
-	return s.Send(events.SourceNoBid, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
+	req := response.Request()
+	for i := range req.Imps {
+		_ = s.Send(events.SourceNoBid, events.StatusUndefined, response,
+			&adtype.ResponseItemEmpty{Req: req, Imp: &req.Imps[i]})
+	}
+	return nil
 }
 
 // SendSourceFail event for the response

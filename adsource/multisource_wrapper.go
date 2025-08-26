@@ -37,7 +37,6 @@ package adsource
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -45,12 +44,10 @@ import (
 	"github.com/demdxx/rpool/v2"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/adquery/bidresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/auction/trafaret"
-	"github.com/geniusrabbit/adcorelib/context/ctxlogger"
 	"github.com/geniusrabbit/adcorelib/eventtraking/events"
 	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
 	"github.com/geniusrabbit/adcorelib/fasttime"
@@ -246,29 +243,18 @@ func (wrp *MultisourceWrapper) ProcessResponse(response adtype.Responser) {
 	if response == nil || response.Error() != nil {
 		return
 	}
-	// Pricess prices of campaigns
-	for _, it := range response.Ads() {
-		if it.Validate() != nil {
-			continue
-		}
-		switch ad := it.(type) {
-		case adtype.ResponserItem:
-			wrp.processAdResponse(response, ad)
-		case adtype.ResponserMultipleItem:
-			for _, it := range ad.Ads() {
-				wrp.processAdResponse(response, it)
-			}
-		default:
-			ctxlogger.Get(response.Context()).
-				Warn("Unsupportable respont item type", zap.String("type", fmt.Sprintf("%T", it)))
+	// Process prices of campaigns
+	for ad := range response.IterAds() {
+		if ad != nil && ad.Validate() == nil {
+			wrp.ProcessResponseItem(response, ad)
 		}
 	}
 }
 
 // ProcessResponseItem processes an individual response item
-func (wrp *MultisourceWrapper) ProcessResponseItem(response adtype.Responser, item adtype.ResponserItem) {
-	if src := item.Source(); src != nil {
-		src.ProcessResponseItem(response, item)
+func (wrp *MultisourceWrapper) ProcessResponseItem(response adtype.Responser, ad adtype.ResponserItem) {
+	if src := ad.Source(); src != nil {
+		src.ProcessResponseItem(response, ad)
 	}
 }
 
@@ -310,31 +296,47 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ *adtype.Bid
 	}
 
 	eventStream := eventstream.StreamFromContext(response.Context())
-	if response.Error() == nil && len(response.Ads()) > 0 {
-		// Log ads
-		for _, it := range response.Ads() {
-			switch ad := it.(type) {
-			case adtype.ResponserItem:
-				_ = eventStream.Send(events.SourceBid, events.StatusSuccess, response, ad)
-			case adtype.ResponserMultipleItem:
-				if len(ad.Ads()) > 0 {
-					_ = eventStream.Send(events.SourceBid, events.StatusSuccess, response, ad.Ads()[0])
+	respErr := response.Error()
+
+	// Check if response is valid and has ads items
+	if respErr == nil && len(response.Ads()) > 0 {
+		// Send bid events for each ad separately
+		for ad := range response.IterAds() {
+			eventType := events.Undefined
+			eventStatus := events.StatusSuccess
+			// Check ad response item
+			if err := ad.Validate(); err != nil {
+				if errors.Is(err, adtype.ErrResponseItemEmpty) {
+					eventType = events.SourceNoBid
+				} else if errors.Is(err, adtype.ErrResponseItemSkipped) {
+					eventType = events.SourceSkip
+				} else {
+					eventType = events.SourceFail
+					eventStatus = events.StatusFailed
 				}
+			} else {
+				eventType = events.SourceBid
 			}
-			break
+
+			// Send event to event stream
+			_ = eventStream.Send(eventType, uint8(eventStatus), response, ad)
 		}
-	} else if response.Error() == nil && len(response.Ads()) == 0 {
+
+		// Send no bid for each empty slot (zone, adunit)
+		imps := response.Request().Imps
+		for i := range imps {
+			imp := &imps[i]
+			if response.Item(imp.ID) == nil {
+				_ = eventStream.Send(events.SourceNoBid, events.StatusUndefined, response,
+					&adtype.ResponseItemEmpty{Req: response.Request(), Imp: imp})
+			}
+		}
+	} else if respErr == nil && len(response.Ads()) == 0 {
 		_ = eventStream.SendSourceNoBid(response)
-	} else if response.Error() != nil && strings.Contains(response.Error().Error(), "skip") {
+	} else if respErr != nil && (errors.Is(respErr, adtype.ErrResponseSkipped) || strings.Contains(respErr.Error(), "skip")) {
 		_ = eventStream.SendSourceSkip(response)
 	} else {
 		_ = eventStream.SendSourceFail(response)
-	}
-}
-
-func (wrp *MultisourceWrapper) processAdResponse(response adtype.Responser, ad adtype.ResponserItem) {
-	if src := ad.Source(); src != nil {
-		src.ProcessResponseItem(response, ad)
 	}
 }
 

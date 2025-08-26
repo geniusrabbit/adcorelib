@@ -7,6 +7,7 @@ package adtype
 
 import (
 	"context"
+	"iter"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
@@ -27,6 +28,9 @@ type Responser interface {
 
 	// Ads list
 	Ads() []ResponserItemCommon
+
+	// IterAds returns an iterator over the response items.
+	IterAds() iter.Seq[ResponserItem]
 
 	// Item by impression code
 	Item(impid string) ResponserItemCommon

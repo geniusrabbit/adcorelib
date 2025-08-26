@@ -7,6 +7,7 @@ package bidresponse
 
 import (
 	"context"
+	"iter"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adtype"
@@ -76,6 +77,29 @@ func (r *Response) Item(impid string) adtype.ResponserItemCommon {
 // Ads list
 func (r *Response) Ads() []adtype.ResponserItemCommon {
 	return r.items
+}
+
+// IterAds returns an iterator over the response items.
+func (r *Response) IterAds() iter.Seq[adtype.ResponserItem] {
+	return func(yield func(adtype.ResponserItem) bool) {
+		for _, it := range r.items {
+			switch itV := it.(type) {
+			case nil:
+			case adtype.ResponserItem:
+				if !yield(itV) {
+					return
+				}
+			case adtype.ResponserMultipleItem:
+				for _, mit := range itV.Ads() {
+					if !yield(mit) {
+						return
+					}
+				}
+			default:
+				// do nothing
+			}
+		}
+	}
 }
 
 // Count of response items

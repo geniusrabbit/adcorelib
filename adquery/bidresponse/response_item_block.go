@@ -40,7 +40,7 @@ func (i *ResponseItemBlock) ImpressionID() string {
 
 // ExtImpressionID it's unique code of the auction bid impression
 func (i *ResponseItemBlock) ExtImpressionID() string {
-	return ""
+	return i.Items[0].ExtImpressionID()
 }
 
 // ExtTargetID of the external network
@@ -85,12 +85,19 @@ func (i *ResponseItemBlock) Validate() (err error) {
 	if len(i.Items) < 1 {
 		return adtype.ErrResponseEmpty
 	}
+	countValid := 0
 	for _, it := range i.Items {
-		if err = it.Validate(); nil != err {
-			return err
+		if err = it.Validate(); err == nil {
+			countValid++
 		}
 	}
-	return err
+	if countValid == 0 {
+		if err != nil {
+			return err
+		}
+		return adtype.ErrResponseEmpty
+	}
+	return nil
 }
 
 // Context value

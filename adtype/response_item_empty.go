@@ -14,35 +14,67 @@ var (
 )
 
 // ResponseItemEmpty value
-type ResponseItemEmpty struct{}
+type ResponseItemEmpty struct {
+	Imp     *Impression
+	Req     *BidRequest
+	Src     Source
+	context context.Context
+}
 
 // ID of current response item (unique code of current response)
 func (*ResponseItemEmpty) ID() string { return "" }
 
+// AuctionID returns ID of the current auction
+func (r *ResponseItemEmpty) AuctionID() string {
+	if r.Req == nil {
+		return ""
+	}
+	return r.Req.ID
+}
+
 // Impression place object
-func (*ResponseItemEmpty) Impression() *Impression { return &emptyImpression }
+func (it *ResponseItemEmpty) Impression() *Impression {
+	if it != nil && it.Imp != nil {
+		return it.Imp
+	}
+	return &emptyImpression
+}
 
 // ImpressionID unique code string
-func (*ResponseItemEmpty) ImpressionID() string { return "" }
+func (it *ResponseItemEmpty) ImpressionID() string { return it.Impression().ID }
 
 // ExtImpressionID it's unique code of the auction bid impression
-func (*ResponseItemEmpty) ExtImpressionID() string { return "" }
+func (it *ResponseItemEmpty) ExtImpressionID() string { return it.Impression().ExternalID }
 
 // ExtTargetID of the external network
-func (*ResponseItemEmpty) ExtTargetID() string { return "" }
+func (it *ResponseItemEmpty) ExtTargetID() string { return it.Impression().ExternalTargetID }
 
 // InternalAuctionCPMBid value provides maximal possible price without any comission
 // According to this value the system can choice the best item for the auction
 func (*ResponseItemEmpty) InternalAuctionCPMBid() billing.Money { return 0 }
 
 // PriorityFormatType from current Ad
-func (*ResponseItemEmpty) PriorityFormatType() types.FormatType { return 0 }
+func (it *ResponseItemEmpty) PriorityFormatType() types.FormatType {
+	format := it.Impression().FormatTypes
+	if formatType := format.HasOneType(); formatType > types.FormatUndefinedType {
+		return formatType
+	}
+	return format.FirstType()
+}
 
 // Validate item
-func (*ResponseItemEmpty) Validate() error { return nil }
+func (*ResponseItemEmpty) Validate() error { return ErrResponseItemEmpty }
 
 // Context value
-func (*ResponseItemEmpty) Context(ctx ...context.Context) context.Context { return nil }
+func (it *ResponseItemEmpty) Context(ctx ...context.Context) context.Context {
+	if len(ctx) > 0 && ctx[0] != nil {
+		it.context = ctx[0]
+	}
+	if it.context == nil {
+		it.context = context.Background()
+	}
+	return it.context
+}
 
 // Get ext field
 func (*ResponseItemEmpty) Get(key string) any { return nil }
@@ -57,10 +89,17 @@ func (*ResponseItemEmpty) AccountID() uint64 { return 0 }
 func (*ResponseItemEmpty) CampaignID() uint64 { return 0 }
 
 // Format object
-func (*ResponseItemEmpty) Format() *types.Format { return &emptyFormat }
+func (it *ResponseItemEmpty) Format() *types.Format {
+	if it != nil {
+		if fmtLst := it.Imp.Formats(); len(fmtLst) > 0 {
+			return fmtLst[0]
+		}
+	}
+	return &emptyFormat
+}
 
 // PricingModel of advertisement
-func (*ResponseItemEmpty) PricingModel() types.PricingModel { return 0 }
+func (*ResponseItemEmpty) PricingModel() types.PricingModel { return types.PricingModelUndefined }
 
 // ContentItem returns the ad response data
 func (*ResponseItemEmpty) ContentItem(name string) any { return nil }
@@ -81,7 +120,12 @@ func (*ResponseItemEmpty) Asset(name string) *admodels.AdAsset { return nil }
 func (*ResponseItemEmpty) Assets() admodels.AdAssets { return nil }
 
 // Source of response
-func (*ResponseItemEmpty) Source() Source { return nil }
+func (it *ResponseItemEmpty) Source() Source {
+	if it == nil || it.Src == nil {
+		return nil
+	}
+	return it.Src
+}
 
 // ImpressionTrackerLinks returns traking links for impression action
 func (*ResponseItemEmpty) ImpressionTrackerLinks() []string { return nil }
@@ -125,7 +169,7 @@ func (*ResponseItemEmpty) PotentialPrice(action Action) billing.Money { return 0
 // FinalPrice returns final price for the item which is including all possible commissions with all corrections
 func (*ResponseItemEmpty) FinalPrice(action Action) billing.Money { return 0 }
 
-// Second campaigns
+// Second competitor campaign
 func (*ResponseItemEmpty) Second() *SecondAd { return nil }
 
 // RevenuePercent money
@@ -142,13 +186,15 @@ func (it *ResponseItemEmpty) TargetCorrectionFactor() float64 { return 0 }
 
 // CommissionShareFactor returns the multipler for commission
 // calculation which system get from user revenue from 0 to 1
-func (*ResponseItemEmpty) CommissionShareFactor() float64 { return 0 }
+func (it *ResponseItemEmpty) CommissionShareFactor() float64 {
+	return it.Impression().CommissionShareFactor()
+}
 
 // IsDirect AD type
-func (*ResponseItemEmpty) IsDirect() bool { return false }
+func (it *ResponseItemEmpty) IsDirect() bool { return it.PriorityFormatType().IsDirect() }
 
 // IsBackup indicates whether the advertisement is a backup ad type.
-func (*ResponseItemEmpty) IsBackup() bool { return false }
+func (it *ResponseItemEmpty) IsBackup() bool { return false }
 
 // ActionURL returns target resource link for direct and banner click as well
 func (*ResponseItemEmpty) ActionURL() string { return "" }

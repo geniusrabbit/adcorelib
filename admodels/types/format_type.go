@@ -94,6 +94,11 @@ func (t FormatType) DisplayName() string {
 	return t.Name()
 }
 
+// IsUndefined type of format
+func (t FormatType) IsUndefined() bool {
+	return t == FormatUndefinedType
+}
+
 // IsInvalid type of format
 func (t FormatType) IsInvalid() bool {
 	return t == FormatInvalidType

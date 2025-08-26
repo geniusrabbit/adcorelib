@@ -3,6 +3,7 @@ package endpoint
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -271,10 +272,14 @@ func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personifi
 		return nil
 	}
 
+	fmt.Println("Target:", target.Codename(), "#", rctx, "===", string(rctx.Referer()), "->", domain(string(rctx.Referer())))
+
 	// Get application by referer
 	if ext.appAccessor != nil {
 		app, _ = ext.appAccessor.AppByURI(domain(string(rctx.Referer())))
 	}
+
+	fmt.Println("APP:", app, "===", string(rctx.Referer()))
 
 	// Create request for the target
 	return NewRequestFor(ctx, app, target, person,

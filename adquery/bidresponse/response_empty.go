@@ -2,6 +2,7 @@ package bidresponse
 
 import (
 	"context"
+	"iter"
 
 	"github.com/bsm/openrtb"
 
@@ -94,6 +95,11 @@ func (r ResponseEmpty) ExtTargetID() string {
 // Ads list
 func (r ResponseEmpty) Ads() []adtype.ResponserItemCommon {
 	return nil
+}
+
+// IterAds returns an iterator over the response items.
+func (r ResponseEmpty) IterAds() iter.Seq[adtype.ResponserItem] {
+	return func(yield func(adtype.ResponserItem) bool) {}
 }
 
 // Item by impression code
