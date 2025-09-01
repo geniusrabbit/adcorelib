@@ -185,9 +185,9 @@ func (g *Generator[E, L, UI]) encodeURL(pattern string, event events.Type, statu
 	code = url.QueryEscape(code)
 	if !strings.Contains(pattern, "{hostname}") {
 		if strings.HasPrefix(pattern, "/") {
-			urlVal = g.hostSchema() + g.hostDomain(response) + strings.Replace(pattern, "{code}", code, -1)
+			urlVal = g.hostSchema() + g.hostDomain(response) + strings.ReplaceAll(pattern, "{code}", code)
 		} else {
-			urlVal = g.hostSchema() + g.hostDomain(response) + "/" + strings.Replace(pattern, "{code}", code, -1)
+			urlVal = g.hostSchema() + g.hostDomain(response) + "/" + strings.ReplaceAll(pattern, "{code}", code)
 		}
 	} else {
 		urlVal = strings.NewReplacer(

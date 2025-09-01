@@ -13,8 +13,8 @@ const (
 
 func (a Action) String() string {
 	switch a {
-	case ActionImpression:
-		return "impression"
+	case ActionView:
+		return "view"
 	case ActionClick:
 		return "click"
 	case ActionLead:

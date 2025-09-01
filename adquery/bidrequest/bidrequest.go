@@ -99,9 +99,6 @@ func (r *BidRequest) ProjectID() uint64 { return 0 }
 // It resets the formats slice and format bitset,
 // and initializes each impression using the provided formats accessor.
 func (r *BidRequest) Init(formats types.FormatsAccessor) {
-	// r.formats = r.formats[:0]
-	// r.formatTypeMask.Reset()
-	// r.formatBitset.Reset()
 	r.formats.Reset()
 
 	// Initialize each impression with the provided formats

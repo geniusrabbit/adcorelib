@@ -16,6 +16,7 @@ var (
 	ErrLowPrice                  = errors.New("BID price is lower than floor price")
 	ErrResponseEmpty             = errors.New("response is empty")
 	ErrResponseSkipped           = errors.New("response is skipped")
+	ErrResponseNoBid             = errors.New("response no bid")
 	ErrResponseItemEmpty         = errors.New("response item is empty")
 	ErrResponseItemSkipped       = errors.New("response item is skipped")
 	ErrResponseInvalidType       = errors.New("invalid response type")

@@ -6,6 +6,8 @@ import (
 )
 
 type priceCalculatorItem interface {
+	ID() string
+
 	// CommissionShareFactor which is the system get from publisher 0..1 for reducing of the value
 	CommissionShareFactor() float64
 
