@@ -148,16 +148,16 @@ func (*ResponseItemEmpty) PriceTestMode() bool { return false }
 // Price per specific action type (view, click, lead, etc)
 func (*ResponseItemEmpty) Price(action Action) billing.Money { return 0 }
 
-// BidViewPrice returns bid price for the external auction source.
+// BidImpressionPrice returns bid price for the external auction source.
 // The current bid price will be adjusted according to the source correction factor and the commission share factor
-func (*ResponseItemEmpty) BidViewPrice() billing.Money { return 0 }
+func (*ResponseItemEmpty) BidImpressionPrice() billing.Money { return 0 }
 
-// SetBidViewPrice value for external sources auction the system will pay
-func (*ResponseItemEmpty) SetBidViewPrice(price billing.Money) error { return nil }
+// SetBidImpressionPrice value for external sources auction the system will pay
+func (*ResponseItemEmpty) SetBidImpressionPrice(price billing.Money) error { return nil }
 
-// PrepareBidViewPrice prepares the price for the action
+// PrepareBidImpressionPrice prepares the price for the action
 // The price is adjusted according to the source correction factor and the commission share factor
-func (*ResponseItemEmpty) PrepareBidViewPrice(price billing.Money) billing.Money { return price }
+func (*ResponseItemEmpty) PrepareBidImpressionPrice(price billing.Money) billing.Money { return price }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.

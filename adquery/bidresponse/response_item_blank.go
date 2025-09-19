@@ -127,24 +127,24 @@ func (it *ResponseItemBlank) Price(action adtype.Action) billing.Money {
 	return it.PriceScope.PricePerAction(action)
 }
 
-// BidViewPrice returns bid price for the external auction source.
+// BidImpressionPrice returns bid price for the external auction source.
 // The current bid price will be adjusted according to the source correction factor and the commission share factor
-func (it *ResponseItemBlank) BidViewPrice() billing.Money {
-	return it.PriceScope.BidViewPrice
+func (it *ResponseItemBlank) BidImpressionPrice() billing.Money {
+	return it.PriceScope.BidImpPrice
 }
 
-// SetBidViewPrice value for external sources auction the system will pay
-func (it *ResponseItemBlank) SetBidViewPrice(bid billing.Money) error {
-	if !it.PriceScope.SetBidViewPrice(bid, false) {
+// SetBidImpressionPrice value for external sources auction the system will pay
+func (it *ResponseItemBlank) SetBidImpressionPrice(bid billing.Money) error {
+	if !it.PriceScope.SetBidImpressionPrice(bid, false) {
 		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
 	}
 	return nil
 }
 
-// PrepareBidViewPrice prepares the price for the action
+// PrepareBidImpressionPrice prepares the price for the action
 // The price is adjusted according to the source correction factor and the commission share factor
-func (it *ResponseItemBlank) PrepareBidViewPrice(price billing.Money) billing.Money {
-	return it.PriceScope.PrepareBidViewPrice(price)
+func (it *ResponseItemBlank) PrepareBidImpressionPrice(price billing.Money) billing.Money {
+	return it.PriceScope.PrepareBidImpressionPrice(price)
 }
 
 // PurchasePrice gives the price of view from external resource.

@@ -143,17 +143,17 @@ type ResponserItem interface {
 	// Price returns the total price for a specific action (e.g., click, lead, view).
 	Price(action Action) billing.Money
 
-	// BidViewPrice returns the bid price for the external auction source.
+	// BidImpressionPrice returns the bid price for the external auction source.
 	// The bid price is adjusted according to the source correction factor and the commission share factor.
-	BidViewPrice() billing.Money
+	BidImpressionPrice() billing.Money
 
-	// SetBidViewPrice sets the bid price value for external sources in an auction.
+	// SetBidImpressionPrice sets the bid price value for external sources in an auction.
 	// The system will pay this bid price.
-	SetBidViewPrice(price billing.Money) error
+	SetBidImpressionPrice(price billing.Money) error
 
-	// PrepareBidViewPrice prepares the price for the action
+	// PrepareBidImpressionPrice prepares the price for the action
 	// The price is adjusted according to the source correction factor and the commission share factor
-	PrepareBidViewPrice(price billing.Money) billing.Money
+	PrepareBidImpressionPrice(price billing.Money) billing.Money
 
 	// PurchasePrice returns the price of a specific action from an external resource (e.g., site, app, RTB).
 	// This represents the cost of the request for the network.

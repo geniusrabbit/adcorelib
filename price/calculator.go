@@ -23,13 +23,13 @@ type priceCalculatorItem interface {
 	// FixedPurchasePrice returns fixed price for the target action
 	FixedPurchasePrice(action adtype.Action) billing.Money
 
-	// BidViewPrice returns bid price for the external auction source.
+	// BidImpressionPrice returns bid price for the external auction source.
 	// The current bid price will be adjusted according to the source correction factor and the commission share factor
-	BidViewPrice() billing.Money
+	BidImpressionPrice() billing.Money
 
-	// PrepareBidViewPrice prepares the price for the action
+	// PrepareBidImpressionPrice prepares the price for the action
 	// The price is adjusted according to the source correction factor and the commission share factor
-	PrepareBidViewPrice(price billing.Money) billing.Money
+	PrepareBidImpressionPrice(price billing.Money) billing.Money
 
 	// Price returns price for the target action (view, click, lead, etc)
 	Price(action adtype.Action) billing.Money
@@ -60,8 +60,8 @@ func CalculatePurchasePrice(item priceCalculatorItem, action adtype.Action) bill
 	if fixedPrice := item.FixedPurchasePrice(action); fixedPrice > 0 {
 		return fixedPrice
 	}
-	if action == adtype.ActionView {
-		if bidPrice := item.BidViewPrice(); bidPrice > 0 {
+	if action == adtype.ActionImpression {
+		if bidPrice := item.BidImpressionPrice(); bidPrice > 0 {
 			return bidPrice
 		}
 	}
@@ -74,8 +74,8 @@ func CalculatePurchasePrice(item priceCalculatorItem, action adtype.Action) bill
 				max(1.-item.CommissionShareFactor(), 0.),
 		)
 	)
-	if action == adtype.ActionView {
-		return item.PrepareBidViewPrice(newPrice)
+	if action == adtype.ActionImpression {
+		return item.PrepareBidImpressionPrice(newPrice)
 	}
 	return newPrice
 }

@@ -9,11 +9,14 @@ type PriceScope struct {
 	// TestMode represents the flag for the test budget usage for the view price.
 	TestMode bool `json:"test_mode,omitempty"`
 
-	// MaxBidViewPrice represents the maximum price for the bid on the auction.
-	MaxBidViewPrice billing.Money `json:"max_bid_view_price,omitempty"`
+	// MaxBidImpPrice represents the maximum price for the bid on the auction.
+	MaxBidImpPrice billing.Money `json:"max_bid_imp_price,omitempty"`
 
-	// BidViewPrice represents the price for the bid on the auction. But charged will be by ViewPrice
-	BidViewPrice billing.Money `json:"bid_view_price,omitempty"`
+	// BidImpPrice represents the price for the bid on the auction. But charged will be by ImpPrice
+	BidImpPrice billing.Money `json:"bid_imp_price,omitempty"`
+
+	// ImpPrice represents the price for the impression action.
+	ImpPrice billing.Money `json:"imp_price,omitempty"`
 
 	// ViewPrice represents the price for the view action.
 	ViewPrice billing.Money `json:"view_price,omitempty"`
@@ -31,6 +34,8 @@ type PriceScope struct {
 // PricePerAction returns the price for the action type.
 func (ps *PriceScope) PricePerAction(actionType adtype.Action) billing.Money {
 	switch actionType {
+	case adtype.ActionImpression:
+		return ps.ImpPrice
 	case adtype.ActionView:
 		return ps.ViewPrice
 	case adtype.ActionClick:
@@ -42,37 +47,37 @@ func (ps *PriceScope) PricePerAction(actionType adtype.Action) billing.Money {
 	}
 }
 
-// SetBidViewPrice sets the price for the bid on the auction.
-func (ps *PriceScope) SetBidViewPrice(price billing.Money, maxIfZero bool) bool {
+// SetBidImpressionPrice sets the price for the bid on the auction.
+func (ps *PriceScope) SetBidImpressionPrice(price billing.Money, maxIfZero bool) bool {
 	if price <= 0 && maxIfZero {
-		ps.BidViewPrice = ps.MaxBidViewPrice
+		ps.BidImpPrice = ps.MaxBidImpPrice
 		return true
 	}
-	if price > ps.BidViewPrice {
+	if price > ps.BidImpPrice {
 		return false
 	}
-	ps.BidViewPrice = max(price, 0)
+	ps.BidImpPrice = max(price, 0)
 	return true
 }
 
-// SetViewPrice sets the price for the view action.
-func (ps *PriceScope) SetViewPrice(price billing.Money, maxIfZero bool) bool {
+// SetImpressionPrice sets the price for the impression action.
+func (ps *PriceScope) SetImpressionPrice(price billing.Money, maxIfZero bool) bool {
 	if price <= 0 && maxIfZero {
-		ps.ViewPrice = ps.MaxBidViewPrice
+		ps.ImpPrice = ps.MaxBidImpPrice
 		return true
 	}
-	if price > ps.MaxBidViewPrice {
-		ps.ViewPrice = ps.MaxBidViewPrice
+	if price > ps.MaxBidImpPrice {
+		ps.ImpPrice = ps.MaxBidImpPrice
 		return true
 	}
-	ps.ViewPrice = max(price, 0)
+	ps.ImpPrice = max(price, 0)
 	return true
 }
 
-// PrepareBidViewPrice prepares the bid view price for the auction.
-func (ps *PriceScope) PrepareBidViewPrice(price billing.Money) billing.Money {
-	if price > ps.MaxBidViewPrice {
-		price = ps.MaxBidViewPrice
+// PrepareBidImpressionPrice prepares the bid impression price for the auction.
+func (ps *PriceScope) PrepareBidImpressionPrice(price billing.Money) billing.Money {
+	if price > ps.MaxBidImpPrice {
+		price = ps.MaxBidImpPrice
 	}
 	return price
 }

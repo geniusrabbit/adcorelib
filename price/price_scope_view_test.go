@@ -419,10 +419,10 @@ func TestPriceScopeView_CompareWithPriceScope(t *testing.T) {
 	}
 
 	ps := PriceScope{
-		MaxBidViewPrice: billing.MoneyFloat(10.0),
-		ViewPrice:       billing.MoneyFloat(2.0),
-		ClickPrice:      billing.MoneyFloat(4.0),
-		LeadPrice:       billing.MoneyFloat(8.0),
+		MaxBidImpPrice: billing.MoneyFloat(10.0),
+		ViewPrice:      billing.MoneyFloat(2.0),
+		ClickPrice:     billing.MoneyFloat(4.0),
+		LeadPrice:      billing.MoneyFloat(8.0),
 	}
 
 	// Both should return the same for ActionView

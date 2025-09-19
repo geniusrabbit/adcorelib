@@ -609,9 +609,9 @@ func (r *BidRequest) ImpressionByID(id string) *Impression {
 // This allows matching impressions even if the ID contains additional postfixes.
 // Returns nil if no matching impression is found.
 func (r *BidRequest) ImpressionByIDvariation(id string) *Impression {
-	for _, im := range r.Imps {
-		if strings.HasPrefix(id, im.ID) {
-			return &im
+	for i := range r.Imps {
+		if im := &r.Imps[i]; strings.HasPrefix(id, im.ID) {
+			return im
 		}
 	}
 	return nil

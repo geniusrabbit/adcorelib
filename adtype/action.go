@@ -6,13 +6,16 @@ type Action int
 // Campaign actions
 const (
 	ActionImpression Action = 1
-	ActionView       Action = 1
-	ActionClick      Action = 2
-	ActionLead       Action = 3
+	ActionImp               = ActionImpression // Alias
+	ActionView       Action = 2
+	ActionClick      Action = 3
+	ActionLead       Action = 4
 )
 
 func (a Action) String() string {
 	switch a {
+	case ActionImpression:
+		return "impression"
 	case ActionView:
 		return "view"
 	case ActionClick:

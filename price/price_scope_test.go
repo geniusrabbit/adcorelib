@@ -88,8 +88,8 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 		{
 			name: "Set valid bid price within max",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				BidViewPrice:    billing.MoneyFloat(5.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				BidImpPrice:    billing.MoneyFloat(5.0),
 			},
 			price:       billing.MoneyFloat(3.0),
 			maxIfZero:   false,
@@ -99,8 +99,8 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 		{
 			name: "Set bid price higher than current bid",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				BidViewPrice:    billing.MoneyFloat(5.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				BidImpPrice:    billing.MoneyFloat(5.0),
 			},
 			price:       billing.MoneyFloat(7.0),
 			maxIfZero:   false,
@@ -110,8 +110,8 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 		{
 			name: "Set zero price with maxIfZero=true",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				BidViewPrice:    billing.MoneyFloat(5.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				BidImpPrice:    billing.MoneyFloat(5.0),
 			},
 			price:       0,
 			maxIfZero:   true,
@@ -121,8 +121,8 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 		{
 			name: "Set zero price with maxIfZero=false",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				BidViewPrice:    billing.MoneyFloat(5.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				BidImpPrice:    billing.MoneyFloat(5.0),
 			},
 			price:       0,
 			maxIfZero:   false,
@@ -132,8 +132,8 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 		{
 			name: "Set negative price with maxIfZero=true",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				BidViewPrice:    billing.MoneyFloat(5.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				BidImpPrice:    billing.MoneyFloat(5.0),
 			},
 			price:       billing.MoneyFloat(-1.0),
 			maxIfZero:   true,
@@ -143,8 +143,8 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 		{
 			name: "Set negative price with maxIfZero=false",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				BidViewPrice:    billing.MoneyFloat(5.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				BidImpPrice:    billing.MoneyFloat(5.0),
 			},
 			price:       billing.MoneyFloat(-1.0),
 			maxIfZero:   false,
@@ -156,14 +156,14 @@ func TestPriceScope_SetBidViewPrice(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ps := tt.priceScope
-			result := ps.SetBidViewPrice(tt.price, tt.maxIfZero)
+			result := ps.SetBidImpressionPrice(tt.price, tt.maxIfZero)
 
 			if result != tt.expectedOk {
-				t.Errorf("SetBidViewPrice() returned %v, want %v", result, tt.expectedOk)
+				t.Errorf("SetBidImpressionPrice() returned %v, want %v", result, tt.expectedOk)
 			}
 
-			if ps.BidViewPrice != tt.expectedBid {
-				t.Errorf("BidViewPrice = %v, want %v", ps.BidViewPrice, tt.expectedBid)
+			if ps.BidImpPrice != tt.expectedBid {
+				t.Errorf("BidImpPrice = %v, want %v", ps.BidImpPrice, tt.expectedBid)
 			}
 		})
 	}
@@ -181,8 +181,8 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 		{
 			name: "Set valid view price within max",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				ViewPrice:       billing.MoneyFloat(3.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				ImpPrice:       billing.MoneyFloat(3.0),
 			},
 			price:         billing.MoneyFloat(5.0),
 			maxIfZero:     false,
@@ -192,8 +192,8 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 		{
 			name: "Set view price higher than max",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				ViewPrice:       billing.MoneyFloat(3.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				ImpPrice:       billing.MoneyFloat(3.0),
 			},
 			price:         billing.MoneyFloat(15.0),
 			maxIfZero:     false,
@@ -203,8 +203,8 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 		{
 			name: "Set zero price with maxIfZero=true",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				ViewPrice:       billing.MoneyFloat(3.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				ImpPrice:       billing.MoneyFloat(3.0),
 			},
 			price:         0,
 			maxIfZero:     true,
@@ -214,8 +214,8 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 		{
 			name: "Set zero price with maxIfZero=false",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				ViewPrice:       billing.MoneyFloat(3.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				ImpPrice:       billing.MoneyFloat(3.0),
 			},
 			price:         0,
 			maxIfZero:     false,
@@ -225,8 +225,8 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 		{
 			name: "Set negative price with maxIfZero=true",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				ViewPrice:       billing.MoneyFloat(3.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				ImpPrice:       billing.MoneyFloat(3.0),
 			},
 			price:         billing.MoneyFloat(-2.0),
 			maxIfZero:     true,
@@ -236,8 +236,8 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 		{
 			name: "Set negative price with maxIfZero=false",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
-				ViewPrice:       billing.MoneyFloat(3.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
+				ImpPrice:       billing.MoneyFloat(3.0),
 			},
 			price:         billing.MoneyFloat(-2.0),
 			maxIfZero:     false,
@@ -249,14 +249,14 @@ func TestPriceScope_SetViewPrice(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ps := tt.priceScope
-			result := ps.SetViewPrice(tt.price, tt.maxIfZero)
+			result := ps.SetImpressionPrice(tt.price, tt.maxIfZero)
 
 			if result != tt.expectedOk {
-				t.Errorf("SetViewPrice() returned %v, want %v", result, tt.expectedOk)
+				t.Errorf("SetImpressionPrice() returned %v, want %v", result, tt.expectedOk)
 			}
 
-			if ps.ViewPrice != tt.expectedPrice {
-				t.Errorf("ViewPrice = %v, want %v", ps.ViewPrice, tt.expectedPrice)
+			if ps.ImpPrice != tt.expectedPrice {
+				t.Errorf("ImpPrice = %v, want %v", ps.ImpPrice, tt.expectedPrice)
 			}
 		})
 	}
@@ -272,7 +272,7 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 		{
 			name: "Price within max limit",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
 			},
 			price:    billing.MoneyFloat(5.0),
 			expected: billing.MoneyFloat(5.0),
@@ -280,7 +280,7 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 		{
 			name: "Price exceeds max limit",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
 			},
 			price:    billing.MoneyFloat(15.0),
 			expected: billing.MoneyFloat(10.0),
@@ -288,7 +288,7 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 		{
 			name: "Price equals max limit",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
 			},
 			price:    billing.MoneyFloat(10.0),
 			expected: billing.MoneyFloat(10.0),
@@ -296,7 +296,7 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 		{
 			name: "Zero price",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
 			},
 			price:    0,
 			expected: 0,
@@ -304,7 +304,7 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 		{
 			name: "Negative price",
 			priceScope: PriceScope{
-				MaxBidViewPrice: billing.MoneyFloat(10.0),
+				MaxBidImpPrice: billing.MoneyFloat(10.0),
 			},
 			price:    billing.MoneyFloat(-5.0),
 			expected: billing.MoneyFloat(-5.0),
@@ -312,7 +312,7 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 		{
 			name: "Zero max bid price",
 			priceScope: PriceScope{
-				MaxBidViewPrice: 0,
+				MaxBidImpPrice: 0,
 			},
 			price:    billing.MoneyFloat(5.0),
 			expected: 0,
@@ -321,9 +321,9 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := tt.priceScope.PrepareBidViewPrice(tt.price)
+			result := tt.priceScope.PrepareBidImpressionPrice(tt.price)
 			if result != tt.expected {
-				t.Errorf("PrepareBidViewPrice() = %v, want %v", result, tt.expected)
+				t.Errorf("PrepareBidImpressionPrice() = %v, want %v", result, tt.expected)
 			}
 		})
 	}
@@ -332,18 +332,18 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 func TestPriceScope_CompleteWorkflow(t *testing.T) {
 	// Test a complete workflow scenario
 	ps := PriceScope{
-		TestMode:        true,
-		MaxBidViewPrice: billing.MoneyFloat(10.0),
-		BidViewPrice:    billing.MoneyFloat(8.0), // Set initial bid price
-		ViewPrice:       billing.MoneyFloat(2.0),
-		ClickPrice:      billing.MoneyFloat(4.0),
-		LeadPrice:       billing.MoneyFloat(8.0),
-		ECPM:            billing.MoneyFloat(5.0),
+		TestMode:       true,
+		MaxBidImpPrice: billing.MoneyFloat(10.0),
+		BidImpPrice:    billing.MoneyFloat(8.0), // Set initial bid price
+		ImpPrice:       billing.MoneyFloat(2.0),
+		ClickPrice:     billing.MoneyFloat(4.0),
+		LeadPrice:      billing.MoneyFloat(8.0),
+		ECPM:           billing.MoneyFloat(5.0),
 	}
 
 	// Test all action types
-	if got := ps.PricePerAction(adtype.ActionView); got != billing.MoneyFloat(2.0) {
-		t.Errorf("ViewPrice = %v, want %v", got, billing.MoneyFloat(2.0))
+	if got := ps.PricePerAction(adtype.ActionImpression); got != billing.MoneyFloat(2.0) {
+		t.Errorf("ImpressionPrice = %v, want %v", got, billing.MoneyFloat(2.0))
 	}
 
 	if got := ps.PricePerAction(adtype.ActionClick); got != billing.MoneyFloat(4.0) {
@@ -354,26 +354,26 @@ func TestPriceScope_CompleteWorkflow(t *testing.T) {
 		t.Errorf("LeadPrice = %v, want %v", got, billing.MoneyFloat(8.0))
 	}
 
-	// Test setting bid view price (should succeed because 6.0 < 8.0 current bid)
-	if !ps.SetBidViewPrice(billing.MoneyFloat(6.0), false) {
-		t.Error("SetBidViewPrice should succeed for valid price")
+	// Test setting bid impression price (should succeed because 6.0 < 8.0 current bid)
+	if !ps.SetBidImpressionPrice(billing.MoneyFloat(6.0), false) {
+		t.Error("SetBidImpressionPrice should succeed for valid price")
 	}
-	if ps.BidViewPrice != billing.MoneyFloat(6.0) {
-		t.Errorf("BidViewPrice = %v, want %v", ps.BidViewPrice, billing.MoneyFloat(6.0))
-	}
-
-	// Test setting view price
-	if !ps.SetViewPrice(billing.MoneyFloat(3.0), false) {
-		t.Error("SetViewPrice should succeed for valid price")
-	}
-	if ps.ViewPrice != billing.MoneyFloat(3.0) {
-		t.Errorf("ViewPrice = %v, want %v", ps.ViewPrice, billing.MoneyFloat(3.0))
+	if ps.BidImpPrice != billing.MoneyFloat(6.0) {
+		t.Errorf("BidImpPrice = %v, want %v", ps.BidImpPrice, billing.MoneyFloat(6.0))
 	}
 
-	// Test prepare bid view price
-	prepared := ps.PrepareBidViewPrice(billing.MoneyFloat(12.0))
+	// Test setting impression price
+	if !ps.SetImpressionPrice(billing.MoneyFloat(3.0), false) {
+		t.Error("SetImpressionPrice should succeed for valid price")
+	}
+	if ps.ImpPrice != billing.MoneyFloat(3.0) {
+		t.Errorf("ImpPrice = %v, want %v", ps.ImpPrice, billing.MoneyFloat(3.0))
+	}
+
+	// Test prepare bid impression price
+	prepared := ps.PrepareBidImpressionPrice(billing.MoneyFloat(12.0))
 	if prepared != billing.MoneyFloat(10.0) {
-		t.Errorf("PrepareBidViewPrice = %v, want %v", prepared, billing.MoneyFloat(10.0))
+		t.Errorf("PrepareBidImpressionPrice = %v, want %v", prepared, billing.MoneyFloat(10.0))
 	}
 }
 
@@ -387,31 +387,31 @@ func TestPriceScope_EdgeCases(t *testing.T) {
 		}
 
 		// Setting prices with zero max should work
-		if !ps.SetBidViewPrice(0, true) {
-			t.Error("SetBidViewPrice should succeed with zero max")
+		if !ps.SetBidImpressionPrice(0, true) {
+			t.Error("SetBidImpressionPrice should succeed with zero max")
 		}
 
-		if ps.BidViewPrice != 0 {
-			t.Errorf("BidViewPrice = %v, want 0", ps.BidViewPrice)
+		if ps.BidImpPrice != 0 {
+			t.Errorf("BidImpPrice = %v, want 0", ps.BidImpPrice)
 		}
 	})
 
 	t.Run("Large values", func(t *testing.T) {
 		largeValue := billing.MoneyFloat(999999.99)
 		ps := PriceScope{
-			MaxBidViewPrice: largeValue,
-			ViewPrice:       largeValue,
-			ClickPrice:      largeValue,
-			LeadPrice:       largeValue,
+			MaxBidImpPrice: largeValue,
+			ImpPrice:       largeValue,
+			ClickPrice:     largeValue,
+			LeadPrice:      largeValue,
 		}
 
-		if got := ps.PricePerAction(adtype.ActionView); got != largeValue {
-			t.Errorf("ViewPrice = %v, want %v", got, largeValue)
+		if got := ps.PricePerAction(adtype.ActionImpression); got != largeValue {
+			t.Errorf("ImpressionPrice = %v, want %v", got, largeValue)
 		}
 
-		prepared := ps.PrepareBidViewPrice(largeValue * 2)
+		prepared := ps.PrepareBidImpressionPrice(largeValue * 2)
 		if prepared != largeValue {
-			t.Errorf("PrepareBidViewPrice = %v, want %v", prepared, largeValue)
+			t.Errorf("PrepareBidImpressionPrice = %v, want %v", prepared, largeValue)
 		}
 	})
 }

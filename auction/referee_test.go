@@ -259,8 +259,8 @@ func newItem(impid string, bid int64) adtype.ResponserItem {
 		Src: nil,
 		Imp: &adtype.Impression{ID: impid},
 		PriceScope: price.PriceScope{
-			ECPM:         billing.MoneyInt(bid),
-			BidViewPrice: billing.MoneyInt(bid) / 1000,
+			ECPM:        billing.MoneyInt(bid),
+			BidImpPrice: billing.MoneyInt(bid) / 1000,
 		},
 	}
 }
