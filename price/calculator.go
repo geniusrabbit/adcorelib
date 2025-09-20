@@ -35,14 +35,14 @@ type priceCalculatorItem interface {
 	Price(action adtype.Action) billing.Money
 }
 
-// CalculateNewBidViewPrice returns new bid price for the target with system comission and with source corrections
+// CalculateNewBidPrice returns new bid price for the target with system comission and with source corrections
 //
 // Formula:
 //
-//	NewBidViewPrice = Price + SourceCorrectionFactor[%] + TargetCorrectionFactor[%] + CommissionShareFactor[%]
+//	NewBidPrice = Price + SourceCorrectionFactor[%] + TargetCorrectionFactor[%] + CommissionShareFactor[%]
 //
 //go:inline
-func CalculateNewBidViewPrice(price billing.Money, item priceCalculatorItem) billing.Money {
+func CalculateNewBidPrice(price billing.Money, item priceCalculatorItem) billing.Money {
 	return billing.MoneyFloat(
 		price.Float64() *
 			(1. + item.CommissionShareFactor()) *
