@@ -11,50 +11,52 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/adquery/bidrequest"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	fasthttpext "github.com/geniusrabbit/adcorelib/net/fasthttp"
 	"github.com/geniusrabbit/adcorelib/personification"
-	"github.com/geniusrabbit/adcorelib/rand"
 )
 
 // NewRequestFor specific person
-func NewRequestFor(ctx context.Context,
+func NewRequestFor(
+	ctx context.Context,
 	app *admodels.Application,
 	target adtype.Target,
 	person personification.Person,
-	opt *RequestOptions, formatAccessor types.FormatsAccessor) *adtype.BidRequest {
+	opt *RequestOptions,
+	formatAccessor types.FormatsAccessor,
+) adtype.BidRequester {
 	var (
 		userInfo         = person.UserInfo()
 		ageStart, ageEnd = userInfo.Ages()
 		referer          = string(opt.Request.Referer())
-		requestID        = rand.UUID()
-		stateFlags       adtype.BidRequestFlags
+		stateFlags       bidrequest.BidRequestFlags
 	)
 	if fasthttpext.IsSecureCF(opt.Request) {
-		stateFlags |= adtype.BidRequestFlagSecure
+		stateFlags |= bidrequest.BidRequestFlagSecure
 	}
 	if brwsr := userInfo.DeviceInfo().Browser; brwsr != nil {
 		if brwsr.IsRobot == 1 {
-			stateFlags |= adtype.BidRequestFlagBot
+			stateFlags |= bidrequest.BidRequestFlagBot
 		}
 		if brwsr.PrivateBrowsing == 1 {
-			stateFlags |= adtype.BidRequestFlagPrivateBrowsing
+			stateFlags |= bidrequest.BidRequestFlagPrivateBrowsing
 		}
-		if brwsr.Adblock == 1 {
-			stateFlags |= adtype.BidRequestFlagAdblock
+		if brwsr.AdBlock == 1 {
+			stateFlags |= bidrequest.BidRequestFlagAdBlock
 		}
 	}
 
-	req := &adtype.BidRequest{
-		ID:         requestID,
+	req := &bidrequest.BidRequest{
+		IDVal:      adtype.NewRequestID(),
 		Debug:      opt.Debug,
 		RequestCtx: opt.Request,
 		StateFlags: stateFlags,
 		Device:     userInfo.DeviceInfo(),
 		AppTarget:  app,
-		Imps: []adtype.Impression{
+		Imps: []*adtype.Impression{
 			{
-				ID:          rand.UUID(), // Impression ID
+				ID:          adtype.NewImpressionID(), // Impression ID
 				Target:      target,
 				FormatTypes: opt.GetFormatTypes(),
 				FormatCodes: opt.FormatCodes,
@@ -98,13 +100,12 @@ func NewRequestFor(ctx context.Context,
 		Ctx:      ctx,
 		Timemark: time.Now(),
 	}
-	req.Init(formatAccessor)
-	return req
+	return req.WithFormats(formatAccessor)
 }
 
 // NewRequestByContext from request
-func NewRequestByContext(ctx context.Context, ectx *fasthttp.RequestCtx) (*adtype.BidRequest, error) {
-	request := &adtype.BidRequest{RequestCtx: ectx, Timemark: time.Now(), Ctx: ctx}
+func NewRequestByContext(ctx context.Context, ectx *fasthttp.RequestCtx) (adtype.BidRequester, error) {
+	request := &bidrequest.BidRequest{RequestCtx: ectx, Timemark: time.Now(), Ctx: ctx}
 	if err := json.NewDecoder(bytes.NewBuffer(ectx.Request.Body())).Decode(request); err != nil {
 		return nil, err
 	}

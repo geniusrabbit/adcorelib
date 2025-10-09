@@ -59,7 +59,7 @@ if err != nil {
     log.Fatal(err)
 }
 
-request := adtype.BidRequest{/*...*/}
+request := &bidrequest.BidRequest{/*...*/}
 response := driver.Bid(request)
 if response.Error() != nil {
     log.Println("Bid request failed:", response.Error())

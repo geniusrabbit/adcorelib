@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2016 – 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019
+// @project GeniusRabbit corelib 2016 – 2019, 2025
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 – 2019, 2025
 //
 
 package adtype
@@ -12,8 +12,8 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 )
 
-// Responser type
-type Responser interface {
+// Response type definition
+type Response interface {
 	// AuctionID response
 	AuctionID() string
 
@@ -24,16 +24,16 @@ type Responser interface {
 	Source() Source
 
 	// Request information
-	Request() *BidRequest
+	Request() BidRequester
 
 	// Ads list
-	Ads() []ResponserItemCommon
+	Ads() []ResponseItemCommon
 
 	// IterAds returns an iterator over the response items.
-	IterAds() iter.Seq[ResponserItem]
+	IterAds() iter.Seq[ResponseItem]
 
 	// Item by impression code
-	Item(impid string) ResponserItemCommon
+	Item(impid string) ResponseItemCommon
 
 	// Count of response items
 	Count() int

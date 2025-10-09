@@ -20,13 +20,13 @@ var (
 // Generator object
 type Generator[EventT EventType, UserInfoT UserInfoType] interface {
 	// Event object by response
-	Event(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) (EventT, error)
+	Event(event events.Type, status uint8, response adtype.Response, it adtype.ResponseItem) (EventT, error)
 
 	// Events object list
-	Events(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItemCommon) []EventT
+	Events(event events.Type, status uint8, response adtype.Response, it adtype.ResponseItemCommon) []EventT
 
 	// UserInfo event object by response
-	UserInfo(response adtype.Responser, it adtype.ResponserItem) (UserInfoT, error)
+	UserInfo(response adtype.Response, it adtype.ResponseItem) (UserInfoT, error)
 }
 
 type generator[EventT EventType, UserInfoT UserInfoType] struct {
@@ -49,7 +49,7 @@ func New[EventT EventType, UserInfoT UserInfoType](
 }
 
 // Event object by response
-func (g generator[EventT, UserInfoT]) Event(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) (EventT, error) {
+func (g generator[EventT, UserInfoT]) Event(event events.Type, status uint8, response adtype.Response, it adtype.ResponseItem) (EventT, error) {
 	eventObj := g.eventAllocator()
 	if err := eventObj.Fill(g.service, event, status, response, it); err != nil {
 		return eventObj, err
@@ -58,8 +58,8 @@ func (g generator[EventT, UserInfoT]) Event(event events.Type, status uint8, res
 }
 
 // Events object list
-func (g generator[EventT, UserInfoT]) Events(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItemCommon) (events []EventT) {
-	if mit, _ := it.(adtype.ResponserMultipleItem); mit != nil {
+func (g generator[EventT, UserInfoT]) Events(event events.Type, status uint8, response adtype.Response, it adtype.ResponseItemCommon) (events []EventT) {
+	if mit, _ := it.(adtype.ResponseMultipleItem); mit != nil {
 		ads := mit.Ads()
 		events = make([]EventT, 0, len(ads))
 		for _, it := range ads {
@@ -67,14 +67,14 @@ func (g generator[EventT, UserInfoT]) Events(event events.Type, status uint8, re
 				events = append(events, event)
 			}
 		}
-	} else if event, err := g.Event(event, status, response, it.(adtype.ResponserItem)); err == nil {
+	} else if event, err := g.Event(event, status, response, it.(adtype.ResponseItem)); err == nil {
 		events = append(events, event)
 	}
 	return events
 }
 
 // UserInfo event object by response
-func (g generator[EventT, UserInfoT]) UserInfo(response adtype.Responser, it adtype.ResponserItem) (UserInfoT, error) {
+func (g generator[EventT, UserInfoT]) UserInfo(response adtype.Response, it adtype.ResponseItem) (UserInfoT, error) {
 	userInfoObj := g.userInfoAllocator()
 	if err := userInfoObj.Fill(response, it); err != nil {
 		return userInfoObj, err

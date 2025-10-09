@@ -72,7 +72,7 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 
 	filter := types.BaseFilter{
 		Secure:          int8(cl.Secure),
-		Adblock:         int8(cl.AdBlock),
+		AdBlock:         int8(cl.AdBlock),
 		PrivateBrowsing: int8(cl.PrivateBrowsing),
 		IP:              int8(cl.IP),
 	}
@@ -129,4 +129,9 @@ func (s *RTBSource) TestFormat(f *types.Format) bool {
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
 func (s *RTBSource) PriceCorrectionReduceFactor() float64 {
 	return s.PriceCorrectionReduce
+}
+
+// Weight of the source for ad selection
+func (s *RTBSource) Weight() float64 {
+	return s.MinimalWeight
 }

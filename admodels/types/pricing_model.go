@@ -24,6 +24,7 @@ const (
 	PricingModelCPM
 	PricingModelCPC
 	PricingModelCPA
+	PricingModelCPV
 )
 
 // PricingModelByName string
@@ -35,6 +36,8 @@ func PricingModelByName(model string) PricingModel {
 		return PricingModelCPC
 	case `CPA`, `3`:
 		return PricingModelCPA
+	case `CPV`, `4`:
+		return PricingModelCPV
 	}
 	return PricingModelUndefined
 }
@@ -56,6 +59,8 @@ func (pm PricingModel) Name() string {
 	switch pm {
 	case PricingModelCPM:
 		return `CPM`
+	case PricingModelCPV:
+		return `CPV`
 	case PricingModelCPC:
 		return `CPC`
 	case PricingModelCPA:
@@ -69,6 +74,13 @@ func (pm PricingModel) Name() string {
 //go:inline
 func (pm PricingModel) IsCPM() bool {
 	return pm == PricingModelCPM
+}
+
+// IsCPV model
+//
+//go:inline
+func (pm PricingModel) IsCPV() bool {
+	return pm == PricingModelCPV
 }
 
 // IsCPC model

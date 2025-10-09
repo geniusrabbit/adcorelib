@@ -8,18 +8,19 @@ package bidrequest
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strings"
 	"time"
 
 	"github.com/demdxx/xtypes"
 	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
-	"golang.org/x/exp/slices"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/personification"
 )
@@ -31,8 +32,8 @@ var defaultUserdata = adtype.User{Geo: &udetect.GeoDefault, AgeStart: 0, AgeEnd:
 type BidRequestFlags uint8
 
 const (
-	// BidRequestFlagAdblock indicates if adblock is enabled
-	BidRequestFlagAdblock BidRequestFlags = 1 << iota
+	// BidRequestFlagAdBlock indicates if adblock is enabled
+	BidRequestFlagAdBlock BidRequestFlags = 1 << iota
 	// BidRequestFlagPrivateBrowsing indicates if private browsing is enabled
 	BidRequestFlagPrivateBrowsing
 	// BidRequestFlagSecure indicates if the request is secure
@@ -46,7 +47,7 @@ const (
 // BidRequest represents a bid request in the ad system.
 // It contains all necessary information for processing an ad bid.
 type BidRequest struct {
-	ID       string    `json:"id,omitempty"`       // Auction ID
+	IDVal    string    `json:"id,omitempty"`       // Auction ID
 	ExtID    string    `json:"bidid,omitempty"`    // External Auction ID
 	Timemark time.Time `json:"timemark,omitempty"` // Timestamp of the request
 
@@ -54,13 +55,13 @@ type BidRequest struct {
 	Debug bool            `json:"debug,omitempty"` // Debug mode flag
 
 	// Source of the request
-	AccessPoint adtype.AccessPoint `json:"-"` // Access point information
+	AccessPointLnk adtype.AccessPoint `json:"-"` // Access point information
 
-	AuctionType types.AuctionType      `json:"auction_type,omitempty"` // Type of auction
-	RequestCtx  *fasthttp.RequestCtx   `json:"-"`                      // HTTP request context
-	Request     any                    `json:"-"`                      // Original request from RTB or another protocol
-	Person      personification.Person `json:"-"`                      // Personification data
-	Imps        []adtype.Impression    `json:"imps,omitempty"`         // List of impressions
+	AucType    types.AuctionType      `json:"auction_type,omitempty"` // Type of auction
+	RequestCtx *fasthttp.RequestCtx   `json:"-"`                      // HTTP request context
+	Request    any                    `json:"-"`                      // Original request from RTB or another protocol
+	Person     personification.Person `json:"-"`                      // Personification data
+	Imps       []*adtype.Impression   `json:"imps,omitempty"`         // List of impressions
 
 	AppTarget  *admodels.Application `json:"app_target,omitempty"` // Target application
 	Device     *udetect.Device       `json:"device,omitempty"`     // Device information
@@ -77,6 +78,8 @@ type BidRequest struct {
 	tags          []string  // Cached tags
 	formats       AdFormats // Formats interface for accessing formats
 	sourceIDs     []uint64  // Cached source IDs
+	targetIDs     []uint64  // Cached target IDs
+	extTargetIDs  []string  // Cached external target IDs
 }
 
 // String implements the fmt.Stringer interface for BidRequest.
@@ -95,24 +98,101 @@ func (r *BidRequest) String() (res string) {
 // Currently returns 0 as a placeholder.
 func (r *BidRequest) ProjectID() uint64 { return 0 }
 
-// Init initializes the BidRequest with basic information.
-// It resets the formats slice and format bitset,
-// and initializes each impression using the provided formats accessor.
-func (r *BidRequest) Init(formats types.FormatsAccessor) {
+// ID returns the unique ID of the BidRequest.
+func (r *BidRequest) ID() string { return r.IDVal }
+
+// ExternalID returns the external ID of the BidRequest.
+func (r *BidRequest) ExternalID() string { return r.ExtID }
+
+// AuctionID returns the auction ID of the BidRequest.
+func (r *BidRequest) AuctionID() string { return r.IDVal }
+
+// ExternalAuctionID returns the external auction ID of the BidRequest.
+func (r *BidRequest) ExternalAuctionID() string { return r.ExtID }
+
+// AuctionType returns the type of auction for the BidRequest.
+func (r *BidRequest) AuctionType() types.AuctionType { return r.AucType }
+
+// AccessPoint returns the access point associated with the BidRequest.
+func (r *BidRequest) AccessPoint() adtype.AccessPoint { return r.AccessPointLnk }
+
+// PrepareWithFormats prepares the BidRequest by initializing formats for each impression
+// using the provided FormatsAccessor. It resets any existing formats and aggregates
+// formats from all impressions into the BidRequest's formats.
+func (r *BidRequest) PrepareWithFormats(formats types.FormatsAccessor) adtype.BidRequester {
+	if r == nil {
+		return nil
+	}
+
+	// Reset internal formats
 	r.formats.Reset()
 
 	// Initialize each impression with the provided formats
-	r.ImpressionUpdate(func(imp *adtype.Impression) bool {
+	for _, imp := range r.Imps {
 		imp.InitFormats(formats)
 		for _, f := range imp.Formats() {
-			r.formats.Add(f)
+			_ = r.formats.Add(f)
 		}
-		return true
-	})
+	}
+
+	return r
+}
+
+// WithFormats sets the formats accessor for the BidRequest and returns the updated BidRequest.
+func (r *BidRequest) WithFormats(formats types.FormatsAccessor) adtype.BidRequester {
+	if r == nil {
+		return nil
+	}
+	return r.Clone().PrepareWithFormats(formats)
 }
 
 // HTTPRequest returns the underlying HTTP request context.
 func (r *BidRequest) HTTPRequest() *fasthttp.RequestCtx { return r.RequestCtx }
+
+// TargetID returns the target ID if there is exactly one impression with a target.
+// Otherwise, returns 0.
+func (r *BidRequest) TargetID() uint64 {
+	if len(r.Imps) == 1 && r.Imps[0].Target != nil {
+		return r.Imps[0].Target.ID()
+	}
+	return 0
+}
+
+// TargetIDs returns a slice of unique target IDs from all impressions.
+func (r *BidRequest) TargetIDs() []uint64 {
+	if r == nil {
+		return nil
+	}
+	if r.targetIDs == nil {
+		ids := make([]uint64, 0, len(r.Imps))
+		for _, imp := range r.Imps {
+			if imp.Target != nil && imp.Target.ID() > 0 {
+				ids = append(ids, imp.Target.ID())
+			}
+		}
+		r.targetIDs = xtypes.SliceUnique(ids)
+		slices.Sort(r.targetIDs)
+	}
+	return r.targetIDs
+}
+
+// ExtTargetIDs returns a slice of unique external target IDs from all impressions.
+func (r *BidRequest) ExtTargetIDs() []string {
+	if r == nil {
+		return nil
+	}
+	if r.extTargetIDs == nil {
+		var ids []string
+		for _, imp := range r.Imps {
+			if imp.ExternalTargetID != "" {
+				ids = append(ids, imp.ExternalTargetID)
+			}
+		}
+		r.extTargetIDs = xtypes.SliceUnique(ids)
+		slices.Sort(r.extTargetIDs)
+	}
+	return r.extTargetIDs
+}
 
 // ServiceDomain returns the domain of the service handling the request.
 func (r *BidRequest) ServiceDomain() string { return string(r.RequestCtx.URI().Host()) }
@@ -141,7 +221,7 @@ func (r *BidRequest) SourceFilterCheck(id uint64) bool {
 
 // Formats returns the list of formats associated with the BidRequest.
 // If the formats slice is empty, it aggregates formats from all impressions.
-func (r *BidRequest) Formats() adtype.BidFormater {
+func (r *BidRequest) Formats() types.BidFormater {
 	return &r.formats
 }
 
@@ -201,6 +281,23 @@ func (r *BidRequest) Sex() uint {
 	return uint(r.User.Sex())
 }
 
+// Age of the user
+func (r *BidRequest) Age() uint {
+	if r == nil || r.User == nil {
+		return 0
+	}
+	return uint(r.User.AgeStart)
+}
+
+// TrafficSourceID returns the ID of the traffic source associated with the BidRequest.
+// Returns 0 if the traffic source information is unavailable. (Direct by default)
+func (r *BidRequest) TrafficSourceID() uint64 {
+	if r == nil || r.AccessPointLnk == nil {
+		return 0
+	}
+	return r.AccessPointLnk.ID()
+}
+
 // AppID returns the ID of the target application.
 // Returns 0 if the app target is unavailable.
 func (r *BidRequest) AppID() uint64 {
@@ -233,11 +330,14 @@ func (r *BidRequest) Categories() []uint64 {
 	return r.categoryArray
 }
 
+// IsDebug checks if the BidRequest is in debug mode.
+func (r *BidRequest) IsDebug() bool { return r != nil && r.Debug }
+
 // IsSecure checks if the request is made over a secure connection.
 func (r *BidRequest) IsSecure() bool { return r.StateFlags&BidRequestFlagSecure != 0 }
 
-// IsAdblock checks if the user has an ad blocker enabled.
-func (r *BidRequest) IsAdblock() bool { return r.StateFlags&BidRequestFlagAdblock != 0 }
+// IsAdBlock checks if the user has an ad blocker enabled.
+func (r *BidRequest) IsAdBlock() bool { return r.StateFlags&BidRequestFlagAdBlock != 0 }
 
 // IsPrivateBrowsing checks if the user is in private browsing mode.
 func (r *BidRequest) IsPrivateBrowsing() bool { return r.StateFlags&BidRequestFlagPrivateBrowsing != 0 }
@@ -340,6 +440,14 @@ func (r *BidRequest) MinECPM() (minBid billing.Money) {
 	return minBid
 }
 
+// GeoID returns the geographical ID associated with the BidRequest.
+func (r *BidRequest) GeoID() uint64 {
+	if r == nil || r.User == nil || r.User.Geo == nil {
+		return 0
+	}
+	return uint64(r.User.Geo.ID)
+}
+
 // GeoInfo returns the geographical information associated with the BidRequest.
 func (r *BidRequest) GeoInfo() *udetect.Geo {
 	if r == nil {
@@ -354,6 +462,15 @@ func (r *BidRequest) CarrierInfo() *udetect.Carrier {
 		return geo.Carrier
 	}
 	return nil
+}
+
+// Size returns the width and height of the browser's visible area
+func (r *BidRequest) Size() (w, h int) {
+	if r == nil || len(r.Imps) < 1 {
+		return 0, 0
+	}
+	devInfo := r.DeviceInfo()
+	return devInfo.Browser.Width, devInfo.Browser.Height
 }
 
 // Get retrieves a value from the BidRequest's extension map by key.
@@ -384,17 +501,15 @@ func (r *BidRequest) Unset(keys ...string) {
 }
 
 // Impressions returns a slice of impressions associated with the BidRequest.
-func (r *BidRequest) Impressions() []adtype.Impression {
+func (r *BidRequest) Impressions() []*adtype.Impression {
 	return r.Imps
 }
 
 // ImpressionUpdate applies a provided function to each impression in the BidRequest.
 // If the function returns true, the impression is updated.
 func (r *BidRequest) ImpressionUpdate(fn func(imp *adtype.Impression) bool) {
-	for i, imp := range r.Imps {
-		if fn(&imp) {
-			r.Imps[i] = imp
-		}
+	for _, imp := range r.Imps {
+		fn(imp)
 	}
 }
 
@@ -403,7 +518,7 @@ func (r *BidRequest) ImpressionUpdate(fn func(imp *adtype.Impression) bool) {
 func (r *BidRequest) ImpressionByID(id string) *adtype.Impression {
 	for _, im := range r.Imps {
 		if im.ID == id {
-			return &im
+			return im
 		}
 	}
 	return nil
@@ -412,9 +527,41 @@ func (r *BidRequest) ImpressionByID(id string) *adtype.Impression {
 // Time returns the timestamp of the BidRequest.
 func (r *BidRequest) Time() time.Time { return r.Timemark }
 
+// CurrentGeoTime returns the current time adjusted to the geographical location of the user.
+func (r *BidRequest) CurrentGeoTime() time.Time {
+	if r == nil || r.User == nil || r.User.Geo == nil {
+		return r.Timemark
+	}
+	return fasttime.NowUTCPlusOffset(r.User.Geo.UTCOffset)
+}
+
 // Validate performs validation on the BidRequest.
 // Currently, it always returns nil, but can be extended to include validation logic.
 func (r *BidRequest) Validate() error { return nil }
+
+// Context returns the context associated with the BidRequest.
+func (r *BidRequest) Context() context.Context {
+	if r == nil || r.Ctx == nil {
+		return context.Background()
+	}
+	return r.Ctx
+}
+
+// SetContext sets the context for the BidRequest.
+func (r *BidRequest) SetContext(ctx context.Context) {
+	if r != nil {
+		r.Ctx = ctx
+	}
+}
+
+// Clone creates and returns a shallow copy of the BidRequest.
+func (r *BidRequest) Clone() *BidRequest {
+	if r == nil {
+		return nil
+	}
+	clone := *r
+	return &clone
+}
 
 // Done returns a channel that is closed when the context of the BidRequest is done.
 func (r *BidRequest) Done() <-chan struct{} {

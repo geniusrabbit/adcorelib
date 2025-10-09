@@ -16,23 +16,23 @@ type Metrics struct {
 }
 
 // IncrementBidRequestCount metric
-func (m *Metrics) IncrementBidRequestCount(source adtype.Source, request *adtype.BidRequest, duration time.Duration) {
+func (m *Metrics) IncrementBidRequestCount(source adtype.Source, request adtype.BidRequester, duration time.Duration) {
 	m.counter().WithLabelValues(
 		gocast.Str(source.ID()),
 		gocast.Str(request.TargetID()),
 		gocast.Str(request.DeviceInfo().DeviceType),
-		request.AuctionType.Name(),
+		request.AuctionType().Name(),
 		"0",
 	).Inc()
 }
 
 // IncrementBidErrorCount metric
-func (m *Metrics) IncrementBidErrorCount(source adtype.Source, request *adtype.BidRequest, err error) {
+func (m *Metrics) IncrementBidErrorCount(source adtype.Source, request adtype.BidRequester, err error) {
 	m.counter().WithLabelValues(
 		gocast.Str(source.ID()),
 		gocast.Str(request.TargetID()),
 		gocast.Str(request.DeviceInfo().DeviceType),
-		request.AuctionType.Name(),
+		request.AuctionType().Name(),
 		gocast.IfThen(err != nil, "1", "0"),
 	).Inc()
 }

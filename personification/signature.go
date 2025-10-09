@@ -58,7 +58,7 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 		Ref:             string(req.Request.Header.Referer()), // TODO: add additional information
 		DNT:             gocast.Int8(req.Request.Header.Peek("Dnt")),
 		LMT:             gocast.Int8(req.QueryArgs().Peek("lmt")),
-		Adblock:         gocast.Int8(req.QueryArgs().Peek("adb")),
+		AdBlock:         gocast.Int8(req.QueryArgs().Peek("adb")),
 		PrivateBrowsing: gocast.Int8(req.QueryArgs().Peek("private")),
 		JS:              1,
 		Languages:       langs,

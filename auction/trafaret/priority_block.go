@@ -19,7 +19,7 @@ func (b *blockPriority) Len() int {
 }
 
 // Pop selects an ad from the blocks based on a weighted random selection.
-func (b *blockPriority) Pop() (float32, adtype.ResponserItemCommon) {
+func (b *blockPriority) Pop() (float32, adtype.ResponseItemCommon) {
 	if len(b.ads) == 0 {
 		return 0, nil
 	}

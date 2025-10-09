@@ -18,11 +18,11 @@ type Referee struct {
 	normalized bool
 
 	// equipment which used in auction competition
-	equipment []adtype.ResponserItemCommon
+	equipment []adtype.ResponseItemCommon
 }
 
 // Push items into equipment
-func (r *Referee) Push(its ...adtype.ResponserItemCommon) {
+func (r *Referee) Push(its ...adtype.ResponseItemCommon) {
 	if len(its) > 0 {
 		r.normalized = false
 		r.equipment = append(r.equipment, its...)
@@ -33,7 +33,7 @@ func (r *Referee) Push(its ...adtype.ResponserItemCommon) {
 func (r *Referee) TotalCapacity() (capacity int) {
 	for _, it := range r.equipment {
 		switch a := it.(type) {
-		case adtype.ResponserMultipleItem:
+		case adtype.ResponseMultipleItem:
 			capacity += a.Count()
 		default:
 			capacity++
@@ -43,7 +43,7 @@ func (r *Referee) TotalCapacity() (capacity int) {
 }
 
 // Match point O(N * K * 2)
-func (r *Referee) Match(rings ...Ring) (resp []adtype.ResponserItemCommon) {
+func (r *Referee) Match(rings ...Ring) (resp []adtype.ResponseItemCommon) {
 	if len(rings) < 1 {
 		return resp
 	}
@@ -54,7 +54,7 @@ func (r *Referee) Match(rings ...Ring) (resp []adtype.ResponserItemCommon) {
 	var (
 		capacity         = ringsCapacity(rings)
 		counters         = borrowCounters()
-		tail             = make([]adtype.ResponserItemCommon, 0, capacity)
+		tail             = make([]adtype.ResponseItemCommon, 0, capacity)
 		tailCount        int
 		multipleResponse bool
 	)
@@ -62,7 +62,7 @@ func (r *Referee) Match(rings ...Ring) (resp []adtype.ResponserItemCommon) {
 
 	// First fill loop, complexity O(N * k)
 	for i, it := range r.equipment {
-		if v, _ := it.(adtype.ResponserMultipleItem); v != nil {
+		if v, _ := it.(adtype.ResponseMultipleItem); v != nil {
 			if capacity < v.Count() {
 				continue
 			}
@@ -125,7 +125,7 @@ func (r *Referee) Match(rings ...Ring) (resp []adtype.ResponserItemCommon) {
 	// Optimizing fill loop
 	for i := 0; i < len(resp); i++ {
 		it := resp[i]
-		if v, _ := it.(adtype.ResponserMultipleItem); v != nil {
+		if v, _ := it.(adtype.ResponseMultipleItem); v != nil {
 			// Not enought advertisement for filling this spcace
 			if v.Count() > tailCount {
 				continue
@@ -152,16 +152,16 @@ func (r *Referee) Match(rings ...Ring) (resp []adtype.ResponserItemCommon) {
 }
 
 // MatchRequest response by request
-func (r *Referee) MatchRequest(req *adtype.BidRequest) []adtype.ResponserItemCommon {
+func (r *Referee) MatchRequest(req adtype.BidRequester) []adtype.ResponseItemCommon {
 	var rings []Ring
-	for _, imp := range req.Imps {
+	for _, imp := range req.Impressions() {
 		rings = append(rings, Ring{ID: imp.ID, Count: imp.Count})
 	}
 	return r.Match(rings...)
 }
 
 // Equipment list
-func (r *Referee) Equipment() []adtype.ResponserItemCommon {
+func (r *Referee) Equipment() []adtype.ResponseItemCommon {
 	return r.equipment
 }
 
@@ -183,10 +183,10 @@ func (r *Referee) normalize() {
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-func normalizeResponseForOptimization(resp []adtype.ResponserItemCommon) {
+func normalizeResponseForOptimization(resp []adtype.ResponseItemCommon) {
 	sort.Slice(resp, func(i, j int) bool {
-		e1, _ := resp[i].(adtype.ResponserMultipleItem)
-		e2, _ := resp[j].(adtype.ResponserMultipleItem)
+		e1, _ := resp[i].(adtype.ResponseMultipleItem)
+		e2, _ := resp[j].(adtype.ResponseMultipleItem)
 		if e1 != nil && e2 == nil {
 			return true
 		}
@@ -198,13 +198,13 @@ func normalizeResponseForOptimization(resp []adtype.ResponserItemCommon) {
 }
 
 // collectReplacement for multiple response O(N * K)
-func collectReplacement(target adtype.ResponserMultipleItem, items []adtype.ResponserItemCommon) (resp []adtype.ResponserItemCommon) {
+func collectReplacement(target adtype.ResponseMultipleItem, items []adtype.ResponseItemCommon) (resp []adtype.ResponseItemCommon) {
 	for _, it := range target.Ads() {
 		for i, ad := range items {
 			if ad == nil {
 				continue
 			}
-			if _, ok := ad.(adtype.ResponserMultipleItem); !ok {
+			if _, ok := ad.(adtype.ResponseMultipleItem); !ok {
 				if ad.ImpressionID() == it.ImpressionID() {
 					if resp == nil {
 						resp = borrowResponseList()
@@ -250,13 +250,13 @@ func ringByID(id string, rings []Ring) (int, Ring) {
 
 func adsCountByImpID(impID string, ads any) (count int) {
 	switch nads := ads.(type) {
-	case []adtype.ResponserItemCommon:
+	case []adtype.ResponseItemCommon:
 		for _, ad := range nads {
 			if ad.ImpressionID() == impID {
 				count++
 			}
 		}
-	case []adtype.ResponserItem:
+	case []adtype.ResponseItem:
 		for _, ad := range nads {
 			if ad.ImpressionID() == impID {
 				count++

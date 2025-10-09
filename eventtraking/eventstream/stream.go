@@ -1,5 +1,5 @@
 //
-// @project GeniusRabbit corelib 2018 - 2019, 2022, 2024
+// @project GeniusRabbit corelib 2018 - 2019, 2022, 2024 - 2025
 // @author Dmitry Ponomarev <demdxx@gmail.com>
 //
 
@@ -29,31 +29,31 @@ type Stream interface {
 	SendEvent(ctx context.Context, event any) error
 
 	// Send response
-	Send(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) error
+	Send(event events.Type, status uint8, response adtype.Response, it adtype.ResponseItem) error
 
 	// SendLeadEvent as lead code type
 	SendLeadEvent(ctx context.Context, event any) error
 
 	// SendSourceSkip event for the response
-	SendSourceSkip(response adtype.Responser) error
+	SendSourceSkip(response adtype.Response) error
 
 	// SendSourceNoBid event for the response
-	SendSourceNoBid(response adtype.Responser) error
+	SendSourceNoBid(response adtype.Response) error
 
 	// SendSourceFail event for the response
-	SendSourceFail(response adtype.Responser) error
+	SendSourceFail(response adtype.Response) error
 
 	// SendAccessPointBid event for the response
-	SendAccessPointBid(response adtype.Responser, it ...adtype.ResponserItem) error
+	SendAccessPointBid(response adtype.Response, it ...adtype.ResponseItem) error
 
 	// SendAccessPointSkip event for the response
-	SendAccessPointSkip(response adtype.Responser) error
+	SendAccessPointSkip(response adtype.Response) error
 
 	// SendAccessPointNoBid event for the response
-	SendAccessPointNoBid(response adtype.Responser) error
+	SendAccessPointNoBid(response adtype.Response) error
 
 	// SendAccessPointFail event for the response
-	SendAccessPointFail(response adtype.Responser) error
+	SendAccessPointFail(response adtype.Response) error
 }
 
 type stream[EventT EventType, UserInfoT UserInfoType] struct {
@@ -77,7 +77,7 @@ func (s *stream[EventT, UserInfoT]) SendEvent(ctx context.Context, event any) er
 }
 
 // Send response
-func (s *stream[EventT, UserInfoT]) Send(event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) (err error) {
+func (s *stream[EventT, UserInfoT]) Send(event events.Type, status uint8, response adtype.Response, it adtype.ResponseItem) (err error) {
 	if response == nil {
 		return errInvalidResponse
 	}
@@ -107,27 +107,27 @@ func (s *stream[EventT, UserInfoT]) SendLeadEvent(ctx context.Context, event any
 }
 
 // SendSourceSkip event for the response
-func (s *stream[EventT, UserInfoT]) SendSourceSkip(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendSourceSkip(response adtype.Response) error {
 	return s.Send(events.SourceSkip, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendSourceNoBid event for the response
-func (s *stream[EventT, UserInfoT]) SendSourceNoBid(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendSourceNoBid(response adtype.Response) error {
 	req := response.Request()
-	for i := range req.Imps {
+	for _, imp := range req.Impressions() {
 		_ = s.Send(events.SourceNoBid, events.StatusUndefined, response,
-			&adtype.ResponseItemEmpty{Req: req, Imp: &req.Imps[i]})
+			&adtype.ResponseItemEmpty{Req: req, Imp: imp})
 	}
 	return nil
 }
 
 // SendSourceFail event for the response
-func (s *stream[EventT, UserInfoT]) SendSourceFail(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendSourceFail(response adtype.Response) error {
 	return s.Send(events.SourceFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointBid event for the response
-func (s *stream[EventT, UserInfoT]) SendAccessPointBid(response adtype.Responser, it ...adtype.ResponserItem) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointBid(response adtype.Response, it ...adtype.ResponseItem) error {
 	for _, item := range it {
 		err := s.Send(events.AccessPointBid, events.StatusSuccess, response, item)
 		if err != nil {
@@ -138,16 +138,16 @@ func (s *stream[EventT, UserInfoT]) SendAccessPointBid(response adtype.Responser
 }
 
 // SendAccessPointSkip event for the response
-func (s *stream[EventT, UserInfoT]) SendAccessPointSkip(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointSkip(response adtype.Response) error {
 	return s.Send(events.AccessPointSkip, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointNoBid event for the response
-func (s *stream[EventT, UserInfoT]) SendAccessPointNoBid(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointNoBid(response adtype.Response) error {
 	return s.Send(events.AccessPointNoBid, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointFail event for the response
-func (s *stream[EventT, UserInfoT]) SendAccessPointFail(response adtype.Responser) error {
+func (s *stream[EventT, UserInfoT]) SendAccessPointFail(response adtype.Response) error {
 	return s.Send(events.AccessPointFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
 }

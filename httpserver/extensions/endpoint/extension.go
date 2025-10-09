@@ -29,10 +29,10 @@ import (
 
 type (
 	appAccessor interface {
-		AppByURI(uri string) (*admodels.Application, error)
+		AppByURI(_ context.Context, uri string) (*admodels.Application, error)
 	}
 	zoneAccessor interface {
-		TargetByCodename(string) (adtype.Target, error)
+		TargetByCodename(context.Context, string) (adtype.Target, error)
 	}
 	getSourceAccessor interface {
 		Sources() adtype.SourceAccessor
@@ -158,11 +158,14 @@ func (ext *Extension) endpointRequestHandler(ctx context.Context, req *fasthttp.
 		return
 	}
 
+	// Get first impression place object
+	firstImp := xtypes.Slice[*adtype.Impression](bidRequest.Impressions()).FirstOr(nil)
+
 	// Collect metrics
 	ext.adRequestCountMetrics.WithLabelValues(
 		endpoint.Codename(),
-		bidRequest.Imps[0].Target.Codename(),
-		b2sbool(bidRequest.IsAdblock()),
+		firstImp.Target.Codename(),
+		b2sbool(bidRequest.IsAdBlock()),
 		b2sbool(bidRequest.IsRobot()),
 		b2sbool(bidRequest.IsSecure()),
 		b2sbool(bidRequest.IsPrivateBrowsing()),
@@ -222,7 +225,7 @@ func (ext *Extension) sourceListHandler(sa sourceListAccessor) fasthttp.RequestH
 func (ext *Extension) sourceInfoHandler(sa adtype.SourceAccessor) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		id := gocast.Uint64(ctx.UserValue("id"))
-		src, _ := sa.SourceByID(id)
+		src, _ := sa.SourceByID(ctx, id)
 		if src == nil {
 			ctx.SetStatusCode(http.StatusNotFound)
 			ctx.SetContentType("application/json")
@@ -241,7 +244,7 @@ func (ext *Extension) sourceInfoHandler(sa adtype.SourceAccessor) fasthttp.Reque
 func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		id := gocast.Uint64(ctx.UserValue("id"))
-		src, _ := sa.SourceByID(id)
+		src, _ := sa.SourceByID(ctx, id)
 		if src == nil {
 			ctx.SetStatusCode(http.StatusNotFound)
 			ctx.SetContentType("application/json")
@@ -262,21 +265,22 @@ func (ext *Extension) sourceMetricsHandler(sa adtype.SourceAccessor) fasthttp.Re
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personification.Person, rctx *fasthttp.RequestCtx) *adtype.BidRequest {
+func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personification.Person, rctx *fasthttp.RequestCtx) adtype.BidRequester {
 	var (
 		app       *admodels.Application
 		spotInfo  = strings.Split(rctx.UserValue("zone").(string), ".")
-		target, _ = ext.zoneAccessor.TargetByCodename(spotInfo[0])
+		target, _ = ext.zoneAccessor.TargetByCodename(ctx, spotInfo[0])
 	)
 	if target == nil {
 		return nil
 	}
 
-	fmt.Println("Target:", target.Codename(), "#", rctx, "===", string(rctx.Referer()), "->", domain(string(rctx.Referer())))
+	fmt.Println("Target:", target.Codename(), "#", rctx,
+		"===", string(rctx.Referer()), "->", domain(string(rctx.Referer())))
 
 	// Get application by referer
 	if ext.appAccessor != nil {
-		app, _ = ext.appAccessor.AppByURI(domain(string(rctx.Referer())))
+		app, _ = ext.appAccessor.AppByURI(ctx, domain(string(rctx.Referer())))
 	}
 
 	fmt.Println("APP:", app, "===", string(rctx.Referer()))

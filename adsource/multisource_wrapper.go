@@ -36,6 +36,7 @@
 package adsource
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"sync/atomic"
@@ -66,7 +67,7 @@ const (
 
 type respItem struct {
 	priority float32
-	resp     adtype.Responser
+	resp     adtype.Response
 }
 
 // MultisourceWrapper describes the abstraction which can control where to send requests
@@ -117,10 +118,10 @@ func (wrp *MultisourceWrapper) ObjectKey() uint64 { return 0 }
 func (wrp *MultisourceWrapper) Protocol() string { return "multisource" }
 
 // Test validates the request before processing
-func (wrp *MultisourceWrapper) Test(request *adtype.BidRequest) bool { return true }
+func (wrp *MultisourceWrapper) Test(request adtype.BidRequester) bool { return true }
 
 // Bid handles a bid request and processes it through the appropriate sources
-func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.Responser) {
+func (wrp *MultisourceWrapper) Bid(request adtype.BidRequester) (response adtype.Response) {
 	if wrp == nil {
 		return bidresponse.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
 	}
@@ -128,17 +129,17 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 		count         = wrp.maxParallelRequest
 		isQueueClosed atomic.Bool
 		queue         = make(chan respItem, count)
-		span, _       = gtracing.StartSpanFromContext(request.Ctx, "ssp.bid")
+		span, _       = gtracing.StartSpanFromContext(request.Context(), "ssp.bid")
 		trafaret      trafaret.Filler
 		err           error
 	)
 
 	if span != nil {
 		ext.Component.Set(span, "ssp")
-		oldContext := request.Ctx
-		request.Ctx = opentracing.ContextWithSpan(oldContext, span)
+		oldContext := request.Context()
+		request.SetContext(opentracing.ContextWithSpan(oldContext, span))
 		defer func() {
-			request.Ctx = oldContext
+			request.SetContext(oldContext)
 			span.Finish()
 		}()
 	}
@@ -221,8 +222,8 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 
 	// Prepare response
 	{
-		var items []adtype.ResponserItemCommon
-		for _, imp := range request.Imps {
+		var items []adtype.ResponseItemCommon
+		for _, imp := range request.Impressions() {
 			if impItems := trafaret.Fill(imp.ID, imp.Count); len(impItems) > 0 {
 				items = append(items, impItems...)
 			}
@@ -239,7 +240,7 @@ func (wrp *MultisourceWrapper) Bid(request *adtype.BidRequest) (response adtype.
 }
 
 // ProcessResponse processes the response to update metrics and log information
-func (wrp *MultisourceWrapper) ProcessResponse(response adtype.Responser) {
+func (wrp *MultisourceWrapper) ProcessResponse(response adtype.Response) {
 	if response == nil || response.Error() != nil {
 		return
 	}
@@ -252,20 +253,20 @@ func (wrp *MultisourceWrapper) ProcessResponse(response adtype.Responser) {
 }
 
 // ProcessResponseItem processes an individual response item
-func (wrp *MultisourceWrapper) ProcessResponseItem(response adtype.Responser, ad adtype.ResponserItem) {
+func (wrp *MultisourceWrapper) ProcessResponseItem(response adtype.Response, ad adtype.ResponseItem) {
 	if src := ad.Source(); src != nil {
 		src.ProcessResponseItem(response, ad)
 	}
 }
 
 // SetRequestTimeout sets the request timeout, ensuring it is not below the minimal timeout
-func (wrp *MultisourceWrapper) SetRequestTimeout(timeout time.Duration) {
+func (wrp *MultisourceWrapper) SetRequestTimeout(ctx context.Context, timeout time.Duration) {
 	if timeout < minimalTimeout {
 		timeout = minimalTimeout
 	}
 	if wrp.requestTimeout != timeout {
 		wrp.requestTimeout = timeout
-		wrp.sources.SetTimeout(timeout)
+		wrp.sources.SetTimeout(ctx, timeout)
 	}
 }
 
@@ -290,7 +291,7 @@ func (wrp *MultisourceWrapper) PriceCorrectionReduceFactor() float64 { return 0 
 /// Internal methods
 ///////////////////////////////////////////////////////////////////////////////
 
-func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ *adtype.BidRequest, response adtype.Responser) {
+func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidRequester, response adtype.Response) {
 	if isNil(response) {
 		return
 	}
@@ -323,9 +324,8 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ *adtype.Bid
 		}
 
 		// Send no bid for each empty slot (zone, adunit)
-		imps := response.Request().Imps
-		for i := range imps {
-			imp := &imps[i]
+		imps := response.Request().Impressions()
+		for _, imp := range imps {
 			if response.Item(imp.ID) == nil {
 				_ = eventStream.Send(events.SourceNoBid, events.StatusUndefined, response,
 					&adtype.ResponseItemEmpty{Req: response.Request(), Imp: imp})

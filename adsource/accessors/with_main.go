@@ -1,6 +1,7 @@
 package accessors
 
 import (
+	"context"
 	"time"
 
 	"github.com/geniusrabbit/adcorelib/adtype"
@@ -23,7 +24,7 @@ func NewAccessorWithMainSource(main adtype.Source, mainSourceWeight float32, oth
 	}
 }
 
-func (a *AccessorWithMain) Iterator(request *adtype.BidRequest) adtype.SourceIterator {
+func (a *AccessorWithMain) Iterator(request adtype.BidRequester) adtype.SourceIterator {
 	return func(yield func(float32, adtype.Source) bool) {
 		if a.mainSource != nil {
 			if !yield(a.mainSourceWeight, a.mainSource) {
@@ -42,18 +43,18 @@ func (a *AccessorWithMain) Iterator(request *adtype.BidRequest) adtype.SourceIte
 	}
 }
 
-func (a *AccessorWithMain) SourceByID(id uint64) (adtype.Source, error) {
+func (a *AccessorWithMain) SourceByID(ctx context.Context, id uint64) (adtype.Source, error) {
 	if a.mainSource != nil && a.mainSource.ID() == id {
 		return a.mainSource, nil
 	}
-	return a.other.SourceByID(id)
+	return a.other.SourceByID(ctx, id)
 }
 
-func (a *AccessorWithMain) SetTimeout(timeout time.Duration) {
+func (a *AccessorWithMain) SetTimeout(ctx context.Context, timeout time.Duration) {
 	if a.mainSource != nil {
 		if srcSetTM, _ := a.mainSource.(adtype.SourceTimeoutSetter); srcSetTM != nil {
 			srcSetTM.SetTimeout(timeout)
 		}
 	}
-	a.other.SetTimeout(timeout)
+	a.other.SetTimeout(ctx, timeout)
 }

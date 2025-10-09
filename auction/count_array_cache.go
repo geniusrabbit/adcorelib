@@ -16,7 +16,7 @@ var (
 		New: func() any { return &counters{items: make([]int, 0, 10)} },
 	}
 	responseListPool = sync.Pool{
-		New: func() any { return make([]adtype.ResponserItemCommon, 0, 10) },
+		New: func() any { return make([]adtype.ResponseItemCommon, 0, 10) },
 	}
 )
 
@@ -36,13 +36,13 @@ func returnCounter(arr *counters) {
 }
 
 // borrowResponseList object
-func borrowResponseList() []adtype.ResponserItemCommon {
-	return responseListPool.Get().([]adtype.ResponserItemCommon)
+func borrowResponseList() []adtype.ResponseItemCommon {
+	return responseListPool.Get().([]adtype.ResponseItemCommon)
 }
 
 // returnResponseList back to pool
 // nolint:staticcheck
-func returnResponseList(arr []adtype.ResponserItemCommon) {
+func returnResponseList(arr []adtype.ResponseItemCommon) {
 	if arr != nil {
 		//lint:ignore SA6002 we need to reset slice
 		responseListPool.Put(arr[:0])

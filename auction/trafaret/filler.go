@@ -11,7 +11,7 @@ type Filler struct {
 }
 
 // Push adds ads to the filler collection, grouping them by impression ID.
-func (f *Filler) Push(priority float32, ads ...adtype.ResponserItemCommon) {
+func (f *Filler) Push(priority float32, ads ...adtype.ResponseItemCommon) {
 	if len(ads) == 0 {
 		return
 	}
@@ -59,7 +59,7 @@ func (f *Filler) Push(priority float32, ads ...adtype.ResponserItemCommon) {
 		} else {
 			blocks[impID] = adPreority{
 				priority: priority,
-				ads:      []adtype.ResponserItemCommon{ad},
+				ads:      []adtype.ResponseItemCommon{ad},
 			}
 		}
 	}
@@ -98,7 +98,7 @@ func (f *Filler) Len() int {
 }
 
 // Fill retrieves ads for a specific impression ID up to the specified size.
-func (f *Filler) Fill(impid string, size int) []adtype.ResponserItemCommon {
+func (f *Filler) Fill(impid string, size int) []adtype.ResponseItemCommon {
 	if size <= 0 {
 		return nil
 	}
@@ -109,7 +109,7 @@ func (f *Filler) Fill(impid string, size int) []adtype.ResponserItemCommon {
 	}
 
 	muliadsCount := 0
-	result := make([]adtype.ResponserItemCommon, 0, size)
+	result := make([]adtype.ResponseItemCommon, 0, size)
 
 	// Retrieve ads from the block.
 	for i := 0; i < size; i++ {
@@ -119,7 +119,7 @@ func (f *Filler) Fill(impid string, size int) []adtype.ResponserItemCommon {
 		}
 		result = append(result, ad)
 		switch ad.(type) {
-		case adtype.ResponserMultipleItem:
+		case adtype.ResponseMultipleItem:
 			muliadsCount++
 			size++
 		}
@@ -153,7 +153,7 @@ func (f *Filler) Copy() *Filler {
 }
 
 // packAdObjects optimizes the selection of ads to fit within the maximum size.
-func packAdObjects(objects []adtype.ResponserItemCommon, maxSize int) []adtype.ResponserItemCommon {
+func packAdObjects(objects []adtype.ResponseItemCommon, maxSize int) []adtype.ResponseItemCommon {
 	n := len(objects)
 	blockSize := maxSize + 1
 	dp := make([]billing.Money, (n+1)*blockSize)
@@ -173,11 +173,11 @@ func packAdObjects(objects []adtype.ResponserItemCommon, maxSize int) []adtype.R
 	}
 
 	// Restore selected objects.
-	res := []adtype.ResponserItemCommon{}
+	res := []adtype.ResponseItemCommon{}
 	w := maxSize
 	for i := n; i > 0; i-- {
 		if dp[i*blockSize+w] != dp[(i-1)*blockSize+w] {
-			res = append([]adtype.ResponserItemCommon{objects[i-1]}, res...)
+			res = append([]adtype.ResponseItemCommon{objects[i-1]}, res...)
 			if w -= adSize(objects[i-1]); w <= 0 {
 				break
 			}
@@ -188,11 +188,11 @@ func packAdObjects(objects []adtype.ResponserItemCommon, maxSize int) []adtype.R
 }
 
 // adSize calculates the size of an ad.
-func adSize(ad adtype.ResponserItemCommon) int {
+func adSize(ad adtype.ResponseItemCommon) int {
 	switch adv := ad.(type) {
 	case nil:
 		return 0
-	case adtype.ResponserMultipleItem:
+	case adtype.ResponseMultipleItem:
 		return adv.Count()
 	default:
 		return 1

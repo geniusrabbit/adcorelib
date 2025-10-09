@@ -1,12 +1,12 @@
 package adtype
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
-	"github.com/geniusrabbit/adcorelib/searchtypes"
 	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
 )
@@ -21,32 +21,28 @@ type (
 	CarrierInfo = udetect.Carrier
 )
 
-// BidFormater defines the interface for managing ad formats in a bid request.
-type BidFormater interface {
-	// List returns the list of formats
-	List() []*types.Format
-
-	// Bitset returns the bitset of format IDs
-	Bitset() *searchtypes.NumberBitset[uint]
-
-	// TypeMask returns the format type mask
-	TypeMask() types.FormatTypeBitset
-}
-
 // BidRequester defines the interface for interacting with a bid request in the ad system.
 type BidRequester interface {
 	fmt.Stringer
 
-	AuctionID() string // Unique ID of the auction
-	ProjectID() uint64 // Project ID (placeholder)
+	ID() string         // Unique ID of the request
+	ExternalID() string // External ID of the request (from OpenRTB)
+
+	ProjectID() uint64              // Project ID (placeholder)
+	AuctionID() string              // Unique ID of the auction
+	ExternalAuctionID() string      // External ID of the auction (from OpenRTB)
+	AuctionType() types.AuctionType // Type of auction (first price, second price, etc)
+
+	WithFormats(types.FormatsAccessor) BidRequester // Set formats accessor
 
 	// HTTP and domain info
 	HTTPRequest() *fasthttp.RequestCtx // Raw HTTP context
 	ServiceDomain() string             // Host of the request
 
 	// Request state and flags
+	IsDebug() bool           // True if debug mode is enabled
 	IsSecure() bool          // True if request is HTTPS
-	IsAdblock() bool         // True if adblock detected
+	IsAdBlock() bool         // True if adblock detected
 	IsPrivateBrowsing() bool // True if in incognito
 	IsRobot() bool           // True if bot detected
 	IsProxy() bool           // True if proxy detected
@@ -61,11 +57,13 @@ type BidRequester interface {
 	OSInfo() *OSInfo           // OS info
 
 	// App, site, geo
+	TrafficSourceID() uint64   // Traffic source ID
 	AppID() uint64             // Target app ID
 	AppInfo() *AppInfo         // App info
 	SiteInfo() *SiteInfo       // Site info or default
 	Domain() []string          // Domain list
 	DomainName() string        // Main domain or bundle name
+	GeoID() uint64             // Geo ID
 	GeoInfo() *GeoInfo         // Geo info
 	CarrierInfo() *CarrierInfo // Carrier info
 
@@ -75,12 +73,22 @@ type BidRequester interface {
 	Keywords() []string   // User keywords
 	Tags() []string       // Combined tags
 	Categories() []uint64 // Categories (currently cached)
+	Sex() uint            // Sex of the user
+	Age() uint            // Age of the user
 
-	// Formats accessor
-	Formats() BidFormater
+	AccessPoint() AccessPoint   // Access point information
+	Formats() types.BidFormater // Formats accessor
 
 	// Financial
 	MinECPM() billing.Money // Max of all bid floors
+
+	// Size returns the width and height of the area of visibility for the ad.
+	Size() (w, h int)
+
+	// TargetID of the specific point
+	TargetID() uint64
+	TargetIDs() []uint64
+	ExtTargetIDs() []string
 
 	// Impressions
 	Impressions() []*Impression                 // List of impressions
@@ -92,8 +100,12 @@ type BidRequester interface {
 	Set(key string, val any) // Set ext value
 	Unset(keys ...string)    // Unset keys
 
-	Time() time.Time       // Timestamp of the request
+	Time() time.Time           // Timestamp of the request
+	CurrentGeoTime() time.Time // Current time in the geo of the request
+	Validate() error           // Validate request
+	Release()                  // Release resources
+
+	Context() context.Context // Request context
+	SetContext(ctx context.Context)
 	Done() <-chan struct{} // Channel that closes when context is done
-	Validate() error       // Validate request
-	Release()              // Release resources
 }

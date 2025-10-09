@@ -97,6 +97,7 @@ func (wrp *Wrapper) IncError(etype openlatency.MetricErrorType, code string) {
 }
 
 // FillMetrics info object
-func (wrp *Wrapper) FillMetrics(info *openlatency.MetricsInfo) {
+func (wrp *Wrapper) FillMetrics(info *openlatency.MetricsInfo) *openlatency.MetricsInfo {
 	wrp.counter.FillMetrics(info)
+	return info
 }

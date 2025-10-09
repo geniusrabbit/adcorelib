@@ -10,13 +10,13 @@ import (
 	"github.com/geniusrabbit/adcorelib/billing"
 )
 
-type equipmentSlice []adtype.ResponserItemCommon
+type equipmentSlice []adtype.ResponseItemCommon
 
 func (l equipmentSlice) Len() int      { return len(l) }
 func (l equipmentSlice) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
 func (l equipmentSlice) Less(i, j int) bool {
-	e1, _ := l[i].(adtype.ResponserMultipleItem)
-	e2, _ := l[j].(adtype.ResponserMultipleItem)
+	e1, _ := l[i].(adtype.ResponseMultipleItem)
+	e2, _ := l[j].(adtype.ResponseMultipleItem)
 	if e1 != nil && (e2 == nil || e1.Count() > e2.Count()) {
 		return true
 	}
@@ -26,7 +26,7 @@ func (l equipmentSlice) Less(i, j int) bool {
 	return avgBid(e1, l[i]) > avgBid(e2, l[j])
 }
 
-func avgBid(mit adtype.ResponserMultipleItem, it adtype.ResponserItemCommon) billing.Money {
+func avgBid(mit adtype.ResponseMultipleItem, it adtype.ResponseItemCommon) billing.Money {
 	if mit != nil {
 		return mit.InternalAuctionCPMBid() / billing.Money(mit.Count())
 	}

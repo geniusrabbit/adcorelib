@@ -47,7 +47,7 @@ func (s *SimpleClient) Detect(ctx context.Context, req *udetect.Request) (*udete
 				Version:         ua.Version,
 				DNT:             req.DNT,
 				LMT:             req.LMT,
-				Adblock:         req.Adblock,
+				AdBlock:         req.AdBlock,
 				IsRobot:         b2i[int8](ua.Bot),
 				Languages:       req.Languages,
 				PrimaryLanguage: req.PrimaryLanguage,

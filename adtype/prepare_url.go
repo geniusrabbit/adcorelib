@@ -9,7 +9,7 @@ import (
 )
 
 // PrepareURL by event
-func PrepareURL(url string, response Responser, it ResponserItem) string {
+func PrepareURL(url string, response Response, it ResponseItem) string {
 	var (
 		req        = response.Request()
 		imp        = it.Impression()
@@ -42,10 +42,10 @@ func PrepareURL(url string, response Responser, it ResponserItem) string {
 		"{carrier_id}", "",
 		"{latitude}", "",
 		"{longitude}", "",
-		"{device_type}", types.PlatformType(req.DeviceType()).Name(),
-		"{device_id}", gocast.Str(req.DeviceID()),
-		"{os_id}", gocast.Str(req.OSID()),
-		"{browser_id}", gocast.Str(req.BrowserID()),
+		"{device_type}", types.PlatformType(req.DeviceInfo().DeviceType).Name(),
+		"{device_id}", gocast.Str(req.DeviceInfo().ID),
+		"{os_id}", gocast.Str(req.OSInfo().ID),
+		"{browser_id}", gocast.Str(req.BrowserInfo().ID),
 	)
 	return replacer.Replace(url)
 }

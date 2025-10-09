@@ -25,6 +25,7 @@ type Impression struct {
 	Target  Target `json:"target,omitempty"`
 
 	BidFloorCPM       billing.Money `json:"bid_floor,omitempty"`
+	PurchaseImpPrice  billing.Money `json:"purchase_imp_price,omitempty"`
 	PurchaseViewPrice billing.Money `json:"purchase_view_price,omitempty"`
 
 	// Ad position
@@ -192,6 +193,9 @@ func (i *Impression) PurchasePrice(action Action) billing.Money {
 	}
 	if action.IsView() && i.PurchaseViewPrice > 0 {
 		return i.PurchaseViewPrice
+	}
+	if action.IsImpression() && i.PurchaseImpPrice > 0 {
+		return i.PurchaseImpPrice
 	}
 	if i.Target != nil {
 		return i.Target.PurchasePrice(action)

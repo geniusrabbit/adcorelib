@@ -15,6 +15,7 @@ type AuctionType uint8
 // Auction types
 const (
 	UndefinedAuctionType   AuctionType = 0
+	AutoPriceAuctionType   AuctionType = 0
 	FirstPriceAuctionType  AuctionType = 1
 	SecondPriceAuctionType AuctionType = 2
 )
@@ -37,7 +38,7 @@ func (at AuctionType) Name() string {
 	case SecondPriceAuctionType:
 		return `second_price`
 	}
-	return `undefined`
+	return `auto`
 }
 
 // DisplayName of the auction

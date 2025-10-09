@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var currentTimestamp = uint64(time.Now().UnixNano())
+
 func init() {
 	go func() {
 		ticker := time.NewTicker(time.Second / 10)
@@ -16,11 +18,23 @@ func init() {
 	}()
 }
 
-var currentTimestamp = uint64(time.Now().UnixNano())
-
 // Now return  current time object
 func Now() time.Time {
 	return time.Unix(0, int64(UnixTimestampNano()))
+}
+
+// NowUTC return  current time object in UTC
+func NowUTC() time.Time {
+	return time.Unix(0, int64(UnixTimestampNano())).UTC()
+}
+
+// NowUTCPlusOffset return  current time object in UTC with offset in hours
+func NowUTCPlusOffset(offset int) time.Time {
+	tm := NowUTC()
+	if offset == 0 {
+		return tm
+	}
+	return tm.Add(time.Duration(offset) * time.Hour)
 }
 
 // UnixTimestampNano returns the current unix timestamp in nanoseconds.

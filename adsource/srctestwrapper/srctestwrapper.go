@@ -35,7 +35,7 @@ func (w *sourceTester) Protocol() string {
 }
 
 // Test current request for compatibility
-func (w *sourceTester) Test(request *adtype.BidRequest) bool {
+func (w *sourceTester) Test(request adtype.BidRequester) bool {
 	return true
 }
 

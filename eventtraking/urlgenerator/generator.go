@@ -81,7 +81,7 @@ func (g *Generator[E, L, UI]) LibURL(path string) string {
 }
 
 // PixelURL generator from response of item
-func (g *Generator[E, L, UI]) PixelURL(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser, js bool) (string, error) {
+func (g *Generator[E, L, UI]) PixelURL(event events.Type, status uint8, item adtype.ResponseItem, response adtype.Response, js bool) (string, error) {
 	ev, err := g.EventGenerator.Event(event, status, response, item)
 	if err != nil {
 		return "", err
@@ -90,7 +90,7 @@ func (g *Generator[E, L, UI]) PixelURL(event events.Type, status uint8, item adt
 }
 
 // Lead URL traking for lead type of event
-func (g *Generator[E, L, UI]) PixelLead(item adtype.ResponserItem, response adtype.Responser, js bool) (string, error) {
+func (g *Generator[E, L, UI]) PixelLead(item adtype.ResponseItem, response adtype.Response, js bool) (string, error) {
 	lead := g.LeadAllocator()
 	if err := lead.Fill(item, response); err != nil {
 		return "", err
@@ -99,7 +99,7 @@ func (g *Generator[E, L, UI]) PixelLead(item adtype.ResponserItem, response adty
 }
 
 // PixelDirectURL generator from response of item
-func (g *Generator[E, L, UI]) PixelDirectURL(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser, direct string) (string, error) {
+func (g *Generator[E, L, UI]) PixelDirectURL(event events.Type, status uint8, item adtype.ResponseItem, response adtype.Response, direct string) (string, error) {
 	ev, err := g.EventGenerator.Event(event, status, response, item)
 	if err != nil {
 		return "", err
@@ -108,12 +108,12 @@ func (g *Generator[E, L, UI]) PixelDirectURL(event events.Type, status uint8, it
 }
 
 // ClickURL generator from respponse of item
-func (g *Generator[E, L, UI]) ClickURL(item adtype.ResponserItem, response adtype.Responser) (string, error) {
+func (g *Generator[E, L, UI]) ClickURL(item adtype.ResponseItem, response adtype.Response) (string, error) {
 	return g.encodeURL(g.ClickPattern, events.Click, events.StatusSuccess, item, response)
 }
 
 // MustClickURL generator from respponse of item
-func (g *Generator[E, L, UI]) MustClickURL(item adtype.ResponserItem, response adtype.Responser) string {
+func (g *Generator[E, L, UI]) MustClickURL(item adtype.ResponseItem, response adtype.Response) string {
 	res, _ := g.ClickURL(item, response)
 	return res
 }
@@ -125,7 +125,7 @@ func (g *Generator[E, L, UI]) ClickRouterURL() string {
 }
 
 // DirectURL generator from respponse of item
-func (g *Generator[E, L, UI]) DirectURL(event events.Type, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+func (g *Generator[E, L, UI]) DirectURL(event events.Type, item adtype.ResponseItem, response adtype.Response) (string, error) {
 	if event == events.Undefined {
 		event = events.Direct
 	}
@@ -139,7 +139,7 @@ func (g *Generator[E, L, UI]) DirectRouterURL() string {
 }
 
 // WinURL generator from response of item
-func (g *Generator[E, L, UI]) WinURL(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+func (g *Generator[E, L, UI]) WinURL(event events.Type, status uint8, item adtype.ResponseItem, response adtype.Response) (string, error) {
 	if event == events.Undefined {
 		event = events.AccessPointWin
 	}
@@ -147,7 +147,7 @@ func (g *Generator[E, L, UI]) WinURL(event events.Type, status uint8, item adtyp
 }
 
 // BillingNoticeURL generator from response of item
-func (g *Generator[E, L, UI]) BillingNoticeURL(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+func (g *Generator[E, L, UI]) BillingNoticeURL(event events.Type, status uint8, item adtype.ResponseItem, response adtype.Response) (string, error) {
 	if event == events.Undefined {
 		event = events.AccessPointBillingNotice
 	}
@@ -161,7 +161,7 @@ func (g *Generator[E, L, UI]) WinRouterURL() string {
 }
 
 // EventCode generator
-func (g *Generator[E, L, UI]) EventCode(event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+func (g *Generator[E, L, UI]) EventCode(event events.Type, status uint8, item adtype.ResponseItem, response adtype.Response) (string, error) {
 	ev, err := g.EventGenerator.Event(event, status, response, item)
 	if err != nil {
 		return "", err
@@ -170,7 +170,7 @@ func (g *Generator[E, L, UI]) EventCode(event events.Type, status uint8, item ad
 	return code.String(), code.ErrorObj()
 }
 
-func (g *Generator[E, L, UI]) encodeURL(pattern string, event events.Type, status uint8, item adtype.ResponserItem, response adtype.Responser) (string, error) {
+func (g *Generator[E, L, UI]) encodeURL(pattern string, event events.Type, status uint8, item adtype.ResponseItem, response adtype.Response) (string, error) {
 	if pattern == "" {
 		return "", nil
 	}
@@ -197,7 +197,7 @@ func (g *Generator[E, L, UI]) encodeURL(pattern string, event events.Type, statu
 		).Replace(pattern)
 	}
 
-	if response.Request().AuctionType.IsSecondPrice() {
+	if response.Request().AuctionType().IsSecondPrice() {
 		if strings.Contains(urlVal, "?") {
 			urlVal += "&"
 		} else {
@@ -217,7 +217,7 @@ func (g *Generator[E, L, UI]) hostSchema() string {
 	return g.Schema
 }
 
-func (g *Generator[E, L, UI]) hostDomain(response adtype.Responser) string {
+func (g *Generator[E, L, UI]) hostDomain(response adtype.Response) string {
 	if g.ServiceDomain != "" {
 		return g.ServiceDomain
 	}

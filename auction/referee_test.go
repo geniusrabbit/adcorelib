@@ -41,18 +41,18 @@ type test struct {
 	Name  string
 	Rings []Ring
 	Bids  []billing.Money
-	Scope []adtype.ResponserItemCommon
+	Scope []adtype.ResponseItemCommon
 }
 
-func (t test) TestResponse(res []adtype.ResponserItemCommon) bool {
+func (t test) TestResponse(res []adtype.ResponseItemCommon) bool {
 	return testBids(t.Bids, res)
 }
 
-func testBids(bids []billing.Money, res []adtype.ResponserItemCommon) bool {
-	var newRes []adtype.ResponserItemCommon
+func testBids(bids []billing.Money, res []adtype.ResponseItemCommon) bool {
+	var newRes []adtype.ResponseItemCommon
 	for _, it := range res {
 		switch v := it.(type) {
-		case adtype.ResponserMultipleItem:
+		case adtype.ResponseMultipleItem:
 			for _, it := range v.Ads() {
 				newRes = append(newRes, it)
 			}
@@ -76,10 +76,10 @@ func testBids(bids []billing.Money, res []adtype.ResponserItemCommon) bool {
 	return true
 }
 
-func respToBids(res []adtype.ResponserItemCommon) (bids []tsItem) {
+func respToBids(res []adtype.ResponseItemCommon) (bids []tsItem) {
 	for _, it := range res {
 		switch v := it.(type) {
-		case adtype.ResponserMultipleItem:
+		case adtype.ResponseMultipleItem:
 			for _, it := range v.Ads() {
 				bids = append(bids, tsItem{
 					Multi: true,
@@ -103,7 +103,7 @@ func TestRefereeMatch(t *testing.T) {
 			Name:  "Simple",
 			Rings: []Ring{{ID: "1", Count: 3}},
 			Bids:  []billing.Money{mi(7), mi(2), mi(2)},
-			Scope: []adtype.ResponserItemCommon{
+			Scope: []adtype.ResponseItemCommon{
 				newItem("1", 1),
 				newItem("1", 2),
 				newItem("1", 7),
@@ -115,7 +115,7 @@ func TestRefereeMatch(t *testing.T) {
 			Name:  "Multy Simple 2",
 			Rings: []Ring{{ID: "1", Count: 3}, {ID: "2", Count: 1}},
 			Bids:  []billing.Money{mi(7), mi(4), mi(3), mi(2)},
-			Scope: []adtype.ResponserItemCommon{
+			Scope: []adtype.ResponseItemCommon{
 				newItem("1", 1),
 				newItem("1", 2),
 				newItem("1", 7),
@@ -129,7 +129,7 @@ func TestRefereeMatch(t *testing.T) {
 			Name:  "Multy Simple 3",
 			Rings: []Ring{{ID: "1", Count: 3}, {ID: "2", Count: 1}, {ID: "3", Count: 2}},
 			Bids:  []billing.Money{mi(7), mi(4), mi(3), mi(2), mi(3), mi(9)},
-			Scope: []adtype.ResponserItemCommon{
+			Scope: []adtype.ResponseItemCommon{
 				newItem("1", 1),
 				newItem("1", 2),
 				newItem("1", 7),
@@ -146,7 +146,7 @@ func TestRefereeMatch(t *testing.T) {
 			Name:  "Multy 3",
 			Rings: []Ring{{ID: "1", Count: 3}, {ID: "2", Count: 1}, {ID: "3", Count: 2}},
 			Bids:  []billing.Money{mi(1), mi(2), mi(3), mi(7), mi(3), mi(1)},
-			Scope: []adtype.ResponserItemCommon{
+			Scope: []adtype.ResponseItemCommon{
 				newMultipleItem(
 					titem{ImpID: "1", Bid: 1},
 					titem{ImpID: "2", Bid: 2},
@@ -165,7 +165,7 @@ func TestRefereeMatch(t *testing.T) {
 			Name:  "Multy 3*2",
 			Rings: []Ring{{ID: "1", Count: 3}, {ID: "2", Count: 1}, {ID: "3", Count: 2}},
 			Bids:  []billing.Money{mi(1), mi(2), mi(3), mi(7), mi(1), mi(1)},
-			Scope: []adtype.ResponserItemCommon{
+			Scope: []adtype.ResponseItemCommon{
 				newMultipleItem(
 					titem{ImpID: "1", Bid: 1},
 					titem{ImpID: "2", Bid: 2},
@@ -205,7 +205,7 @@ func TestReplacement(t *testing.T) {
 		titem{ImpID: "1", Bid: 1},
 		titem{ImpID: "2", Bid: 2},
 		titem{ImpID: "3", Bid: 3},
-	), []adtype.ResponserItemCommon{
+	), []adtype.ResponseItemCommon{
 		newItem("1", 7),
 		newItem("1", 3),
 		newItem("2", 3),
@@ -225,7 +225,7 @@ func BenchmarkRefereeMatch(b *testing.B) {
 		Name:  "Multy 3*2",
 		Rings: []Ring{{ID: "1", Count: 3}, {ID: "2", Count: 1}, {ID: "3", Count: 2}},
 		Bids:  []billing.Money{mi(1), mi(2), mi(3), mi(7), mi(1), mi(1)},
-		Scope: []adtype.ResponserItemCommon{
+		Scope: []adtype.ResponseItemCommon{
 			newMultipleItem(
 				titem{ImpID: "1", Bid: 1},
 				titem{ImpID: "2", Bid: 2},
@@ -254,7 +254,7 @@ func BenchmarkRefereeMatch(b *testing.B) {
 	})
 }
 
-func newItem(impid string, bid int64) adtype.ResponserItem {
+func newItem(impid string, bid int64) adtype.ResponseItem {
 	return &bidresponse.ResponseItemBlank{
 		Src: nil,
 		Imp: &adtype.Impression{ID: impid},
@@ -265,7 +265,7 @@ func newItem(impid string, bid int64) adtype.ResponserItem {
 	}
 }
 
-func newMultipleItem(bids ...titem) adtype.ResponserMultipleItem {
+func newMultipleItem(bids ...titem) adtype.ResponseMultipleItem {
 	block := &bidresponse.ResponseItemBlock{}
 	for _, bid := range bids {
 		block.Items = append(block.Items, newItem(bid.ImpID, bid.Bid))

@@ -17,34 +17,34 @@ type URLGenerator interface {
 
 	// PixelURL generator from response of item
 	// @param js generates the JavaScript pixel type
-	PixelURL(event events.Type, status uint8, item ResponserItem, response Responser, js bool) (string, error)
+	PixelURL(event events.Type, status uint8, item ResponseItem, response Response, js bool) (string, error)
 
 	// PixelDirectURL generator from response of item
-	PixelDirectURL(event events.Type, status uint8, item ResponserItem, response Responser, direct string) (string, error)
+	PixelDirectURL(event events.Type, status uint8, item ResponseItem, response Response, direct string) (string, error)
 
 	// PixelLead URL
-	PixelLead(item ResponserItem, response Responser, js bool) (string, error)
+	PixelLead(item ResponseItem, response Response, js bool) (string, error)
 
 	// MustClickURL generator from response of item
-	MustClickURL(item ResponserItem, response Responser) string
+	MustClickURL(item ResponseItem, response Response) string
 
 	// ClickURL generator from response of item
-	ClickURL(item ResponserItem, response Responser) (string, error)
+	ClickURL(item ResponseItem, response Response) (string, error)
 
 	// ClickRouterURL returns router pattern
 	ClickRouterURL() string
 
 	// DirectURL generator from response of item
-	DirectURL(event events.Type, item ResponserItem, response Responser) (string, error)
+	DirectURL(event events.Type, item ResponseItem, response Response) (string, error)
 
 	// DirectRouterURL returns router pattern
 	DirectRouterURL() string
 
 	// WinURL generator from response of item
-	WinURL(event events.Type, status uint8, item ResponserItem, response Responser) (string, error)
+	WinURL(event events.Type, status uint8, item ResponseItem, response Response) (string, error)
 
 	// BillingNoticeURL generator from response of item
-	BillingNoticeURL(event events.Type, status uint8, item ResponserItem, response Responser) (string, error)
+	BillingNoticeURL(event events.Type, status uint8, item ResponseItem, response Response) (string, error)
 
 	// WinRouterURL returns router pattern
 	WinRouterURL() string

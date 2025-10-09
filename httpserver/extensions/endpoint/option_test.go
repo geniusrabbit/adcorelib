@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,16 +13,20 @@ import (
 
 type dummySource struct{}
 
-func (dummySource) Bid(request *adtype.BidRequest) adtype.Responser { return nil }
-func (dummySource) ProcessResponse(response adtype.Responser)       {}
+func (dummySource) Bid(request adtype.BidRequester) adtype.Response { return nil }
+func (dummySource) ProcessResponse(response adtype.Response)        {}
 
 type dummyAppAccessor struct{}
 
-func (dummyAppAccessor) AppByURI(uri string) (*admodels.Application, error) { return nil, nil }
+func (dummyAppAccessor) AppByURI(_ context.Context, uri string) (*admodels.Application, error) {
+	return nil, nil
+}
 
 type dummyZoneAccessor struct{}
 
-func (dummyZoneAccessor) TargetByCodename(string) (adtype.Target, error) { return nil, nil }
+func (dummyZoneAccessor) TargetByCodename(context.Context, string) (adtype.Target, error) {
+	return nil, nil
+}
 
 func Test_Options(t *testing.T) {
 	server := NewExtension(

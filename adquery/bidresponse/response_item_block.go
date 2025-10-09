@@ -19,7 +19,7 @@ import (
 
 // ResponseItemBlock group of simple items
 type ResponseItemBlock struct {
-	Items   []adtype.ResponserItem
+	Items   []adtype.ResponseItem
 	context context.Context
 }
 
@@ -71,7 +71,7 @@ func (i *ResponseItemBlock) InternalAuctionCPMBid() (bid billing.Money) {
 }
 
 // Ads list
-func (i *ResponseItemBlock) Ads() []adtype.ResponserItem {
+func (i *ResponseItemBlock) Ads() []adtype.ResponseItem {
 	return i.Items
 }
 
@@ -117,5 +117,5 @@ func (i *ResponseItemBlock) Get(key string) any {
 }
 
 var (
-	_ adtype.ResponserMultipleItem = &ResponseItemBlock{}
+	_ adtype.ResponseMultipleItem = &ResponseItemBlock{}
 )

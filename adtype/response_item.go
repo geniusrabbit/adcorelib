@@ -30,9 +30,9 @@ var (
 	ErrNewAuctionBidIsHigherThenMaxBid = errors.New("new auction bid is higher than max bid")
 )
 
-// ResponserItemCommon defines the common interface for response items in an ad auction.
+// ResponseItemCommon defines the common interface for response items in an ad auction.
 // It includes methods to access identification, pricing, validation, and contextual data.
-type ResponserItemCommon interface {
+type ResponseItemCommon interface {
 	// ID returns the unique identifier of the current response item.
 	ID() string
 
@@ -69,21 +69,24 @@ type ResponserItemCommon interface {
 }
 
 // ResponserItem defines the interface for a single advertisement response item.
-// It extends ResponserItemCommon by adding methods specific to individual ads.
-type ResponserItem interface {
-	ResponserItemCommon
+// It extends ResponseItemCommon by adding methods specific to individual ads.
+type ResponseItem interface {
+	ResponseItemCommon
 
 	// NetworkName returns the name of the ad network that provided the response.
 	NetworkName() string
-
-	// AdID returns the unique identifier of the advertisement.
-	AdID() uint64
 
 	// AccountID returns the unique identifier of the advertiser's account.
 	AccountID() uint64
 
 	// CampaignID returns the unique identifier of the advertising campaign.
 	CampaignID() uint64
+
+	// AdID returns the unique identifier of the advertisement.
+	AdID() string
+
+	// CreativeID returns the unique identifier of the creative asset used in the advertisement.
+	CreativeID() string
 
 	// Format returns the format information of the advertisement.
 	Format() *types.Format
@@ -102,10 +105,10 @@ type ResponserItem interface {
 	ContentFields() map[string]any
 
 	// MainAsset returns the primary asset of the advertisement (e.g., image, video).
-	MainAsset() *admodels.AdAsset
+	MainAsset() *admodels.AdFileAsset
 
 	// Assets returns a list of all assets associated with the advertisement.
-	Assets() admodels.AdAssets
+	Assets() admodels.AdFileAssets
 
 	// Source returns the source information of the advertisement response.
 	Source() Source
@@ -183,11 +186,11 @@ type ResponserItem interface {
 
 // ResponserMultipleItem defines the interface for handling multiple advertisement response items.
 // It is typically used for complex banners that contain multiple ads.
-type ResponserMultipleItem interface {
-	ResponserItemCommon
+type ResponseMultipleItem interface {
+	ResponseItemCommon
 
-	// Ads returns a slice of ResponserItem interfaces representing individual ads within the response.
-	Ads() []ResponserItem
+	// Ads returns a slice of ResponseItem interfaces representing individual ads within the response.
+	Ads() []ResponseItem
 
 	// Count returns the total number of response items (ads) in the response.
 	Count() int

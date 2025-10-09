@@ -14,7 +14,7 @@ import (
 // ResponseEmpty object represents empty response and response item
 type ResponseEmpty struct {
 	ItemID  string
-	Req     *adtype.BidRequest
+	Req     adtype.BidRequester
 	Src     adtype.Source
 	Imp     *adtype.Impression
 	Bid     *openrtb.Bid
@@ -23,8 +23,8 @@ type ResponseEmpty struct {
 }
 
 // NewEmptyResponse by bid request
-func NewEmptyResponse(request *adtype.BidRequest, src adtype.Source, err error) *ResponseEmpty {
-	return &ResponseEmpty{Req: request, Src: src, Err: err, context: request.Ctx}
+func NewEmptyResponse(request adtype.BidRequester, src adtype.Source, err error) *ResponseEmpty {
+	return &ResponseEmpty{Req: request, Src: src, Err: err, context: request.Context()}
 }
 
 // ID of current response item (unique code of current response)
@@ -37,7 +37,7 @@ func (r ResponseEmpty) AuctionID() string {
 	if r.Req == nil {
 		return ""
 	}
-	return r.Req.ID
+	return r.Req.AuctionID()
 }
 
 // AuctionType returns type of the auction (first price, second price, etc)
@@ -45,7 +45,7 @@ func (r ResponseEmpty) AuctionType() types.AuctionType {
 	if r.Req == nil {
 		return types.UndefinedAuctionType
 	}
-	return r.Req.AuctionType
+	return r.Req.AuctionType()
 }
 
 // Source returns source of the response
@@ -59,7 +59,7 @@ func (r ResponseEmpty) PriorityFormatType() types.FormatType {
 }
 
 // Request returns the original request object
-func (r ResponseEmpty) Request() *adtype.BidRequest {
+func (r ResponseEmpty) Request() adtype.BidRequester {
 	return r.Req
 }
 
@@ -93,17 +93,17 @@ func (r ResponseEmpty) ExtTargetID() string {
 }
 
 // Ads list
-func (r ResponseEmpty) Ads() []adtype.ResponserItemCommon {
+func (r ResponseEmpty) Ads() []adtype.ResponseItemCommon {
 	return nil
 }
 
 // IterAds returns an iterator over the response items.
-func (r ResponseEmpty) IterAds() iter.Seq[adtype.ResponserItem] {
-	return func(yield func(adtype.ResponserItem) bool) {}
+func (r ResponseEmpty) IterAds() iter.Seq[adtype.ResponseItem] {
+	return func(yield func(adtype.ResponseItem) bool) {}
 }
 
 // Item by impression code
-func (r ResponseEmpty) Item(impid string) adtype.ResponserItemCommon {
+func (r ResponseEmpty) Item(impid string) adtype.ResponseItemCommon {
 	return nil
 }
 
@@ -137,7 +137,7 @@ func (r *ResponseEmpty) Context(ctx ...context.Context) context.Context {
 		r.context = ctx[0]
 	}
 	if r.context == nil && r.Req != nil {
-		return r.Req.Ctx
+		return r.Req.Context()
 	}
 	return r.context
 }
@@ -154,6 +154,6 @@ func (r *ResponseEmpty) Get(key string) (res any) {
 func (r *ResponseEmpty) Release() {}
 
 var (
-	_ adtype.ResponserItemCommon = (*ResponseEmpty)(nil)
-	_ adtype.Responser           = (*ResponseEmpty)(nil)
+	_ adtype.ResponseItemCommon = (*ResponseEmpty)(nil)
+	_ adtype.Response           = (*ResponseEmpty)(nil)
 )

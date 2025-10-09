@@ -40,6 +40,7 @@ import (
 	"time"
 
 	"github.com/demdxx/rpool/v2"
+	"github.com/geniusrabbit/adcorelib/adquery/bidrequest"
 	"github.com/geniusrabbit/adcorelib/adtype"
 )
 
@@ -52,8 +53,8 @@ func TestMultisourceWrapper_sourceResponseLog(t *testing.T) {
 		metrics            Metrics
 	}
 	type args struct {
-		in0      *adtype.BidRequest
-		response adtype.Responser
+		in0      *bidrequest.BidRequest
+		response adtype.Response
 	}
 	tests := []struct {
 		name   string

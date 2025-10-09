@@ -26,7 +26,7 @@ func (DummyClient) Detect(ctx context.Context, req *udetect.Request) (*udetect.R
 			Browser: &udetect.Browser{
 				DNT:             req.DNT,
 				LMT:             req.LMT,
-				Adblock:         req.Adblock,
+				AdBlock:         req.AdBlock,
 				Languages:       req.Languages,
 				PrimaryLanguage: req.PrimaryLanguage,
 				UA:              req.UA,

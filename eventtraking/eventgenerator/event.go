@@ -35,7 +35,7 @@ type EventType interface {
 	Unpack(data []byte, unpuckFnc ...EventUnpacFunc) error
 
 	// Fill event object by response
-	Fill(service string, event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) error
+	Fill(service string, event events.Type, status uint8, response adtype.Response, it adtype.ResponseItem) error
 }
 
 // LeadType object for lead basic type interface
@@ -56,12 +56,12 @@ type LeadType interface {
 	Unpack(data []byte) error
 
 	// Fill event object by response
-	Fill(item adtype.ResponserItem, response adtype.Responser) error
+	Fill(item adtype.ResponseItem, response adtype.Response) error
 }
 
 // UserInfoType object for user info basic type interface
 type UserInfoType interface {
-	Fill(response adtype.Responser, it adtype.ResponserItem) error
+	Fill(response adtype.Response, it adtype.ResponseItem) error
 }
 
 // TestEvent object for testing
@@ -89,7 +89,7 @@ func (e *TestEvent) Pack() events.Code { return events.CodeObj([]byte{1, 2, 3}, 
 func (e *TestEvent) Unpack(data []byte, unpuckFnc ...EventUnpacFunc) error { return nil }
 
 // Fill event object by response
-func (e *TestEvent) Fill(service string, event events.Type, status uint8, response adtype.Responser, it adtype.ResponserItem) error {
+func (e *TestEvent) Fill(service string, event events.Type, status uint8, response adtype.Response, it adtype.ResponseItem) error {
 	return nil
 }
 
@@ -114,7 +114,7 @@ func (l *TestLead) Pack() events.Code { return events.CodeObj([]byte{1, 2, 3}, n
 func (l *TestLead) Unpack(data []byte) error { return nil }
 
 // Fill event object by response
-func (l *TestLead) Fill(item adtype.ResponserItem, response adtype.Responser) error { return nil }
+func (l *TestLead) Fill(item adtype.ResponseItem, response adtype.Response) error { return nil }
 
 var _ LeadType = &TestLead{}
 
@@ -122,6 +122,6 @@ var _ LeadType = &TestLead{}
 type TestUserInfo struct{}
 
 // Fill user info object by response
-func (u *TestUserInfo) Fill(response adtype.Responser, it adtype.ResponserItem) error { return nil }
+func (u *TestUserInfo) Fill(response adtype.Response, it adtype.ResponseItem) error { return nil }
 
 var _ UserInfoType = &TestUserInfo{}

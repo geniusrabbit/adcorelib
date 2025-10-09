@@ -14,13 +14,13 @@ func (wp minimalSourceWrapper) ObjectKey() uint64 { return 0 }
 func (wp minimalSourceWrapper) Protocol() string { return "undefined" }
 
 // Test request before processing
-func (wp minimalSourceWrapper) Test(request *BidRequest) bool { return true }
+func (wp minimalSourceWrapper) Test(request BidRequester) bool { return true }
 
 // Bid request for standart system filter
-func (wp minimalSourceWrapper) Bid(request *BidRequest) Responser { return wp.source.Bid(request) }
+func (wp minimalSourceWrapper) Bid(request BidRequester) Response { return wp.source.Bid(request) }
 
 // ProcessResponseItem result or error
-func (wp minimalSourceWrapper) ProcessResponseItem(response Responser, item ResponserItem) {
+func (wp minimalSourceWrapper) ProcessResponseItem(response Response, item ResponseItem) {
 	wp.source.ProcessResponseItem(response, item)
 }
 

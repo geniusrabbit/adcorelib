@@ -15,21 +15,21 @@ import (
 
 // Response from different sources
 type Response struct {
-	request *adtype.BidRequest
+	request adtype.BidRequester
 	source  adtype.Source
-	items   []adtype.ResponserItemCommon
+	items   []adtype.ResponseItemCommon
 	err     error
 	context context.Context
 }
 
 // NewResponse common object
-func NewResponse(request *adtype.BidRequest, source adtype.Source, items []adtype.ResponserItemCommon, err error) *Response {
+func NewResponse(request adtype.BidRequester, source adtype.Source, items []adtype.ResponseItemCommon, err error) *Response {
 	return &Response{
 		request: request,
 		source:  source,
 		items:   items,
 		err:     err,
-		context: request.Ctx,
+		context: request.Context(),
 	}
 }
 
@@ -38,7 +38,7 @@ func (r *Response) AuctionID() string {
 	if r == nil || r.request == nil {
 		return ""
 	}
-	return r.request.ID
+	return r.request.AuctionID()
 }
 
 // AuctionType of request
@@ -46,7 +46,7 @@ func (r *Response) AuctionType() types.AuctionType {
 	if r == nil || r.request == nil {
 		return types.UndefinedAuctionType
 	}
-	return r.request.AuctionType
+	return r.request.AuctionType()
 }
 
 // Source of response
@@ -55,17 +55,17 @@ func (r *Response) Source() adtype.Source {
 }
 
 // Request information
-func (r *Response) Request() *adtype.BidRequest {
+func (r *Response) Request() adtype.BidRequester {
 	return r.request
 }
 
 // AddItem to response
-func (r *Response) AddItem(it adtype.ResponserItemCommon) {
+func (r *Response) AddItem(it adtype.ResponseItemCommon) {
 	r.items = append(r.items, it)
 }
 
 // Item by impression code
-func (r *Response) Item(impid string) adtype.ResponserItemCommon {
+func (r *Response) Item(impid string) adtype.ResponseItemCommon {
 	for _, it := range r.items {
 		if it.ImpressionID() == impid {
 			return it
@@ -75,21 +75,21 @@ func (r *Response) Item(impid string) adtype.ResponserItemCommon {
 }
 
 // Ads list
-func (r *Response) Ads() []adtype.ResponserItemCommon {
+func (r *Response) Ads() []adtype.ResponseItemCommon {
 	return r.items
 }
 
 // IterAds returns an iterator over the response items.
-func (r *Response) IterAds() iter.Seq[adtype.ResponserItem] {
-	return func(yield func(adtype.ResponserItem) bool) {
+func (r *Response) IterAds() iter.Seq[adtype.ResponseItem] {
+	return func(yield func(adtype.ResponseItem) bool) {
 		for _, it := range r.items {
 			switch itV := it.(type) {
 			case nil:
-			case adtype.ResponserItem:
+			case adtype.ResponseItem:
 				if !yield(itV) {
 					return
 				}
-			case adtype.ResponserMultipleItem:
+			case adtype.ResponseMultipleItem:
 				for _, mit := range itV.Ads() {
 					if !yield(mit) {
 						return
@@ -165,5 +165,5 @@ func (r *Response) reset() {
 }
 
 var (
-	_ adtype.Responser = &Response{}
+	_ adtype.Response = &Response{}
 )

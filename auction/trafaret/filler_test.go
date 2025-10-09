@@ -50,7 +50,7 @@ func TestFiller(t *testing.T) {
 	}
 
 	adx1 := &bidresponse.ResponseItemBlock{
-		Items: []adtype.ResponserItem{ad1, ad3},
+		Items: []adtype.ResponseItem{ad1, ad3},
 	}
 
 	filler.Push(0.3, ad1, ad2)
@@ -64,7 +64,7 @@ func TestFiller(t *testing.T) {
 	}
 }
 
-func adsListRealSize(list []adtype.ResponserItemCommon) int {
+func adsListRealSize(list []adtype.ResponseItemCommon) int {
 	realSize := 0
 	for _, item := range list {
 		realSize += adSize(item)

@@ -10,81 +10,83 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/searchtypes"
+	"github.com/geniusrabbit/udetect"
 )
+
+type (
+	DeviceInfo  = udetect.Device
+	BrowserInfo = udetect.Browser
+	OSInfo      = udetect.OS
+	AppInfo     = udetect.App
+	SiteInfo    = udetect.Site
+	GeoInfo     = udetect.Geo
+	CarrierInfo = udetect.Carrier
+)
+
+// BidFormater defines the interface for managing ad formats in a bid request.
+type BidFormater interface {
+	// List returns the list of formats
+	List() []*Format
+
+	// Bitset returns the bitset of format IDs
+	Bitset() *searchtypes.NumberBitset[uint]
+
+	// TypeMask returns the format type mask
+	TypeMask() FormatTypeBitset
+}
 
 // TargetPointer describer of base target params
 type TargetPointer interface {
-	// Format list to target
-	Formats() []*Format
-
-	// FormatBitset of IDs
-	FormatBitset() *searchtypes.NumberBitset[uint]
-
-	// FormatTypeMask of formats
-	FormatTypeMask() FormatTypeBitset
+	// BidFormater of the request
+	Formats() BidFormater
 
 	// Size of the area of visibility
 	Size() (width, height int)
 
-	// Tags list
-	Tags() []string
+	// Request state and flags
+	IsDebug() bool           // True if debug mode is enabled
+	IsSecure() bool          // True if request is HTTPS
+	IsAdBlock() bool         // True if adblock detected
+	IsPrivateBrowsing() bool // True if in incognito
+	IsRobot() bool           // True if bot detected
+	IsProxy() bool           // True if proxy detected
+	IsIPv6() bool            // True if IP is IPv6
 
-	// AppID of the specific point
-	AppID() uint64
+	// Device and environment
+	DeviceInfo() *DeviceInfo   // Full device info
+	BrowserInfo() *BrowserInfo // Browser info
+	OSInfo() *OSInfo           // OS info
+
+	// App, site, geo
+	TrafficSourceID() uint64   // Traffic source ID
+	AppID() uint64             // Target app ID
+	AppInfo() *AppInfo         // App info
+	SiteInfo() *SiteInfo       // Site info or default
+	Domain() []string          // Domain list
+	DomainName() string        // Main domain or bundle name
+	GeoID() uint64             // Geo ID
+	GeoInfo() *GeoInfo         // Geo info
+	CarrierInfo() *CarrierInfo // Carrier info
+	LanguageID() uint64        // Browser language
 
 	// TargetID of the specific point
 	TargetID() uint64
 
-	// Domain prepared to targeting
-	Domain() []string
+	Sex() uint // Sex of the user
+	Age() uint // Age in years
 
-	// Sex of the user
-	Sex() uint
-
-	// Age of the user
-	Age() uint
+	// Tags list
+	Tags() []string
 
 	// Categories of the current request
 	Categories() []uint64
 
-	// GeoID of the target GEO
-	GeoID() uint64
-
-	// City of the target GEO
-	City() string
-
-	// LanguageID of targeting
-	LanguageID() uint64
-
-	// DeviceType value
-	DeviceType() uint64
-
-	// DeviceID of the target
-	DeviceID() uint64
-
-	// OSID of the user
-	OSID() uint64
-
-	// BrowserID of the user
-	BrowserID() uint64
-
 	// MinECPM value
 	MinECPM() billing.Money
 
-	// IsSecure connection of the request
-	IsSecure() bool
-
-	// IsAdblock used of the connection of the request
-	IsAdblock() bool
-
-	// IsPrivateBrowsing used of the connection of the request
-	IsPrivateBrowsing() bool
-
-	// IsIPv6 of the request
-	IsIPv6() bool
-
 	// Time of the request start
 	Time() time.Time
+	CurrentGeoTime() time.Time
 }
 
 // MultiTargetPointer extends standart target pointer untile multi zone targetting

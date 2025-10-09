@@ -6,10 +6,10 @@ type SourceEmpty struct {
 }
 
 // Bid request for standart system filter
-func (*SourceEmpty) Bid(request *BidRequest) Responser { return nil }
+func (*SourceEmpty) Bid(request BidRequester) Response { return nil }
 
 // ProcessResponseItem result or error
-func (*SourceEmpty) ProcessResponseItem(Responser, ResponserItem) {}
+func (*SourceEmpty) ProcessResponseItem(Response, ResponseItem) {}
 
 // ID of the source driver
 func (*SourceEmpty) ID() uint64 { return 0 }
@@ -21,7 +21,7 @@ func (*SourceEmpty) ObjectKey() uint64 { return 0 }
 func (*SourceEmpty) Protocol() string { return "undefined" }
 
 // Test request before processing
-func (*SourceEmpty) Test(request *BidRequest) bool { return false }
+func (*SourceEmpty) Test(request BidRequester) bool { return false }
 
 // PriceCorrectionReduceFactor which is a potential
 // Returns percent from 0 to 1 for reducing of the value

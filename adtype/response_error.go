@@ -15,16 +15,16 @@ import (
 // ResponseError from different sources
 type ResponseError struct {
 	context context.Context
-	request *BidRequest
+	request BidRequester
 	err     error
 }
 
 // NewErrorResponse object
-func NewErrorResponse(request *BidRequest, err error) *ResponseError {
+func NewErrorResponse(request BidRequester, err error) *ResponseError {
 	return &ResponseError{
 		request: request,
 		err:     err,
-		context: request.Ctx,
+		context: request.Context(),
 	}
 }
 
@@ -33,7 +33,7 @@ func (r *ResponseError) AuctionID() string {
 	if r == nil || r.request == nil {
 		return ""
 	}
-	return r.request.ID
+	return r.request.AuctionID()
 }
 
 // AuctionType of request
@@ -41,29 +41,29 @@ func (r *ResponseError) AuctionType() types.AuctionType {
 	if r == nil || r.request == nil {
 		return types.UndefinedAuctionType
 	}
-	return r.request.AuctionType
+	return r.request.AuctionType()
 }
 
 // Source of response
 func (r *ResponseError) Source() Source { return nil }
 
 // Request information
-func (r *ResponseError) Request() *BidRequest { return r.request }
+func (r *ResponseError) Request() BidRequester { return r.request }
 
 // AddItem to response
-func (r *ResponseError) AddItem(it ResponserItemCommon) {
+func (r *ResponseError) AddItem(it ResponseItemCommon) {
 	panic("error response can't add item")
 }
 
 // Item by impression code
-func (r *ResponseError) Item(impid string) ResponserItemCommon { return nil }
+func (r *ResponseError) Item(impid string) ResponseItemCommon { return nil }
 
 // Ads list
-func (r *ResponseError) Ads() []ResponserItemCommon { return nil }
+func (r *ResponseError) Ads() []ResponseItemCommon { return nil }
 
 // IterAds returns an iterator over the response items.
-func (r *ResponseError) IterAds() iter.Seq[ResponserItem] {
-	return func(yield func(ResponserItem) bool) {}
+func (r *ResponseError) IterAds() iter.Seq[ResponseItem] {
+	return func(yield func(ResponseItem) bool) {}
 }
 
 // Count of response items
@@ -117,5 +117,5 @@ func (r *ResponseError) reset() {
 }
 
 var (
-	_ Responser = &ResponseError{}
+	_ Response = &ResponseError{}
 )

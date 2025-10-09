@@ -43,14 +43,17 @@ func (*ResponseItemBlank) NetworkName() string { return "" }
 // Validate item
 func (*ResponseItemBlank) Validate() error { return nil }
 
-// AdID number
-func (*ResponseItemBlank) AdID() uint64 { return 0 }
-
-// AccountID number
+// AccountID returns the unique identifier of the advertiser's account.
 func (*ResponseItemBlank) AccountID() uint64 { return 0 }
 
-// CampaignID number
+// CampaignID returns the unique identifier of the advertising campaign.
 func (*ResponseItemBlank) CampaignID() uint64 { return 0 }
+
+// AdID returns the unique identifier of the advertisement.
+func (*ResponseItemBlank) AdID() string { return "" }
+
+// CreativeID returns the unique identifier of the creative.
+func (*ResponseItemBlank) CreativeID() string { return "" }
 
 // Source of response
 func (it *ResponseItemBlank) Source() adtype.Source { return it.Src }
@@ -87,13 +90,13 @@ func (*ResponseItemBlank) ContentItemString(name string) string { return "" }
 func (*ResponseItemBlank) ContentFields() map[string]any { return nil }
 
 // MainAsset from response
-func (*ResponseItemBlank) MainAsset() *admodels.AdAsset { return nil }
+func (*ResponseItemBlank) MainAsset() *admodels.AdFileAsset { return nil }
 
 // Asset by name
-func (*ResponseItemBlank) Asset(name string) *admodels.AdAsset { return nil }
+func (*ResponseItemBlank) Asset(name string) *admodels.AdFileAsset { return nil }
 
 // Assets list
-func (*ResponseItemBlank) Assets() admodels.AdAssets { return nil }
+func (*ResponseItemBlank) Assets() admodels.AdFileAssets { return nil }
 
 // ImpressionTrackerLinks returns traking links for impression action
 func (*ResponseItemBlank) ImpressionTrackerLinks() []string { return nil }
@@ -220,4 +223,4 @@ func (*ResponseItemBlank) Width() int { return 0 }
 // Height of item
 func (*ResponseItemBlank) Height() int { return 0 }
 
-var _ adtype.ResponserItem = (*ResponseItemBlank)(nil)
+var _ adtype.ResponseItem = (*ResponseItemBlank)(nil)

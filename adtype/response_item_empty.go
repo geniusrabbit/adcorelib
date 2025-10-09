@@ -16,7 +16,7 @@ var (
 // ResponseItemEmpty value
 type ResponseItemEmpty struct {
 	Imp     *Impression
-	Req     *BidRequest
+	Req     BidRequester
 	Src     Source
 	context context.Context
 }
@@ -29,7 +29,7 @@ func (r *ResponseItemEmpty) AuctionID() string {
 	if r.Req == nil {
 		return ""
 	}
-	return r.Req.ID
+	return r.Req.AuctionID()
 }
 
 // Impression place object
@@ -79,14 +79,17 @@ func (it *ResponseItemEmpty) Context(ctx ...context.Context) context.Context {
 // Get ext field
 func (*ResponseItemEmpty) Get(key string) any { return nil }
 
-// AdID number
-func (*ResponseItemEmpty) AdID() uint64 { return 0 }
-
 // AccountID number
 func (*ResponseItemEmpty) AccountID() uint64 { return 0 }
 
 // CampaignID number
 func (*ResponseItemEmpty) CampaignID() uint64 { return 0 }
+
+// AdID returns the unique identifier of the advertisement.
+func (*ResponseItemEmpty) AdID() string { return "" }
+
+// CreativeID returns the unique identifier of the creative.
+func (*ResponseItemEmpty) CreativeID() string { return "" }
 
 // Format object
 func (it *ResponseItemEmpty) Format() *types.Format {
@@ -111,13 +114,13 @@ func (*ResponseItemEmpty) ContentItemString(name string) string { return "" }
 func (*ResponseItemEmpty) ContentFields() map[string]any { return nil }
 
 // MainAsset from response
-func (*ResponseItemEmpty) MainAsset() *admodels.AdAsset { return nil }
+func (*ResponseItemEmpty) MainAsset() *admodels.AdFileAsset { return nil }
 
 // Asset by name
-func (*ResponseItemEmpty) Asset(name string) *admodels.AdAsset { return nil }
+func (*ResponseItemEmpty) Asset(name string) *admodels.AdFileAsset { return nil }
 
 // Assets list
-func (*ResponseItemEmpty) Assets() admodels.AdAssets { return nil }
+func (*ResponseItemEmpty) Assets() admodels.AdFileAssets { return nil }
 
 // Source of response
 func (it *ResponseItemEmpty) Source() Source {
@@ -205,4 +208,4 @@ func (*ResponseItemEmpty) Width() int { return 0 }
 // Height of item
 func (*ResponseItemEmpty) Height() int { return 0 }
 
-var _ ResponserItem = (*ResponseItemEmpty)(nil)
+var _ ResponseItem = (*ResponseItemEmpty)(nil)

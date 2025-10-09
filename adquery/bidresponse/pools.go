@@ -18,9 +18,9 @@ var (
 ///////////////////////////////////////////////////////////////////////////////
 
 // BorrowResponse object
-func BorrowResponse(request *adtype.BidRequest, source adtype.Source, items []adtype.ResponserItemCommon, err error) *Response {
+func BorrowResponse(request adtype.BidRequester, source adtype.Source, items []adtype.ResponseItemCommon, err error) *Response {
 	resp := responsePool.Get().(*Response)
-	resp.context = request.Ctx
+	resp.context = request.Context()
 	resp.request = request
 	resp.source = source
 	resp.items = items
