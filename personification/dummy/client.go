@@ -1,4 +1,4 @@
-package personification
+package dummy
 
 import (
 	"context"

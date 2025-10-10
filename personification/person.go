@@ -5,7 +5,7 @@ import (
 )
 
 type person struct {
-	request  *udetect.Request
+	request  *Request
 	userInfo UserInfo
 }
 

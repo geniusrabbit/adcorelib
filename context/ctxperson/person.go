@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/geniusrabbit/adcorelib/personification"
+	"github.com/geniusrabbit/adcorelib/personification/dummy"
 )
 
 var (
 	// CtxPersonObject reference to the person accessor
 	CtxPersonObject = struct{ s string }{"person"}
-	dummyClient     personification.DummyClient
+	dummyClient     dummy.DummyClient
 )
 
 // Get logger object

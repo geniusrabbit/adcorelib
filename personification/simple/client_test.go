@@ -1,4 +1,4 @@
-package personification
+package simple
 
 import (
 	"encoding/json"
