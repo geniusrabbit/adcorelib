@@ -150,6 +150,14 @@ func (i *Impression) TargetID() uint {
 	return uint(i.Target.ID())
 }
 
+// TargetCodename returns the target codename
+func (i *Impression) TargetCodename() string {
+	if i == nil || i.Target == nil {
+		return ""
+	}
+	return i.Target.Codename()
+}
+
 // AccountID returns the account ID
 func (i *Impression) AccountID() uint64 {
 	if i != nil && i.Target != nil {

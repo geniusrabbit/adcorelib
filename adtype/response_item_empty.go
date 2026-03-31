@@ -49,6 +49,9 @@ func (it *ResponseItemEmpty) ExtImpressionID() string { return it.Impression().E
 // ExtTargetID of the external network
 func (it *ResponseItemEmpty) ExtTargetID() string { return it.Impression().ExternalTargetID }
 
+// TargetCodename of the target placement codename
+func (it *ResponseItemEmpty) TargetCodename() string { return it.Impression().TargetCodename() }
+
 // InternalAuctionCPMBid value provides maximal possible price without any comission
 // According to this value the system can choice the best item for the auction
 func (*ResponseItemEmpty) InternalAuctionCPMBid() billing.Money { return 0 }

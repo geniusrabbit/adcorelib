@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"net"
 	"time"
 
 	"github.com/geniusrabbit/udetect"
@@ -99,6 +100,18 @@ func NewRequestFor(
 		Person:   person,
 		Ctx:      ctx,
 		Timemark: time.Now(),
+	}
+
+	// Debug overrides for testing purposes
+	if req.IsDebug() {
+		ipStr := opt.Request.QueryArgs().Peek("ip")
+		if len(ipStr) > 0 {
+			req.User.Geo.IP = net.ParseIP(string(ipStr))
+		}
+		ccStr := opt.Request.QueryArgs().Peek("cc")
+		if len(ccStr) > 0 {
+			req.User.Geo.Country = string(ccStr)
+		}
 	}
 	return req.WithFormats(formatAccessor)
 }

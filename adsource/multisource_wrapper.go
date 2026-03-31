@@ -38,6 +38,7 @@ package adsource
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -224,6 +225,7 @@ func (wrp *MultisourceWrapper) Bid(request adtype.BidRequester) (response adtype
 	{
 		var items []adtype.ResponseItemCommon
 		for _, imp := range request.Impressions() {
+			fmt.Println(">>> IMP ID:", imp.ID, imp.Count, ":##", trafaret.Len())
 			if impItems := trafaret.Fill(imp.ID, imp.Count); len(impItems) > 0 {
 				items = append(items, impItems...)
 			}

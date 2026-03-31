@@ -48,6 +48,11 @@ func (i *ResponseItemBlock) ExtTargetID() string {
 	return ""
 }
 
+// TargetCodename of the target placement codename
+func (i *ResponseItemBlock) TargetCodename() string {
+	return ""
+}
+
 // PriorityFormatType from current Ad
 func (i *ResponseItemBlock) PriorityFormatType() types.FormatType {
 	return types.FormatInvalidType

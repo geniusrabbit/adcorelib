@@ -48,6 +48,9 @@ type ResponseItemCommon interface {
 	// ExtTargetID returns the external target identifier from the external network.
 	ExtTargetID() string
 
+	// TargetCodename returns the target placement codename.
+	TargetCodename() string
+
 	// InternalAuctionCPMBid provides the maximum possible CPM (Cost Per Mille) bid without any commission.
 	// This value is used by the system to select the best item for the auction.
 	InternalAuctionCPMBid() billing.Money

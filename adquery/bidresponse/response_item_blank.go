@@ -37,6 +37,9 @@ func (it *ResponseItemBlank) ExtImpressionID() string { return it.Imp.ExternalID
 // ExtTargetID of the external network
 func (it *ResponseItemBlank) ExtTargetID() string { return it.Imp.ExternalTargetID }
 
+// TargetCodename of the target placement codename
+func (it *ResponseItemBlank) TargetCodename() string { return it.Imp.TargetCodename() }
+
 // NetworkName by source
 func (*ResponseItemBlank) NetworkName() string { return "" }
 

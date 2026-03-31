@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2017 - 2018, 2022
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2018, 2022
+// @project GeniusRabbit corelib 2017 - 2018, 2022, 2026
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2018, 2022, 2026
 //
 
 package types
@@ -76,7 +76,14 @@ func (fl *BaseFilter) Set(field uint64, data any) {
 	var positive bool
 	switch field {
 	case FieldFormat:
-		fl.Formats, _ = data.(gosql.StringArray)
+		switch vl := data.(type) {
+		case []string:
+			fl.Formats = vl
+		case gosql.StringArray:
+			fl.Formats = vl
+		case gosql.NullableStringArray:
+			fl.Formats = gosql.StringArray(vl)
+		}
 	case FieldDeviceTypes:
 		fl.DeviceTypes, positive = IDArrayFilterAny(data, "Invalid type for DeviceTypes")
 	case FieldDevices:
@@ -134,10 +141,12 @@ func (fl *BaseFilter) SetPositive(field uint64, positive bool) {
 // Test filter items
 func (fl *BaseFilter) Test(t TargetPointer) bool {
 	formatList := t.Formats().List()
-	found := len(formatList) < 1
-	for _, f := range formatList {
-		if found = fl.TestFormat(f); found {
-			break
+	found := len(formatList) < 1 || fl.Formats.Len() <= 0
+	if !found {
+		for _, f := range formatList {
+			if found = fl.TestFormat(f); found {
+				break
+			}
 		}
 	}
 

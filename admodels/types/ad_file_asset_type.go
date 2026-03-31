@@ -81,6 +81,11 @@ func (ft AdFileAssetType) IsVideo() bool {
 	return ft == AdFileAssetVideoType
 }
 
+// IsUndefined file type
+func (ft AdFileAssetType) IsUndefined() bool {
+	return ft == AdFileAssetUndefinedType
+}
+
 // Value implements the driver.Valuer interface, json field interface
 func (ft AdFileAssetType) Value() (driver.Value, error) {
 	return []byte(ft.Code()), nil

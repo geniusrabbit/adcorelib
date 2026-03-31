@@ -92,6 +92,14 @@ func (r ResponseEmpty) ExtTargetID() string {
 	return r.Imp.ExternalTargetID
 }
 
+// TargetCodename of the target placement codename
+func (r ResponseEmpty) TargetCodename() string {
+	if r.Imp == nil {
+		return ""
+	}
+	return r.Imp.TargetCodename()
+}
+
 // Ads list
 func (r ResponseEmpty) Ads() []adtype.ResponseItemCommon {
 	return nil

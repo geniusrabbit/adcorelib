@@ -40,7 +40,7 @@ type (
 		FactoryList() []adtype.SourceFactory
 	}
 	sourceListAccessor interface {
-		SourceList() ([]adtype.Source, error)
+		SourceList(context.Context) ([]adtype.Source, error)
 	}
 	sourceMetricsAccessor interface {
 		Metrics() *openlatency.MetricsInfo
@@ -133,7 +133,7 @@ func (ext *Extension) InitRouter(ctx context.Context, router *router.Router, tra
 
 		// Source info API handler
 		if sla, ok := sources.(sourceListAccessor); ok {
-			routeWrapper.GET("/sources", middleware.CollectSimpleMetrics("api.sources", ext.sourceListHandler(sla)))
+			routeWrapper.GET("/sources", middleware.CollectSimpleMetrics("api.sources", ext.sourceListHandler(ctx, sla)))
 		}
 		routeWrapper.GET("/sources/{id}",
 			middleware.CollectSimpleMetrics("api.sources.info", ext.sourceInfoHandler(sources)))
@@ -203,16 +203,16 @@ func (ext *Extension) factoryInfoHandler(factory adtype.SourceFactory) fasthttp.
 	}
 }
 
-func (ext *Extension) sourceListHandler(sa sourceListAccessor) fasthttp.RequestHandler {
-	return func(ctx *fasthttp.RequestCtx) {
-		sources, err := sa.SourceList()
+func (ext *Extension) sourceListHandler(ctx context.Context, sa sourceListAccessor) fasthttp.RequestHandler {
+	return func(rctx *fasthttp.RequestCtx) {
+		sources, err := sa.SourceList(ctx)
 		if err != nil {
-			ctx.SetStatusCode(http.StatusInternalServerError)
+			rctx.SetStatusCode(http.StatusInternalServerError)
 			return
 		}
-		ctx.SetContentType("application/json")
-		ctx.SetStatusCode(http.StatusOK)
-		_ = json.NewEncoder(ctx).Encode(xtypes.SliceApply(sources, func(s adtype.Source) any {
+		rctx.SetContentType("application/json")
+		rctx.SetStatusCode(http.StatusOK)
+		_ = json.NewEncoder(rctx).Encode(xtypes.SliceApply(sources, func(s adtype.Source) any {
 			return map[string]any{
 				"id":       s.ID(),
 				"protocol": s.Protocol(),
