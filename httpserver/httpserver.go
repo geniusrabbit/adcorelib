@@ -169,7 +169,7 @@ func (srv *Server) corsHandler(next fasthttp.RequestHandler) fasthttp.RequestHan
 		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "HEAD,GET,POST,PUT,PATCH,OPTIONS")
 		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
-		ctx.Response.Header.Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+		ctx.Response.Header.Set("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Page-Path,X-Page-Domain,X-Page-URL,X-Openrtb-Version")
 		if string(ctx.Method()) == "OPTIONS" {
 			ctx.SetStatusCode(http.StatusNoContent)
 			return

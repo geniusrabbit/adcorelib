@@ -307,7 +307,7 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 			eventStatus := events.StatusSuccess
 			// Check ad response item
 			if err := ad.Validate(); err != nil {
-				if errors.Is(err, adtype.ErrResponseItemEmpty) {
+				if errors.Is(err, adtype.ErrResponseItemEmpty) || errors.Is(err, adtype.ErrResponseNoBid) {
 					eventType = events.SourceNoBid
 				} else if errors.Is(err, adtype.ErrResponseItemSkipped) {
 					eventType = events.SourceSkip
@@ -331,7 +331,7 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 					&adtype.ResponseItemEmpty{Req: response.Request(), Imp: imp})
 			}
 		}
-	} else if respErr == nil && len(response.Ads()) == 0 {
+	} else if (respErr == nil || errors.Is(respErr, adtype.ErrResponseNoBid) || errors.Is(respErr, adtype.ErrResponseEmpty)) && len(response.Ads()) == 0 {
 		_ = eventStream.SendSourceNoBid(response)
 	} else if respErr != nil && (errors.Is(respErr, adtype.ErrResponseSkipped) || strings.Contains(respErr.Error(), "skip")) {
 		_ = eventStream.SendSourceSkip(response)

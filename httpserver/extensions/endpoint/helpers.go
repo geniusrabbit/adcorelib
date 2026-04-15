@@ -17,6 +17,21 @@ func peekOneFromQuery(query *fasthttp.Args, keys ...string) string {
 	return ""
 }
 
+func domainScheme(surl string) (scheme string) {
+	if len(surl) < 7 {
+		return ""
+	}
+	switch strings.ToLower(surl[:7]) {
+	case "http://":
+		scheme = "http"
+	case "https:/":
+		scheme = "https"
+	default:
+		scheme = ""
+	}
+	return scheme
+}
+
 func domain(surl string) (name string) {
 	if len(surl) < 1 {
 		name = ""
@@ -31,6 +46,30 @@ func domain(surl string) (name string) {
 		}
 	}
 	return name
+}
+
+// urlPath extracts the path component from a URL string.
+// If the input is empty, it returns an empty string.
+// If the input starts with "http://" or "https:/", it parses it as a URL and returns the path component.
+// For other inputs, it returns an empty string.
+//
+// Examples:
+//
+//	urlPath("") -> ""
+//	urlPath("http://example.com/test") -> "/test"
+//	urlPath("https://example.com/api/v1") -> "/api/v1"
+func urlPath(surl string) (path string) {
+	if len(surl) < 1 {
+		path = ""
+	} else {
+		switch strings.ToLower(surl[:7]) {
+		case "http://", "https:/":
+			if u, err := url.Parse(surl); nil == err {
+				path = u.Path
+			}
+		}
+	}
+	return path
 }
 
 func sexFrom(v int) string {

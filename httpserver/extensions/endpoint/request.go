@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/geniusrabbit/udetect"
@@ -31,8 +32,25 @@ func NewRequestFor(
 		userInfo         = person.UserInfo()
 		ageStart, ageEnd = userInfo.Ages()
 		referer          = string(opt.Request.Referer())
+		pageURL          = referer
+		xPagePath        = string(opt.Request.Request.Header.Peek("X-Page-Path"))
+		xPageDomain      = string(opt.Request.Request.Header.Peek("X-Page-Domain"))
+		xPageURL         = string(opt.Request.Request.Header.Peek("X-Page-URL"))
+		refDomainName    = domain(referer)
+		refPath          = urlPath(referer)
+		refScheme        = domainScheme(referer)
 		stateFlags       bidrequest.BidRequestFlags
 	)
+
+	// If the referer is empty or root, try to construct it from X-Page-* headers
+	if refPath == "" || refPath == "/" {
+		if len(xPagePath) > 0 && (xPageDomain == "" || xPageDomain == refDomainName) {
+			pageURL = refScheme + "://" + refDomainName + xPagePath
+		} else if xPageURL != "" && strings.HasPrefix(xPageURL, refScheme+"://"+refDomainName) {
+			pageURL = xPageURL
+		}
+	}
+
 	if fasthttpext.IsSecureCF(opt.Request) {
 		stateFlags |= bidrequest.BidRequestFlagSecure
 	}
@@ -87,15 +105,15 @@ func NewRequestFor(
 			Geo:           userInfo.GeoInfo(),
 		},
 		Site: &udetect.Site{
-			ExtID:         "",              // External ID
-			Domain:        domain(referer), //
-			Cat:           nil,             // Array of categories
-			PrivacyPolicy: 0,               // Default: 1 ("1": has a privacy policy)
-			Keywords:      opt.Keywords,    // Comma separated list of keywords about the site.
-			Page:          referer,         // URL of the page
-			Referrer:      referer,         // Referrer URL
-			Search:        "",              // Search string that caused navigation
-			Mobile:        0,               // Mobile ("1": site is mobile optimised)
+			ExtID:         "",            // External ID
+			Domain:        refDomainName, //
+			Cat:           nil,           // Array of categories
+			PrivacyPolicy: 0,             // Default: 1 ("1": has a privacy policy)
+			Keywords:      opt.Keywords,  // Comma separated list of keywords about the site.
+			Page:          pageURL,       // URL of the page
+			Referrer:      referer,       // Referrer URL
+			Search:        "",            // Search string that caused navigation
+			Mobile:        0,             // Mobile ("1": site is mobile optimised)
 		},
 		Person:   person,
 		Ctx:      ctx,
