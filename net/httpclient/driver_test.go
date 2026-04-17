@@ -399,10 +399,10 @@ func TestDriver_WithRealServer(t *testing.T) {
 
 		if r.Header.Get("Authorization") != "" {
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, `{"method":"%s","auth":"present"}`, r.Method)
+			_, _ = fmt.Fprintf(w, `{"method":"%s","auth":"present"}`, r.Method)
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, `{"error":"unauthorized"}`)
+			_, _ = fmt.Fprint(w, `{"error":"unauthorized"}`)
 		}
 	}))
 	defer server.Close()

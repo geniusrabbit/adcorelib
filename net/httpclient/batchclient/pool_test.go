@@ -25,7 +25,7 @@ func TestConnectionPool_Basic(t *testing.T) {
 		t.Errorf("Expected status code 200, got %d", resp.StatusCode())
 	}
 
-	resp.Close()
+	_ = resp.Close()
 }
 
 func TestConnectionPool_WarmupConnections(t *testing.T) {
@@ -106,14 +106,14 @@ func TestConnectionPool_RetryLogic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expected first request to succeed, got %v", err)
 	}
-	resp.Close()
+	_ = resp.Close()
 
 	// Second request should succeed
 	resp, err = pool.Do(req)
 	if err != nil {
 		t.Fatalf("Expected second request to succeed, got %v", err)
 	}
-	resp.Close()
+	_ = resp.Close()
 
 	// Third request should fail even with retries
 	_, err = pool.Do(req)
@@ -163,7 +163,7 @@ func TestConnectionPool_StatsReset(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to execute request %d: %v", i, err)
 		}
-		resp.Close()
+		_ = resp.Close()
 	}
 
 	// Check initial stats
@@ -218,6 +218,6 @@ func BenchmarkConnectionPool_Execute(b *testing.B) {
 		if err != nil {
 			b.Fatalf("Failed to execute request: %v", err)
 		}
-		resp.Close()
+		_ = resp.Close()
 	}
 }

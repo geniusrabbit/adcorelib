@@ -101,7 +101,7 @@ var Languages = []Language{
 	{ID: 74, Code: [2]byte{'K', 'L'}, Name: "Kalaallisut,Greenlandic", NativeName: "kalaallisut,kalaallit oqaasii"},
 	{ID: 75, Code: [2]byte{'K', 'N'}, Name: "Kannada", NativeName: "ಕನ್ನಡ"},
 	{ID: 76, Code: [2]byte{'K', 'R'}, Name: "Kanuri", NativeName: "Kanuri"},
-	{ID: 77, Code: [2]byte{'K', 'S'}, Name: "Kashmiri", NativeName: "कश्मीरी,كشميري‎"},
+	{ID: 77, Code: [2]byte{'K', 'S'}, Name: "Kashmiri", NativeName: "कश्मीरी,كشميري\u200e"},
 	{ID: 78, Code: [2]byte{'K', 'K'}, Name: "Kazakh", NativeName: "Қазақ тілі"},
 	{ID: 79, Code: [2]byte{'K', 'M'}, Name: "Khmer", NativeName: "ភាសាខ្មែរ"},
 	{ID: 80, Code: [2]byte{'K', 'I'}, Name: "Kikuyu,Gikuyu", NativeName: "Gĩkũyũ"},
@@ -110,7 +110,7 @@ var Languages = []Language{
 	{ID: 83, Code: [2]byte{'K', 'V'}, Name: "Komi", NativeName: "коми кыв"},
 	{ID: 84, Code: [2]byte{'K', 'G'}, Name: "Kongo", NativeName: "KiKongo"},
 	{ID: 85, Code: [2]byte{'K', 'O'}, Name: "Korean", NativeName: "한국어 (韓國語),조선말 (朝鮮語)"},
-	{ID: 86, Code: [2]byte{'K', 'U'}, Name: "Kurdish", NativeName: "Kurdî,كوردی‎"},
+	{ID: 86, Code: [2]byte{'K', 'U'}, Name: "Kurdish", NativeName: "Kurdî,كوردی\u200e"},
 	{ID: 87, Code: [2]byte{'K', 'J'}, Name: "Kwanyama,Kuanyama", NativeName: "Kuanyama"},
 	{ID: 88, Code: [2]byte{'L', 'A'}, Name: "Latin", NativeName: "latine,lingua latina"},
 	{ID: 89, Code: [2]byte{'L', 'B'}, Name: "Luxembourgish,Letzeburgesch", NativeName: "Lëtzebuergesch"},
@@ -124,7 +124,7 @@ var Languages = []Language{
 	{ID: 97, Code: [2]byte{'G', 'V'}, Name: "Manx", NativeName: "Gaelg,Gailck"},
 	{ID: 98, Code: [2]byte{'M', 'K'}, Name: "Macedonian", NativeName: "македонски јазик"},
 	{ID: 99, Code: [2]byte{'M', 'G'}, Name: "Malagasy", NativeName: "Malagasy fiteny"},
-	{ID: 100, Code: [2]byte{'M', 'S'}, Name: "Malay", NativeName: "bahasa Melayu,بهاس ملايو‎"},
+	{ID: 100, Code: [2]byte{'M', 'S'}, Name: "Malay", NativeName: "bahasa Melayu,بهاس ملايو\u200e"},
 	{ID: 101, Code: [2]byte{'M', 'L'}, Name: "Malayalam", NativeName: "മലയാളം"},
 	{ID: 102, Code: [2]byte{'M', 'T'}, Name: "Maltese", NativeName: "Malti"},
 	{ID: 103, Code: [2]byte{'M', 'I'}, Name: "Māori", NativeName: "te reo Māori"},
@@ -147,7 +147,7 @@ var Languages = []Language{
 	{ID: 120, Code: [2]byte{'O', 'M'}, Name: "Oromo", NativeName: "Afaan Oromoo"},
 	{ID: 121, Code: [2]byte{'O', 'R'}, Name: "Oriya", NativeName: "ଓଡ଼ିଆ"},
 	{ID: 122, Code: [2]byte{'O', 'S'}, Name: "Ossetian,Ossetic", NativeName: "ирон æвзаг"},
-	{ID: 123, Code: [2]byte{'P', 'A'}, Name: "Panjabi,Punjabi", NativeName: "ਪੰਜਾਬੀ,پنجابی‎"},
+	{ID: 123, Code: [2]byte{'P', 'A'}, Name: "Panjabi,Punjabi", NativeName: "ਪੰਜਾਬੀ,پنجابی\u200e"},
 	{ID: 124, Code: [2]byte{'P', 'I'}, Name: "Pāli", NativeName: "पाऴि"},
 	{ID: 125, Code: [2]byte{'F', 'A'}, Name: "Persian", NativeName: "فارسی"},
 	{ID: 126, Code: [2]byte{'P', 'L'}, Name: "Polish", NativeName: "polski"},
@@ -160,7 +160,7 @@ var Languages = []Language{
 	{ID: 133, Code: [2]byte{'R', 'U'}, Name: "Russian", NativeName: "русский язык"},
 	{ID: 134, Code: [2]byte{'S', 'A'}, Name: "Sanskrit (Saṁskṛta)", NativeName: "संस्कृतम्"},
 	{ID: 135, Code: [2]byte{'S', 'C'}, Name: "Sardinian", NativeName: "sardu"},
-	{ID: 136, Code: [2]byte{'S', 'D'}, Name: "Sindhi", NativeName: "सिन्धी,سنڌي، سندھی‎"},
+	{ID: 136, Code: [2]byte{'S', 'D'}, Name: "Sindhi", NativeName: "सिन्धी,سنڌي، سندھی\u200e"},
 	{ID: 137, Code: [2]byte{'S', 'E'}, Name: "Northern Sami", NativeName: "Davvisámegiella"},
 	{ID: 138, Code: [2]byte{'S', 'M'}, Name: "Samoan", NativeName: "gagana faa Samoa"},
 	{ID: 139, Code: [2]byte{'S', 'G'}, Name: "Sango", NativeName: "yângâ tî sängö"},
@@ -179,7 +179,7 @@ var Languages = []Language{
 	{ID: 152, Code: [2]byte{'S', 'V'}, Name: "Swedish", NativeName: "svenska"},
 	{ID: 153, Code: [2]byte{'T', 'A'}, Name: "Tamil", NativeName: "தமிழ்"},
 	{ID: 154, Code: [2]byte{'T', 'E'}, Name: "Telugu", NativeName: "తెలుగు"},
-	{ID: 155, Code: [2]byte{'T', 'G'}, Name: "Tajik", NativeName: "тоҷикӣ,toğikī,تاجیکی‎"},
+	{ID: 155, Code: [2]byte{'T', 'G'}, Name: "Tajik", NativeName: "тоҷикӣ,toğikī,تاجیکی\u200e"},
 	{ID: 156, Code: [2]byte{'T', 'H'}, Name: "Thai", NativeName: "ไทย"},
 	{ID: 157, Code: [2]byte{'T', 'I'}, Name: "Tigrinya", NativeName: "ትግርኛ"},
 	{ID: 158, Code: [2]byte{'B', 'O'}, Name: "Tibetan Standard,Tibetan,Central", NativeName: "བོད་ཡིག"},
@@ -189,13 +189,13 @@ var Languages = []Language{
 	{ID: 162, Code: [2]byte{'T', 'O'}, Name: "Tonga (Tonga Islands)", NativeName: "faka Tonga"},
 	{ID: 163, Code: [2]byte{'T', 'R'}, Name: "Turkish", NativeName: "Türkçe"},
 	{ID: 164, Code: [2]byte{'T', 'S'}, Name: "Tsonga", NativeName: "Xitsonga"},
-	{ID: 165, Code: [2]byte{'T', 'T'}, Name: "Tatar", NativeName: "татарча,tatarça,تاتارچا‎"},
+	{ID: 165, Code: [2]byte{'T', 'T'}, Name: "Tatar", NativeName: "татарча,tatarça,تاتارچا\u200e"},
 	{ID: 166, Code: [2]byte{'T', 'W'}, Name: "Twi", NativeName: "Twi"},
 	{ID: 167, Code: [2]byte{'T', 'Y'}, Name: "Tahitian", NativeName: "Reo Tahiti"},
-	{ID: 168, Code: [2]byte{'U', 'G'}, Name: "Uighur,Uyghur", NativeName: "Uyƣurqə,ئۇيغۇرچە‎"},
+	{ID: 168, Code: [2]byte{'U', 'G'}, Name: "Uighur,Uyghur", NativeName: "Uyƣurqə,ئۇيغۇرچە\u200e"},
 	{ID: 169, Code: [2]byte{'U', 'K'}, Name: "Ukrainian", NativeName: "українська"},
 	{ID: 170, Code: [2]byte{'U', 'R'}, Name: "Urdu", NativeName: "اردو"},
-	{ID: 171, Code: [2]byte{'U', 'Z'}, Name: "Uzbek", NativeName: "zbek,Ўзбек,أۇزبېك‎"},
+	{ID: 171, Code: [2]byte{'U', 'Z'}, Name: "Uzbek", NativeName: "zbek,Ўзбек,أۇزبېك\u200e"},
 	{ID: 172, Code: [2]byte{'V', 'E'}, Name: "Venda", NativeName: "Tshivenḓa"},
 	{ID: 173, Code: [2]byte{'V', 'I'}, Name: "Vietnamese", NativeName: "Tiếng Việt"},
 	{ID: 174, Code: [2]byte{'V', 'O'}, Name: "Volapük", NativeName: "Volapük"},
@@ -269,8 +269,9 @@ func GetLanguageByID(ID uint) *Language {
 /// Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
+//go:inline
 func IntCode(geoCode [2]byte) uint {
-	var code uint = (uint)(geoCode[0])
+	code := uint(geoCode[0])
 	code |= (uint)(geoCode[1]) << 8
 	return code
 }

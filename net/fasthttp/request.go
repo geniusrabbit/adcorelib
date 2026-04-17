@@ -34,7 +34,7 @@ func NewParamReader(ctx *fasthttp.RequestCtx) ParamReader {
 	}
 }
 
-// Param from reuqst
+// Param from request
 func (r ParamReader) Param(key string) string {
 	if r.Form != nil {
 		if v, ok := r.Form.Value[key]; ok {
@@ -44,5 +44,5 @@ func (r ParamReader) Param(key string) string {
 			return ""
 		}
 	}
-	return string(r.Args.Peek(key))
+	return string(r.Peek(key))
 }

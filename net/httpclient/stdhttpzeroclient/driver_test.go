@@ -14,7 +14,7 @@ func TestZeroAllocDriver(t *testing.T) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -28,7 +28,7 @@ func TestZeroAllocDriver(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Request execution failed: %v", err)
 	}
-	defer resp.Close()
+	defer func() { _ = resp.Close() }()
 
 	if resp.StatusCode() != 200 {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode())
@@ -45,7 +45,7 @@ func TestZeroAllocDriverWithHeaders(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -60,7 +60,7 @@ func TestZeroAllocDriverWithHeaders(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Request execution failed: %v", err)
 	}
-	defer resp.Close()
+	defer func() { _ = resp.Close() }()
 
 	if resp.StatusCode() != 200 {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode())
@@ -73,7 +73,7 @@ func TestZeroAllocDriverStringRequest(t *testing.T) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -86,7 +86,7 @@ func TestZeroAllocDriverStringRequest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Request execution failed: %v", err)
 	}
-	defer resp.Close()
+	defer func() { _ = resp.Close() }()
 
 	if resp.StatusCode() != 200 {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode())
@@ -103,7 +103,7 @@ func TestZeroAllocDriverJSONRequest(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -117,7 +117,7 @@ func TestZeroAllocDriverJSONRequest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Request execution failed: %v", err)
 	}
-	defer resp.Close()
+	defer func() { _ = resp.Close() }()
 
 	if resp.StatusCode() != 200 {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode())
@@ -134,7 +134,7 @@ func TestZeroAllocDriverFormRequest(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -152,7 +152,7 @@ func TestZeroAllocDriverFormRequest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Request execution failed: %v", err)
 	}
-	defer resp.Close()
+	defer func() { _ = resp.Close() }()
 
 	if resp.StatusCode() != 200 {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode())
@@ -202,7 +202,7 @@ func BenchmarkZeroAllocDriver(b *testing.B) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -220,7 +220,7 @@ func BenchmarkZeroAllocDriver(b *testing.B) {
 				b.Fatalf("Request execution failed: %v", err)
 			}
 
-			resp.Close()
+			_ = resp.Close()
 		}
 	})
 }
@@ -231,7 +231,7 @@ func BenchmarkZeroAllocDriverWithHeaders(b *testing.B) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -251,7 +251,7 @@ func BenchmarkZeroAllocDriverWithHeaders(b *testing.B) {
 			b.Fatalf("Request execution failed: %v", err)
 		}
 
-		resp.Close()
+		_ = resp.Close()
 	}
 }
 
@@ -261,7 +261,7 @@ func BenchmarkZeroAllocDriverStringRequest(b *testing.B) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -278,7 +278,7 @@ func BenchmarkZeroAllocDriverStringRequest(b *testing.B) {
 			b.Fatalf("Request execution failed: %v", err)
 		}
 
-		resp.Close()
+		_ = resp.Close()
 	}
 }
 
@@ -288,7 +288,7 @@ func BenchmarkZeroAllocDriverJSONRequest(b *testing.B) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -307,6 +307,6 @@ func BenchmarkZeroAllocDriverJSONRequest(b *testing.B) {
 			b.Fatalf("Request execution failed: %v", err)
 		}
 
-		resp.Close()
+		_ = resp.Close()
 	}
 }

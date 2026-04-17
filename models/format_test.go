@@ -11,7 +11,7 @@ func TestDirectFormat(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var format Format
 	if err = json.NewDecoder(f).Decode(&format); err != nil {

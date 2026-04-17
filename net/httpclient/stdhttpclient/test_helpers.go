@@ -20,7 +20,7 @@ func getGlobalTestServer() *httptest.Server {
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			// Simple, fast response for all requests
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("OK"))
+			_, _ = w.Write([]byte("OK"))
 		})
 
 		globalTestServer = httptest.NewServer(mux)

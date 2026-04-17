@@ -47,7 +47,7 @@ func ExampleBatchExecutor() {
 	// Clean up responses
 	for _, req := range result.Requests {
 		if req.Response != nil {
-			req.Response.Close()
+			_ = req.Response.Close()
 		}
 	}
 
@@ -82,7 +82,7 @@ func ExampleRateLimitedExecutor() {
 		}
 
 		fmt.Printf("Request %d completed with status %d\n", i+1, resp.StatusCode())
-		resp.Close()
+		_ = resp.Close()
 	}
 	elapsed := time.Since(start)
 
@@ -140,7 +140,7 @@ func ExampleConnectionPool() {
 		}
 
 		fmt.Printf("Request %d completed with status %d\n", i+1, resp.StatusCode())
-		resp.Close()
+		_ = resp.Close()
 	}
 
 	// Print statistics
@@ -193,7 +193,7 @@ func Example_chainedExecutors() {
 	// Clean up responses
 	for _, req := range result.Requests {
 		if req.Response != nil {
-			req.Response.Close()
+			_ = req.Response.Close()
 		}
 	}
 
@@ -246,7 +246,7 @@ func Example_withCustomDriver() {
 	// Clean up
 	for _, req := range result.Requests {
 		if req.Response != nil {
-			req.Response.Close()
+			_ = req.Response.Close()
 		}
 	}
 }

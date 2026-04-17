@@ -89,7 +89,7 @@ func (e *WinEvent) Ping() bool {
 		} else {
 			e.Response = ""
 		}
-		resp.Body.Close()
+		_ = resp.Body.Close()
 	}
 	return resp != nil && e.Error == nil && http.StatusOK == resp.StatusCode
 }

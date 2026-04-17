@@ -122,7 +122,7 @@ func (cp *ConnectionPool) WarmupConnections(ctx context.Context, hosts []string,
 				}
 
 				if resp != nil {
-					resp.Close()
+					_ = resp.Close()
 				}
 
 				cp.statsMutex.Lock()
@@ -211,7 +211,7 @@ func (cp *ConnectionPool) performHealthCheck() {
 			}
 
 			if resp != nil {
-				resp.Close()
+				_ = resp.Close()
 			}
 		}(host)
 	}

@@ -35,7 +35,7 @@ func TestIntegrationWithStdHTTPClient(t *testing.T) {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode())
 	}
 
-	resp.Close()
+	_ = resp.Close()
 }
 
 // TestChainedExecutorsWithStdHTTPClient demonstrates chaining multiple executors
@@ -76,7 +76,7 @@ func TestChainedExecutorsWithStdHTTPClient(t *testing.T) {
 	// Clean up
 	for _, req := range result.Requests {
 		if req.Response != nil {
-			req.Response.Close()
+			_ = req.Response.Close()
 		}
 	}
 
@@ -117,7 +117,7 @@ func BenchmarkIntegrationWithStdHTTPClient(b *testing.B) {
 		// Clean up
 		for _, req := range result.Requests {
 			if req.Response != nil {
-				req.Response.Close()
+				_ = req.Response.Close()
 			}
 		}
 	}

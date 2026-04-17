@@ -27,7 +27,7 @@ func TestRateLimitedExecutor_Basic(t *testing.T) {
 		t.Errorf("Expected status code 200, got %d", resp.StatusCode())
 	}
 
-	resp.Close()
+	_ = resp.Close()
 }
 
 func TestRateLimitedExecutor_RateLimiting(t *testing.T) {
@@ -53,7 +53,7 @@ func TestRateLimitedExecutor_RateLimiting(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to execute request: %v", err)
 		}
-		resp.Close()
+		_ = resp.Close()
 	}
 
 	elapsed := time.Since(start)
@@ -89,7 +89,7 @@ func TestRateLimitedExecutor_WithTimeout(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	resp.Close()
+	_ = resp.Close()
 }
 
 func TestRateLimitedExecutor_ContextCancellation(t *testing.T) {
@@ -107,7 +107,7 @@ func TestRateLimitedExecutor_ContextCancellation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to execute first request: %v", err)
 	}
-	resp.Close()
+	_ = resp.Close()
 
 	// Create second request
 	req2, err := executor.Request("GET", "http://example.com", nil)
@@ -160,7 +160,7 @@ func TestRateLimitedExecutor_StatsReset(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to execute request %d: %v", i, err)
 		}
-		resp.Close()
+		_ = resp.Close()
 	}
 
 	// Check initial stats
@@ -224,6 +224,6 @@ func BenchmarkRateLimitedExecutor_Execute(b *testing.B) {
 		if err != nil {
 			b.Fatalf("Failed to execute request: %v", err)
 		}
-		resp.Close()
+		_ = resp.Close()
 	}
 }

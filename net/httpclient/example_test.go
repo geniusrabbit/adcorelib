@@ -29,7 +29,7 @@ func Example() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Close()
+	defer func() { _ = resp.Close() }()
 
 	// Process the response
 	fmt.Printf("Status Code: %d\n", resp.StatusCode())

@@ -116,7 +116,7 @@ func TestBatchExecutor_Basic(t *testing.T) {
 		t.Errorf("Expected status code 200, got %d", resp.StatusCode())
 	}
 
-	resp.Close()
+	_ = resp.Close()
 }
 
 func TestBatchExecutor_ExecuteBatch(t *testing.T) {
@@ -309,6 +309,6 @@ func BenchmarkBatchExecutor_SingleRequest(b *testing.B) {
 			b.Fatalf("Failed to execute request: %v", err)
 		}
 
-		resp.Close()
+		_ = resp.Close()
 	}
 }

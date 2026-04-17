@@ -103,7 +103,7 @@ func (srv *Server) Shutdown() {
 	}
 
 	if srv.httpConnection != nil {
-		srv.httpConnection.Close()
+		_ = srv.httpConnection.Close()
 		srv.httpConnection = nil
 	}
 }

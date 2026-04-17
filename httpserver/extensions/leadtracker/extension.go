@@ -106,13 +106,14 @@ func (ext *Extension[LeadT]) eventLeadHandler(pixelType string) httphandler.ExtH
 			)
 		}
 
-		if pixelType == "js" {
+		switch pixelType {
+		case "js":
 			rctx.SetContentType("application/javascript")
 			dataCode = []byte(trakingJSCode)
-		} else if pixelType == "gif" {
+		case "gif":
 			rctx.SetContentType("image/gif")
 			dataCode = []byte(trakingGIFPixel)
-		} else {
+		default:
 			rctx.SetContentType("plain/text")
 		}
 		rctx.SetStatusCode(http.StatusOK)

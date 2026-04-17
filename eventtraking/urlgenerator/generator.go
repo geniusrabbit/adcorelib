@@ -43,16 +43,10 @@ func (g *Generator[E, L, UI]) Init() *Generator[E, L, UI] {
 	if g.Schema != "" && !strings.HasSuffix(g.Schema, "://") {
 		g.Schema = strings.TrimRight(g.Schema, ":/") + "://"
 	}
-	if !(false ||
-		strings.HasPrefix(g.CDNDomain, "http://") ||
-		strings.HasPrefix(g.CDNDomain, "https://") ||
-		strings.HasPrefix(g.CDNDomain, "//")) {
+	if !isFullURL(g.CDNDomain) {
 		g.CDNDomain = "//" + strings.TrimRight(g.CDNDomain, "/")
 	}
-	if !(false ||
-		strings.HasPrefix(g.LibDomain, "http://") ||
-		strings.HasPrefix(g.LibDomain, "https://") ||
-		strings.HasPrefix(g.LibDomain, "//")) {
+	if !isFullURL(g.LibDomain) {
 		g.LibDomain = "//" + strings.TrimRight(g.LibDomain, "/")
 	}
 	return g

@@ -11,7 +11,7 @@ func TestPerformanceConfig(t *testing.T) {
 	// Create a simple test server for this test
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -45,7 +45,7 @@ func TestPerformanceConfig(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Request execution failed: %v", err)
 			}
-			defer resp.Close()
+			defer func() { _ = resp.Close() }()
 
 			if resp.StatusCode() != 200 {
 				t.Errorf("Expected status 200, got %d", resp.StatusCode())
@@ -59,7 +59,7 @@ func TestObjectPooling(t *testing.T) {
 	// Create a simple test server for this test
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -79,7 +79,7 @@ func TestObjectPooling(t *testing.T) {
 		}
 
 		// Close should return objects to pool
-		resp.Close()
+		_ = resp.Close()
 	}
 }
 
@@ -93,7 +93,7 @@ func BenchmarkHighPerformanceDriver(b *testing.B) {
 	// Create a simple test server for this benchmark
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -129,7 +129,7 @@ func BenchmarkExtremePerformanceDriver(b *testing.B) {
 	// Create a simple test server for this benchmark
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -160,7 +160,7 @@ func BenchmarkObjectPooling(b *testing.B) {
 	// Create a simple test server for this benchmark
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -186,7 +186,7 @@ func BenchmarkObjectPooling(b *testing.B) {
 		}
 		if resp != nil {
 			// Response received - test response object pooling
-			resp.Close()
+			_ = resp.Close()
 		}
 	}
 

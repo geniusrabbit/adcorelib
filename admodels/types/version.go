@@ -103,7 +103,7 @@ func (v *Version) UnmarshalJSON(data []byte) error {
 }
 
 func (v *Version) SetFromStr(str string) error {
-	var major, minor, patch int = 0, 0, 0
+	var major, minor, patch int
 	if str != "" && str != "0" && str != "undefined" {
 		if _, err := fmt.Sscanf(str, "%d.%d.%d", &major, &minor, &patch); err != nil {
 			if _, err = fmt.Sscanf(str, "%d.%d", &major, &minor); err != nil {

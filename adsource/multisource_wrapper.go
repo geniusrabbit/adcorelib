@@ -312,8 +312,10 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 	if respErr == nil && len(response.Ads()) > 0 {
 		// Send bid events for each ad separately
 		for ad := range response.IterAds() {
-			eventType := events.Undefined
-			eventStatus := events.StatusSuccess
+			var (
+				eventType   events.Type
+				eventStatus = events.StatusSuccess
+			)
 			// Check ad response item
 			if err := ad.Validate(); err != nil {
 				if errors.Is(err, adtype.ErrResponseItemEmpty) || errors.Is(err, adtype.ErrResponseNoBid) {
