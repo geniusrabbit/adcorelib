@@ -13,6 +13,11 @@ func (wp minimalSourceWrapper) ObjectKey() uint64 { return 0 }
 // Protocol of the source driver
 func (wp minimalSourceWrapper) Protocol() string { return "undefined" }
 
+// Info returns information about the source platform and the source protocol
+func (wp minimalSourceWrapper) Info() *SourceInfo {
+	return &SourceInfo{ID: "undefined", Protocol: "undefined"}
+}
+
 // Test request before processing
 func (wp minimalSourceWrapper) Test(request BidRequester) bool { return true }
 

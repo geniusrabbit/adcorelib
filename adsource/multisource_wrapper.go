@@ -117,6 +117,15 @@ func (wrp *MultisourceWrapper) ObjectKey() uint64 { return 0 }
 // Protocol returns the protocol of the source driver
 func (wrp *MultisourceWrapper) Protocol() string { return "multisource" }
 
+// Info returns information about the source platform and the source protocol
+func (wrp *MultisourceWrapper) Info() *adtype.SourceInfo {
+	return &adtype.SourceInfo{
+		ID:       "multisource",
+		Protocol: "multisource",
+		Name:     "Multisource Wrapper",
+	}
+}
+
 // Test validates the request before processing
 func (wrp *MultisourceWrapper) Test(request adtype.BidRequester) bool { return true }
 

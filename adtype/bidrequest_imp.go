@@ -75,10 +75,10 @@ func (i *Impression) InitFormatsBySizeAndTypes(w, h, minw, minh int, formatTypes
 		minw, minh = minw-(minw/3), minh/3
 	}
 	if minw == 0 {
-		minw = w - (w / 8)
+		minw = w / 2
 	}
 	if minh == 0 {
-		minh = h - (h / 5)
+		minh = h / 3
 	}
 
 	// Extract formats by size

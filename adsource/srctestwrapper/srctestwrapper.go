@@ -1,6 +1,8 @@
 package srctestwrapper
 
 import (
+	"github.com/demdxx/gocast/v2"
+
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/openlatency"
@@ -32,6 +34,16 @@ func (w *sourceTester) ObjectKey() uint64 {
 // Protocol of the source driver
 func (w *sourceTester) Protocol() string {
 	return w.sourceInfo.Protocol
+}
+
+// Info returns information about the source platform and the source protocol
+func (w *sourceTester) Info() *adtype.SourceInfo {
+	return &adtype.SourceInfo{
+		ID:          gocast.Str(w.sourceInfo.ID),
+		Protocol:    w.sourceInfo.Protocol,
+		Name:        "Test Wrapper",
+		Description: "test-wrapper",
+	}
 }
 
 // Test current request for compatibility

@@ -4,6 +4,18 @@ import (
 	"time"
 )
 
+type SourceInfo struct {
+	ID          string         `json:"id"`
+	Protocol    string         `json:"protocol"`
+	Name        string         `json:"name,omitempty"`
+	Description string         `json:"description,omitempty"`
+	Domain      string         `json:"domain,omitempty"`
+	IconURL     string         `json:"icon_url,omitempty"`
+	LogoURL     string         `json:"logo_url,omitempty"`
+	URL         string         `json:"url,omitempty"`
+	Metadata    map[string]any `json:"metadata,omitempty"`
+}
+
 // SourceMinimal contains only minimal set of methods
 type SourceMinimal interface {
 	// Bid request for standart system filter
@@ -38,6 +50,9 @@ type Source interface {
 
 	// Protocol of the source driver
 	Protocol() string
+
+	// Info returns information about the source platform and the source protocol
+	Info() *SourceInfo
 
 	// PriceCorrectionReduceFactor which is a potential
 	// Returns percent from 0 to 1 for reducing of the value

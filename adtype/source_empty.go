@@ -20,6 +20,14 @@ func (*SourceEmpty) ObjectKey() uint64 { return 0 }
 // Protocol of the source driver
 func (*SourceEmpty) Protocol() string { return "undefined" }
 
+// Info returns information about the source platform and the source protocol
+func (*SourceEmpty) Info() *SourceInfo {
+	return &SourceInfo{
+		ID:       "<empty>",
+		Protocol: "undefined",
+	}
+}
+
 // Test request before processing
 func (*SourceEmpty) Test(request BidRequester) bool { return false }
 
