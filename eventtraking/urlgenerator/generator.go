@@ -206,7 +206,7 @@ func (g *Generator[E, L, UI]) encodeURL(pattern string, event events.Type, statu
 
 func (g *Generator[E, L, UI]) hostSchema() string {
 	if g.Schema == "" {
-		return "//"
+		return "https://"
 	}
 	return g.Schema
 }
@@ -219,5 +219,6 @@ func (g *Generator[E, L, UI]) hostDomain(response adtype.Response) string {
 }
 
 func isFullURL(url string) bool {
-	return strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "//")
+	return strings.HasPrefix(url, "http://") ||
+		strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "//")
 }

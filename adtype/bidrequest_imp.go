@@ -29,8 +29,9 @@ type Impression struct {
 	PurchaseViewPrice billing.Money `json:"purchase_view_price,omitempty"`
 
 	// Ad position
-	Pos   int `json:"pos,omitempty"` // 5.4 Ad Position
-	Count int `json:"cnt,omitempty"` // Count of places for multiple banners
+	Pos          int `json:"pos,omitempty"`  // 5.4 Ad Position
+	Count        int `json:"cnt,omitempty"`  // Count of places for multiple banners
+	Interstitial int `json:"intr,omitempty"` // 5.5 Interstitial or full screen display
 
 	// Sizes and position on the screen
 	X         int `json:"x,omitempty"`
@@ -122,6 +123,16 @@ func (i *Impression) Formats() (f []*types.Format) {
 	return i.formats
 }
 
+// FormatCodes of impression
+func (i *Impression) FormatByCode(code string) *types.Format {
+	for _, f := range i.formats {
+		if f.Codename == code {
+			return f
+		}
+	}
+	return nil
+}
+
 // FormatByType of formats
 func (i *Impression) FormatByType(tp types.FormatType) *types.Format {
 	for _, f := range i.formats {
@@ -181,6 +192,11 @@ func (i *Impression) IsStandart() bool {
 	return false ||
 		i.FormatTypes.Is(types.FormatBannerType) ||
 		i.FormatTypes.Is(types.FormatBannerHTML5Type)
+}
+
+// IsInterstitial returns true if the impression is interstitial
+func (i *Impression) IsInterstitial() bool {
+	return i.Interstitial == 1
 }
 
 // CommissionShareFactor which system get from publisher from 0 to 1

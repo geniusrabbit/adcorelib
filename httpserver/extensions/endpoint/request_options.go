@@ -12,23 +12,24 @@ import (
 
 // RequestOptions prepare
 type RequestOptions struct {
-	Debug       bool
-	Request     *fasthttp.RequestCtx
-	Count       int
-	X, Y        int
-	Width       int
-	WidthMax    int
-	Height      int
-	HeightMax   int
-	Page        string
-	Keywords    string
-	FormatCodes []string
-	FormatTypes []string
-	SubID1      string
-	SubID2      string
-	SubID3      string
-	SubID4      string
-	SubID5      string
+	Debug        bool
+	Request      *fasthttp.RequestCtx
+	Interstitial int
+	Count        int
+	X, Y         int
+	Width        int
+	WidthMax     int
+	Height       int
+	HeightMax    int
+	Page         string
+	Keywords     string
+	FormatCodes  []string
+	FormatTypes  []string
+	SubID1       string
+	SubID2       string
+	SubID3       string
+	SubID4       string
+	SubID5       string
 }
 
 // NewRequestOptions prepare
@@ -55,23 +56,24 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		).Filter(isNotEmptyString)
 	}
 	return &RequestOptions{
-		Debug:       debug,
-		Request:     ctx,
-		X:           gocast.Int(string(queryArgs.Peek("x"))),
-		Y:           gocast.Int(string(queryArgs.Peek("y"))),
-		Width:       minW,
-		WidthMax:    ifPositiveNumber(w, -1),
-		Height:      minH,
-		HeightMax:   ifPositiveNumber(h, -1),
-		FormatCodes: formatCodes,
-		FormatTypes: formatTypeCodes,
-		Keywords:    strings.Trim(peekOneFromQuery(queryArgs, "keywords", "keyword", "kw"), ", \t\n\r"),
-		SubID1:      peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
-		SubID2:      peekOneFromQuery(queryArgs, "subid2", "s2"),
-		SubID3:      peekOneFromQuery(queryArgs, "subid3", "s3"),
-		SubID4:      peekOneFromQuery(queryArgs, "subid4", "s4"),
-		SubID5:      peekOneFromQuery(queryArgs, "subid5", "s5"),
-		Count:       gocast.Int(peekOneFromQuery(queryArgs, "count")),
+		Debug:        debug,
+		Request:      ctx,
+		Interstitial: gocast.Int(string(queryArgs.Peek("intr"))),
+		X:            gocast.Int(string(queryArgs.Peek("x"))),
+		Y:            gocast.Int(string(queryArgs.Peek("y"))),
+		Width:        minW,
+		WidthMax:     ifPositiveNumber(w, -1),
+		Height:       minH,
+		HeightMax:    ifPositiveNumber(h, -1),
+		FormatCodes:  formatCodes,
+		FormatTypes:  formatTypeCodes,
+		Keywords:     strings.Trim(peekOneFromQuery(queryArgs, "keywords", "keyword", "kw"), ", \t\n\r"),
+		SubID1:       peekOneFromQuery(queryArgs, "subid1", "subid", "s1"),
+		SubID2:       peekOneFromQuery(queryArgs, "subid2", "s2"),
+		SubID3:       peekOneFromQuery(queryArgs, "subid3", "s3"),
+		SubID4:       peekOneFromQuery(queryArgs, "subid4", "s4"),
+		SubID5:       peekOneFromQuery(queryArgs, "subid5", "s5"),
+		Count:        gocast.Int(peekOneFromQuery(queryArgs, "count")),
 	}
 }
 

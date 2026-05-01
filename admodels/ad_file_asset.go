@@ -1,6 +1,6 @@
 //
-// @project GeniusRabbit corelib 2018 - 2019
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2018 - 2019
+// @project GeniusRabbit corelib 2018 - 2019, 2025
+// @author Dmitry Ponomarev <demdxx@gmail.com> 2018 - 2019, 2025
 //
 
 package admodels
@@ -35,12 +35,15 @@ func (th *AdFileAssetThumb) IsVideo() bool {
 // AdFileAsset information
 type AdFileAsset struct {
 	ID          uint64                `json:"id,omitempty"`
-	Name        string                `json:"name,omitempty"` // Name of the asset, like "main", "banner", "icon", etc.
-	URL         string                `json:"url,omitempty"`  // In case of HTML5, hare must be the path to directory on CDN
+	ExternalID  string                `json:"external_id,omitempty"` // ID of the asset in the source system, like VAST media file ID
+	Name        string                `json:"name,omitempty"`        // Name of the asset, like "main", "banner", "icon", etc.
+	AltText     string                `json:"alt_text,omitempty"`    // Alternative text for the asset, used for accessibility and as a fallback
+	URL         string                `json:"url,omitempty"`         // In case of HTML5, hare must be the path to directory on CDN
 	Type        types.AdFileAssetType `json:"type,omitempty"`
 	ContentType string                `json:"content_type,omitempty"`
 	Width       int                   `json:"width,omitempty"`
 	Height      int                   `json:"height,omitempty"`
+	Duration    int                   `json:"duration,omitempty"` // Duration in seconds, for video assets
 	Thumbs      []AdFileAssetThumb
 }
 
