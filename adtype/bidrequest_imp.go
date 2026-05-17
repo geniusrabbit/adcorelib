@@ -235,6 +235,14 @@ func (i *Impression) RequestObj() any {
 	return i.Request
 }
 
+// Size of the area of visibility for the ad
+func (i *Impression) Size() (w, h int) {
+	if i == nil {
+		return 0, 0
+	}
+	return i.Width, i.Height
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// OpenRTB methods
 ///////////////////////////////////////////////////////////////////////////////

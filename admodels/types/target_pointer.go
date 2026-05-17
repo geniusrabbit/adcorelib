@@ -51,6 +51,7 @@ type TargetPointer interface {
 	IsRobot() bool           // True if bot detected
 	IsProxy() bool           // True if proxy detected
 	IsIPv6() bool            // True if IP is IPv6
+	IsInterstitial() bool    // True if ad slot is interstitial (full-screen takeover)
 
 	// Device and environment
 	DeviceInfo() *DeviceInfo   // Full device info

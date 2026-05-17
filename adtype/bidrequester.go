@@ -94,6 +94,7 @@ type BidRequester interface {
 	Impressions() []*Impression                 // List of impressions
 	ImpressionUpdate(fn func(*Impression) bool) // Modify all impressions
 	ImpressionByID(id string) *Impression       // Exact match
+	TargetPointers() []types.TargetPointer      // TargetPointer interfaces for each impression
 
 	// Ext map manipulation
 	Get(key string) any      // Get ext value

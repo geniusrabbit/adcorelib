@@ -62,6 +62,7 @@ type BidRequest struct {
 	Request    any                    `json:"-"`                      // Original request from RTB or another protocol
 	Person     personification.Person `json:"-"`                      // Personification data
 	Imps       []*adtype.Impression   `json:"imps,omitempty"`         // List of impressions
+	targets    []types.TargetPointer  `json:"-"`                      // Cached target wrappers for impressions
 
 	AppTarget  *admodels.Application `json:"app_target,omitempty"` // Target application
 	Device     *udetect.Device       `json:"device,omitempty"`     // Device information
@@ -174,6 +175,21 @@ func (r *BidRequest) TargetIDs() []uint64 {
 		slices.Sort(r.targetIDs)
 	}
 	return r.targetIDs
+}
+
+// TargetPointers returns a slice of TargetPointer interfaces for each impression in the BidRequest.
+func (r *BidRequest) TargetPointers() []types.TargetPointer {
+	if r == nil {
+		return nil
+	}
+	if r.targets == nil {
+		targets := make([]types.TargetPointer, 0, len(r.Imps))
+		for _, imp := range r.Imps {
+			targets = append(targets, &BidTargetWrapper{BidReq: r, Imp: imp})
+		}
+		r.targets = targets
+	}
+	return r.targets
 }
 
 // ExtTargetIDs returns a slice of unique external target IDs from all impressions.
@@ -580,3 +596,5 @@ func (r *BidRequest) Release() {
 		}
 	}
 }
+
+var _ adtype.BidRequester = (*BidRequest)(nil)
