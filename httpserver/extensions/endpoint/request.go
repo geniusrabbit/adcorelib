@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 
@@ -131,6 +132,23 @@ func NewRequestFor(
 		if len(ccStr) > 0 {
 			req.User.Geo.Country = string(ccStr)
 		}
+		secureStr := opt.Request.QueryArgs().Peek("secure")
+		if len(secureStr) > 0 {
+			if secure, _ := strconv.ParseBool(string(secureStr)); secure {
+				req.StateFlags |= bidrequest.BidRequestFlagSecure
+			} else {
+				req.StateFlags &^= bidrequest.BidRequestFlagSecure
+			}
+		}
+		domainStr := opt.Request.QueryArgs().Peek("domain")
+		if len(domainStr) > 0 {
+			req.Site.Domain = string(domainStr)
+		}
+		// Replace hostname for url and referrer if domain override is provided
+		if len(domainStr) > 0 {
+			req.Site.Page = replaceDomain(req.Site.Page, string(domainStr), req.IsSecure())
+			req.Site.Referrer = replaceDomain(req.Site.Referrer, string(domainStr), req.IsSecure())
+		}
 	}
 	return req.WithFormats(formatAccessor)
 }
@@ -142,4 +160,28 @@ func NewRequestByContext(ctx context.Context, ectx *fasthttp.RequestCtx) (adtype
 		return nil, err
 	}
 	return request, nil
+}
+
+func replaceDomain(urlStr, newDomain string, secure bool) string {
+	if urlStr == "" {
+		return urlStr
+	}
+	parts := strings.SplitN(urlStr, "://", 2)
+	if len(parts) != 2 {
+		return urlStr
+	}
+	scheme, rest := parts[0], parts[1]
+	pathIndex := strings.Index(rest, "/")
+	var path string
+	if pathIndex != -1 {
+		path = rest[pathIndex:]
+	} else {
+		path = ""
+	}
+	if secure {
+		scheme = "https"
+	} else {
+		scheme = "http"
+	}
+	return scheme + "://" + newDomain + path
 }

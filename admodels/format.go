@@ -39,6 +39,8 @@ func FormatFromModel(format *models.Format) *types.Format {
 		fmtp.Set(types.FormatDirectType)
 	case format.IsProxy() && conf.RequiredFieldExcept(models.FormatFieldContent) == nil:
 		fmtp.Set(types.FormatProxyType)
+	case format.IsBanner():
+		fmtp.Set(types.FormatBannerType)
 	default:
 		if asset := conf.SimpleAsset(); asset != nil {
 			if asset.IsHTML5Support() {

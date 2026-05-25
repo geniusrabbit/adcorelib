@@ -358,7 +358,17 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 //
 //go:inline
 func (fl *BaseFilter) TestFormat(f *Format) bool {
-	return len(fl.Formats) < 1 || fl.Formats.IndexOf(f.Codename) >= 0
+	return len(fl.Formats) == 0 || fl.Formats.IndexOf(f.Codename) >= 0
+}
+
+// TestInterstitialFormat reports whether format f is permitted by the InterstitialFormats allowlist.
+// An empty InterstitialFormats slice permits every format.
+// Note: does not consider Formats; call [BaseFilter.Test] for context-aware
+// format matching that respects [TargetPointer.IsInterstitial].
+//
+//go:inline
+func (fl *BaseFilter) TestInterstitialFormat(f *Format) bool {
+	return len(fl.InterstitialFormats) == 0 || fl.InterstitialFormats.IndexOf(f.Codename) >= 0
 }
 
 // checkUintArr reports whether the single value v satisfies the filter arr

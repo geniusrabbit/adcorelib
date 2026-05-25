@@ -22,6 +22,7 @@ const (
 	FormatTypeVideo  = `video`
 	FormatTypeProxy  = `proxy`
 	FormatTypeNative = `native`
+	FormatTypeBanner = `banner`
 )
 
 // Format model description
@@ -88,4 +89,9 @@ func (f Format) IsProxy() bool {
 // IsNative type of format
 func (f Format) IsNative() bool {
 	return f.Type == FormatTypeNative || strings.HasPrefix(f.Codename, FormatTypeNative)
+}
+
+// IsBanner type of format
+func (f Format) IsBanner() bool {
+	return f.Type == FormatTypeBanner || strings.HasPrefix(f.Codename, FormatTypeBanner)
 }
