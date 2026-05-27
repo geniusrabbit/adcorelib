@@ -1,6 +1,8 @@
 package trafaret
 
 import (
+	"reflect"
+
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 )
@@ -12,9 +14,10 @@ type Filler struct {
 
 // Push adds ads to the filler collection, grouping them by impression ID.
 func (f *Filler) Push(priority float32, ads ...adtype.ResponseItemCommon) {
-	if len(ads) == 0 {
+	if ads = filterNilAds(ads); len(ads) == 0 {
 		return
 	}
+
 	// Check if all ads share the same impression ID.
 	impID := ads[0].ImpressionID()
 	oneImpression := true
@@ -197,4 +200,27 @@ func adSize(ad adtype.ResponseItemCommon) int {
 	default:
 		return 1
 	}
+}
+
+func isNilAd(ad adtype.ResponseItemCommon) bool {
+	if ad == nil {
+		return true
+	}
+	v := reflect.ValueOf(ad)
+	switch v.Kind() {
+	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Func, reflect.Chan:
+		return v.IsNil()
+	default:
+		return false
+	}
+}
+
+func filterNilAds(ads []adtype.ResponseItemCommon) []adtype.ResponseItemCommon {
+	filtered := ads[:0]
+	for _, ad := range ads {
+		if !isNilAd(ad) {
+			filtered = append(filtered, ad)
+		}
+	}
+	return filtered
 }

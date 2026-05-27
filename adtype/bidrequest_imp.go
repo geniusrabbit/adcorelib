@@ -256,7 +256,7 @@ func (i *Impression) ContextType() openrtbnreq.ContextTypeID {
 // ContextSubType IDs 7.4
 // @link https://www.iab.com/wp-content/uploads/2016/03/OpenRTB-Native-Ads-Specification-1-1_2016.pdf
 func (i *Impression) ContextSubType() openrtbnreq.ContextSubTypeID {
-	return openrtbnreq.ContextSubTypeGeneral
+	return 0 // openrtbnreq.ContextSubTypeGeneral
 }
 
 // PlacementType IDs 7.5

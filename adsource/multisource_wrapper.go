@@ -38,6 +38,7 @@ package adsource
 import (
 	"context"
 	"errors"
+	"reflect"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -312,6 +313,9 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 	if respErr == nil && len(response.Ads()) > 0 {
 		// Send bid events for each ad separately
 		for ad := range response.IterAds() {
+			if isNil(ad) {
+				continue
+			}
 			var (
 				eventType   events.Type
 				eventStatus = events.StatusSuccess
@@ -353,11 +357,13 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 
 //go:inline
 func isNil(v any) bool {
-	switch vv := v.(type) {
-	case nil:
+	if v == nil {
 		return true
-	case any:
-		return vv == nil
+	}
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Func, reflect.Chan:
+		return rv.IsNil()
 	}
 	return false
 }
