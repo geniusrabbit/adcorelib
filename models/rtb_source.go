@@ -22,6 +22,7 @@ const (
 
 type RTBSourceFlags struct {
 	Trace        int8 `json:"trace,omitempty"`
+	TestMode     int8 `json:"test_mode,omitempty"`
 	ErrorsIgnore int8 `json:"errors_ignore,omitempty"`
 }
 

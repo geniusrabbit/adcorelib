@@ -44,7 +44,7 @@ type AdFileAsset struct {
 	Width       int                   `json:"width,omitempty"`
 	Height      int                   `json:"height,omitempty"`
 	Duration    int                   `json:"duration,omitempty"` // Duration in seconds, for video assets
-	Thumbs      []AdFileAssetThumb
+	Thumbs      []AdFileAssetThumb    `json:"thumbs,omitempty"`
 }
 
 // ThumbBy size borders and specific type

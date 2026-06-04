@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 
 	"golang.org/x/exp/constraints"
 
@@ -46,7 +47,7 @@ func MoneyInt[T constraints.Integer](amount T) Money {
 
 // String implementation of Stringer interface
 func (m Money) String() string {
-	return fmt.Sprintf("%.09f", m.Float64())
+	return strings.TrimRight(fmt.Sprintf("%.09f", m.Float64()), "0")
 }
 
 // Float64 value from money
