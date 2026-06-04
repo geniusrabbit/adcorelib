@@ -70,3 +70,16 @@ func ContentPreparer(response Response, item ResponseItem) *strings.Replacer {
 	}
 	return strings.NewReplacer(args...)
 }
+
+// ContentMappingPreparer returns a strings.Replacer that can be used to replace macros in ad content with actual values from the item's content mapping. It looks for a ContentMapping method on the item and uses it to create the replacer. If no ContentMapping is provided, it returns nil.
+func ContentMappingPreparer(response Response, item ResponseItem) *strings.Replacer {
+	if prep := item.(interface{ ContentMapping() map[string]string }); prep != nil {
+		mapping := prep.ContentMapping()
+		args := make([]string, 0, len(mapping)*2)
+		for k, v := range mapping {
+			args = append(args, k, v)
+		}
+		return strings.NewReplacer(args...)
+	}
+	return nil
+}
