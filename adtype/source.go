@@ -1,9 +1,16 @@
 package adtype
 
 import (
+	"path/filepath"
+	"strings"
 	"time"
 )
 
+// SourceInfo contains information about the source platform and the source protocol
+// It contains the name, description, domain, icon URL, logo URL, URL, DSP domains, and metadata
+// DSP domains is a list of domains that are used to serve DSP traffic
+// Metadata is a map of metadata about the source platform
+// It is used to store additional information about the source platform
 type SourceInfo struct {
 	ID          string         `json:"id"`
 	Protocol    string         `json:"protocol"`
@@ -13,7 +20,35 @@ type SourceInfo struct {
 	IconURL     string         `json:"icon_url,omitempty"`
 	LogoURL     string         `json:"logo_url,omitempty"`
 	URL         string         `json:"url,omitempty"`
+	DSPDomains  []string       `json:"dsp_domains,omitempty"` // ["*.dsp.domain.com"]
 	Metadata    map[string]any `json:"metadata,omitempty"`
+}
+
+// IsDSPDomain checks if the domain is a DSP domain
+// It checks if the domain is a suffix of the DSP domain or if the domain matches the DSP domain pattern
+func (s *SourceInfo) IsDSPDomain(domain string) bool {
+	for _, dspDomain := range s.DSPDomains {
+		if strings.HasSuffix(domain, dspDomain) {
+			return true
+		}
+		if matched, _ := filepath.Match(dspDomain, domain); matched {
+			return true
+		}
+	}
+	return false
+}
+
+// SourceInfoList is a list of SourceInfo
+type SourceInfoList []*SourceInfo
+
+// SourceInfoByID returns the SourceInfo by ID
+func (l SourceInfoList) SourceInfoByDSPDomain(domain string) *SourceInfo {
+	for _, source := range l {
+		if source.IsDSPDomain(domain) {
+			return source
+		}
+	}
+	return nil
 }
 
 // SourceMinimal contains only minimal set of methods

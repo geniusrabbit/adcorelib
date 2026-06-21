@@ -6,6 +6,7 @@
 package admodels
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/geniusrabbit/gosql/v2"
@@ -141,4 +142,13 @@ func (s *RTBSource) PriceCorrectionReduceFactor() float64 {
 // Weight of the source for ad selection
 func (s *RTBSource) Weight() float64 {
 	return s.MinimalWeight
+}
+
+// Domain of the source
+func (s *RTBSource) Domain() string {
+	u, err := url.Parse(s.URL)
+	if err != nil {
+		return ""
+	}
+	return u.Host
 }
