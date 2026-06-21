@@ -82,6 +82,7 @@ func NewRequestFor(
 				FormatCodes:  opt.FormatCodes,
 				Count:        max(opt.Count, 1),
 				Interstitial: opt.Interstitial,
+				Push:         opt.Push,
 				X:            opt.X,
 				Y:            opt.Y,
 				Width:        opt.Width,

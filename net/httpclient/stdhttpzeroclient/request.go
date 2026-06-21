@@ -4,8 +4,6 @@ import (
 	"io"
 	"net/http"
 	"sync"
-
-	"golang.org/x/exp/maps"
 )
 
 // FastRequest is a zero-allocation request implementation for high-performance scenarios.
@@ -61,7 +59,7 @@ func (r *FastRequest) Reset() {
 	r.url = ""
 	r.body = nil
 	r.headersMu.Lock()
-	maps.Clear(r.headers)
+	clear(r.headers)
 	r.headersMu.Unlock()
 }
 

@@ -81,16 +81,22 @@ func (rle *RateLimitedExecutor) Execute(ctx context.Context, req httpclient.Requ
 	rle.totalRequests++
 	rle.statsMutex.Unlock()
 
+	// Snapshot the channel fields under the lock to avoid races with UpdateRate.
+	rle.stopMutex.RLock()
+	limiter := rle.rateLimiter
+	stopChan := rle.stopChan
+	rle.stopMutex.RUnlock()
+
 	// Wait for rate limiter
 	select {
-	case <-rle.rateLimiter:
+	case <-limiter:
 		// Got permission to proceed
 		rle.statsMutex.Lock()
 		rle.totalExecuted++
 		rle.statsMutex.Unlock()
 	case <-ctx.Done():
 		return nil, ctx.Err()
-	case <-rle.stopChan:
+	case <-stopChan:
 		return nil, context.Canceled
 	}
 
@@ -122,9 +128,15 @@ func (rle *RateLimitedExecutor) refillRateLimiter() {
 
 // refillTokens adds tokens to the rate limiter up to the configured limit.
 func (rle *RateLimitedExecutor) refillTokens() {
-	for i := 0; i < rle.requestsPerSecond; i++ {
+	// Snapshot mutable fields under the lock to avoid races with UpdateRate.
+	rle.stopMutex.RLock()
+	rps := rle.requestsPerSecond
+	limiter := rle.rateLimiter
+	rle.stopMutex.RUnlock()
+
+	for i := 0; i < rps; i++ {
 		select {
-		case rle.rateLimiter <- struct{}{}:
+		case limiter <- struct{}{}:
 			// Token added successfully
 		default:
 			// Rate limiter is full, stop adding tokens
@@ -168,6 +180,11 @@ func (rle *RateLimitedExecutor) Stop() {
 
 // Stats returns rate limiter statistics.
 func (rle *RateLimitedExecutor) Stats() RateLimiterStats {
+	rle.stopMutex.RLock()
+	rps := rle.requestsPerSecond
+	limiter := rle.rateLimiter
+	rle.stopMutex.RUnlock()
+
 	rle.statsMutex.RLock()
 	defer rle.statsMutex.RUnlock()
 
@@ -177,13 +194,13 @@ func (rle *RateLimitedExecutor) Stats() RateLimiterStats {
 	}
 
 	return RateLimiterStats{
-		RequestsPerSecond: rle.requestsPerSecond,
+		RequestsPerSecond: rps,
 		TotalRequests:     rle.totalRequests,
 		TotalExecuted:     rle.totalExecuted,
 		TotalThrottled:    rle.totalThrottled,
 		ThrottleRate:      throttleRate,
-		QueueSize:         len(rle.rateLimiter),
-		QueueCapacity:     cap(rle.rateLimiter),
+		QueueSize:         len(limiter),
+		QueueCapacity:     cap(limiter),
 	}
 }
 

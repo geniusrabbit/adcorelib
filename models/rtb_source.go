@@ -26,6 +26,10 @@ type RTBSourceFlags struct {
 	ErrorsIgnore int8 `json:"errors_ignore,omitempty"`
 }
 
+type RTBSourceConfig struct {
+	Rules string `json:"rules,omitempty"`
+}
+
 // RTBSource for SSP connect
 type RTBSource struct {
 	ID        uint64 `json:"id" gorm:"primaryKey"`
@@ -76,7 +80,7 @@ type RTBSource struct {
 	PrivateBrowsing     int                                      `json:"private_browsing,omitempty"`                        // 0 - any, 1 - only, 2 - exclude
 	IP                  int                                      `json:"ip,omitempty"`                                      // 0 - any, 1 - IPv4, 2 - IPv6
 
-	Config gosql.NullableJSON[any] `gorm:"type:JSONB" json:"config,omitempty"`
+	Config gosql.NullableJSON[RTBSourceConfig] `gorm:"type:JSONB" json:"config"`
 
 	// Time marks
 	CreatedAt time.Time      `json:"created_at"`

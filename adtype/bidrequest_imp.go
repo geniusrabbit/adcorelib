@@ -29,9 +29,10 @@ type Impression struct {
 	PurchaseViewPrice billing.Money `json:"purchase_view_price,omitempty"`
 
 	// Ad position
-	Pos          int `json:"pos,omitempty"`  // 5.4 Ad Position
-	Count        int `json:"cnt,omitempty"`  // Count of places for multiple banners
-	Interstitial int `json:"intr,omitempty"` // 5.5 Interstitial or full screen display
+	Pos          int  `json:"pos,omitempty"`  // 5.4 Ad Position
+	Count        int  `json:"cnt,omitempty"`  // Count of places for multiple banners
+	Interstitial bool `json:"intr,omitempty"` // Interstitial or full screen display
+	Push         bool `json:"push,omitempty"` // Push notification
 
 	// Sizes and position on the screen
 	X         int `json:"x,omitempty"`
@@ -196,7 +197,12 @@ func (i *Impression) IsStandart() bool {
 
 // IsInterstitial returns true if the impression is interstitial
 func (i *Impression) IsInterstitial() bool {
-	return i.Interstitial == 1
+	return i.Interstitial
+}
+
+// IsPush returns true if the impression is push notification
+func (i *Impression) IsPush() bool {
+	return i.Push
 }
 
 // CommissionShareFactor which system get from publisher from 0 to 1

@@ -6,7 +6,6 @@ import (
 	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
 	useragent "github.com/mileusna/useragent"
-	"golang.org/x/exp/constraints"
 )
 
 func deviceType(ua *useragent.UserAgent) udetect.DeviceType {
@@ -37,7 +36,7 @@ func isEmpty(uid uuid.UUID) bool {
 	return true
 }
 
-func b2i[R constraints.Integer | constraints.Float](b bool) R {
+func b2i[R ~int | ~int8](b bool) R {
 	if b {
 		return 1
 	}

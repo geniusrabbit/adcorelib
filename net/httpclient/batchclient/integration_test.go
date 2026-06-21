@@ -3,6 +3,8 @@ package batchclient_test
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -11,8 +13,19 @@ import (
 	"github.com/geniusrabbit/adcorelib/net/httpclient/stdhttpclient"
 )
 
+func newTestServer() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status":"ok"}`))
+	}))
+}
+
 // TestIntegrationWithStdHTTPClient demonstrates that batchclient works with stdhttpclient
 func TestIntegrationWithStdHTTPClient(t *testing.T) {
+	srv := newTestServer()
+	defer srv.Close()
+
 	// Create a standard HTTP client driver
 	driver := stdhttpclient.NewDriver()
 
@@ -20,7 +33,7 @@ func TestIntegrationWithStdHTTPClient(t *testing.T) {
 	batchExecutor := batchclient.NewBatchExecutor(driver, 10)
 
 	// Test basic driver interface methods
-	req, err := batchExecutor.Request("GET", "https://httpbin.org/json", nil)
+	req, err := batchExecutor.Request("GET", srv.URL+"/json", nil)
 	if err != nil {
 		t.Fatalf("Failed to create request: %v", err)
 	}
@@ -40,6 +53,9 @@ func TestIntegrationWithStdHTTPClient(t *testing.T) {
 
 // TestChainedExecutorsWithStdHTTPClient demonstrates chaining multiple executors
 func TestChainedExecutorsWithStdHTTPClient(t *testing.T) {
+	srv := newTestServer()
+	defer srv.Close()
+
 	// Create base driver
 	driver := stdhttpclient.NewDriver()
 
@@ -51,7 +67,7 @@ func TestChainedExecutorsWithStdHTTPClient(t *testing.T) {
 	// Create multiple requests
 	var requests []httpclient.Request
 	for i := 0; i < 5; i++ {
-		req, err := batchExecutor.Request("GET", "https://httpbin.org/json", nil)
+		req, err := batchExecutor.Request("GET", srv.URL+"/json", nil)
 		if err != nil {
 			t.Fatalf("Failed to create request %d: %v", i, err)
 		}
@@ -95,13 +111,16 @@ func TestChainedExecutorsWithStdHTTPClient(t *testing.T) {
 
 // BenchmarkIntegrationWithStdHTTPClient benchmarks the integration
 func BenchmarkIntegrationWithStdHTTPClient(b *testing.B) {
+	srv := newTestServer()
+	defer srv.Close()
+
 	driver := stdhttpclient.NewDriver()
 	batchExecutor := batchclient.NewBatchExecutor(driver, 50)
 
 	// Create requests
 	var requests []httpclient.Request
 	for i := 0; i < 100; i++ {
-		req, err := batchExecutor.Request("GET", "https://httpbin.org/json", nil)
+		req, err := batchExecutor.Request("GET", srv.URL+"/json", nil)
 		if err != nil {
 			b.Fatalf("Failed to create request %d: %v", i, err)
 		}

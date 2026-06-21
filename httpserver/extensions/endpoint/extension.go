@@ -279,7 +279,13 @@ func (ext *Extension) requestByHTTPRequest(ctx context.Context, person personifi
 		app, _ = ext.appAccessor.AppByURI(ctx, domain(string(rctx.Referer())))
 	}
 
+	// Prepare request options
+	reqOpt, err := NewRequestOptions(rctx)
+	if err != nil {
+		ctxlogger.Get(ctx).Warn("Invalid request options", zap.Error(err))
+		return nil
+	}
+
 	// Create request for the target
-	return NewRequestFor(ctx, app, target, person,
-		NewRequestOptions(rctx), ext.formatAccessor)
+	return NewRequestFor(ctx, app, target, person, reqOpt, ext.formatAccessor)
 }

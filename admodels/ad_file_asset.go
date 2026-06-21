@@ -38,7 +38,7 @@ type AdFileAsset struct {
 	ExternalID  string                `json:"external_id,omitempty"` // ID of the asset in the source system, like VAST media file ID
 	Name        string                `json:"name,omitempty"`        // Name of the asset, like "main", "banner", "icon", etc.
 	AltText     string                `json:"alt_text,omitempty"`    // Alternative text for the asset, used for accessibility and as a fallback
-	URL         string                `json:"url,omitempty"`         // In case of HTML5, hare must be the path to directory on CDN
+	URL         string                `json:"url,omitempty"`         // In case of HTML5, here must be the path to directory on CDN
 	Type        types.AdFileAssetType `json:"type,omitempty"`
 	ContentType string                `json:"content_type,omitempty"`
 	Width       int                   `json:"width,omitempty"`

@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -14,13 +15,14 @@ import (
 type RequestOptions struct {
 	Debug        bool
 	Request      *fasthttp.RequestCtx
-	Interstitial int
 	Count        int
 	X, Y         int
 	Width        int
 	WidthMax     int
 	Height       int
 	HeightMax    int
+	Interstitial bool
+	Push         bool
 	Page         string
 	Keywords     string
 	FormatCodes  []string
@@ -33,7 +35,7 @@ type RequestOptions struct {
 }
 
 // NewRequestOptions prepare
-func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
+func NewRequestOptions(ctx *fasthttp.RequestCtx) (*RequestOptions, error) {
 	var (
 		queryArgs        = ctx.QueryArgs()
 		w, h, minW, minH = getSizeByCtx(ctx)
@@ -42,7 +44,12 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		formatCodes      []string
 		formatTypes      = strings.Trim(string(queryArgs.Peek("type")), ", \t\n\r")
 		formatTypeCodes  []string
+		isIntr           = gocast.Bool(string(queryArgs.Peek("intr")))
+		isPush           = gocast.Bool(string(queryArgs.Peek("push")))
 	)
+	if isIntr && isPush {
+		return nil, fmt.Errorf("invalid request: both interstitial and push cannot be true")
+	}
 	if formats != "" && formats != "auto" && formats != "all" {
 		formatCodes = xtypes.SliceApply(
 			strings.Split(formats, ","),
@@ -58,13 +65,14 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 	return &RequestOptions{
 		Debug:        debug,
 		Request:      ctx,
-		Interstitial: gocast.Int(string(queryArgs.Peek("intr"))),
 		X:            gocast.Int(string(queryArgs.Peek("x"))),
 		Y:            gocast.Int(string(queryArgs.Peek("y"))),
 		Width:        minW,
 		WidthMax:     ifPositiveNumber(w, -1),
 		Height:       minH,
 		HeightMax:    ifPositiveNumber(h, -1),
+		Interstitial: isIntr,
+		Push:         isPush,
 		FormatCodes:  formatCodes,
 		FormatTypes:  formatTypeCodes,
 		Keywords:     strings.Trim(peekOneFromQuery(queryArgs, "keywords", "keyword", "kw"), ", \t\n\r"),
@@ -74,7 +82,7 @@ func NewRequestOptions(ctx *fasthttp.RequestCtx) *RequestOptions {
 		SubID4:       peekOneFromQuery(queryArgs, "subid4", "s4"),
 		SubID5:       peekOneFromQuery(queryArgs, "subid5", "s5"),
 		Count:        gocast.Int(peekOneFromQuery(queryArgs, "count")),
-	}
+	}, nil
 }
 
 // NewDirectRequestOptions prepare

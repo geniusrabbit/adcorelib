@@ -7,18 +7,21 @@ package searchtypes
 
 import (
 	"sort"
-
-	"golang.org/x/exp/constraints"
 )
 
+// Integer type constraint for generic NumberBitset
+type Integer interface {
+	~uint | ~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint8 | ~uint16 | ~uint32 | ~uint64
+}
+
 // NumberBitset any numbers
-type NumberBitset[T constraints.Integer] struct {
+type NumberBitset[T Integer] struct {
 	values []T
 	mask   uint64
 }
 
 // NewNumberBitset from numbers
-func NewNumberBitset[T constraints.Integer](vals ...T) (b *NumberBitset[T]) {
+func NewNumberBitset[T Integer](vals ...T) (b *NumberBitset[T]) {
 	return (&NumberBitset[T]{}).Set(vals...)
 }
 

@@ -15,9 +15,6 @@ import (
 	"github.com/geniusrabbit/adcorelib/models"
 )
 
-// RTBRequestType contains type of representation of request information
-type RTBRequestType = types.RTBRequestType
-
 // Request types
 const (
 	RTBRequestTypeUndefined       = types.RTBRequestTypeUndefined
@@ -28,7 +25,14 @@ const (
 	RTBRequestTypePLAINTEXT       = types.RTBRequestTypePLAINTEXT
 )
 
-type RTBSourceFlags = models.RTBSourceFlags
+type (
+	// RTBRequestType contains type of representation of request information
+	RTBRequestType = types.RTBRequestType
+	// RTBSourceConfig contains configuration for the RTB source
+	RTBSourceConfig = models.RTBSourceConfig
+	// RTBSourceFlags contains flags for the RTB source
+	RTBSourceFlags = models.RTBSourceFlags
+)
 
 // RTBSource describe the source of external DSP platform or similar exchange protocol.
 // All that sources have similar options and very common prefilter configurations
@@ -61,7 +65,7 @@ type RTBSource struct {
 	Budget      billing.Money // Budget for this source
 	DailyBudget billing.Money // Daily budget for this source
 
-	Config gosql.NullableJSON[any]
+	Config RTBSourceConfig
 }
 
 // RTBSourceFromModel convert database model to specified model
@@ -113,7 +117,7 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 		MinBid: billing.MoneyFloat(cl.MinBid),
 		MaxBid: billing.MoneyFloat(cl.MaxBid),
 
-		Config: cl.Config,
+		Config: cl.Config.DataOr(RTBSourceConfig{}),
 	}
 }
 
