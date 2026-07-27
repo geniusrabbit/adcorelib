@@ -65,7 +65,7 @@ func (st ProcessingStatus) Code() string {
 
 // Value implements the driver.Valuer interface, json field interface
 func (st ProcessingStatus) Value() (driver.Value, error) {
-	return []byte(st.Code()), nil
+	return st.Code(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

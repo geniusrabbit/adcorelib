@@ -1,6 +1,5 @@
 //
-// @project GeniusRabbit corelib 2016 - 2018
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2016 - 2018
+// @project GeniusRabbit corelib
 //
 
 package types
@@ -47,7 +46,7 @@ func (st PrivateStatus) IsPrivate() bool {
 
 // Value implements the driver.Valuer interface, json field interface
 func (st PrivateStatus) Value() (driver.Value, error) {
-	return []byte(st.Name()), nil
+	return st.Name(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface

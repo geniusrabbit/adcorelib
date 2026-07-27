@@ -101,7 +101,7 @@ func (ft AdFileAssetType) IsUndefined() bool {
 
 // Value implements the driver.Valuer interface, json field interface
 func (ft AdFileAssetType) Value() (driver.Value, error) {
-	return []byte(ft.Code()), nil
+	return ft.Code(), nil
 }
 
 // Scan implements the driver.Valuer interface, json field interface
