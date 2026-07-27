@@ -1,0 +1,17 @@
+# Degenerate case of banner.yaml: the classic single fixed-size banner
+# (still used in places, but per the underlying task's own assessment an
+# increasingly legacy pattern) — `sizes` with exactly one, non-flexible
+# element, so a UI never needs to show a size picker (Format.IsFixedSize
+# would report true here).
+id: 1
+codename: banner_300x250
+title: "Banner 300x250"
+kind: banner
+sizes:
+  - {width: 300, height: 250}
+config:
+  children:
+    - kind: asset
+      asset: {name: main, required: true, width: 300, height: 250, allow_animated: true, allowed_types: [image, html5]}
+    - kind: field
+      field: {name: url, title: "Click-through URL", type: url}

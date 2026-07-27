@@ -1,0 +1,114 @@
+# The top-level `bindings` (outside `config`) associate the whole format
+# with the second, independent adapter adformat/openrtbvideo (§3.2.12,
+# Target = "openrtb_video"): protocols/apis/linearity are real OpenRTB
+# Video object fields that have no, and should not have, a
+# protocol-agnostic equivalent on AssetRequirement — unlike
+# duration_min/max/allow_sound on the `main` asset, already fully
+# covered by the generic model and not duplicated in the binding.
+#
+# The `tracking` group demonstrates fire-and-forget pixels (§3.2.16,
+# the VAST-specific adapter adformat/vasttracking), as opposed to `url`
+# below (an ordinary navigational click-through link):
+# impression_trackers/complete_trackers are not a single link but up to
+# 5 independent URLs each (Field.MinCount/MaxCount, §3.2.15) — several
+# simultaneous viewability-verification vendors.
+#
+# `main` also demonstrates the video-specific §3.2.1 gap #4 fields
+# (bitrate_min/max, allowed_codecs, allowed_framerates) needed by
+# stricter TV/VAST specs beyond duration alone, plus `safe_zone` (gap
+# #2): the player overlays a skip button/countdown in the bottom-right
+# corner, so that corner must stay clear of essential creative content.
+# `companion` shows the accessibility gap #3 (alt_text).
+id: 4
+codename: video_preroll
+title: "Video Pre-roll"
+kind: video
+tags: [preroll, in-stream, skippable]
+bindings:
+  - target: openrtb_video
+    params:
+      protocols: [2, 3, 5, 6] # VAST 2.0/3.0/4.0/4.1 (OpenRTB Video.protocols values)
+      apis: [1, 2] # VPAID 1.0/2.0
+      linearity: 1 # Linear
+config:
+  children:
+    - kind: asset
+      asset:
+        name: main
+        required: true
+        min_width: 640
+        max_width: 1920
+        min_height: 360
+        max_height: 1080
+        allow_animated: true
+        allow_sound: true
+        duration_min: 5
+        duration_max: 30
+        bitrate_min: 500
+        bitrate_max: 8000
+        allowed_codecs: [h264, vp9]
+        allowed_framerates: [24, 25, 29.97, 30]
+        allowed_types: [video]
+        safe_zone: # bottom-right corner is reserved for the player's skip/countdown control
+          bottom: 0.15
+          right: 0.2
+    - kind: asset
+      asset:
+        name: companion
+        width: 300 # exact size
+        height: 250
+        allowed_types: [image]
+        alt_text:
+          required: true
+          max_length: 100
+    - kind: field
+      field:
+        name: title
+        title: Title
+        type: string
+        max: 100
+    - kind: field
+      field:
+        name: skip_after
+        title: "Allow skip after (sec)"
+        type: int
+        min: 0
+        max: 30
+    - kind: field # demonstrates Options (was Select) — §3.2.3
+      field:
+        name: position
+        title: "Allowed playback position"
+        type: string
+        options:
+          - {value: preroll, title: "Pre-roll"}
+          - {value: midroll, title: "Mid-roll"}
+          - {value: postroll, title: "Post-roll"}
+    - kind: field
+      field:
+        name: url
+        title: "Click-through URL"
+        type: url
+    - kind: group # demonstrates tracking pixels (§3.2.16)
+      group:
+        name: tracking
+        children:
+          - kind: field
+            field:
+              name: impression_trackers
+              title: "Impression tracking pixels"
+              type: url
+              min_count: 0
+              max_count: 5 # several verification vendors at once (IAS, DoubleVerify, ...)
+              bindings:
+                - target: vast_tracking
+                  params: {event: impression}
+          - kind: field
+            field:
+              name: complete_trackers
+              title: "Complete tracking pixels"
+              type: url
+              min_count: 0
+              max_count: 5
+              bindings:
+                - target: vast_tracking
+                  params: {event: complete}

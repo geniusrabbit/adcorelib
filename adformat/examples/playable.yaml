@@ -1,0 +1,42 @@
+# Rich mobile ad (playable / interactive end card), per the industry
+# research in §3.2.2 (MRAID 3.0, Meta/Unity Ads/Moloco playable specs,
+# IAB New Ad Portfolio). `main` is the single self-contained HTML5 file
+# (per playable-network specs, inlined, with no outbound network calls
+# of its own); `resource` is an optional bundle of helper files of the
+# same role, whose count is not fixed (min_count/max_count) — the same
+# "resource bundle" case discussed for interactive HTML5 banners
+# (§3.4, argument #2). `orientations: [portrait, landscape]` is a new
+# Format-level field (not per-asset), since it is a requirement on the
+# creative as a whole, not any one file. The CTA end-card click/redirect
+# and the mandatory MRAID close control are outside adformat — host/
+# MRAID-container behavior, not creative structure (§3.2.2).
+id: 6
+codename: playable_interstitial
+title: "Playable Interstitial (HTML5)"
+kind: banner
+tags: [playable, interstitial, mraid, expandable]
+sizes:
+  - {width: 320, height: 480}
+orientations: [portrait, landscape]
+config:
+  children:
+    - kind: asset
+      asset:
+        name: main
+        required: true
+        allowed_types: [html5]
+        max_file_size: 5242880 # 5 MB — typical Meta/Unity Ads/Moloco limit for playable/IEC
+    - kind: asset # helper bundle: css/js/fonts/sprites packaged alongside main.html
+      asset:
+        name: resource
+        required: false
+        min_count: 0
+        max_count: 50 # see argument #2 in §3.4 — HTML5-banner resource bundle
+        allowed_types: [image, video, html5]
+        max_file_size: 2097152 # 2 MB per resource file
+    - kind: field
+      field:
+        name: url
+        title: "Store / click-through URL"
+        type: url
+        required: true

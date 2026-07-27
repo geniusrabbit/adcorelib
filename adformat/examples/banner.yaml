@@ -1,0 +1,31 @@
+# Demonstrates Format.Sizes (§3.2.13) instead of the old fixed
+# Width/Height: two exact sizes plus one flexible option (for matching
+# third-party iframe slots) in a single format — one uploaded image
+# (resizable: true + a range on the asset covering the whole spread)
+# serves whichever of the offered sizes the creative picks after upload.
+id: 1
+codename: banner_flex
+title: "Banner (multi-size)"
+kind: banner
+sizes:
+  - {title: "Medium Rectangle 300x250", width: 300, height: 250, default: true}
+  - {title: "Square 250x250", width: 250, height: 250}
+  - {title: "Flexible (iframe)", flexible: true, min_width: 250, max_width: 970, min_height: 90, max_height: 415}
+config:
+  children:
+    - kind: asset
+      asset:
+        name: main
+        required: true
+        resizable: true # one image serves the whole spread of sizes in `sizes`
+        min_width: 250
+        max_width: 970
+        min_height: 90
+        max_height: 415
+        allow_animated: true
+        allowed_types: [image, html5]
+    - kind: field
+      field:
+        name: url
+        title: "Click-through URL"
+        type: url

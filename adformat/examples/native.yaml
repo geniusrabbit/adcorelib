@@ -1,0 +1,130 @@
+# `adtype`/`phone` directly illustrate conditional fields (§3.2.5): phone
+# is active (shown and, if required, enforced) only when adtype equals
+# "business" — for "game"/"app" it is inactive and not validated/required.
+# Condition never overrides Required — a required field marked with a
+# Condition means "required when active", not "always required".
+#
+# `bindings: [{target: openrtb_native, ...}]` on every asset/field except
+# `adtype`/`categories` (which have no direct OpenRTB Native equivalent —
+# purely internal format logic) demonstrates §3.2.12: explicit, stable
+# ids instead of the name-based guessing adsource-openrtb does today.
+#
+# `categories` demonstrates Field.MinCount/MaxCount (§3.2.15): a
+# multi-select of 1-3 values out of Options, not a single choice.
+#
+# `main` also demonstrates two §3.2.1 gaps: `aspect_ratio` as a more
+# readable alternative/addition to the min/max width-height range
+# (matching the classic "1.91:1" native-image spec used by Facebook/
+# Google-style exchanges) and `alt_text`, an accessibility requirement
+# now expected by an increasing number of exchanges.
+id: 3
+codename: native
+title: "Native Ad"
+kind: native
+config:
+  children:
+    - kind: asset
+      asset:
+        name: main
+        required: true
+        resizable: true # was adjust_size
+        min_width: 50
+        max_width: 1500 # was a bare "width: 1500" with min_width set
+        min_height: 50
+        max_height: 1500
+        aspect_ratio: "1.91:1" # readable alternative/addition to the width/height range (§3.2.1 gap #1)
+        thumbs: # structured, instead of ["250x","350x","500x"]
+          - {width: 250}
+          - {width: 350}
+          - {width: 500}
+        allowed_types: [image, video]
+        focal_point: # focus point, MGID-native style — not an action,
+          enabled: true # just a coordinate for the display client (CSS object-position-like)
+          default: [0.5, 0.5] # center, unless the advertiser picked one
+        alt_text: # accessibility requirement (§3.2.1 gap #3)
+          required: true
+          max_length: 100
+        bindings: # explicit association with OpenRTB Native (§3.2.12)
+          - target: openrtb_native
+            params: {id: 1, image_type: 3} # openrtbnative.ImageTypeMain
+    - kind: asset
+      asset:
+        name: logo
+        min_width: 50
+        max_width: 100
+        min_height: 50
+        max_height: 100
+        allowed_types: [image]
+        bindings:
+          - target: openrtb_native
+            params: {id: 2, image_type: 2} # openrtbnative.ImageTypeLogo
+    - kind: field
+      field:
+        name: title
+        title: Title
+        type: string
+        required: true
+        min: 5
+        max: 40
+        bindings:
+          - target: openrtb_native
+            params: {id: 3} # title asset — id only, length comes from `max` (§3.2.12)
+    - kind: field
+      field:
+        name: description
+        title: Description
+        type: string
+        required: true
+        min: 5
+        max: 80
+        bindings:
+          - target: openrtb_native
+            params: {id: 4, data_type: 2} # openrtbnative.DataTypeDesc
+    - kind: field
+      field:
+        name: brandname
+        title: Brandname
+        type: string
+        max: 30
+        bindings:
+          - target: openrtb_native
+            params: {id: 5, data_type: 1} # openrtbnative.DataTypeSponsored
+    - kind: field # demonstrates Options (§3.2.3)
+      field:
+        name: adtype
+        title: "Advertiser type"
+        type: string
+        options:
+          - {value: business, title: "Business"}
+          - {value: game, title: "Game"}
+          - {value: app, title: "App"}
+    - kind: field
+      field:
+        name: phone
+        title: Phone
+        type: phone
+        condition: # demonstrates Condition (§3.2.5) — shown/required
+          field: adtype # only for "business" advertisers
+          in: [business]
+        bindings:
+          - target: openrtb_native
+            params: {id: 6, data_type: 8} # openrtbnative.DataTypePhone
+    - kind: field
+      field:
+        name: url
+        title: "Promotion URL"
+        type: url
+        bindings:
+          - target: openrtb_native
+            params: {id: 7, data_type: 11} # openrtbnative.DataTypeDisplayURL
+    - kind: field # demonstrates Field.MinCount/MaxCount (§3.2.15) — multi-select from Options
+      field:
+        name: categories
+        title: Categories
+        type: string
+        min_count: 1
+        max_count: 3
+        options:
+          - {value: electronics, title: Electronics}
+          - {value: fashion, title: Fashion}
+          - {value: home, title: "Home & Garden"}

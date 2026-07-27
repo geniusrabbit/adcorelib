@@ -1,0 +1,7 @@
+# A popunder/direct format needs no media assets or fields at all — the
+# ad is served through the advertiser's direct link.
+id: 2
+codename: direct
+title: "Direct / Popunder"
+kind: direct
+tags: [popunder]

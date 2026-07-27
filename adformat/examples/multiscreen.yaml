@@ -1,0 +1,79 @@
+# Structural multi-screen interactive banner: screens and the
+# transitions between them are described explicitly in the schema
+# (§3.2.11) — this is for a format that a renderer (an SSP/SDK player)
+# assembles from structured assets/fields per screen, as opposed to a
+# self-contained HTML5 bundle where the screen graph lives inside the
+# file's own JS (see playable.yaml) and adformat does not need to know
+# about it at all.
+#
+# `intro`/`offer` are distinctly-named (non-repeating) screens, each
+# with its own set of assets/fields — recursion through Config.Children/
+# Node (§3.2.7), which in YAML looks like several `kind: group` nodes at
+# one level of `children`. `entry: true` marks the starting screen;
+# `navigate_to` on cta_label/back_label is a fixed, format-author-chosen
+# transition (including the reserved "$back" command). `hotspot` is a
+# repeatable (§3.5) group where each instance is bound to one of the
+# screens by the advertiser themselves via screen_ref, not hardcoded by
+# the format.
+id: 7
+codename: multiscreen_banner
+title: "Multi-screen Interactive Banner"
+kind: banner
+tags: [expandable, multi-screen]
+sizes:
+  - {width: 320, height: 480}
+config:
+  children:
+    - kind: group
+      group:
+        name: intro
+        entry: true # starting screen, §3.2.11
+        children:
+          - kind: asset
+            asset: {name: background, required: true, allowed_types: [image]}
+          - kind: field
+            field: {name: headline, title: Headline, type: string, max: 40}
+          - kind: field
+            field:
+              name: cta_label
+              title: "Button label"
+              type: string
+              max: 20
+              navigate_to: offer # tapping this button switches to the "offer" screen
+    - kind: group
+      group:
+        name: offer
+        children:
+          - kind: param # demonstrates Param (§3.2.14) — hidden from the advertiser, only for the renderer
+            param: {name: renderer_layout_id, value: "offer_v2"}
+          - kind: asset
+            asset: {name: background, required: true, allowed_types: [image]}
+          - kind: field
+            field: {name: offer_text, title: "Offer text", type: string, max: 80}
+          - kind: field
+            field:
+              name: back_label
+              title: "Back button label"
+              type: string
+              max: 20
+              navigate_to: "$back" # reserved command — go back, not a screen name
+          - kind: field
+            field: {name: url, title: "Click-through URL", type: url}
+    - kind: group # optional repeatable element — the advertiser places their own hotspots
+      group:
+        name: hotspot
+        min_count: 0
+        max_count: 5
+        children:
+          - kind: asset
+            asset: {name: icon, required: true, allowed_types: [image]}
+          - kind: field
+            field: {name: label, title: Label, type: string, max: 30}
+          - kind: field
+            field:
+              name: target_screen # the advertiser picks the target screen themselves (screen_ref, §3.2.11)
+              title: "Target screen"
+              type: screen_ref
+              options:
+                - {value: intro, title: "Intro"}
+                - {value: offer, title: "Offer"}

@@ -1,0 +1,54 @@
+# `icon` is a mandatory small icon, `main` is an optional larger creative
+# that can be either an image or a video (allowed_types: [image, video],
+# duration_max applies only when it is a video) — the typical push-ad
+# pairing (icon + big picture/video).
+id: 5
+codename: push_ad
+title: "Push Notification Ad"
+kind: push
+tags: [notification]
+config:
+  children:
+    - kind: asset
+      asset:
+        name: icon
+        required: true
+        min_width: 48
+        max_width: 192
+        min_height: 48
+        max_height: 192
+        allowed_types: [image]
+    - kind: asset
+      asset:
+        name: main
+        required: false
+        min_width: 300
+        max_width: 1200
+        min_height: 157
+        max_height: 628
+        allow_animated: true
+        duration_max: 15
+        allowed_types: [image, video]
+        focal_point: # different OS/launchers render the push image at different ratios
+          enabled: true
+          default: [0.5, 0.5]
+    - kind: field
+      field:
+        name: title
+        title: Title
+        type: string
+        required: true
+        max: 65
+    - kind: field
+      field:
+        name: description
+        title: Description
+        type: string
+        required: true
+        max: 120
+    - kind: field
+      field:
+        name: url
+        title: "Click-through URL"
+        type: url
+        required: true
