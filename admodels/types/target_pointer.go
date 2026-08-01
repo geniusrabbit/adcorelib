@@ -67,11 +67,14 @@ type TargetPointer interface {
 	DomainName() string        // Main domain or bundle name
 	GeoID() uint64             // Geo ID
 	GeoInfo() *GeoInfo         // Geo info
+	CountryCode() string       // Country code
 	CarrierInfo() *CarrierInfo // Carrier info
 	LanguageID() uint64        // Browser language
+	LanguageCode() string      // Browser language code
 
 	// TargetID of the specific point
 	TargetID() uint64
+	ExtarnalTargetID() string
 
 	Sex() uint // Sex of the user
 	Age() uint // Age in years

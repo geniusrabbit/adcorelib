@@ -17,6 +17,24 @@ type BidTargetWrapper struct {
 	Imp    *adtype.Impression
 }
 
+// CountryCode implements [types.TargetPointer].
+func (b *BidTargetWrapper) CountryCode() string {
+	return b.BidReq.GeoInfo().Country
+}
+
+// ExtarnalTargetID implements [types.TargetPointer].
+func (b *BidTargetWrapper) ExtarnalTargetID() string {
+	return b.Imp.ExternalTargetID
+}
+
+// LanguageCode implements [types.TargetPointer].
+func (b *BidTargetWrapper) LanguageCode() string {
+	if langs := b.BidReq.BrowserInfo().Languages; len(langs) > 0 {
+		return langs[0]
+	}
+	return ""
+}
+
 // Age returns the estimated age of the user in years.
 func (b *BidTargetWrapper) Age() uint {
 	return b.BidReq.Age()

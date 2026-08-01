@@ -1,24 +1,33 @@
 package adtype
 
-import "github.com/geniusrabbit/adcorelib/rand"
+import (
+	"encoding/hex"
+
+	"github.com/google/uuid"
+)
 
 // NewRequestID generates new unique request ID
 //
 //go:inline
 func NewRequestID() string {
-	return rand.UUID()
+	return GenSomeID()
 }
 
 // NewImpressionID generates new unique impression ID
 //
 //go:inline
 func NewImpressionID() string {
-	return rand.UUID()
+	return GenSomeID()
 }
 
 // NewAdResponseItemID generates new unique ad response item ID
 //
 //go:inline
 func NewAdResponseItemID() string {
-	return rand.UUID()
+	return GenSomeID()
+}
+
+func GenSomeID() string {
+	newUUID := uuid.New()
+	return hex.EncodeToString(newUUID[:])
 }

@@ -37,7 +37,7 @@ require (
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.3.0 // indirect
-	github.com/IBM/sarama v1.60.0 // indirect
+	github.com/IBM/sarama v1.60.1 // indirect
 	github.com/andybalholm/brotli v1.2.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -79,11 +79,11 @@ require (
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260727163830-6c54dddc4772 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260727163830-6c54dddc4772 // indirect
-	google.golang.org/grpc v1.82.1 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260729162451-8efbd57d26e0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260729162451-8efbd57d26e0 // indirect
+	google.golang.org/grpc v1.83.0 // indirect
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.2 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20260727163830-6c54dddc4772
+replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20260729162451-8efbd57d26e0
