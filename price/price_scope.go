@@ -6,9 +6,6 @@ import (
 )
 
 type PriceScope struct {
-	// TestMode represents the flag for the test budget usage for the view price.
-	TestMode bool `json:"test_mode,omitempty"`
-
 	// MaxBidImpPrice represents the maximum price for the bid on the auction.
 	MaxBidImpPrice billing.Money `json:"max_bid_imp_price,omitempty"`
 

@@ -21,6 +21,11 @@ func Wrap(sourceInfo *admodels.RTBSource, source adtype.SourceMinimal) adtype.So
 	return &sourceTester{SourceMinimal: source, sourceInfo: sourceInfo}
 }
 
+// AccountID of the source driver
+func (w *sourceTester) AccountID() uint64 {
+	return w.sourceInfo.Account.ID()
+}
+
 // ID of the source driver
 func (w *sourceTester) ID() uint64 {
 	return w.sourceInfo.ID

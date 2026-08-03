@@ -143,9 +143,6 @@ type ResponseItem interface {
 	// ECPM returns the Effective Cost Per Mille (thousand impressions) value of the advertisement.
 	ECPM() billing.Money
 
-	// PriceTestMode indicates whether the price is in test mode.
-	PriceTestMode() bool
-
 	// Price returns the total price for a specific action (e.g., click, lead, view).
 	Price(action Action) billing.Money
 

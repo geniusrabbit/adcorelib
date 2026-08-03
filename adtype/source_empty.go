@@ -11,6 +11,9 @@ func (*SourceEmpty) Bid(request BidRequester) Response { return nil }
 // ProcessResponseItem result or error
 func (*SourceEmpty) ProcessResponseItem(Response, ResponseItem) {}
 
+// AccountID of the source driver
+func (*SourceEmpty) AccountID() uint64 { return 0 }
+
 // ID of the source driver
 func (*SourceEmpty) ID() uint64 { return 0 }
 

@@ -109,6 +109,9 @@ func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 	return wrp, nil
 }
 
+// AccountID returns the account ID of the source driver
+func (wrp *MultisourceWrapper) AccountID() uint64 { return 0 }
+
 // ID returns the ID of the source driver
 func (wrp *MultisourceWrapper) ID() uint64 { return 0 }
 

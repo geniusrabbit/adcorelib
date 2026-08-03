@@ -4,6 +4,9 @@ type minimalSourceWrapper struct {
 	source SourceMinimal
 }
 
+// AccountID of the source driver
+func (wp minimalSourceWrapper) AccountID() uint64 { return 0 }
+
 // ID of the source driver
 func (wp minimalSourceWrapper) ID() uint64 { return 0 }
 

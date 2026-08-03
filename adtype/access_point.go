@@ -9,4 +9,7 @@ package adtype
 type AccessPoint interface {
 	// ID of the access point
 	ID() uint64
+
+	// AccountID of the access point
+	AccountID() uint64
 }

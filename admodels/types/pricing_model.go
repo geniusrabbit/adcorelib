@@ -15,16 +15,16 @@ import (
 )
 
 // PricingModel value
-// CREATE TYPE PricingModel AS ENUM ('undefined', 'CPM', 'CPC', 'CPA')
+// CREATE TYPE PricingModel AS ENUM ('undefined', 'CPM', 'CPMV', 'CPC', 'CPA')
 type PricingModel uint8
 
 // PricingModel consts
 const (
 	PricingModelUndefined PricingModel = iota
 	PricingModelCPM
+	PricingModelCPMV
 	PricingModelCPC
 	PricingModelCPA
-	PricingModelCPV
 )
 
 // PricingModelByName string
@@ -32,12 +32,12 @@ func PricingModelByName(model string) PricingModel {
 	switch strings.ToUpper(model) {
 	case `CPM`, `1`:
 		return PricingModelCPM
-	case `CPC`, `2`:
+	case `CPMV`, `2`:
+		return PricingModelCPMV
+	case `CPC`, `3`:
 		return PricingModelCPC
-	case `CPA`, `3`:
+	case `CPA`, `4`:
 		return PricingModelCPA
-	case `CPV`, `4`:
-		return PricingModelCPV
 	}
 	return PricingModelUndefined
 }
@@ -59,8 +59,8 @@ func (pm PricingModel) Name() string {
 	switch pm {
 	case PricingModelCPM:
 		return `CPM`
-	case PricingModelCPV:
-		return `CPV`
+	case PricingModelCPMV:
+		return `CPMV`
 	case PricingModelCPC:
 		return `CPC`
 	case PricingModelCPA:
@@ -76,11 +76,11 @@ func (pm PricingModel) IsCPM() bool {
 	return pm == PricingModelCPM
 }
 
-// IsCPV model
+// IsCPMV model
 //
 //go:inline
-func (pm PricingModel) IsCPV() bool {
-	return pm == PricingModelCPV
+func (pm PricingModel) IsCPMV() bool {
+	return pm == PricingModelCPMV
 }
 
 // IsCPC model

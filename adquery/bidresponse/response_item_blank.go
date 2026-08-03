@@ -125,9 +125,6 @@ func (it *ResponseItemBlank) FixedPurchasePrice(action adtype.Action) billing.Mo
 // ECPM returns the effective cost per mille of the item.
 func (it *ResponseItemBlank) ECPM() billing.Money { return it.PriceScope.ECPM }
 
-// PriceTestMode returns true if the price is in test mode
-func (it *ResponseItemBlank) PriceTestMode() bool { return it.PriceScope.TestMode }
-
 // Price per specific action type (view, click, lead, etc)
 func (it *ResponseItemBlank) Price(action adtype.Action) billing.Money {
 	return it.PriceScope.PricePerAction(action)

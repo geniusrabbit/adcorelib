@@ -329,54 +329,6 @@ func TestPriceScope_PrepareBidViewPrice(t *testing.T) {
 	}
 }
 
-func TestPriceScope_CompleteWorkflow(t *testing.T) {
-	// Test a complete workflow scenario
-	ps := PriceScope{
-		TestMode:       true,
-		MaxBidImpPrice: billing.MoneyFloat(10.0),
-		BidImpPrice:    billing.MoneyFloat(8.0), // Set initial bid price
-		ImpPrice:       billing.MoneyFloat(2.0),
-		ClickPrice:     billing.MoneyFloat(4.0),
-		LeadPrice:      billing.MoneyFloat(8.0),
-		ECPM:           billing.MoneyFloat(5.0),
-	}
-
-	// Test all action types
-	if got := ps.PricePerAction(adtype.ActionImpression); got != billing.MoneyFloat(2.0) {
-		t.Errorf("ImpressionPrice = %v, want %v", got, billing.MoneyFloat(2.0))
-	}
-
-	if got := ps.PricePerAction(adtype.ActionClick); got != billing.MoneyFloat(4.0) {
-		t.Errorf("ClickPrice = %v, want %v", got, billing.MoneyFloat(4.0))
-	}
-
-	if got := ps.PricePerAction(adtype.ActionLead); got != billing.MoneyFloat(8.0) {
-		t.Errorf("LeadPrice = %v, want %v", got, billing.MoneyFloat(8.0))
-	}
-
-	// Test setting bid impression price (should succeed because 6.0 < 8.0 current bid)
-	if !ps.SetBidImpressionPrice(billing.MoneyFloat(6.0), false) {
-		t.Error("SetBidImpressionPrice should succeed for valid price")
-	}
-	if ps.BidImpPrice != billing.MoneyFloat(6.0) {
-		t.Errorf("BidImpPrice = %v, want %v", ps.BidImpPrice, billing.MoneyFloat(6.0))
-	}
-
-	// Test setting impression price
-	if !ps.SetImpressionPrice(billing.MoneyFloat(3.0), false) {
-		t.Error("SetImpressionPrice should succeed for valid price")
-	}
-	if ps.ImpPrice != billing.MoneyFloat(3.0) {
-		t.Errorf("ImpPrice = %v, want %v", ps.ImpPrice, billing.MoneyFloat(3.0))
-	}
-
-	// Test prepare bid impression price
-	prepared := ps.PrepareBidImpressionPrice(billing.MoneyFloat(12.0))
-	if prepared != billing.MoneyFloat(10.0) {
-		t.Errorf("PrepareBidImpressionPrice = %v, want %v", prepared, billing.MoneyFloat(10.0))
-	}
-}
-
 func TestPriceScope_EdgeCases(t *testing.T) {
 	t.Run("All zero values", func(t *testing.T) {
 		ps := PriceScope{}

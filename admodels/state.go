@@ -7,7 +7,6 @@ type State interface {
 	TotalProfit() billing.Money
 	Spend() billing.Money
 	TotalSpend() billing.Money
-	TestSpend() billing.Money
 	Imps() uint64
 	Views() uint64
 	Clicks() uint64

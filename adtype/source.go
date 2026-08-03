@@ -75,6 +75,10 @@ type SourceTimeoutSetter interface {
 // Source of advertisement and where will be selled the traffic
 type Source interface {
 	SourceMinimal
+
+	// AccountID of the source driver
+	AccountID() uint64
+
 	SourceTesteChecker
 
 	// ID of the source driver
