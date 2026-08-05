@@ -15,8 +15,8 @@ import (
 
 	"github.com/geniusrabbit/adcorelib/adquery/bidresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype/prices"
 	"github.com/geniusrabbit/adcorelib/billing"
-	"github.com/geniusrabbit/adcorelib/price"
 )
 
 type titem struct {
@@ -258,9 +258,9 @@ func newItem(impid string, bid int64) adtype.ResponseItem {
 	return &bidresponse.ResponseItemBlank{
 		Src: nil,
 		Imp: &adtype.Impression{ID: impid},
-		PriceScope: price.PriceScope{
-			ECPM:        billing.MoneyInt(bid),
-			BidImpPrice: billing.MoneyInt(bid) / 1000,
+		PriceScope: prices.PriceScope{
+			ECPM:     billing.MoneyInt(bid),
+			CPMScope: prices.CPMScope{BidCPM: billing.MoneyInt(bid)},
 		},
 	}
 }

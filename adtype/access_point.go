@@ -5,6 +5,8 @@
 
 package adtype
 
+import "github.com/geniusrabbit/adcorelib/admodels/types"
+
 // AccessPoint is the DSP source
 type AccessPoint interface {
 	// ID of the access point
@@ -12,4 +14,7 @@ type AccessPoint interface {
 
 	// AccountID of the access point
 	AccountID() uint64
+
+	// Pricing model
+	PricingModel() types.PricingModel
 }

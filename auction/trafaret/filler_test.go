@@ -6,8 +6,8 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adquery/bidresponse"
 	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype/prices"
 	"github.com/geniusrabbit/adcorelib/billing"
-	"github.com/geniusrabbit/adcorelib/price"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,7 +28,7 @@ func TestFiller(t *testing.T) {
 		Src:             &src1,
 		FormatVal:       &format1,
 		PricingModelVal: types.PricingModelCPM,
-		PriceScope:      price.PriceScope{ECPM: billing.MoneyFloat(1.0)},
+		PriceScope:      prices.PriceScope{ECPM: billing.MoneyFloat(1.0)},
 	}
 
 	ad2 := &bidresponse.ResponseItemBlank{
@@ -37,7 +37,7 @@ func TestFiller(t *testing.T) {
 		Src:             &src1,
 		FormatVal:       &format1,
 		PricingModelVal: types.PricingModelCPM,
-		PriceScope:      price.PriceScope{ECPM: billing.MoneyFloat(0.5)},
+		PriceScope:      prices.PriceScope{ECPM: billing.MoneyFloat(0.5)},
 	}
 
 	ad3 := &bidresponse.ResponseItemBlank{
@@ -46,7 +46,7 @@ func TestFiller(t *testing.T) {
 		Src:             &src1,
 		FormatVal:       &format1,
 		PricingModelVal: types.PricingModelCPM,
-		PriceScope:      price.PriceScope{ECPM: billing.MoneyFloat(2.0)},
+		PriceScope:      prices.PriceScope{ECPM: billing.MoneyFloat(2.0)},
 	}
 
 	adx1 := &bidresponse.ResponseItemBlock{

@@ -6,8 +6,8 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/adtype/prices"
 	"github.com/geniusrabbit/adcorelib/billing"
-	"github.com/geniusrabbit/adcorelib/price"
 )
 
 // ResponseItemBlank value
@@ -19,7 +19,7 @@ type ResponseItemBlank struct {
 	FormatVal *types.Format
 
 	PricingModelVal types.PricingModel
-	PriceScope      price.PriceScope
+	PriceScope      prices.PriceScope
 }
 
 // ID of current response item (unique code of current response)
@@ -123,53 +123,46 @@ func (it *ResponseItemBlank) FixedPurchasePrice(action adtype.Action) billing.Mo
 }
 
 // ECPM returns the effective cost per mille of the item.
-func (it *ResponseItemBlank) ECPM() billing.Money { return it.PriceScope.ECPM }
+func (it *ResponseItemBlank) ECPM() billing.Money { return it.PriceScope.EffectiveCPM() }
 
 // Price per specific action type (view, click, lead, etc)
 func (it *ResponseItemBlank) Price(action adtype.Action) billing.Money {
 	return it.PriceScope.PricePerAction(action)
 }
 
-// BidImpressionPrice returns bid price for the external auction source.
-// The current bid price will be adjusted according to the source correction factor and the commission share factor
-func (it *ResponseItemBlank) BidImpressionPrice() billing.Money {
-	return it.PriceScope.BidImpPrice
+// SetBidPrice sets the current bid price for the given action. If withCommission
+// is true, the price is grossed up by the discrepancy corrections and the
+// commission share before being stored.
+func (it *ResponseItemBlank) SetBidPrice(action adtype.Action, bid billing.Money, withCommission bool) error {
+	return it.PriceScope.SetBidPrice(action, bid, it, withCommission)
 }
 
-// SetBidImpressionPrice value for external sources auction the system will pay
-func (it *ResponseItemBlank) SetBidImpressionPrice(bid billing.Money) error {
-	if !it.PriceScope.SetBidImpressionPrice(bid, false) {
-		return adtype.ErrNewAuctionBidIsHigherThenMaxBid
-	}
-	return nil
-}
-
-// PrepareBidImpressionPrice prepares the price for the action
-// The price is adjusted according to the source correction factor and the commission share factor
-func (it *ResponseItemBlank) PrepareBidImpressionPrice(price billing.Money) billing.Money {
-	return it.PriceScope.PrepareBidImpressionPrice(price)
+// PrepareBidPrice prepares the bid price for the given action by clamping it
+// to the maximal allowed bid of that action (if defined).
+func (it *ResponseItemBlank) PrepareBidPrice(action adtype.Action, p billing.Money) billing.Money {
+	return it.PriceScope.PrepareBidPerAction(action, p)
 }
 
 // PurchasePrice gives the price of view from external resource.
 // The cost of this request.
 func (it *ResponseItemBlank) PurchasePrice(action adtype.Action) billing.Money {
-	return price.CalculatePurchasePrice(it, action)
+	return it.PriceScope.PublisherPricePerAction(action, it)
 }
 
 // PotentialPrice wich can be received from source but was marked as descrepancy
 func (it *ResponseItemBlank) PotentialPrice(action adtype.Action) billing.Money {
-	return price.CalculatePotentialPrice(it, action)
+	return it.PriceScope.PotentialPricePerAction(action)
 }
 
 // FinalPrice returns final price for the item which is including all possible commissions with all corrections
 func (it *ResponseItemBlank) FinalPrice(action adtype.Action) billing.Money {
-	return price.CalculateFinalPrice(it, action)
+	return it.PriceScope.AdvertiserPricePerAction(action, it)
 }
 
 // InternalAuctionCPMBid value provides maximal possible price without any comission
 // According to this value the system can choice the best item for the auction
 func (it *ResponseItemBlank) InternalAuctionCPMBid() billing.Money {
-	return price.CalculateInternalAuctionBid(it)
+	return it.ECPM()
 }
 
 // Second campaigns
@@ -186,11 +179,17 @@ func (it *ResponseItemBlank) CommissionShareFactor() float64 {
 
 // SourceCorrectionFactor value for the source
 func (it *ResponseItemBlank) SourceCorrectionFactor() float64 {
+	if it.Src == nil {
+		return 0
+	}
 	return it.Src.PriceCorrectionReduceFactor()
 }
 
 // TargetCorrectionFactor value for the target
 func (it *ResponseItemBlank) TargetCorrectionFactor() float64 {
+	if it.Imp == nil || it.Imp.Target == nil {
+		return 0
+	}
 	return it.Imp.Target.RevenueShareReduceFactor()
 }
 
@@ -223,4 +222,8 @@ func (*ResponseItemBlank) Width() int { return 0 }
 // Height of item
 func (*ResponseItemBlank) Height() int { return 0 }
 
-var _ adtype.ResponseItem = (*ResponseItemBlank)(nil)
+var (
+	_ adtype.ResponseItem        = (*ResponseItemBlank)(nil)
+	_ prices.Factors             = (*ResponseItemBlank)(nil)
+	_ prices.FixedPurchasePricer = (*ResponseItemBlank)(nil)
+)

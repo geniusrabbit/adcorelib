@@ -28,6 +28,10 @@ const (
 var (
 	// ErrNewAuctionBidIsHigherThenMaxBid is returned when a new auction bid exceeds the maximum allowed bid.
 	ErrNewAuctionBidIsHigherThenMaxBid = errors.New("new auction bid is higher than max bid")
+
+	// ErrUnsupportedAction is returned when the price of the action is not supported
+	// by the response item (e.g. an impression-only item is asked to set a click bid).
+	ErrUnsupportedAction = errors.New("action is not supported by the response item")
 )
 
 // ResponseItemCommon defines the common interface for response items in an ad auction.
@@ -146,17 +150,18 @@ type ResponseItem interface {
 	// Price returns the total price for a specific action (e.g., click, lead, view).
 	Price(action Action) billing.Money
 
-	// BidImpressionPrice returns the bid price for the external auction source.
-	// The bid price is adjusted according to the source correction factor and the commission share factor.
-	BidImpressionPrice() billing.Money
+	// SetBidPrice sets the current bid price for the given action, used for the
+	// external auction source. If withCommission is true, the price is treated as
+	// the net amount that must remain after discrepancy corrections and the
+	// commission share are deducted downstream (see PublisherPrice) and is grossed
+	// up via BidUpPrice-style calculation before being stored. If withCommission is
+	// false, the price is stored as given.
+	SetBidPrice(action Action, price billing.Money, withCommission bool) error
 
-	// SetBidImpressionPrice sets the bid price value for external sources in an auction.
-	// The system will pay this bid price.
-	SetBidImpressionPrice(price billing.Money) error
-
-	// PrepareBidImpressionPrice prepares the price for the action
-	// The price is adjusted according to the source correction factor and the commission share factor
-	PrepareBidImpressionPrice(price billing.Money) billing.Money
+	// PrepareBidPrice prepares the bid price for the given action by clamping it
+	// to the maximal allowed bid of that action (if defined). Used before storing
+	// or comparing a candidate bid against the current auction limits.
+	PrepareBidPrice(action Action, price billing.Money) billing.Money
 
 	// PurchasePrice returns the price of a specific action from an external resource (e.g., site, app, RTB).
 	// This represents the cost of the request for the network.
