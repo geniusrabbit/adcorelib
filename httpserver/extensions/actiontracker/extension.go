@@ -106,7 +106,7 @@ func (ext *Extension[EventT]) eventHandler(eventName events.Type) httphandler.Ex
 
 		// Redirect user to the target URL if it's needed for the event type
 		if etype := event.EventType(); etype == events.Click || etype == events.Direct {
-			rctx.Redirect(event.PrepareURL(event.EventURL()), http.StatusFound)
+			rctx.Redirect(event.PreparedEventURL(), http.StatusFound)
 		} else {
 			rctx.SetStatusCode(http.StatusOK)
 		}

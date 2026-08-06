@@ -22,6 +22,9 @@ type EventType interface {
 	// EventURL returns url of event target
 	EventURL() string
 
+	// PreparedEventURL returns prepared url of event target
+	PreparedEventURL() string
+
 	// PrepareURL prepare url for event
 	PrepareURL(url string) string
 
@@ -75,6 +78,9 @@ func (e *TestEvent) EventType() events.Type { return events.View }
 
 // EventURL returns url of event target
 func (e *TestEvent) EventURL() string { return "" }
+
+// PreparedEventURL returns prepared url of event target
+func (e *TestEvent) PreparedEventURL() string { return "" }
 
 // PrepareURL prepare url for event
 func (e *TestEvent) PrepareURL(url string) string { return "" }

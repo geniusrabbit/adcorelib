@@ -15,3 +15,11 @@ func FastIntn(n int) int {
 	}
 	return FastInt() % n
 }
+
+func FastPositiveIntn(n int) int {
+	if n <= 0 {
+		return 0
+	}
+	i := FastInt() % n
+	return int(int64(i) & 0x7fffffff)
+}
