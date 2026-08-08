@@ -215,6 +215,26 @@ func (i *Impression) CommissionShareFactor() float64 {
 	return i.Target.CommissionShareFactor()
 }
 
+// MinimumPrice return the minimum price for the action
+func (i *Impression) MinimumPrice(action Action) billing.Money {
+	if i == nil {
+		return 0
+	}
+	if action.IsView() && i.PurchaseViewPrice > 0 {
+		return i.PurchaseViewPrice
+	}
+	if action.IsImpression() {
+		if i.PurchaseImpPrice > 0 {
+			return i.PurchaseImpPrice
+		}
+		if i.BidFloorCPM > 0 {
+			return i.BidFloorCPM / 1000
+		}
+		return 0
+	}
+	return 0
+}
+
 // PurchasePrice return the price of need to pay for the action
 // to the connected network or application if price is fixed
 func (i *Impression) PurchasePrice(action Action) billing.Money {

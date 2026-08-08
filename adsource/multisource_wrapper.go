@@ -61,6 +61,10 @@ var (
 	ErrSourcesCantBeNil = errors.New("[SSP] seurces can`t be nil")
 )
 
+type ResponsePreprocessor interface {
+	PreprocessResponse(response adtype.Response) (adtype.Response, error)
+}
+
 const (
 	minimalTimeout          = time.Millisecond * 10
 	minimalParallelRequests = 1
@@ -76,6 +80,9 @@ type respItem struct {
 type MultisourceWrapper struct {
 	// Source list of external platforms
 	sources adtype.SourceAccessor
+
+	// Response preprocessor
+	responsePreprocessor ResponsePreprocessor
 
 	// Execution pool
 	execpool *rpool.Pool
@@ -246,6 +253,12 @@ func (wrp *MultisourceWrapper) Bid(request adtype.BidRequester) (response adtype
 			response = bidresponse.NewEmptyResponse(request, wrp, err)
 		} else {
 			response = bidresponse.BorrowResponse(request, nil, items, nil)
+			if wrp.responsePreprocessor != nil {
+				response, err = wrp.responsePreprocessor.PreprocessResponse(response)
+				if err != nil {
+					response = bidresponse.NewEmptyResponse(request, wrp, err)
+				}
+			}
 		}
 	}
 

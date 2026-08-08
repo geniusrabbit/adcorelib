@@ -29,3 +29,10 @@ func WithMaxParallelRequests(maxParallelRequest int) Option {
 		wrp.maxParallelRequest = maxParallelRequest
 	}
 }
+
+// WithResponsePreprocessor returns a response preprocessor
+func WithResponsePreprocessor(preprocessor ResponsePreprocessor) Option {
+	return func(wrp *MultisourceWrapper) {
+		wrp.responsePreprocessor = preprocessor
+	}
+}

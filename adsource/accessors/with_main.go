@@ -32,6 +32,10 @@ func (a *AccessorWithMain) Iterator(request adtype.BidRequester) adtype.SourceIt
 			}
 		}
 
+		if a.other == nil {
+			return
+		}
+
 		for w, src := range a.other.Iterator(request) {
 			if src == nil {
 				break
@@ -47,6 +51,9 @@ func (a *AccessorWithMain) SourceByID(ctx context.Context, id uint64) (adtype.So
 	if a.mainSource != nil && a.mainSource.ID() == id {
 		return a.mainSource, nil
 	}
+	if a.other == nil {
+		return nil, nil
+	}
 	return a.other.SourceByID(ctx, id)
 }
 
@@ -56,5 +63,7 @@ func (a *AccessorWithMain) SetTimeout(ctx context.Context, timeout time.Duration
 			srcSetTM.SetTimeout(timeout)
 		}
 	}
-	a.other.SetTimeout(ctx, timeout)
+	if a.other != nil {
+		a.other.SetTimeout(ctx, timeout)
+	}
 }

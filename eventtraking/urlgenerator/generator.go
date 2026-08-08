@@ -34,7 +34,6 @@ type Generator[EventT EventType, LeadT LeadType, UserInfoT UserInfoType] struct 
 	DirectPattern        string
 	WinPattern           string
 	BillingNoticePattern string
-	PriceParamName       string
 
 	LeadAllocator eventgenerator.Allocator[LeadT]
 }
@@ -191,16 +190,6 @@ func (g *Generator[E, L, UI]) encodeURL(pattern string, event events.Type, statu
 		).Replace(pattern)
 	}
 
-	if response.Request().AuctionType().IsSecondPrice() {
-		if strings.Contains(urlVal, "?") {
-			urlVal += "&"
-		} else {
-			urlVal += "?"
-		}
-		// ${AUCTION_PRICE} - Clearing price using the same currency and units as
-		// the bid. Note that this macro is currently not supported in AMP ads.
-		urlVal += g.PriceParamName + "=${AUCTION_PRICE}"
-	}
 	return urlVal, nil
 }
 

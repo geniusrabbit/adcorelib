@@ -96,6 +96,10 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 
 // SignCookie do sign request by traking response
 func (sign *Signature) SignCookie(resp Person, req *fasthttp.RequestCtx) {
+	if sign == nil {
+		return
+	}
+
 	if span, _ := gtracing.StartSpanFromFastContext(req, "personification.sign"); span != nil {
 		defer span.Finish()
 	}
@@ -124,8 +128,8 @@ func (sign *Signature) SignCookie(resp Person, req *fasthttp.RequestCtx) {
 }
 
 func pareseAcceptLanguage(langs string) (primaryLanguage string, langArr []string) {
-	arr := strings.Split(langs, ",")
-	for _, lang := range arr {
+	arr := strings.SplitSeq(langs, ",")
+	for lang := range arr {
 		lang = strings.TrimSpace(lang)
 		if len(lang) < 2 {
 			continue
