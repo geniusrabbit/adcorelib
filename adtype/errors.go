@@ -5,23 +5,23 @@
 
 package adtype
 
-import "errors"
+import "github.com/geniusrabbit/adcorelib/errtype"
 
 // Set of errors
 var (
 	// For bidding validation
-	ErrInvalidCur                = errors.New("BID currency is not valid")
-	ErrInvalidCreativeSize       = errors.New("creative size is invalid")
-	ErrInvalidViewType           = errors.New("view type is invalid")
-	ErrLowPrice                  = errors.New("BID price is lower than floor price")
-	ErrResponseEmpty             = errors.New("response is empty")
-	ErrResponseSkipped           = errors.New("response is skipped")
-	ErrResponseNoBid             = errors.New("response no bid")
-	ErrResponseItemEmpty         = errors.New("response item is empty")
-	ErrResponseItemSkipped       = errors.New("response item is skipped")
-	ErrResponseInvalidType       = errors.New("invalid response type")
-	ErrResponseInvalidGroup      = errors.New("system not support group winners")
-	ErrInvalidItemInitialisation = errors.New("invalid item initialisation")
+	ErrInvalidCur                = errtype.Error("BID currency is not valid")
+	ErrInvalidCreativeSize       = errtype.Error("creative size is invalid")
+	ErrInvalidViewType           = errtype.Error("view type is invalid")
+	ErrLowPrice                  = errtype.Error("BID price is lower than floor price")
+	ErrResponseEmpty             = errtype.Error("response is empty")
+	ErrResponseSkipped           = errtype.Error("response is skipped")
+	ErrResponseNoBid             = errtype.Error("response no bid")
+	ErrResponseItemEmpty         = errtype.Error("response item is empty")
+	ErrResponseItemSkipped       = errtype.Error("response item is skipped")
+	ErrResponseInvalidType       = errtype.Error("invalid response type")
+	ErrResponseInvalidGroup      = errtype.Error("system not support group winners")
+	ErrInvalidItemInitialisation = errtype.Error("invalid item initialisation")
 )
 
 // NoSupportError object
