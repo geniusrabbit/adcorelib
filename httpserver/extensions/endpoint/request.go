@@ -1,16 +1,13 @@
 package endpoint
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/geniusrabbit/udetect"
-	"github.com/valyala/fasthttp"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
@@ -151,16 +148,11 @@ func NewRequestFor(
 			req.Site.Referrer = replaceDomain(req.Site.Referrer, string(domainStr), req.IsSecure())
 		}
 	}
-	return req.WithFormats(formatAccessor)
-}
 
-// NewRequestByContext from request
-func NewRequestByContext(ctx context.Context, ectx *fasthttp.RequestCtx) (adtype.BidRequester, error) {
-	request := &bidrequest.BidRequest{RequestCtx: ectx, Timemark: time.Now(), Ctx: ctx}
-	if err := json.NewDecoder(bytes.NewBuffer(ectx.Request.Body())).Decode(request); err != nil {
-		return nil, err
-	}
-	return request, nil
+	// Prepare bid request with categories and tags
+	_ = req.PrepareRequest(0, nil)
+
+	return req.WithFormats(formatAccessor)
 }
 
 func replaceDomain(urlStr, newDomain string, secure bool) string {

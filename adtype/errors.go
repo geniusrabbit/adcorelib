@@ -17,6 +17,7 @@ var (
 	ErrResponseEmpty             = errtype.Error("response is empty")
 	ErrResponseSkipped           = errtype.Error("response is skipped")
 	ErrResponseNoBid             = errtype.Error("response no bid")
+	ErrResponseInvalidRequest    = errtype.Error("response invalid request")
 	ErrResponseItemEmpty         = errtype.Error("response item is empty")
 	ErrResponseItemSkipped       = errtype.Error("response item is skipped")
 	ErrResponseInvalidType       = errtype.Error("invalid response type")

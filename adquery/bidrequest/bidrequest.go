@@ -8,6 +8,7 @@ package bidrequest
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"slices"
 	"strings"
 	"time"
@@ -23,6 +24,11 @@ import (
 	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/personification"
+)
+
+var (
+	ErrBidRequestNil        = errors.New("bid request is nil")
+	ErrCategoryIsNotMatched = errors.New("category is not matched")
 )
 
 // defaultUserdata initializes a default User with Geo set to GeoDefault
@@ -43,6 +49,11 @@ const (
 	// BidRequestFlagProxy indicates if the request is from a proxy
 	BidRequestFlagProxy
 )
+
+type CategoryMatcher interface {
+	MatchCategoryID(key string) uint64
+	MatchCategoryIDFromKeyword(keyword string) uint64
+}
 
 // BidRequest represents a bid request in the ad system.
 // It contains all necessary information for processing an ad bid.
@@ -75,12 +86,93 @@ type BidRequest struct {
 
 	// Internal caches for efficient access
 	categoryArray []uint64  // Cached category IDs
-	domain        []string  // Cached domains
-	tags          []string  // Cached tags
+	domain        []string  // Cached domains (prepared domains)
+	tags          []string  // Cached tags (keywords)
 	formats       AdFormats // Formats interface for accessing formats
 	sourceIDs     []uint64  // Cached source IDs
 	targetIDs     []uint64  // Cached target IDs
 	extTargetIDs  []string  // Cached external target IDs
+}
+
+// PrepareRequest prepares the bid request by extracting categories and tags from the user and site information.
+func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper CategoryMatcher) error {
+	if r == nil {
+		return ErrBidRequestNil
+	}
+	categories := []string{}
+	// Extract tags from user information
+	{
+		if r.User != nil {
+			r.tags = strings.Split(r.User.Keywords, ",")
+		}
+		if r.Site != nil {
+			r.tags = append(r.tags, strings.Split(r.Site.Keywords, ",")...)
+			categories = append(categories, r.Site.Cat...)
+		}
+		if r.App != nil {
+			r.tags = append(r.tags, strings.Split(r.App.Keywords, ",")...)
+			categories = append(categories, r.App.Cat...)
+		}
+	}
+	// Prepare categories
+	if categoryMapper != nil {
+		r.categoryArray = make([]uint64, 0, len(categories))
+		for _, cat := range categories {
+			if id := categoryMapper.MatchCategoryID(cat); id != 0 {
+				r.categoryArray = append(r.categoryArray, id)
+			}
+		}
+		for _, tag := range r.tags {
+			if id := categoryMapper.MatchCategoryIDFromKeyword(tag); id != 0 {
+				r.categoryArray = append(r.categoryArray, id)
+			}
+		}
+		r.categoryArray = xtypes.SliceUnique(r.categoryArray)
+		// Validate categories
+		if len(categories) > 0 && len(r.categoryArray) == 0 {
+			return ErrCategoryIsNotMatched
+		}
+		if len(r.categoryArray) == 0 && defaultCategoryID != 0 {
+			r.categoryArray = append(r.categoryArray, defaultCategoryID)
+		}
+	}
+	// Prepare domains
+	{
+		if r.Site != nil {
+			r.domain = r.Site.DomainPrepared()
+		} else if r.App != nil {
+			r.domain = r.App.DomainPrepared()
+		}
+	}
+	// Prepare target IDs
+	{
+		ids := make([]uint64, 0, len(r.Imps))
+		for _, imp := range r.Imps {
+			if imp.Target != nil && imp.Target.ID() > 0 {
+				ids = append(ids, imp.Target.ID())
+			}
+		}
+		r.targetIDs = xtypes.SliceUnique(ids)
+	}
+	// Prepare external target IDs
+	{
+		ids := make([]string, 0, len(r.Imps))
+		for _, imp := range r.Imps {
+			if imp.ExternalTargetID != "" {
+				ids = append(ids, imp.ExternalTargetID)
+			}
+		}
+		r.extTargetIDs = xtypes.SliceUnique(ids)
+	}
+	// Prepare targets
+	{
+		targets := make([]types.TargetPointer, 0, len(r.Imps))
+		for _, imp := range r.Imps {
+			targets = append(targets, &BidTargetWrapper{BidReq: r, Imp: imp})
+		}
+		r.targets = targets
+	}
+	return nil
 }
 
 // String implements the fmt.Stringer interface for BidRequest.
@@ -160,55 +252,13 @@ func (r *BidRequest) TargetID() uint64 {
 }
 
 // TargetIDs returns a slice of unique target IDs from all impressions.
-func (r *BidRequest) TargetIDs() []uint64 {
-	if r == nil {
-		return nil
-	}
-	if r.targetIDs == nil {
-		ids := make([]uint64, 0, len(r.Imps))
-		for _, imp := range r.Imps {
-			if imp.Target != nil && imp.Target.ID() > 0 {
-				ids = append(ids, imp.Target.ID())
-			}
-		}
-		r.targetIDs = xtypes.SliceUnique(ids)
-		slices.Sort(r.targetIDs)
-	}
-	return r.targetIDs
-}
+func (r *BidRequest) TargetIDs() []uint64 { return r.targetIDs }
 
 // TargetPointers returns a slice of TargetPointer interfaces for each impression in the BidRequest.
-func (r *BidRequest) TargetPointers() []types.TargetPointer {
-	if r == nil {
-		return nil
-	}
-	if r.targets == nil {
-		targets := make([]types.TargetPointer, 0, len(r.Imps))
-		for _, imp := range r.Imps {
-			targets = append(targets, &BidTargetWrapper{BidReq: r, Imp: imp})
-		}
-		r.targets = targets
-	}
-	return r.targets
-}
+func (r *BidRequest) TargetPointers() []types.TargetPointer { return r.targets }
 
 // ExtTargetIDs returns a slice of unique external target IDs from all impressions.
-func (r *BidRequest) ExtTargetIDs() []string {
-	if r == nil {
-		return nil
-	}
-	if r.extTargetIDs == nil {
-		var ids []string
-		for _, imp := range r.Imps {
-			if imp.ExternalTargetID != "" {
-				ids = append(ids, imp.ExternalTargetID)
-			}
-		}
-		r.extTargetIDs = xtypes.SliceUnique(ids)
-		slices.Sort(r.extTargetIDs)
-	}
-	return r.extTargetIDs
-}
+func (r *BidRequest) ExtTargetIDs() []string { return r.extTargetIDs }
 
 // ServiceDomain returns the domain of the service handling the request.
 func (r *BidRequest) ServiceDomain() string { return string(r.RequestCtx.URI().Host()) }
@@ -237,40 +287,15 @@ func (r *BidRequest) SourceFilterCheck(id uint64) bool {
 
 // Formats returns the list of formats associated with the BidRequest.
 // If the formats slice is empty, it aggregates formats from all impressions.
-func (r *BidRequest) Formats() types.BidFormater {
-	return &r.formats
-}
+func (r *BidRequest) Formats() types.BidFormater { return &r.formats }
 
 // Tags returns a list of tags associated with the BidRequest.
 // It aggregates keywords from the user and site information.
-func (r *BidRequest) Tags() []string {
-	if r == nil {
-		return nil
-	}
-	if r.tags != nil {
-		return r.tags
-	}
-	// Extract tags from user and site information
-	if r.User != nil && len(r.User.Keywords) > 0 {
-		r.tags = strings.Split(r.User.Keywords, ",")
-	}
-	// Extract tags from site information
-	if r.Site != nil && len(r.Site.Keywords) > 0 {
-		r.tags = append(r.tags, strings.Split(r.Site.Keywords, ",")...)
-	}
-	return r.tags
-}
+func (r *BidRequest) Tags() []string { return r.tags }
 
 // Domain returns a list of domains associated with the site or app.
 // It prepares the domain list by aggregating from Site and App information.
 func (r *BidRequest) Domain() []string {
-	if r.domain == nil {
-		if r.Site != nil {
-			r.domain = r.Site.DomainPrepared()
-		} else if r.App != nil {
-			r.domain = r.App.DomainPrepared()
-		}
-	}
 	return r.domain
 }
 
@@ -333,16 +358,19 @@ func (r *BidRequest) LanguageID() uint64 {
 // Keywords returns a slice of keywords associated with the user.
 // Returns nil if user information is unavailable.
 func (r *BidRequest) Keywords() []string {
-	if r == nil || r.User == nil {
+	if r == nil {
 		return nil
 	}
-	return strings.Split(r.User.Keywords, ",")
+	return r.tags
 }
 
 // Categories returns a slice of category IDs associated with the BidRequest.
 // Currently, it returns the cached categoryArray.
 // (Note: The implementation is incomplete and commented out for future development.)
 func (r *BidRequest) Categories() []uint64 {
+	if r == nil {
+		return nil
+	}
 	return r.categoryArray
 }
 
