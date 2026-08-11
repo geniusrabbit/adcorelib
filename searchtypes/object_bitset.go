@@ -40,18 +40,14 @@ func (b *ObjectBitset) Values() []any {
 
 // Set type values
 func (b *ObjectBitset) Set(vals ...any) *ObjectBitset {
-	var updated = false
 	for _, v := range vals {
 		if !b.Has(v) {
 			b.mask |= 1 << uint64(b.value(v)%64)
 			b.values = append(b.values, v)
-			updated = true
+			sort.Slice(b.values, func(i, j int) bool {
+				return b.less(b.values[i], b.values[j])
+			})
 		}
-	}
-	if updated {
-		sort.Slice(b.values, func(i, j int) bool {
-			return b.less(b.values[i], b.values[j])
-		})
 	}
 	return b
 }
@@ -59,31 +55,17 @@ func (b *ObjectBitset) Set(vals ...any) *ObjectBitset {
 // Unset type values
 func (b *ObjectBitset) Unset(vals ...any) *ObjectBitset {
 	newVals := b.values
+	changed := false
 	for _, v := range vals {
 		idx := sort.Search(len(newVals), func(i int) bool {
-			return b.less(v, newVals[i])
+			return !b.less(newVals[i], v) // first >= v
 		})
-
-		if idx >= 0 && idx < len(newVals) && newVals[idx] == v {
-			i := idx + 1
-			for ; i < len(newVals); i++ {
-				if newVals[i] != v {
-					break
-				}
-			}
-			if idx > 0 {
-				if i < len(newVals) {
-					newVals = append(newVals[:idx], newVals[i:]...)
-				} else if idx < len(newVals)-1 {
-					newVals = newVals[:idx]
-				}
-			} else if i < len(newVals)-1 {
-				newVals = newVals[i:]
-			}
+		if idx < len(newVals) && newVals[idx] == v {
+			newVals = append(newVals[:idx:idx], newVals[idx+1:]...)
+			changed = true
 		}
 	}
-
-	if len(newVals) == len(b.values) {
+	if !changed {
 		return b
 	}
 	return NewObjectBitset(b.less, b.value, newVals...)
@@ -93,9 +75,9 @@ func (b *ObjectBitset) Unset(vals ...any) *ObjectBitset {
 func (b *ObjectBitset) Has(v any) bool {
 	if b != nil && b.mask&(1<<uint64(b.value(v)%64)) != 0 {
 		idx := sort.Search(b.Len(), func(i int) bool {
-			return b.less(v, b.values[i])
+			return !b.less(b.values[i], v) // first >= v
 		})
-		return idx >= 0 && idx < b.Len() && b.values[idx] == v
+		return idx < b.Len() && b.values[idx] == v
 	}
 	return false
 }

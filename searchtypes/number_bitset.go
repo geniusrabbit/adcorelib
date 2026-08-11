@@ -48,16 +48,13 @@ func (b *NumberBitset[T]) Values() []T {
 
 // Set type values
 func (b *NumberBitset[T]) Set(vals ...T) *NumberBitset[T] {
-	var updated = false
 	for _, v := range vals {
 		if !b.Has(v) {
 			b.mask |= 1 << uint64(v%64)
 			b.values = append(b.values, v)
-			updated = true
+			// Keep sorted so subsequent Has() in this call sees a valid order.
+			sort.Slice(b.values, func(i, j int) bool { return b.values[i] < b.values[j] })
 		}
-	}
-	if updated {
-		sort.Slice(b.values, func(i, j int) bool { return b.values[i] < b.values[j] })
 	}
 	return b
 }
@@ -65,31 +62,17 @@ func (b *NumberBitset[T]) Set(vals ...T) *NumberBitset[T] {
 // Unset type values
 func (b *NumberBitset[T]) Unset(vals ...T) *NumberBitset[T] {
 	newVals := b.values
+	changed := false
 	for _, v := range vals {
 		idx := sort.Search(len(newVals), func(i int) bool {
 			return newVals[i] >= v
 		})
-
-		if idx >= 0 && idx < len(newVals) && newVals[idx] == v {
-			i := idx + 1
-			for ; i < len(newVals); i++ {
-				if newVals[i] != v {
-					break
-				}
-			}
-			if idx > 0 {
-				if i < len(newVals) {
-					newVals = append(newVals[:idx], newVals[i:]...)
-				} else if idx < len(newVals)-1 {
-					newVals = newVals[:idx]
-				}
-			} else if i < len(newVals)-1 {
-				newVals = newVals[i:]
-			}
+		if idx < len(newVals) && newVals[idx] == v {
+			newVals = append(newVals[:idx:idx], newVals[idx+1:]...)
+			changed = true
 		}
 	}
-
-	if len(newVals) == len(b.values) {
+	if !changed {
 		return b
 	}
 	return NewNumberBitset(newVals...)
