@@ -32,7 +32,7 @@ func (*SourceEmpty) Info() *SourceInfo {
 }
 
 // Test request before processing
-func (*SourceEmpty) Test(request BidRequester) bool { return false }
+func (*SourceEmpty) Test(request BidRequester) error { return ErrSourceEmptyRejected }
 
 // PriceCorrectionReduceFactor which is a potential
 // Returns percent from 0 to 1 for reducing of the value

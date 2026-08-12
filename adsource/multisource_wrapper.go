@@ -138,7 +138,7 @@ func (wrp *MultisourceWrapper) Info() *adtype.SourceInfo {
 }
 
 // Test validates the request before processing
-func (wrp *MultisourceWrapper) Test(request adtype.BidRequester) bool { return true }
+func (wrp *MultisourceWrapper) Test(request adtype.BidRequester) error { return nil }
 
 // Bid handles a bid request and processes it through the appropriate sources
 func (wrp *MultisourceWrapper) Bid(request adtype.BidRequester) (response adtype.Response) {

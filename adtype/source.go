@@ -62,8 +62,9 @@ type SourceMinimal interface {
 
 // SourceTesteChecker checker
 type SourceTesteChecker interface {
-	// Test current request for compatibility
-	Test(request BidRequester) bool
+	// Test current request for compatibility.
+	// Returns a typed cause on rejection, or nil when the request may proceed.
+	Test(request BidRequester) error
 }
 
 // SourceTimeoutSetter interface

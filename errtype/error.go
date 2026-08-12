@@ -4,6 +4,8 @@
 
 package errtype
 
+import "fmt"
+
 // Error is a reusable sentinel error that supports WithMessage while remaining
 // compatible with errors.Is against the bare sentinel.
 type Error string
@@ -18,6 +20,12 @@ func (e Error) WithMessage(msg string) error {
 		return e
 	}
 	return &withMessage{base: e, msg: msg}
+}
+
+// WithMessageFmt attaches detail text (typically cause.Error()).
+// An empty message returns the sentinel itself.
+func (e Error) WithMessageFmt(format string, args ...any) error {
+	return e.WithMessage(fmt.Sprintf(format, args...))
 }
 
 type withMessage struct {

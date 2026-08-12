@@ -11,5 +11,8 @@ func WithSignature(ctx context.Context, signature *Signature) context.Context {
 }
 
 func SignatureFromContext(ctx context.Context) *Signature {
-	return ctx.Value(ContextKeySignature).(*Signature)
+	if sign, ok := ctx.Value(ContextKeySignature).(*Signature); ok {
+		return sign
+	}
+	return nil
 }

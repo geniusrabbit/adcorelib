@@ -52,8 +52,8 @@ func (w *sourceTester) Info() *adtype.SourceInfo {
 }
 
 // Test current request for compatibility
-func (w *sourceTester) Test(request adtype.BidRequester) bool {
-	return true
+func (w *sourceTester) Test(request adtype.BidRequester) error {
+	return nil
 }
 
 func (w *sourceTester) Metrics() *openlatency.MetricsInfo {

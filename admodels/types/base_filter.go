@@ -6,7 +6,31 @@
 package types
 
 import (
+	"github.com/geniusrabbit/adcorelib/errtype"
 	"github.com/geniusrabbit/gosql/v2"
+)
+
+var (
+	ErrFormatNotAllowed              = errtype.Error("format not allowed")
+	ErrSecureNotAllowed              = errtype.Error("secure not allowed")
+	ErrSecureOnlyNotAllowed          = errtype.Error("secure only not allowed")
+	ErrAdBlockNotAllowed             = errtype.Error("ad block not allowed")
+	ErrAdBlockOnlyNotAllowed         = errtype.Error("ad block only not allowed")
+	ErrPrivateBrowsingNotAllowed     = errtype.Error("private browsing not allowed")
+	ErrPrivateBrowsingOnlyNotAllowed = errtype.Error("private browsing only not allowed")
+	ErrIPv6NotAllowed                = errtype.Error("IPv6 not allowed")
+	ErrIPv4NotAllowed                = errtype.Error("IPv4 not allowed")
+	ErrTrafficSourceNotAllowed       = errtype.Error("traffic source not allowed")
+	ErrTargetNotAllowed              = errtype.Error("target not allowed")
+	ErrAppNotAllowed                 = errtype.Error("app not allowed")
+	ErrDomainNotAllowed              = errtype.Error("domain not allowed")
+	ErrDeviceTypeNotAllowed          = errtype.Error("device type not allowed")
+	ErrDeviceIDNotAllowed            = errtype.Error("device ID not allowed")
+	ErrOSIDNotAllowed                = errtype.Error("OS ID not allowed")
+	ErrBrowserIDNotAllowed           = errtype.Error("browser ID not allowed")
+	ErrCategoriesNotAllowed          = errtype.Error("categories not allowed")
+	ErrCountryIDNotAllowed           = errtype.Error("country ID not allowed")
+	ErrLanguageIDNotAllowed          = errtype.Error("language ID not allowed")
 )
 
 // FilterField identifies a filter dimension in [BaseFilter].
@@ -253,8 +277,8 @@ func (fl *BaseFilter) SetPositive(field uint64, positive bool) {
 // Checks are applied in order: format → tristate flags (secure, adblock,
 // private browsing, IP version) → source identifiers (traffic source, zone,
 // app, domain) → device / OS / browser / geo / language.
-// Any single failing check short-circuits and returns false immediately.
-func (fl *BaseFilter) Test(t TargetPointer) bool {
+// Any single failing check short-circuits and returns a preallocated sentinel error.
+func (fl *BaseFilter) Test(t TargetPointer) error {
 	formatList := t.Formats().List()
 	// Select the active format allowlist: InterstitialFormats takes precedence
 	// when the request is interstitial and the list is configured.
@@ -273,7 +297,7 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 	}
 
 	if !found {
-		return false
+		return ErrFormatNotAllowed
 	}
 
 	// ===========================================================================
@@ -281,19 +305,31 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 	// ===========================================================================
 
 	if fl.Secure != SecureAny && (fl.Secure == SecureOnly) != t.IsSecure() {
-		return false
+		if fl.Secure == SecureOnly {
+			return ErrSecureOnlyNotAllowed
+		}
+		return ErrSecureNotAllowed
 	}
 
 	if fl.AdBlock != AdBlockAny && (fl.AdBlock == AdBlockOnly) != t.IsAdBlock() {
-		return false
+		if fl.AdBlock == AdBlockOnly {
+			return ErrAdBlockOnlyNotAllowed
+		}
+		return ErrAdBlockNotAllowed
 	}
 
 	if fl.PrivateBrowsing != PrivateBrowsingAny && (fl.PrivateBrowsing == PrivateBrowsingOnly) != t.IsPrivateBrowsing() {
-		return false
+		if fl.PrivateBrowsing == PrivateBrowsingOnly {
+			return ErrPrivateBrowsingOnlyNotAllowed
+		}
+		return ErrPrivateBrowsingNotAllowed
 	}
 
 	if fl.IP != IPAny && (fl.IP == IPv6Only) != t.IsIPv6() {
-		return false
+		if fl.IP == IPv6Only {
+			return ErrIPv4NotAllowed
+		}
+		return ErrIPv6NotAllowed
 	}
 
 	// ===========================================================================
@@ -301,19 +337,19 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 	// ===========================================================================
 
 	if !fl.checkUintArr(t.TrafficSourceID(), FieldTrafficSources, fl.TrafficSources) {
-		return false
+		return ErrTrafficSourceNotAllowed
 	}
 
 	if !fl.checkUintArr(t.TargetID(), FieldZones, fl.Zones) {
-		return false
+		return ErrTargetNotAllowed
 	}
 
 	if !fl.checkUintArr(t.AppID(), FieldApps, fl.Apps) {
-		return false
+		return ErrAppNotAllowed
 	}
 
 	if !fl.checkStringArr(t.Domain(), FieldDomains, fl.Domains) {
-		return false
+		return ErrDomainNotAllowed
 	}
 
 	// ===========================================================================
@@ -321,34 +357,34 @@ func (fl *BaseFilter) Test(t TargetPointer) bool {
 	// ===========================================================================
 
 	if !fl.checkUintArr(uint64(t.DeviceInfo().DeviceType), FieldDeviceTypes, fl.DeviceTypes) {
-		return false
+		return ErrDeviceTypeNotAllowed
 	}
 
 	if !fl.checkUintArr(uint64(t.DeviceInfo().ID), FieldDevices, fl.Devices) {
-		return false
+		return ErrDeviceIDNotAllowed
 	}
 
 	if !fl.checkUintArr(uint64(t.OSInfo().ID), FieldOS, fl.OS) {
-		return false
+		return ErrOSIDNotAllowed
 	}
 
 	if !fl.checkUintArr(t.BrowserInfo().ID, FieldBrowsers, fl.Browsers) {
-		return false
+		return ErrBrowserIDNotAllowed
 	}
 
 	if !fl.multyCheckUintArr(t.Categories(), FieldCategories, fl.Categories) {
-		return false
+		return ErrCategoriesNotAllowed
 	}
 
 	if !fl.checkUintArr(uint64(t.GeoInfo().ID), FieldCountries, fl.Countries) {
-		return false
+		return ErrCountryIDNotAllowed
 	}
 
 	if !fl.checkUintArr(t.LanguageID(), FieldLanguages, fl.Languages) {
-		return false
+		return ErrLanguageIDNotAllowed
 	}
 
-	return true
+	return nil
 }
 
 // TestFormat reports whether format f is permitted by the Formats allowlist.

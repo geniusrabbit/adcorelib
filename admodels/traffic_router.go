@@ -17,7 +17,7 @@ type TrafficRouter struct {
 }
 
 // Test checks if the target matches the filter criteria.
-func (d *TrafficRouter) Test(target types.TargetPointer) bool {
+func (d *TrafficRouter) Test(target types.TargetPointer) error {
 	return d.Filter.Test(target)
 }
 

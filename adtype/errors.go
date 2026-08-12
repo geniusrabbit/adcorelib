@@ -23,6 +23,7 @@ var (
 	ErrResponseInvalidType       = errtype.Error("invalid response type")
 	ErrResponseInvalidGroup      = errtype.Error("system not support group winners")
 	ErrInvalidItemInitialisation = errtype.Error("invalid item initialisation")
+	ErrSourceEmptyRejected       = errtype.Error("empty source rejected")
 )
 
 // NoSupportError object

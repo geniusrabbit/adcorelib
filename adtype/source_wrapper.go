@@ -22,7 +22,7 @@ func (wp minimalSourceWrapper) Info() *SourceInfo {
 }
 
 // Test request before processing
-func (wp minimalSourceWrapper) Test(request BidRequester) bool { return true }
+func (wp minimalSourceWrapper) Test(request BidRequester) error { return nil }
 
 // Bid request for standart system filter
 func (wp minimalSourceWrapper) Bid(request BidRequester) Response { return wp.source.Bid(request) }

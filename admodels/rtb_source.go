@@ -123,7 +123,7 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 }
 
 // Test RTB source
-func (s *RTBSource) Test(t types.TargetPointer) bool {
+func (s *RTBSource) Test(t types.TargetPointer) error {
 	return s.Filter.Test(t)
 }
 

@@ -3,12 +3,20 @@ package types
 import (
 	"time"
 
+	"github.com/geniusrabbit/adcorelib/errtype"
 	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/hourstable"
 )
 
 // Hours SQL type declaration
 type Hours = hourstable.Hours
+
+// Preallocated schedule reject reasons for hot-path Test methods.
+var (
+	ErrHoursNotAllowed = errtype.Error("hours not allowed")
+	ErrDateNotStarted  = errtype.Error("date not started")
+	ErrDateEnded       = errtype.Error("date ended")
+)
 
 // HoursByString returns hours object by string pattern
 func HoursByString(s string) (Hours, error) {
