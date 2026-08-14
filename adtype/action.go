@@ -7,9 +7,10 @@ type Action int
 const (
 	ActionImpression Action = 1
 	ActionImp               = ActionImpression // Alias
-	ActionView       Action = 2
-	ActionClick      Action = 3
-	ActionLead       Action = 4
+	ActionDirect     Action = 2                // Direct (popunder or direct link)
+	ActionView       Action = 3
+	ActionClick      Action = 4
+	ActionLead       Action = 5
 )
 
 func (a Action) String() string {
