@@ -32,7 +32,7 @@ type PriceScope struct {
 // HasAction returns true if the pricing of the action is defined for the scope.
 func (ps *PriceScope) HasAction(action adtype.Action) bool {
 	switch action {
-	case adtype.ActionImpression:
+	case adtype.ActionImpression, adtype.ActionDirect:
 		return ps.HasCPM()
 	case adtype.ActionView:
 		return ps.HasCPMV()
@@ -47,7 +47,7 @@ func (ps *PriceScope) HasAction(action adtype.Action) bool {
 // PricePerAction returns the current price of one action.
 func (ps *PriceScope) PricePerAction(action adtype.Action) billing.Money {
 	switch action {
-	case adtype.ActionImpression:
+	case adtype.ActionImpression, adtype.ActionDirect:
 		return PriceFromCPM(ps.BidCPM)
 	case adtype.ActionView:
 		return PriceFromCPM(ps.BidCPMV)
@@ -62,7 +62,7 @@ func (ps *PriceScope) PricePerAction(action adtype.Action) billing.Money {
 // MaxPricePerAction returns the maximal possible price of one action.
 func (ps *PriceScope) MaxPricePerAction(action adtype.Action) billing.Money {
 	switch action {
-	case adtype.ActionImpression:
+	case adtype.ActionImpression, adtype.ActionDirect:
 		return PriceFromCPM(ps.MaxBidCPM)
 	case adtype.ActionView:
 		return PriceFromCPM(ps.MaxBidCPMV)
@@ -78,7 +78,7 @@ func (ps *PriceScope) MaxPricePerAction(action adtype.Action) billing.Money {
 // The value is clamped by the maximal price of the action if the last one is defined.
 func (ps *PriceScope) SetBidPerAction(action adtype.Action, price billing.Money) error {
 	switch action {
-	case adtype.ActionImpression:
+	case adtype.ActionImpression, adtype.ActionDirect:
 		return ps.SetBidCPM(CPMFromPrice(price))
 	case adtype.ActionView:
 		return ps.SetBidCPMV(CPMFromPrice(price))

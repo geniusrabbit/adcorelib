@@ -47,10 +47,6 @@ func Benchmark_Format1(b *testing.B) {
 			}
 		})
 	})
-
-	for _, v := range numbers {
-		fmt.Println(">>>>", v, formatUint(v))
-	}
 }
 
 var numbers []string

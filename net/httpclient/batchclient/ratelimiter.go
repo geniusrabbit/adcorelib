@@ -83,14 +83,21 @@ func (rle *RateLimitedExecutor) Execute(ctx context.Context, req httpclient.Requ
 
 	// Snapshot the channel fields under the lock to avoid races with UpdateRate.
 	rle.stopMutex.RLock()
+	if rle.stopped {
+		rle.stopMutex.RUnlock()
+		return nil, context.Canceled
+	}
 	limiter := rle.rateLimiter
 	stopChan := rle.stopChan
 	rle.stopMutex.RUnlock()
 
-	// Wait for rate limiter
+	// Wait for rate limiter. When Stop() has closed stopChan, leftover tokens
+	// can still make the limiter case ready; prefer the stopped state.
 	select {
 	case <-limiter:
-		// Got permission to proceed
+		if rle.isStopped() {
+			return nil, context.Canceled
+		}
 		rle.statsMutex.Lock()
 		rle.totalExecuted++
 		rle.statsMutex.Unlock()
@@ -176,6 +183,12 @@ func (rle *RateLimitedExecutor) Stop() {
 		close(rle.stopChan)
 		rle.stopped = true
 	}
+}
+
+func (rle *RateLimitedExecutor) isStopped() bool {
+	rle.stopMutex.RLock()
+	defer rle.stopMutex.RUnlock()
+	return rle.stopped
 }
 
 // Stats returns rate limiter statistics.
