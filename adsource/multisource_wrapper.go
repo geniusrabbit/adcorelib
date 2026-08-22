@@ -93,6 +93,9 @@ type MultisourceWrapper struct {
 	// Maximum number of parallel requests
 	maxParallelRequest int
 
+	// Number of ad servers
+	serversCount int
+
 	// Metrics accessor
 	metrics Metrics
 }
@@ -113,6 +116,10 @@ func NewMultisourceWrapper(options ...Option) (*MultisourceWrapper, error) {
 	wrp.maxParallelRequest = max(wrp.maxParallelRequest, minimalParallelRequests)
 	wrp.execpool = rpool.NewPool(rpool.WithMaxTasksCount(wrp.maxParallelRequest))
 
+	if wrp.serversCount < 1 {
+		wrp.serversCount = 1
+	}
+
 	return wrp, nil
 }
 
@@ -127,6 +134,11 @@ func (wrp *MultisourceWrapper) ObjectKey() uint64 { return 0 }
 
 // Protocol returns the protocol of the source driver
 func (wrp *MultisourceWrapper) Protocol() string { return "multisource" }
+
+// ServersCount returns the number of ad servers
+func (wrp *MultisourceWrapper) ServersCount() int {
+	return wrp.serversCount
+}
 
 // Info returns information about the source platform and the source protocol
 func (wrp *MultisourceWrapper) Info() *adtype.SourceInfo {

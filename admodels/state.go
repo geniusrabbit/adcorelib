@@ -17,4 +17,5 @@ type State interface {
 	Clicks() uint64
 	Leads() uint64
 	LastSyncTime() time.Time
+	ServerCount() int
 }

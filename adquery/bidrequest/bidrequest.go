@@ -55,6 +55,10 @@ type CategoryMatcher interface {
 	MatchCategoryIDFromKeyword(keyword string) uint64
 }
 
+type ServerCounter interface {
+	Value() uint64
+}
+
 // BidRequest represents a bid request in the ad system.
 // It contains all necessary information for processing an ad bid.
 type BidRequest struct {

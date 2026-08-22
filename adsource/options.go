@@ -9,6 +9,13 @@ import (
 // Option sets some property of the server
 type Option func(wrp *MultisourceWrapper)
 
+// WithServersCount returns the number of ad servers
+func WithServersCount(serversCount int) Option {
+	return func(wrp *MultisourceWrapper) {
+		wrp.serversCount = serversCount
+	}
+}
+
 // WithSourceAccessor for the server
 func WithSourceAccessor(sources adtype.SourceAccessor) Option {
 	return func(wrp *MultisourceWrapper) {
