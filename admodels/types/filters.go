@@ -85,14 +85,14 @@ func IDArrayFilterAny(v any, panicMsg string) (gosql.NullableOrderedNumberArray[
 	case gosql.NullableOrderedNumberArray[int64]:
 		return IDArrayFilter(vl)
 	case gosql.NullableOrderedNumberArray[uint64]:
-		return vl, false
+		return vl.Sort(), false
 	case []int:
 		return IDArrayFilter(IntArrayToInt64(vl))
 	case []int64:
 		return IDArrayFilter(gosql.NullableOrderedNumberArray[int64](vl))
 	case []uint64:
 		// Raw unsigned IDs carry no exclude signal — always include mode.
-		return gosql.NullableOrderedNumberArray[uint64](vl), false
+		return gosql.NullableOrderedNumberArray[uint64](vl).Sort(), false
 	default:
 		if panicMsg != "" {
 			panic(panicMsg)
