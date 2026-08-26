@@ -24,6 +24,7 @@ type (
 // BidRequester defines the interface for interacting with a bid request in the ad system.
 type BidRequester interface {
 	fmt.Stringer
+	IsNillable
 
 	ID() string         // Unique ID of the request
 	ExternalID() string // External ID of the request (from OpenRTB)

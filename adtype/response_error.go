@@ -21,15 +21,10 @@ type ResponseError struct {
 
 // NewErrorResponse object
 func NewErrorResponse(request BidRequester, err error) *ResponseError {
-	var ctx context.Context
-	if request != nil {
-		ctx = request.Context()
+	if request != nil && !request.IsNil() {
+		return &ResponseError{request: request, err: err, context: request.Context()}
 	}
-	return &ResponseError{
-		request: request,
-		err:     err,
-		context: ctx,
-	}
+	return &ResponseError{err: err}
 }
 
 // AuctionID response

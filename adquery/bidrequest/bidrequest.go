@@ -210,8 +210,16 @@ func (r *BidRequest) ExternalAuctionID() string { return r.ExtID }
 // AuctionType returns the type of auction for the BidRequest.
 func (r *BidRequest) AuctionType() types.AuctionType { return r.AucType }
 
+// IsNil reports whether the BidRequest pointer is nil. Safe to call on a nil receiver.
+func (r *BidRequest) IsNil() bool { return r == nil }
+
 // AccessPoint returns the access point associated with the BidRequest.
-func (r *BidRequest) AccessPoint() adtype.AccessPoint { return r.AccessPointLnk }
+func (r *BidRequest) AccessPoint() adtype.AccessPoint {
+	if r == nil {
+		return nil
+	}
+	return r.AccessPointLnk
+}
 
 // PrepareWithFormats prepares the BidRequest by initializing formats for each impression
 // using the provided FormatsAccessor. It resets any existing formats and aggregates
