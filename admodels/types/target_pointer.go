@@ -75,6 +75,7 @@ type TargetPointer interface {
 	// TargetID of the specific point
 	TargetID() uint64
 	ExtarnalTargetID() string
+	AuctionType() AuctionType // Type of auction (first price, second price, etc)
 
 	Sex() uint // Sex of the user
 	Age() uint // Age in years

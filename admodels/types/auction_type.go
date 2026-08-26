@@ -15,7 +15,7 @@ type AuctionType uint8
 // Auction types
 const (
 	UndefinedAuctionType   AuctionType = 0
-	AutoPriceAuctionType   AuctionType = 0
+	AutoPriceAuctionType               = UndefinedAuctionType
 	FirstPriceAuctionType  AuctionType = 1
 	SecondPriceAuctionType AuctionType = 2
 )
@@ -28,6 +28,11 @@ func (at AuctionType) IsFirtsPrice() bool {
 // IsSecondPrice auction type
 func (at AuctionType) IsSecondPrice() bool {
 	return at == SecondPriceAuctionType
+}
+
+// IsAutoPrice auction type
+func (at AuctionType) IsAutoPrice() bool {
+	return at == AutoPriceAuctionType
 }
 
 // Name of the status

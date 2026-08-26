@@ -27,6 +27,11 @@ func (b *BidTargetWrapper) ExtarnalTargetID() string {
 	return b.Imp.ExternalTargetID
 }
 
+// AuctionType implements [types.TargetPointer].
+func (b *BidTargetWrapper) AuctionType() types.AuctionType {
+	return b.BidReq.AuctionType()
+}
+
 // LanguageCode implements [types.TargetPointer].
 func (b *BidTargetWrapper) LanguageCode() string {
 	if langs := b.BidReq.BrowserInfo().Languages; len(langs) > 0 {
