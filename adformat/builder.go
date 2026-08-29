@@ -1,5 +1,7 @@
 package adformat
 
+import "github.com/guregu/null"
+
 // builder.go is the Go-ergonomic layer over Node/Config/AssetRequirement/
 // Field/Condition/Param/SizeOption (§3.2.10): constructors plus a chain
 // of value-receiver modifiers (each returns a modified copy, so they
@@ -14,6 +16,7 @@ package adformat
 // field, and a top-level function cannot share its name with a type.
 // This affects exactly two modifier names and one constructor name:
 //   - Field.Title (struct field) → the modifier is WithTitle, not Title.
+//   - Field.Description (struct field) → the modifier is WithDescription.
 //   - AssetRequirement.NavigateTo / Field.NavigateTo (struct fields) →
 //     the modifier is WithNavigateTo, not NavigateTo.
 //   - the Param struct type → the constructor is NewParam, not Param.
@@ -224,6 +227,30 @@ func (f Field) When(c Condition) Field {
 // name (see the package-level deviation note above).
 func (f Field) WithTitle(t string) Field {
 	f.Title = t
+	return f
+}
+
+// WithDescription sets helper text shown under the title in the edit UI.
+func (f Field) WithDescription(s string) Field {
+	f.Description = s
+	return f
+}
+
+// WithMultiline sets the minimum textarea row count (0 = single-line input).
+func (f Field) WithMultiline(rows int) Field {
+	f.Multiline = rows
+	return f
+}
+
+// ReadOnly hides the field from the general edit UI (editable: false).
+func (f Field) ReadOnly() Field {
+	f.Editable = null.BoolFrom(false)
+	return f
+}
+
+// WithMultilang marks the field as supporting multiple languages when editing.
+func (f Field) WithMultilang() Field {
+	f.Multilang = true
 	return f
 }
 

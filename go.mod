@@ -18,6 +18,7 @@ require (
 	github.com/geniusrabbit/notificationcenter/v2 v2.5.0
 	github.com/geniusrabbit/udetect v0.0.0-20251009164230-11a5e0a2d3b8
 	github.com/google/uuid v1.6.0
+	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
 	github.com/nats-io/nats.go v1.53.1
 	github.com/opentracing/opentracing-go v1.2.0

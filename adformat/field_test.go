@@ -150,6 +150,31 @@ func TestFieldIsValidOption(t *testing.T) {
 	}
 }
 
+func TestFieldUIMetadataBuilders(t *testing.T) {
+	f := StringField("description").
+		WithTitle("Description").
+		WithDescription("Body text shown with the ad").
+		WithMultiline(3).
+		WithMultilang()
+	if f.Description != "Body text shown with the ad" {
+		t.Errorf("description: %q", f.Description)
+	}
+	if f.MultilineRows() != 3 {
+		t.Errorf("multiline: %d", f.MultilineRows())
+	}
+	if !f.IsMultilang() {
+		t.Error("expected multilang")
+	}
+	if !f.IsEditable() {
+		t.Error("default must be editable")
+	}
+
+	hidden := StringField("internal").ReadOnly()
+	if hidden.IsEditable() {
+		t.Error("ReadOnly must set editable=false")
+	}
+}
+
 func TestFieldSoftEqual(t *testing.T) {
 	a := Field{Name: "title", Type: FieldStringType}
 	b := Field{Name: "title", Type: FieldStringType}

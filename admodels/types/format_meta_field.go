@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/demdxx/gocast/v2"
+	"github.com/guregu/null"
 )
 
 // Errors list...
@@ -27,6 +28,7 @@ const (
 	FormatFieldFloatType                   = "float"
 	FormatFieldBoolType                    = "bool"
 	FormatFieldPhoneType                   = "phone"
+	FormatFieldHTMLType                    = "html"
 	FormatFieldDefaultType                 = FormatFieldStringType
 )
 
@@ -56,6 +58,9 @@ type FormatField struct {
 	// Title of yje field for interface
 	Title string `json:"title,omitempty"`
 
+	// Description is helper text shown under the title in the edit UI
+	Description string `json:"description,omitempty"`
+
 	// Name of the field (required)
 	Name string `json:"name" validation:"required"`
 
@@ -79,6 +84,16 @@ type FormatField struct {
 
 	// RegExp validation pattern
 	RegExp string `json:"regexp,omitempty"`
+
+	// Multiline is the minimum textarea row count; 0 means a single-line input
+	Multiline int `json:"multiline,omitempty"`
+
+	// Editable controls whether the field is shown in the general edit UI.
+	// Omitted (Valid=false) or true = shown; false = hidden.
+	Editable null.Bool `json:"editable,omitzero"`
+
+	// Multilang marks the field as supporting multiple languages when editing
+	Multilang bool `json:"multilang,omitempty"`
 }
 
 // GetType of the field
@@ -100,6 +115,22 @@ func (f FormatField) MaxLength() int {
 		return 0
 	}
 	return int(f.Max)
+}
+
+// IsEditable reports whether the field is shown in the general edit UI.
+// Omitted JSON (Valid=false) defaults to true.
+func (f FormatField) IsEditable() bool {
+	return !f.Editable.Valid || f.Editable.Bool
+}
+
+// IsMultilang reports whether the field supports multiple languages when editing.
+func (f FormatField) IsMultilang() bool {
+	return f.Multilang
+}
+
+// MultilineRows is the minimum textarea row count; 0 means a single-line input.
+func (f FormatField) MultilineRows() int {
+	return f.Multiline
 }
 
 // SoftEqual compare

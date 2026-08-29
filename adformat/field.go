@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/demdxx/gocast/v2"
+	"github.com/guregu/null"
 )
 
 // Errors returned by Field.Prepare.
@@ -89,6 +90,9 @@ type Field struct {
 	// Title of the field for the UI.
 	Title string `json:"title,omitempty" yaml:"title,omitempty"`
 
+	// Description is helper text shown under the title in the edit UI.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+
 	// Name of the field (required, used for addressing/Condition/Binding).
 	Name string `json:"name" yaml:"name"`
 
@@ -137,6 +141,16 @@ type Field struct {
 	// representations (OpenRTB Native data/title asset, tracking pixel
 	// event, ...) — §3.2.12.
 	Bindings []Binding `json:"bindings,omitempty" yaml:"bindings,omitempty"`
+
+	// Multiline is the minimum textarea row count; 0 means a single-line input.
+	Multiline int `json:"multiline,omitempty" yaml:"multiline,omitempty"`
+
+	// Editable controls whether the field is shown in the general edit UI.
+	// Omitted (Valid=false) or true = shown; false = hidden.
+	Editable null.Bool `json:"editable,omitzero" yaml:"editable,omitempty"`
+
+	// Multilang marks the field as supporting multiple languages when editing.
+	Multilang bool `json:"multilang,omitempty" yaml:"multilang,omitempty"`
 }
 
 // GetType of the field, defaulting to FieldDefaultType.
@@ -157,6 +171,22 @@ func (f Field) GetName() string {
 // model.
 func (f Field) IsRequired() bool {
 	return f.GetType() != FieldBoolType && f.Required
+}
+
+// IsEditable reports whether the field is shown in the general edit UI.
+// Omitted JSON (Valid=false) defaults to true.
+func (f Field) IsEditable() bool {
+	return !f.Editable.Valid || f.Editable.Bool
+}
+
+// IsMultilang reports whether the field supports multiple languages when editing.
+func (f Field) IsMultilang() bool {
+	return f.Multilang
+}
+
+// MultilineRows is the minimum textarea row count; 0 means a single-line input.
+func (f Field) MultilineRows() int {
+	return f.Multiline
 }
 
 // MaxLength of the field limit, for length-bounded types only.

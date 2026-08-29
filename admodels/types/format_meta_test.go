@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 )
 
@@ -153,4 +154,63 @@ func TestConfigIntersec(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFormatFieldUIMetadataJSON(t *testing.T) {
+	t.Run("omitted editable defaults to shown", func(t *testing.T) {
+		var f FormatField
+		if err := json.Unmarshal([]byte(`{"name":"title","title":"Title"}`), &f); err != nil {
+			t.Fatal(err)
+		}
+		if !f.IsEditable() {
+			t.Error("omitted editable must default to true")
+		}
+		if f.IsMultilang() {
+			t.Error("omitted multilang must default to false")
+		}
+		if f.MultilineRows() != 0 {
+			t.Errorf("omitted multiline must be 0, got %d", f.MultilineRows())
+		}
+	})
+
+	t.Run("editable false hides the field", func(t *testing.T) {
+		var f FormatField
+		if err := json.Unmarshal([]byte(`{"name":"internal","editable":false}`), &f); err != nil {
+			t.Fatal(err)
+		}
+		if f.IsEditable() {
+			t.Error("editable:false must hide the field")
+		}
+	})
+
+	t.Run("round-trip multiline description multilang", func(t *testing.T) {
+		in := FormatField{
+			Name:        "description",
+			Title:       "Description",
+			Description: "Body text shown with the ad",
+			Multiline:   3,
+			Multilang:   true,
+		}
+		data, err := json.Marshal(in)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var out FormatField
+		if err := json.Unmarshal(data, &out); err != nil {
+			t.Fatal(err)
+		}
+		if out.Description != in.Description || out.Multiline != 3 || !out.IsMultilang() || !out.IsEditable() {
+			t.Errorf("round-trip mismatch: %+v", out)
+		}
+		if strings.Contains(string(data), `"editable"`) {
+			t.Errorf("unset editable should be omitted, got %s", data)
+		}
+		var fromNull FormatField
+		if err := json.Unmarshal([]byte(`{"name":"title","editable":null}`), &fromNull); err != nil {
+			t.Fatal(err)
+		}
+		if !fromNull.IsEditable() {
+			t.Error("editable:null must default to shown")
+		}
+	})
 }
