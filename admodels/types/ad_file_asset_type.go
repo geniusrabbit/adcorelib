@@ -1,6 +1,5 @@
 //
-// @project GeniusRabbit corelib 2018, 2025
-// @author Dmitry Ponomarev <demdxx@gmail.com> 2018, 2025
+// @project GeniusRabbit corelib
 //
 
 package types
@@ -21,7 +20,7 @@ const (
 	AdFileAssetImageType     AdFileAssetType = 1
 	AdFileAssetVideoType     AdFileAssetType = 2
 	AdFileAssetHTML5Type     AdFileAssetType = 3
-	AdFileAssetVASTTagType   AdFileAssetType = 4
+	AdFileAssetAudioType     AdFileAssetType = 4
 )
 
 // AdFileAssetTypeByName returns adfile value type
@@ -33,8 +32,8 @@ func AdFileAssetTypeByName(name string) AdFileAssetType {
 		return AdFileAssetVideoType
 	case "html5", "3":
 		return AdFileAssetHTML5Type
-	case "vast_tag", "vast", "4":
-		return AdFileAssetVASTTagType
+	case "audio", "4":
+		return AdFileAssetAudioType
 	}
 	return AdFileAssetUndefinedType
 }
@@ -53,8 +52,8 @@ func (ft AdFileAssetType) Code() string {
 		return "video"
 	case AdFileAssetHTML5Type:
 		return "html5"
-	case AdFileAssetVASTTagType:
-		return "vast_tag"
+	case AdFileAssetAudioType:
+		return "audio"
 	}
 	return "undefined"
 }
@@ -68,7 +67,7 @@ func (ft AdFileAssetType) Num() int {
 		return 2
 	case AdFileAssetHTML5Type:
 		return 3
-	case AdFileAssetVASTTagType:
+	case AdFileAssetAudioType:
 		return 4
 	}
 	return 0
@@ -89,9 +88,9 @@ func (ft AdFileAssetType) IsHTML5() bool {
 	return ft == AdFileAssetHTML5Type
 }
 
-// IsVASTTag file type
-func (ft AdFileAssetType) IsVASTTag() bool {
-	return ft == AdFileAssetVASTTagType
+// IsAudio file type
+func (ft AdFileAssetType) IsAudio() bool {
+	return ft == AdFileAssetAudioType
 }
 
 // IsUndefined file type
