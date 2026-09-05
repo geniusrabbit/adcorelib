@@ -20,14 +20,11 @@ func effectiveCount(minCount, maxCount int, required bool) (mn, mx int) {
 			mn = 0
 		}
 	}
-	switch {
-	case maxCount == Unlimited:
+	switch maxCount {
+	case Unlimited:
 		mx = Unlimited
-	case maxCount == 0:
-		mx = mn
-		if mx < 1 {
-			mx = 1
-		}
+	case 0:
+		mx = max(mn, 1)
 	default:
 		mx = maxCount
 	}

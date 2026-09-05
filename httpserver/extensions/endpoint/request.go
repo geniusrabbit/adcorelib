@@ -163,9 +163,12 @@ func replaceDomain(urlStr, newDomain string, secure bool) string {
 	if len(parts) != 2 {
 		return urlStr
 	}
-	scheme, rest := parts[0], parts[1]
-	pathIndex := strings.Index(rest, "/")
-	var path string
+	var (
+		scheme    string
+		rest      = parts[1]
+		pathIndex = strings.Index(rest, "/")
+		path      string
+	)
 	if pathIndex != -1 {
 		path = rest[pathIndex:]
 	} else {

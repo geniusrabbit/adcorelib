@@ -1,7 +1,7 @@
 package trafaret
 
 import (
-	"reflect"
+	"github.com/demdxx/gocast/v2"
 
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
@@ -13,8 +13,15 @@ type Filler struct {
 }
 
 // Push adds ads to the filler collection, grouping them by impression ID.
+// The input slice is copied; Shuffle/Pop must not mutate the caller's backing
+// array (e.g. Response.Ads() passed as a variadic).
 func (f *Filler) Push(priority float32, ads ...adtype.ResponseItemCommon) {
-	if ads = filterNilAds(ads); len(ads) == 0 {
+	if len(ads) == 0 {
+		return
+	}
+	copied := make([]adtype.ResponseItemCommon, len(ads))
+	copy(copied, ads)
+	if ads = filterNilAds(copied); len(ads) == 0 {
 		return
 	}
 
@@ -34,7 +41,7 @@ func (f *Filler) Push(priority float32, ads ...adtype.ResponseItemCommon) {
 			priority: priority,
 			ads:      ads,
 		}
-		priorityAds.Sort()
+		priorityAds.Shuffle()
 
 		// Add to an existing block or create a new one.
 		for i := range f.blocks {
@@ -90,7 +97,7 @@ func (f *Filler) Push(priority float32, ads ...adtype.ResponseItemCommon) {
 	// Sort the blocks by impression ID.
 	for i := range f.blocks {
 		for j := range f.blocks[i].ads {
-			f.blocks[i].ads[j].Sort()
+			f.blocks[i].ads[j].Shuffle()
 		}
 	}
 }
@@ -112,12 +119,14 @@ func (f *Filler) Fill(impid string, size int) []adtype.ResponseItemCommon {
 	}
 
 	muliadsCount := 0
+	origSize := size
 	result := make([]adtype.ResponseItemCommon, 0, size)
 
-	// Retrieve ads from the block.
+	// Retrieve ads from the block. Multi-ads occupy more than one slot, so the
+	// loop fetches extra candidates; packing still uses the original size.
 	for i := 0; i < size; i++ {
 		_, ad := block.Pop()
-		if ad == nil {
+		if gocast.IsNil(ad) {
 			break
 		}
 		result = append(result, ad)
@@ -133,7 +142,7 @@ func (f *Filler) Fill(impid string, size int) []adtype.ResponseItemCommon {
 	}
 
 	// Postprocess ads if multiple ads are present.
-	return packAdObjects(result, size)
+	return packAdObjects(result, origSize)
 }
 
 // Block retrieves a blockPriority by impression ID.
@@ -165,7 +174,7 @@ func packAdObjects(objects []adtype.ResponseItemCommon, maxSize int) []adtype.Re
 	for i := 1; i <= n; i++ {
 		for w := 0; w <= maxSize; w++ {
 			dpIdx := (i - 1) * blockSize
-			if objSize := adSize(objects[i-1]); objSize < w {
+			if objSize := adSize(objects[i-1]); objSize <= w {
 				withItem := dp[dpIdx+w-objSize] + objects[i-1].InternalAuctionCPMBid()
 				withoutItem := dp[dpIdx+w]
 				dp[i*blockSize+w] = max(withItem, withoutItem)
@@ -202,23 +211,10 @@ func adSize(ad adtype.ResponseItemCommon) int {
 	}
 }
 
-func isNilAd(ad adtype.ResponseItemCommon) bool {
-	if ad == nil {
-		return true
-	}
-	v := reflect.ValueOf(ad)
-	switch v.Kind() {
-	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Func, reflect.Chan:
-		return v.IsNil()
-	default:
-		return false
-	}
-}
-
 func filterNilAds(ads []adtype.ResponseItemCommon) []adtype.ResponseItemCommon {
 	filtered := ads[:0]
 	for _, ad := range ads {
-		if !isNilAd(ad) {
+		if !gocast.IsNil(ad) {
 			filtered = append(filtered, ad)
 		}
 	}

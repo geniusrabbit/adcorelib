@@ -148,6 +148,7 @@ func TestNumberBitset_ContainsAllFrom(t *testing.T) {
 	if a.ContainsAllFrom(c) {
 		t.Fatal("a should not be subset of c")
 	}
+	//nolint:staticcheck
 	if !NewNumberBitset[uint]().ContainsAllFrom(a) {
 		// empty set: mask 0, 0&set.mask==0, then no values to check → true
 		// Document actual behavior.

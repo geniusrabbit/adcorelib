@@ -1,7 +1,10 @@
 package trafaret
 
 import (
+	"math/rand/v2"
 	"slices"
+
+	"github.com/demdxx/gocast/v2"
 
 	"github.com/geniusrabbit/adcorelib/adtype"
 )
@@ -22,10 +25,16 @@ func (a *adPreority) Pop() adtype.ResponseItemCommon {
 	if len(a.ads) == 0 {
 		return nil
 	}
-	idx := len(a.ads) - 1
-	ad := a.ads[idx]
-	a.ads = a.ads[:idx]
-	return ad
+	size := len(a.ads)
+	offset := rand.IntN(size)
+	for i := range size {
+		idx := (i + offset) % size
+		if ad := a.ads[idx]; !gocast.IsNil(ad) {
+			a.ads[idx] = nil
+			return ad
+		}
+	}
+	return nil
 }
 
 // Sort orders the ads in ascending order based on their CPM bid.
@@ -40,6 +49,13 @@ func (a *adPreority) Sort() {
 			return -1
 		}
 		return 1
+	})
+}
+
+// Shuffle randomizes the order of the ads in the collection.
+func (a *adPreority) Shuffle() {
+	rand.Shuffle(len(a.ads), func(i, j int) {
+		a.ads[i], a.ads[j] = a.ads[j], a.ads[i]
 	})
 }
 

@@ -9,6 +9,8 @@ import (
 	"context"
 	"iter"
 
+	"github.com/demdxx/gocast/v2"
+
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adtype"
 )
@@ -27,7 +29,7 @@ func NewResponse(request adtype.BidRequester, source adtype.Source, items []adty
 	return &Response{
 		request: request,
 		source:  source,
-		items:   items,
+		items:   filterNilItems(items),
 		err:     err,
 		context: request.Context(),
 	}
@@ -61,12 +63,21 @@ func (r *Response) Request() adtype.BidRequester {
 
 // AddItem to response
 func (r *Response) AddItem(it adtype.ResponseItemCommon) {
+	if gocast.IsNil(it) {
+		return
+	}
 	r.items = append(r.items, it)
 }
 
 // Item by impression code
 func (r *Response) Item(impid string) adtype.ResponseItemCommon {
+	if r == nil {
+		return nil
+	}
 	for _, it := range r.items {
+		if gocast.IsNil(it) {
+			continue
+		}
 		if it.ImpressionID() == impid {
 			return it
 		}
@@ -83,6 +94,9 @@ func (r *Response) Ads() []adtype.ResponseItemCommon {
 func (r *Response) IterAds() iter.Seq[adtype.ResponseItem] {
 	return func(yield func(adtype.ResponseItem) bool) {
 		for _, it := range r.items {
+			if gocast.IsNil(it) {
+				continue
+			}
 			switch itV := it.(type) {
 			case nil:
 			case adtype.ResponseItem:
@@ -91,6 +105,9 @@ func (r *Response) IterAds() iter.Seq[adtype.ResponseItem] {
 				}
 			case adtype.ResponseMultipleItem:
 				for _, mit := range itV.Ads() {
+					if gocast.IsNil(mit) {
+						continue
+					}
 					if !yield(mit) {
 						return
 					}
@@ -116,11 +133,36 @@ func (r *Response) Validate() (err error) {
 		return adtype.ErrResponseEmpty
 	}
 	for _, it := range r.items {
+		if gocast.IsNil(it) {
+			continue
+		}
 		if err = it.Validate(); err != nil {
 			break
 		}
 	}
 	return
+}
+
+func filterNilItems(items []adtype.ResponseItemCommon) []adtype.ResponseItemCommon {
+	n := 0
+	for _, it := range items {
+		if !gocast.IsNil(it) {
+			n++
+		}
+	}
+	if n == len(items) {
+		return items
+	}
+	if n == 0 {
+		return nil
+	}
+	out := make([]adtype.ResponseItemCommon, 0, n)
+	for _, it := range items {
+		if !gocast.IsNil(it) {
+			out = append(out, it)
+		}
+	}
+	return out
 }
 
 // Error of the response

@@ -95,7 +95,7 @@ func TestU64StringMatcher_AllChildrenID(t *testing.T) {
 	if got := m.AllChildrenID(2); !reflect.DeepEqual(got, []uint64{4}) {
 		t.Fatalf("AllChildrenID(2)=%v want [4]", got)
 	}
-	if got := m.AllChildrenID(4); got != nil && len(got) != 0 {
+	if got := m.AllChildrenID(4); len(got) != 0 {
 		t.Fatalf("AllChildrenID(leaf)=%v want empty", got)
 	}
 	if got := m.AllChildrenID(99); got != nil {

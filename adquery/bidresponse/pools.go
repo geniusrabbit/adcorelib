@@ -23,7 +23,7 @@ func BorrowResponse(request adtype.BidRequester, source adtype.Source, items []a
 	resp.context = request.Context()
 	resp.request = request
 	resp.source = source
-	resp.items = items
+	resp.items = filterNilItems(items)
 	resp.err = err
 	return resp
 }
