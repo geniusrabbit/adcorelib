@@ -1,6 +1,7 @@
 package leadtracker
 
 import (
+	"bytes"
 	"context"
 	"net/http"
 	"time"
@@ -62,8 +63,9 @@ func (ext *Extension[LeadType]) InitRouter(ctx context.Context, router *router.R
 		if leadType != "plain" {
 			suffix = "." + leadType
 		}
-		router.GET("/lead"+suffix,
-			ext.handlerWrapper.Metrics("traking.lead."+leadType, ext.eventLeadHandler(leadType)))
+		handler := ext.handlerWrapper.Metrics("traking.lead."+leadType, ext.eventLeadHandler(leadType))
+		router.GET("/lead"+suffix, handler)
+		router.POST("/lead"+suffix, handler)
 	}
 }
 
@@ -72,17 +74,38 @@ func (ext *Extension[LeadT]) eventLeadHandler(pixelType string) httphandler.ExtH
 	return func(ctx context.Context, rctx *fasthttp.RequestCtx) {
 		defer debugtool.Trace()
 
-		var (
-			dataCode  []byte
-			leadData  = rctx.QueryArgs().Peek("l")
-			leadEvent = ext.leadAllocator()
-			err       = leadEvent.Unpack(leadData)
-			span, _   = gtracing.StartSpanFromFastContext(rctx, handlerCode)
-		)
-
+		span, _ := gtracing.StartSpanFromFastContext(rctx, handlerCode)
 		if span != nil {
 			defer span.Finish()
 		}
+
+		if len(bytes.TrimSpace(peekLeadArg(rctx, "clk"))) > 0 {
+			leadEvent, err := parseCompactLead(rctx)
+			if err != nil {
+				ctxlogger.Get(ctx).Error(
+					"unpack event handler",
+					zap.String("handler", "lead"),
+					zap.Error(err),
+				)
+				rctx.SetStatusCode(http.StatusBadRequest)
+				return
+			}
+			if err = ext.eventStream.SendLeadEvent(ctx, leadEvent); err != nil {
+				ctxlogger.Get(ctx).Error(
+					"send event handler",
+					zap.String("handler", "lead"),
+					zap.Error(err),
+				)
+			}
+			writeLeadResponse(rctx, pixelType)
+			return
+		}
+
+		var (
+			leadData  = peekLeadArg(rctx, "l")
+			leadEvent = ext.leadAllocator()
+			err       = leadEvent.Unpack(leadData)
+		)
 
 		if err != nil {
 			ctxlogger.Get(ctx).Error(
@@ -95,7 +118,6 @@ func (ext *Extension[LeadT]) eventLeadHandler(pixelType string) httphandler.ExtH
 			return
 		}
 
-		// Send lead event to the stream
 		leadEvent.SetDateTime(int64(fasttime.UnixTimestamp()))
 		if err = ext.eventStream.SendLeadEvent(ctx, &leadEvent); err != nil {
 			ctxlogger.Get(ctx).Error(
@@ -106,21 +128,26 @@ func (ext *Extension[LeadT]) eventLeadHandler(pixelType string) httphandler.ExtH
 			)
 		}
 
-		switch pixelType {
-		case "js":
-			rctx.SetContentType("application/javascript")
-			dataCode = []byte(trakingJSCode)
-		case "gif":
-			rctx.SetContentType("image/gif")
-			dataCode = []byte(trakingGIFPixel)
-		default:
-			rctx.SetContentType("plain/text")
-		}
-		rctx.SetStatusCode(http.StatusOK)
-		rctx.Response.Header.Set("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
-		rctx.Response.Header.Set("Expires", "Wed, 11 Nov 1998 11:11:11 GMT")
-		rctx.Response.Header.Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
-		rctx.Response.Header.Set("Pragma", "no-cache")
-		_, _ = rctx.Write(dataCode)
+		writeLeadResponse(rctx, pixelType)
 	}
+}
+
+func writeLeadResponse(rctx *fasthttp.RequestCtx, pixelType string) {
+	var dataCode []byte
+	switch pixelType {
+	case "js":
+		rctx.SetContentType("application/javascript")
+		dataCode = []byte(trakingJSCode)
+	case "gif":
+		rctx.SetContentType("image/gif")
+		dataCode = []byte(trakingGIFPixel)
+	default:
+		rctx.SetContentType("plain/text")
+	}
+	rctx.SetStatusCode(http.StatusOK)
+	rctx.Response.Header.Set("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
+	rctx.Response.Header.Set("Expires", "Wed, 11 Nov 1998 11:11:11 GMT")
+	rctx.Response.Header.Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
+	rctx.Response.Header.Set("Pragma", "no-cache")
+	_, _ = rctx.Write(dataCode)
 }
