@@ -53,6 +53,8 @@ const (
 	FieldApps                                   // app IDs
 	FieldZones                                  // zone IDs
 	FieldInterstitialFormats                    // ad format codenames for interstitial requests
+	FieldExtApps                                // external app/site ExtID strings (ext_app_id)
+	FieldExtZones                               // external zone/tagid strings (ext_zone_id)
 )
 
 // Secure request filter values.
@@ -119,7 +121,9 @@ type BaseFilter struct {
 	Domains             gosql.StringArray
 	Apps                gosql.NullableOrderedNumberArray[uint64]
 	Zones               gosql.NullableOrderedNumberArray[uint64]
-	Secure              int8 // SecureAny | SecureOnly | SecureExclude
+	ExtApps             gosql.StringArray // publisher ext_app_id / site ExtID
+	ExtZones            gosql.StringArray // publisher ext_zone_id / tagid
+	Secure              int8              // SecureAny | SecureOnly | SecureExclude
 	AdBlock             int8 // AdBlockAny | AdBlockOnly | AdBlockExclude
 	PrivateBrowsing     int8 // PrivateBrowsingAny | PrivateBrowsingOnly | PrivateBrowsingExclude
 	IP                  int8 // IPAny | IPv4Only | IPv6Only
@@ -260,6 +264,22 @@ func (fl *BaseFilter) SetZoneIDs(arr []uint64) {
 	fl.SetPositive(FieldZones, false) // false = include mode (bit clear)
 }
 
+// SetExtApps sets the external app/site ExtID filter. Values with a leading
+// '-' are treated as an exclusion list; all others form an inclusion list.
+func (fl *BaseFilter) SetExtApps(arr gosql.NullableStringArray) {
+	var positive bool
+	fl.ExtApps, positive = StringArrayFilter(arr)
+	fl.SetPositive(FieldExtApps, positive)
+}
+
+// SetExtZones sets the external zone/tagid filter. Values with a leading '-'
+// are treated as an exclusion list; all others form an inclusion list.
+func (fl *BaseFilter) SetExtZones(arr gosql.NullableStringArray) {
+	var positive bool
+	fl.ExtZones, positive = StringArrayFilter(arr)
+	fl.SetPositive(FieldExtZones, positive)
+}
+
 // SetPositive records the include/exclude polarity for the given field in
 // excludeMask. Despite the name, positive=true activates exclude mode
 // (sets the corresponding bit); positive=false activates include mode
@@ -346,6 +366,14 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 
 	if !fl.checkUintArr(t.AppID(), FieldApps, fl.Apps) {
 		return ErrAppNotAllowed
+	}
+
+	if !fl.checkStringArr(extAppIDs(t), FieldExtApps, fl.ExtApps) {
+		return ErrAppNotAllowed
+	}
+
+	if !fl.checkStringArr(extZoneIDs(t), FieldExtZones, fl.ExtZones) {
+		return ErrTargetNotAllowed
 	}
 
 	if !fl.checkStringArr(t.Domain(), FieldDomains, fl.Domains) {
@@ -448,8 +476,28 @@ func (fl *BaseFilter) Reset() {
 	fl.Domains = fl.Domains[:0]
 	fl.Apps = fl.Apps[:0]
 	fl.Zones = fl.Zones[:0]
+	fl.ExtApps = fl.ExtApps[:0]
+	fl.ExtZones = fl.ExtZones[:0]
 	fl.Secure = SecureAny
 	fl.AdBlock = AdBlockAny
 	fl.PrivateBrowsing = PrivateBrowsingAny
 	fl.IP = IPAny
+}
+
+func extAppIDs(t TargetPointer) []string {
+	var ids []string
+	if app := t.AppInfo(); app != nil && app.ExtID != "" {
+		ids = append(ids, app.ExtID)
+	}
+	if site := t.SiteInfo(); site != nil && site.ExtID != "" {
+		ids = append(ids, site.ExtID)
+	}
+	return ids
+}
+
+func extZoneIDs(t TargetPointer) []string {
+	if id := t.ExtarnalTargetID(); id != "" {
+		return []string{id}
+	}
+	return nil
 }
