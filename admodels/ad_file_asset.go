@@ -69,9 +69,6 @@ func (f *AdFileAsset) ThumbBy(w, h, wmin, hmin int) (th *AdFileAssetThumb) {
 // size borders (IsSuits) are preferred; if none fit, the closest of all
 // thumbs is returned. w/h <= 0 means that axis is unbounded (same as ThumbBy).
 func (f *AdFileAsset) ClosestThumbBy(w, h, wmin, hmin int) *AdFileAssetThumb {
-	if len(f.Thumbs) == 0 {
-		return nil
-	}
 	tw, th := w, h
 	if w <= 0 {
 		w = 0x0fffffff
@@ -93,6 +90,14 @@ func (f *AdFileAsset) ClosestThumbBy(w, h, wmin, hmin int) *AdFileAssetThumb {
 			best = t
 			bestDist = dist
 			bestSuits = suits
+		}
+	}
+	if best == nil && f.URL != "" {
+		best = &AdFileAssetThumb{
+			URL:    f.URL,
+			Width:  f.Width,
+			Height: f.Height,
+			Type:   f.Type,
 		}
 	}
 	return best
