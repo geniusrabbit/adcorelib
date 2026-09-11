@@ -22,6 +22,14 @@ type SimpleClient struct {
 	OSList      []*Item
 }
 
+// New returns a SimpleClient with the given catalog lists.
+func New(browsers, os []*Item) *SimpleClient {
+	return &SimpleClient{
+		BrowserList: browsers,
+		OSList:      os,
+	}
+}
+
 func (s *SimpleClient) Detect(ctx context.Context, req *udetect.Request) (*udetect.Response, error) {
 	if isEmpty(req.UID) {
 		req.UID = uuid.New()
