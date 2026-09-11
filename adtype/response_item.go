@@ -89,6 +89,9 @@ type ResponseItem interface {
 	// CampaignID returns the unique identifier of the advertising campaign.
 	CampaignID() uint64
 
+	// LinkID returns the unique identifier of the served AdLink (0 if none).
+	LinkID() uint64
+
 	// AdID returns the unique identifier of the advertisement.
 	AdID() string
 

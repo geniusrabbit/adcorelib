@@ -88,6 +88,9 @@ func (*ResponseItemEmpty) AccountID() uint64 { return 0 }
 // CampaignID number
 func (*ResponseItemEmpty) CampaignID() uint64 { return 0 }
 
+// LinkID returns the unique identifier of the served AdLink.
+func (*ResponseItemEmpty) LinkID() uint64 { return 0 }
+
 // AdID returns the unique identifier of the advertisement.
 func (*ResponseItemEmpty) AdID() string { return "" }
 
