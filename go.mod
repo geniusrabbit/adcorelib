@@ -12,7 +12,7 @@ require (
 	github.com/demdxx/xtypes v0.3.1
 	github.com/fasthttp/router v1.5.4
 	github.com/flf2ko/fasthttp-prometheus v0.1.0
-	github.com/geniusrabbit/gogeo v0.0.0-20190430153311-59b5dca35b92
+	github.com/geniusrabbit/gogeo v0.0.0-20260914182346-207e3fa202e7
 	github.com/geniusrabbit/gosql/v2 v2.3.2
 	github.com/geniusrabbit/hourstable v1.0.0
 	github.com/geniusrabbit/notificationcenter/v2 v2.5.0

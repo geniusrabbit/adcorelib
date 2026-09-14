@@ -147,7 +147,7 @@ func ContentPreparer(response Response, item ResponseItem) *strings.Replacer {
 		PriceModel: item.PricingModel().Name(),
 
 		// Country, City, Latitude, Longitude, Language
-		Country:   req.GeoInfo().Country,
+		Country:   req.GeoInfo().Country.ISO2(),
 		City:      req.GeoInfo().City,
 		Language:  req.BrowserInfo().PrimaryLanguage,
 		Latitude:  gocast.Str(req.GeoInfo().Lat),

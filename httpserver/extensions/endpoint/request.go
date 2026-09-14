@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/udetect"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
@@ -128,7 +129,7 @@ func NewRequestFor(
 		}
 		ccStr := opt.Request.QueryArgs().Peek("cc")
 		if len(ccStr) > 0 {
-			req.User.Geo.Country = string(ccStr)
+			req.User.Geo.Country = gogeo.CountryCode2ByString(string(ccStr))
 		}
 		secureStr := opt.Request.QueryArgs().Peek("secure")
 		if len(secureStr) > 0 {

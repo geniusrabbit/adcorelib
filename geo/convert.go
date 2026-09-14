@@ -17,7 +17,7 @@ func CountryCodes2IDs(codes []string) gosql.NullableOrderedNumberArray[uint64] {
 		switch cc = strings.ToUpper(cc); cc {
 		case "EU", "AS", "AF", "OC", "SA", "NA", "AN":
 			for _, country := range gogeo.Countries {
-				if country.Continent == cc {
+				if country.Continent() == cc {
 					result = append(result, uint64(country.ID))
 				}
 			}

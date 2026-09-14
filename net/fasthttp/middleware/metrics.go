@@ -37,7 +37,7 @@ func CollectMetrics(metric string, spy Spy, next func(p personification.Person, 
 	return spy(func(p personification.Person, ctx *fasthttp.RequestCtx) {
 		var (
 			info    = p.UserInfo()
-			country = info.Country().Country
+			country = info.Country().Country.ISO2()
 			start   = time.Now()
 		)
 

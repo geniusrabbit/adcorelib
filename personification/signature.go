@@ -71,14 +71,14 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 
 	response, err := sign.Detector.Detect(ctx, request)
 	// Init additional information
-	if response.Geo == nil || len(response.Geo.IP) == 0 || response.Geo.Country == "" {
+	if response.Geo == nil || len(response.Geo.IP) == 0 || response.Geo.Country.ISO2() == gogeo.UndefinedCountryCodeISO2 {
 		if response.Geo == nil {
 			response.Geo = &udetect.Geo{}
 		}
 		if len(response.Geo.IP) == 0 {
 			response.Geo.IP = net.ParseIP(request.IP)
 		}
-		if response.Geo.Country == "" {
+		if response.Geo.Country.ISO2() == gogeo.UndefinedCountryCodeISO2 {
 			cc := string(req.Request.Header.Peek("Cf-Ipcountry"))
 			country := gogeo.CountryByCode2(cc)
 			response.Geo.ID = uint(country.ID)

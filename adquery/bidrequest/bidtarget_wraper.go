@@ -19,7 +19,7 @@ type BidTargetWrapper struct {
 
 // CountryCode implements [types.TargetPointer].
 func (b *BidTargetWrapper) CountryCode() string {
-	return b.BidReq.GeoInfo().Country
+	return b.BidReq.GeoInfo().Country.ISO2()
 }
 
 // ExtarnalTargetID implements [types.TargetPointer].
