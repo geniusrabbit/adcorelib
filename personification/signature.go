@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/demdxx/gocast/v2"
-	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
 	"github.com/valyala/fasthttp"
@@ -70,21 +69,16 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 	}
 
 	response, err := sign.Detector.Detect(ctx, request)
-	// Init additional information
-	if response.Geo == nil || len(response.Geo.IP) == 0 || response.Geo.Country.ISO2() == gogeo.UndefinedCountryCodeISO2 {
-		if response.Geo == nil {
-			response.Geo = &udetect.Geo{}
-		}
-		if len(response.Geo.IP) == 0 {
-			response.Geo.IP = net.ParseIP(request.IP)
-		}
-		if response.Geo.Country.ISO2() == gogeo.UndefinedCountryCodeISO2 {
-			cc := string(req.Request.Header.Peek("Cf-Ipcountry"))
-			country := gogeo.CountryByCode2(cc)
-			response.Geo.ID = uint(country.ID)
-			response.Geo.Country = country.Code2
-		}
+	if response == nil {
+		response = &udetect.Response{}
 	}
+	if response.Geo == nil {
+		response.Geo = &udetect.Geo{}
+	}
+	if len(response.Geo.IP) == 0 {
+		response.Geo.IP = net.ParseIP(request.IP)
+	}
+	applyCloudflareGeo(response.Geo, &req.Request.Header)
 	return &person{
 		request: request,
 		userInfo: UserInfo{
