@@ -9,7 +9,7 @@ func LangCodes2IDs(codes []string) gosql.NullableOrderedNumberArray[uint64] {
 	}
 	result := make(gosql.NullableOrderedNumberArray[uint64], 0, len(codes))
 	for _, lg := range codes {
-		result = append(result, uint64(GetLanguageIdByCodeString(lg)))
+		result = append(result, uint64(CodeFromString(lg).ID()))
 	}
 	return result.Sort()
 }
