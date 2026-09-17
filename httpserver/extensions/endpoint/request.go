@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/udetect"
 
 	"github.com/geniusrabbit/adcorelib/admodels"
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/adquery/bidrequest"
 	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/geo"
 	fasthttpext "github.com/geniusrabbit/adcorelib/net/fasthttp"
 	"github.com/geniusrabbit/adcorelib/personification"
 )
@@ -129,7 +129,7 @@ func NewRequestFor(
 		}
 		ccStr := opt.Request.QueryArgs().Peek("cc")
 		if len(ccStr) > 0 {
-			req.User.Geo.Country = gogeo.CountryCode2ByString(string(ccStr))
+			req.User.Geo.Country = geo.CountryCode2ByString(string(ccStr))
 		}
 		secureStr := opt.Request.QueryArgs().Peek("secure")
 		if len(secureStr) > 0 {

@@ -4,9 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
+
+	adgeo "github.com/geniusrabbit/adcorelib/geo"
 )
 
 func TestApplyCloudflareGeoFillMissing(t *testing.T) {
@@ -53,13 +54,13 @@ func TestApplyCloudflareGeoFillMissing(t *testing.T) {
 }
 
 func TestApplyCloudflareGeoRegionSuffix(t *testing.T) {
-	sk := gogeo.CountryByCode2("SK").Code2
+	sk := adgeo.CountryByCode2("SK").Code2
 
-	if got := cloudflareRegionCode("BA", sk); got != gogeo.RegionCodeByString("SK-BA") {
-		t.Fatalf("BA + SK = %q, want SK-BA lookup %q", got.ISO3166(), gogeo.RegionCodeByString("SK-BA").ISO3166())
-	}
-	if got := cloudflareRegionCode("BL", sk); got.ISO3166() != "SK-BL" {
+	if got := adgeo.RegionCodeByPartial("BL", sk); got.ISO3166() != "SK-BL" {
 		t.Fatalf("BL + SK = %q, want SK-BL", got.ISO3166())
+	}
+	if got := adgeo.RegionCodeByPartial("SK-BL", sk); got.ISO3166() != "SK-BL" {
+		t.Fatalf("full SK-BL = %q", got.ISO3166())
 	}
 
 	h := cfHeaders(map[string]string{
@@ -74,7 +75,7 @@ func TestApplyCloudflareGeoRegionSuffix(t *testing.T) {
 }
 
 func TestApplyCloudflareGeoKeepDetectorCountry(t *testing.T) {
-	sk := gogeo.CountryByCode2("SK")
+	sk := adgeo.CountryByCode2("SK")
 	geo := &udetect.Geo{
 		ID:        uint(sk.ID),
 		Country:   sk.Code2,
@@ -132,7 +133,7 @@ func TestApplyCloudflareGeoSkipXX(t *testing.T) {
 		"CF-IPCountry": "XX",
 		"CF-IPCity":    "Unknown",
 	}))
-	if geo.Country.ISO2() != gogeo.UndefinedCountryCodeISO2 {
+	if geo.Country.ISO2() != adgeo.UndefinedCountryCodeISO2 {
 		t.Fatalf("XX must not set Country, got %q", geo.Country.ISO2())
 	}
 	if geo.ID != 0 {
@@ -143,7 +144,7 @@ func TestApplyCloudflareGeoSkipXX(t *testing.T) {
 	}
 
 	applyCloudflareGeo(geo, cfHeaders(map[string]string{"CF-IPCountry": "T1"}))
-	if geo.Country.ISO2() != gogeo.UndefinedCountryCodeISO2 {
+	if geo.Country.ISO2() != adgeo.UndefinedCountryCodeISO2 {
 		t.Fatalf("T1 must not set Country, got %q", geo.Country.ISO2())
 	}
 }

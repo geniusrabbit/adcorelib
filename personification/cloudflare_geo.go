@@ -4,9 +4,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/udetect"
 	"github.com/valyala/fasthttp"
+
+	adgeo "github.com/geniusrabbit/adcorelib/geo"
 )
 
 // applyCloudflareGeo fills empty/undefined udetect.Geo fields from CloudFlare
@@ -18,15 +19,15 @@ func applyCloudflareGeo(geo *udetect.Geo, h *fasthttp.RequestHeader) {
 		return
 	}
 
-	if geo.Country.ISO2() == gogeo.UndefinedCountryCodeISO2 {
+	if geo.Country.ISO2() == adgeo.UndefinedCountryCodeISO2 {
 		if country, ok := cloudflareCountry(peekHeader(h, "CF-IPCountry")); ok {
 			geo.ID = uint(country.ID)
 			geo.Country = country.Code2
 		}
 	}
 
-	if geo.Region == gogeo.UndefinedRegionCode {
-		if rc := cloudflareRegionCode(peekHeader(h, "CF-Region-Code"), geo.Country); rc != gogeo.UndefinedRegionCode {
+	if geo.Region == adgeo.UndefinedRegionCode {
+		if rc := adgeo.RegionCodeByPartial(peekHeader(h, "CF-Region-Code"), geo.Country); rc != adgeo.UndefinedRegionCode {
 			geo.Region = rc
 		}
 	}
@@ -66,30 +67,16 @@ func peekHeader(h *fasthttp.RequestHeader, key string) string {
 	return string(h.Peek(key))
 }
 
-func cloudflareCountry(code string) (*gogeo.Country, bool) {
+func cloudflareCountry(code string) (*adgeo.Country, bool) {
 	switch code {
 	case "", "XX", "T1":
 		return nil, false
 	}
-	country := gogeo.CountryByCode2(code)
-	if country.ISO2() == gogeo.UndefinedCountryCodeISO2 {
+	country := adgeo.CountryByCode2(code)
+	if country.ISO2() == adgeo.UndefinedCountryCodeISO2 {
 		return nil, false
 	}
 	return country, true
-}
-
-func cloudflareRegionCode(code string, country gogeo.Code2) gogeo.RegionCode {
-	if code == "" {
-		return gogeo.UndefinedRegionCode
-	}
-	if rc := gogeo.RegionCodeByString(code); rc != gogeo.UndefinedRegionCode {
-		return rc
-	}
-	// OpenRTB / CF often send the subdivision only ("BA"), not "SK-BA".
-	if country.ISO2() != gogeo.UndefinedCountryCodeISO2 {
-		return gogeo.RegionCodeByString(country.ISO2() + "-" + code)
-	}
-	return gogeo.UndefinedRegionCode
 }
 
 func timezoneOffsetHours(name string) (int, bool) {

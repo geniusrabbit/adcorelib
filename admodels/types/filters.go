@@ -7,9 +7,9 @@ package types
 
 import (
 	"github.com/demdxx/gocast/v2"
-	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/gosql/v2"
 
+	"github.com/geniusrabbit/adcorelib/geo"
 	"github.com/geniusrabbit/adcorelib/i18n/languages"
 )
 
@@ -141,9 +141,22 @@ func CountryFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNum
 		return narr, executed
 	}
 	for _, cc := range sarr {
-		narr = append(narr, uint64(gogeo.CountryByCode2(cc).ID))
+		narr = append(narr, uint64(geo.CountryByCode2(cc).ID))
 	}
 	narr.Sort()
+	return narr, executed
+}
+
+// RegionFilter resolves ISO 3166-2 region codes to geo IDs and returns a
+// sorted ID array with include/exclude polarity (see [StringArrayFilter]).
+// Codes with a leading '-' contribute to an exclude list; all others form an
+// include list. An unrecognised code resolves to ID 0.
+func RegionFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNumberArray[uint64], executed bool) {
+	var sarr gosql.StringArray
+	if sarr, executed = StringArrayFilter(arr); sarr.Len() < 1 {
+		return narr, executed
+	}
+	narr = geo.RegionCodes2IDs(sarr)
 	return narr, executed
 }
 
