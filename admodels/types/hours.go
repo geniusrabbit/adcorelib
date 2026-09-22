@@ -13,11 +13,14 @@ type Hours = hourstable.Hours
 
 // Preallocated schedule reject reasons for hot-path Test methods.
 var (
-	ErrHoursNotAllowed       = errtype.Error("hours not allowed")
-	ErrDateNotStarted        = errtype.Error("date not started")
-	ErrDateEnded             = errtype.Error("date ended")
-	ErrBudgetValueNotAllowed = errtype.Error("budget value not allowed")
-	ErrPacingNotAllowed      = errtype.Error("pacing not allowed")
+	ErrHoursNotAllowed         = errtype.Error("hours not allowed")
+	ErrDateNotStarted          = errtype.Error("date not started")
+	ErrDateEnded               = errtype.Error("date ended")
+	ErrBudgetValueNotAllowed   = errtype.Error("budget value not allowed")
+	ErrPacingNotAllowed        = errtype.Error("pacing not allowed")
+	ErrAdFormatNotAllowed      = errtype.Error("ad format not allowed")
+	ErrAdPopoverNotAllowed     = ErrAdFormatNotAllowed.WithMessage("ad popover (interstitial) not allowed")
+	ErrAdOnlyPopoverNotAllowed = ErrAdFormatNotAllowed.WithMessage("ad only popover (interstitial) not allowed")
 )
 
 // HoursByString returns hours object by string pattern
