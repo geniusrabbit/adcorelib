@@ -34,8 +34,8 @@ func TestRegionUKGBAlias(t *testing.T) {
 	if engUK.Code() != "GB-ENG" {
 		t.Fatalf("canonical code = %q, want GB-ENG", engUK.Code())
 	}
-	if engUK.Country().ISO2() != "UK" {
-		t.Fatalf("country ISO2 = %q, want UK", engUK.Country().ISO2())
+	if engUK.Country().ISO2() != "GB" {
+		t.Fatalf("country ISO2 = %q, want GB", engUK.Country().ISO2())
 	}
 }
 

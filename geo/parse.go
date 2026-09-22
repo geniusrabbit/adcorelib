@@ -3,7 +3,7 @@ package geo
 // RegionCodeByPartial accepts a full ISO 3166-2 code ("SK-BA") or a
 // subdivision suffix ("BA") when the parent country is known.
 // Empty and unknown values return UndefinedRegionCode.
-func RegionCodeByPartial(code string, country Code2) RegionCode {
+func RegionCodeByPartial(code string, country CountryCode2) RegionCode {
 	if code == "" {
 		return UndefinedRegionCode
 	}

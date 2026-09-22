@@ -4,13 +4,13 @@ import "github.com/geniusrabbit/gogeo"
 
 // Type aliases keep gogeo methods and stay assignable to udetect.Geo fields.
 type (
-	Code2       = gogeo.Code2
-	RegionCode  = gogeo.RegionCode
-	Continent   = gogeo.Continent
-	Country     = gogeo.Country
-	Region      = gogeo.Region
-	Coordinates = gogeo.Coordinates
-	TimeZone    = gogeo.TimeZone
+	CountryCode2 = gogeo.CountryCode2
+	RegionCode   = gogeo.RegionCode
+	Continent    = gogeo.Continent
+	Country      = gogeo.Country
+	Region       = gogeo.Region
+	Coordinates  = gogeo.Coordinates
+	TimeZone     = gogeo.TimeZone
 )
 
 const (

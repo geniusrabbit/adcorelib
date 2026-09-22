@@ -15,7 +15,7 @@ func CountryByCode2(code string) *Country {
 
 // CountryByCode2Bytes is the allocation-free ISO-2 lookup.
 // Unknown codes resolve to the undefined country (never nil).
-func CountryByCode2Bytes(code Code2) *Country {
+func CountryByCode2Bytes(code CountryCode2) *Country {
 	return gogeo.CountryByCode2Bytes(code)
 }
 
@@ -26,7 +26,7 @@ func CountryByCode3(code string) *Country {
 }
 
 // CountryCode2ByString returns a Code2 from an ISO-2 or ISO-3 string.
-func CountryCode2ByString(code string) Code2 {
+func CountryCode2ByString(code string) CountryCode2 {
 	return gogeo.CountryCode2ByString(code)
 }
 
