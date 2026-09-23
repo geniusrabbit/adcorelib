@@ -7,6 +7,14 @@ func CountryByID(id uint8) *Country {
 	return gogeo.CountryByID(id)
 }
 
+// CountryByCode returns the country for an ISO-2 or ISO-3 code.
+func CountryByCode(code string) *Country {
+	if len(code) == 3 {
+		return gogeo.CountryByCode3(code)
+	}
+	return gogeo.CountryByCode2(code)
+}
+
 // CountryByCode2 returns the country for an ISO-2 code.
 // Unknown codes resolve to the undefined country (never nil).
 func CountryByCode2(code string) *Country {

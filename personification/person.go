@@ -4,34 +4,35 @@ import (
 	"github.com/geniusrabbit/udetect"
 )
 
-type person struct {
-	request  *Request
-	userInfo UserInfo
+// PersonType is a personification type
+type PersonType struct {
+	Request       *Request
+	UserInfoValue UserInfo
 }
 
 // User info data
-func (p *person) UserInfo() *UserInfo {
-	return &p.userInfo
+func (p *PersonType) UserInfo() *UserInfo {
+	return &p.UserInfoValue
 }
 
 // IsInited person in database
-func (p *person) IsInited() bool { return false }
+func (p *PersonType) IsInited() bool { return false }
 
 // Properties for domain
-func (p *person) Properties(name string) Properties { return nil }
+func (p *PersonType) Properties(name string) Properties { return nil }
 
 // Predict what does he likes?
-func (p *person) Predict(req *PredictRequest) (*PredictResponse, error) {
+func (p *PersonType) Predict(req *PredictRequest) (*PredictResponse, error) {
 	return nil, nil
 }
 
 // PredictPrice what minimal
-func (p *person) PredictPrice(req *PredictPriceRequest) (*PredictPriceResponse, error) {
+func (p *PersonType) PredictPrice(req *PredictPriceRequest) (*PredictPriceResponse, error) {
 	return nil, nil
 }
 
-var EmptyPerson = &person{
-	userInfo: UserInfo{
+var EmptyPerson = &PersonType{
+	UserInfoValue: UserInfo{
 		User:   &udetect.User{},
 		Device: &udetect.DeviceDefault,
 		Geo:    &udetect.GeoDefault,

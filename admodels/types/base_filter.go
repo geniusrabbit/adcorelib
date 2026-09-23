@@ -17,7 +17,7 @@ var (
 	ErrAdBlockNotAllowed             = errtype.Error("ad block not allowed")
 	ErrAdBlockOnlyNotAllowed         = errtype.Error("ad block only not allowed")
 	ErrPrivateBrowsingNotAllowed     = errtype.Error("private browsing not allowed")
-	ErrPrivateBrowsingOnlyNotAllowed = errtype.Error("private browsing only not allowed")
+	ErrPrivateBrowsingOnlyNotAllowed = errtype.Error("private browsing only allowed")
 	ErrIPv6NotAllowed                = errtype.Error("IPv6 not allowed")
 	ErrIPv4NotAllowed                = errtype.Error("IPv4 not allowed")
 	ErrTrafficSourceNotAllowed       = errtype.Error("traffic source not allowed")
@@ -124,9 +124,9 @@ type BaseFilter struct {
 	ExtApps             gosql.StringArray // publisher ext_app_id / site ExtID
 	ExtZones            gosql.StringArray // publisher ext_zone_id / tagid
 	Secure              int8              // SecureAny | SecureOnly | SecureExclude
-	AdBlock             int8 // AdBlockAny | AdBlockOnly | AdBlockExclude
-	PrivateBrowsing     int8 // PrivateBrowsingAny | PrivateBrowsingOnly | PrivateBrowsingExclude
-	IP                  int8 // IPAny | IPv4Only | IPv6Only
+	AdBlock             int8              // AdBlockAny | AdBlockOnly | AdBlockExclude
+	PrivateBrowsing     int8              // PrivateBrowsingAny | PrivateBrowsingOnly | PrivateBrowsingExclude
+	IP                  int8              // IPAny | IPv4Only | IPv6Only
 }
 
 // ---------------------------------------------------------------------------

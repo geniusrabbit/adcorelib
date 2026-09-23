@@ -1,8 +1,13 @@
 package personification
 
-import "context"
+import (
+	"context"
+
+	"github.com/geniusrabbit/adcorelib/personification/dummy"
+)
 
 var (
+	dummyClient         dummy.DummyClient
 	ContextKeySignature = struct{ s string }{s: "personification.signature"}
 )
 
@@ -15,4 +20,11 @@ func SignatureFromContext(ctx context.Context) *Signature {
 		return sign
 	}
 	return nil
+}
+
+func DetectorFromContext(ctx context.Context) Client {
+	if sign := SignatureFromContext(ctx); sign != nil {
+		return sign.Detector
+	}
+	return &dummyClient
 }

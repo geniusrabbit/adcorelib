@@ -79,9 +79,9 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 		response.Geo.IP = net.ParseIP(request.IP)
 	}
 	applyCloudflareGeo(response.Geo, &req.Request.Header)
-	return &person{
-		request: request,
-		userInfo: UserInfo{
+	return &PersonType{
+		Request: request,
+		UserInfoValue: UserInfo{
 			Device: response.Device,
 			Geo:    response.Geo,
 		},
