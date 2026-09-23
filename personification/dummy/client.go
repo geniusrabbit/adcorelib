@@ -36,6 +36,8 @@ func (DummyClient) Detect(ctx context.Context, req *udetect.Request) (*udetect.R
 				Height:          req.Height,
 				FlashVer:        req.FlashVer,
 			},
+			OS: &udetect.OSDefault,
 		},
+		Geo: &udetect.GeoDefault,
 	}, nil
 }
