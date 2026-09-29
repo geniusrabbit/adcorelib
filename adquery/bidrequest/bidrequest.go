@@ -51,7 +51,7 @@ const (
 )
 
 type CategoryMatcher interface {
-	MatchCategoryID(key string) uint64
+	MatchCategoryID(key string, cattax int) uint64
 	MatchCategoryIDFromKeyword(keyword string) uint64
 }
 
@@ -103,7 +103,7 @@ func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper Cat
 	if r == nil {
 		return ErrBidRequestNil
 	}
-	categories := []string{}
+	var hadCategories bool
 	// Extract tags from user information
 	{
 		if r.User != nil {
@@ -111,19 +111,28 @@ func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper Cat
 		}
 		if r.Site != nil {
 			r.tags = append(r.tags, strings.Split(r.Site.Keywords, ",")...)
-			categories = append(categories, r.Site.Cat...)
+			hadCategories = hadCategories || len(r.Site.R0Cat) > 0
 		}
 		if r.App != nil {
 			r.tags = append(r.tags, strings.Split(r.App.Keywords, ",")...)
-			categories = append(categories, r.App.Cat...)
+			hadCategories = hadCategories || len(r.App.R0Cat) > 0
 		}
 	}
-	// Prepare categories
+	// Prepare categories. Site and app ids are already r0.
 	if categoryMapper != nil {
-		r.categoryArray = make([]uint64, 0, len(categories))
-		for _, cat := range categories {
-			if id := categoryMapper.MatchCategoryID(cat); id != 0 {
-				r.categoryArray = append(r.categoryArray, id)
+		r.categoryArray = make([]uint64, 0)
+		if r.Site != nil {
+			for _, id := range r.Site.R0Cat {
+				if id != 0 {
+					r.categoryArray = append(r.categoryArray, uint64(id))
+				}
+			}
+		}
+		if r.App != nil {
+			for _, id := range r.App.R0Cat {
+				if id != 0 {
+					r.categoryArray = append(r.categoryArray, uint64(id))
+				}
 			}
 		}
 		for _, tag := range r.tags {
@@ -133,7 +142,7 @@ func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper Cat
 		}
 		r.categoryArray = xtypes.SliceUnique(r.categoryArray)
 		// Validate categories
-		if len(categories) > 0 && len(r.categoryArray) == 0 {
+		if hadCategories && len(r.categoryArray) == 0 {
 			return ErrCategoryIsNotMatched
 		}
 		if len(r.categoryArray) == 0 && defaultCategoryID != 0 {

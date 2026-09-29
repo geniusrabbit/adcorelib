@@ -108,7 +108,6 @@ func NewRequestFor(
 		Site: &udetect.Site{
 			ExtID:         "",            // External ID
 			Domain:        refDomainName, //
-			Cat:           nil,           // Array of categories
 			PrivacyPolicy: 0,             // Default: 1 ("1": has a privacy policy)
 			Keywords:      opt.Keywords,  // Comma separated list of keywords about the site.
 			Page:          pageURL,       // URL of the page
