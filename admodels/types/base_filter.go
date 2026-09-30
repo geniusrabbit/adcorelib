@@ -293,6 +293,12 @@ func (fl *BaseFilter) SetPositive(field uint64, positive bool) {
 	}
 }
 
+// IsExcluded reports whether field is an exclude list. An empty list is not a
+// constraint either way; this only reads the polarity bit.
+func (fl BaseFilter) IsExcluded(field FilterField) bool {
+	return fl.excludeMask&(1<<field) != 0
+}
+
 // Test evaluates whether the target satisfies every configured filter.
 // Checks are applied in order: format → tristate flags (secure, adblock,
 // private browsing, IP version) → source identifiers (traffic source, zone,
