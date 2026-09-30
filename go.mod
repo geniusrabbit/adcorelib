@@ -16,7 +16,7 @@ require (
 	github.com/geniusrabbit/gosql/v2 v2.3.2
 	github.com/geniusrabbit/hourstable v1.0.0
 	github.com/geniusrabbit/notificationcenter/v2 v2.5.0
-	github.com/geniusrabbit/udetect v0.0.0-20260923122328-4f00d3f84f4c
+	github.com/geniusrabbit/udetect v0.0.0-20260930085427-fd156a2b914c
 	github.com/google/uuid v1.6.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
@@ -68,6 +68,7 @@ require (
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20250401214520-65e299d6c5c9 // indirect
 	github.com/redis/go-redis/v9 v9.22.0 // indirect
+	github.com/rtb-0/rtbdict v0.0.0-20260930080334-2cd28f6a6de9 // indirect
 	github.com/savsgio/gotils v0.0.0-20250924091648-bce9a52d7761 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

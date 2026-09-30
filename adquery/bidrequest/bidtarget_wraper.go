@@ -65,9 +65,14 @@ func (b *BidTargetWrapper) CarrierInfo() *types.CarrierInfo {
 	return b.BidReq.CarrierInfo()
 }
 
-// Categories returns the IAB content category IDs of the request.
-func (b *BidTargetWrapper) Categories() []uint64 {
-	return b.BidReq.Categories()
+// CategoryIDs returns the r0 category IDs of the request.
+func (b *BidTargetWrapper) CategoryIDs() []uint64 {
+	return b.BidReq.CategoryIDs()
+}
+
+// CategoryCodes returns the r0 category codes of the request.
+func (b *BidTargetWrapper) CategoryCodes() []string {
+	return b.BidReq.CategoryCodes()
 }
 
 // CurrentGeoTime returns the current wall-clock time adjusted to the user's geo timezone.

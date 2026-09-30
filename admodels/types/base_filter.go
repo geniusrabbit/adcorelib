@@ -400,7 +400,7 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 		return ErrBrowserIDNotAllowed
 	}
 
-	if !fl.multyCheckUintArr(t.Categories(), FieldCategories, fl.Categories) {
+	if !fl.multyCheckUintArr(t.CategoryIDs(), FieldCategories, fl.Categories) {
 		return ErrCategoriesNotAllowed
 	}
 

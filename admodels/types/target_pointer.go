@@ -84,7 +84,8 @@ type TargetPointer interface {
 	Tags() []string
 
 	// Categories of the current request
-	Categories() []uint64
+	CategoryIDs() []uint64
+	CategoryCodes() []string
 
 	// MinECPM value
 	MinECPM() billing.Money

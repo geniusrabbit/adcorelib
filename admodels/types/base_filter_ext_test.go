@@ -115,7 +115,8 @@ func (stubTarget) AuctionType() AuctionType   { return 0 }
 func (stubTarget) Sex() uint                  { return 0 }
 func (stubTarget) Age() uint                  { return 0 }
 func (stubTarget) Tags() []string             { return nil }
-func (stubTarget) Categories() []uint64       { return nil }
+func (stubTarget) CategoryIDs() []uint64      { return nil }
+func (stubTarget) CategoryCodes() []string    { return nil }
 func (stubTarget) MinECPM() billing.Money     { return 0 }
 func (stubTarget) Time() time.Time            { return time.Time{} }
 func (stubTarget) CurrentGeoTime() time.Time  { return time.Time{} }

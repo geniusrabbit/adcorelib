@@ -69,13 +69,14 @@ type BidRequester interface {
 	CarrierInfo() *CarrierInfo // Carrier info
 
 	// User info
-	UserInfo() *User      // Full user info
-	LanguageID() uint64   // Browser language
-	Keywords() []string   // User keywords
-	Tags() []string       // Combined tags
-	Categories() []uint64 // Categories (currently cached)
-	Sex() uint            // Sex of the user
-	Age() uint            // Age of the user
+	UserInfo() *User         // Full user info
+	LanguageID() uint64      // Browser language
+	Keywords() []string      // User keywords
+	Tags() []string          // Combined tags
+	CategoryIDs() []uint64   // Category IDs
+	CategoryCodes() []string // Category Codes
+	Sex() uint               // Sex of the user
+	Age() uint               // Age of the user
 
 	AccessPoint() AccessPoint   // Access point information
 	Formats() types.BidFormater // Formats accessor

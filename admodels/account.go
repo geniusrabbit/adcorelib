@@ -71,3 +71,8 @@ func (c *Account) CommissionShareFactor() float64 {
 	}
 	return 1. - c.RevenueShare
 }
+
+// TestBudgetValue tests if the account has enough balance to spend
+func (c *Account) TestBudgetValue() bool {
+	return c.CurrentState != nil && c.Balance() > 0
+}

@@ -53,6 +53,8 @@ const (
 type CategoryMatcher interface {
 	MatchCategoryID(key string, cattax int) uint64
 	MatchCategoryIDFromKeyword(keyword string) uint64
+	// CategoryCode returns the r0 code for an r0 id. An unknown id returns "".
+	CategoryCode(id uint64) string
 }
 
 type ServerCounter interface {
@@ -89,7 +91,8 @@ type BidRequest struct {
 	Tracer     any                   `json:"-"`                    // Tracing information
 
 	// Internal caches for efficient access
-	categoryArray []uint64  // Cached category IDs
+	categoryIDs   []uint64  // Cached r0 category IDs
+	categoryCodes []string  // Cached r0 codes, same order as categoryIDs; blank codes omitted
 	domain        []string  // Cached domains (prepared domains)
 	tags          []string  // Cached tags (keywords)
 	formats       AdFormats // Formats interface for accessing formats
@@ -120,33 +123,43 @@ func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper Cat
 	}
 	// Prepare categories. Site and app ids are already r0.
 	if categoryMapper != nil {
-		r.categoryArray = make([]uint64, 0)
+		r.categoryIDs = make([]uint64, 0)
 		if r.Site != nil {
 			for _, id := range r.Site.R0Cat {
 				if id != 0 {
-					r.categoryArray = append(r.categoryArray, uint64(id))
+					r.categoryIDs = append(r.categoryIDs, uint64(id))
 				}
 			}
 		}
 		if r.App != nil {
 			for _, id := range r.App.R0Cat {
 				if id != 0 {
-					r.categoryArray = append(r.categoryArray, uint64(id))
+					r.categoryIDs = append(r.categoryIDs, uint64(id))
 				}
 			}
 		}
 		for _, tag := range r.tags {
 			if id := categoryMapper.MatchCategoryIDFromKeyword(tag); id != 0 {
-				r.categoryArray = append(r.categoryArray, id)
+				r.categoryIDs = append(r.categoryIDs, uint64(id))
 			}
 		}
-		r.categoryArray = xtypes.SliceUnique(r.categoryArray)
+		r.categoryIDs = xtypes.SliceUnique(r.categoryIDs)
 		// Validate categories
-		if hadCategories && len(r.categoryArray) == 0 {
+		if hadCategories && len(r.categoryIDs) == 0 {
 			return ErrCategoryIsNotMatched
 		}
-		if len(r.categoryArray) == 0 && defaultCategoryID != 0 {
-			r.categoryArray = append(r.categoryArray, defaultCategoryID)
+		if len(r.categoryIDs) == 0 && defaultCategoryID != 0 {
+			r.categoryIDs = append(r.categoryIDs, defaultCategoryID)
+		}
+		r.categoryCodes = nil
+		if len(r.categoryIDs) > 0 {
+			codes := make([]string, 0, len(r.categoryIDs))
+			for _, id := range r.categoryIDs {
+				if code := categoryMapper.CategoryCode(id); code != "" {
+					codes = append(codes, code)
+				}
+			}
+			r.categoryCodes = codes
 		}
 	}
 	// Prepare domains
@@ -385,14 +398,21 @@ func (r *BidRequest) Keywords() []string {
 	return r.tags
 }
 
-// Categories returns a slice of category IDs associated with the BidRequest.
-// Currently, it returns the cached categoryArray.
-// (Note: The implementation is incomplete and commented out for future development.)
-func (r *BidRequest) Categories() []uint64 {
+// CategoryIDs returns the cached r0 category IDs.
+func (r *BidRequest) CategoryIDs() []uint64 {
 	if r == nil {
 		return nil
 	}
-	return r.categoryArray
+	return r.categoryIDs
+}
+
+// CategoryCodes returns the cached r0 codes for CategoryIDs, in the same order.
+// An id with no code is omitted.
+func (r *BidRequest) CategoryCodes() []string {
+	if r == nil {
+		return nil
+	}
+	return r.categoryCodes
 }
 
 // IsDebug checks if the BidRequest is in debug mode.
