@@ -378,7 +378,7 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 	}
 
 	if !fl.checkUintArr(t.GeoInfo().CountryID(), FieldCountries, fl.Countries) {
-		return ErrCountryIDNotAllowed
+		return ErrCountryIDNotAllowed.WithMessageFmt("country ID %d not allowed (allowed: %v)", t.GeoInfo().CountryID(), fl.Countries)
 	}
 
 	if !fl.checkUintArr(t.LanguageID(), FieldLanguages, fl.Languages) {
@@ -414,7 +414,7 @@ func (fl *BaseFilter) TestInterstitialFormat(f *Format) bool {
 //
 //go:inline
 func (fl *BaseFilter) checkUintArr(v uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
-	return arr.Len() < 1 || (arr.IndexOf(v) >= 0) == (fl.excludeMask&(1<<off) == 0)
+	return arr.Len() < 1 || (arr.IndexOf(v) >= 0) == !fl.IsExcluded(off)
 }
 
 // multyCheckUintArr is like checkUintArr but accepts a slice of values and
@@ -429,7 +429,7 @@ func (fl *BaseFilter) multyCheckUintArr(v []uint64, off uint64, arr gosql.Nullab
 //
 //go:inline
 func (fl *BaseFilter) checkStringArr(v []string, off uint64, arr gosql.StringArray) bool {
-	return arr.Len() < 1 || arr.OneOf(v) == (fl.excludeMask&(1<<off) == 0)
+	return arr.Len() < 1 || arr.OneOf(v) == !fl.IsExcluded(off)
 }
 
 // Reset clears all filter fields and resets excludeMask and tristate flags to
