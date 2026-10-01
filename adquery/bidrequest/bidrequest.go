@@ -34,22 +34,6 @@ var (
 // defaultUserdata initializes a default User with Geo set to GeoDefault
 var defaultUserdata = adtype.User{Geo: &udetect.GeoDefault, AgeStart: 0, AgeEnd: 1000}
 
-// BidRequestFlags defines flags for bid requests.
-type BidRequestFlags uint8
-
-const (
-	// BidRequestFlagAdBlock indicates if adblock is enabled
-	BidRequestFlagAdBlock BidRequestFlags = 1 << iota
-	// BidRequestFlagPrivateBrowsing indicates if private browsing is enabled
-	BidRequestFlagPrivateBrowsing
-	// BidRequestFlagSecure indicates if the request is secure
-	BidRequestFlagSecure
-	// BidRequestFlagBot indicates if the request is from a bot
-	BidRequestFlagBot
-	// BidRequestFlagProxy indicates if the request is from a proxy
-	BidRequestFlagProxy
-)
-
 type CategoryMatcher interface {
 	MatchCategoryID(key string, cattax int) uint64
 	MatchCategoryIDFromKeyword(keyword string) uint64

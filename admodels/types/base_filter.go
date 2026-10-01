@@ -378,7 +378,7 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 	}
 
 	if !fl.checkUintArr(t.GeoInfo().CountryID(), FieldCountries, fl.Countries) {
-		return ErrCountryIDNotAllowed.WithMessageFmt("country ID %d not allowed (allowed: %v)", t.GeoInfo().CountryID(), fl.Countries)
+		return ErrCountryIDNotAllowed
 	}
 
 	if !fl.checkUintArr(t.LanguageID(), FieldLanguages, fl.Languages) {
