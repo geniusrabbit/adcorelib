@@ -48,7 +48,7 @@ func IntArrayToInt64(arr []int) (res gosql.NullableOrderedNumberArray[int64]) {
 // absolute values form an exclude list and executed=true is returned.
 // An empty input returns (nil, false) — no constraint.
 //
-// The returned bool mirrors the "executed" flag used by [BaseFilter.SetPositive]:
+// The returned bool is the exclude flag for [BaseFilter.setExcluded]:
 // false = include mode, true = exclude mode.
 func IDArrayFilter(arr gosql.NullableOrderedNumberArray[int64]) (narr gosql.NullableOrderedNumberArray[uint64], executed bool) {
 	if arr.Len() < 1 {
@@ -77,7 +77,7 @@ func IDArrayFilter(arr gosql.NullableOrderedNumberArray[int64]) (narr gosql.Null
 //     []int is converted via [IntArrayToInt64] first.
 //   - gosql.NullableOrderedNumberArray[uint64] / []uint64 — raw unsigned IDs
 //     with no sign convention; always returns false (include mode). For a
-//     pre-processed exclude list, call [BaseFilter.SetPositive] manually after.
+//     pre-processed exclude list, pass include=false to the typed setter.
 //
 // If the value does not match any case and panicMsg is non-empty, it panics.
 func IDArrayFilterAny(v any, panicMsg string) (gosql.NullableOrderedNumberArray[uint64], bool) {
@@ -129,6 +129,30 @@ func StringArrayFilter(arr gosql.NullableStringArray) (gosql.StringArray, bool) 
 		executed = true
 	}
 	return narr, executed
+}
+
+func countryCodesToIDs(arr gosql.NullableStringArray) gosql.NullableOrderedNumberArray[uint64] {
+	if arr.Len() < 1 {
+		return nil
+	}
+	narr := make(gosql.NullableOrderedNumberArray[uint64], 0, len(arr))
+	for _, cc := range arr {
+		narr = append(narr, uint64(geo.CountryByCode2(cc).ID))
+	}
+	narr.Sort()
+	return narr
+}
+
+func languageCodesToIDs(arr gosql.NullableStringArray) gosql.NullableOrderedNumberArray[uint64] {
+	if arr.Len() < 1 {
+		return nil
+	}
+	narr := make(gosql.NullableOrderedNumberArray[uint64], 0, len(arr))
+	for _, lg := range arr {
+		narr = append(narr, uint64(languages.GetLanguageIdByCodeString(lg)))
+	}
+	narr.Sort()
+	return narr
 }
 
 // CountryFilter resolves ISO 3166-1 alpha-2 country codes to geo IDs and

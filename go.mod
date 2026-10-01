@@ -12,11 +12,11 @@ require (
 	github.com/demdxx/xtypes v0.3.1
 	github.com/fasthttp/router v1.5.4
 	github.com/flf2ko/fasthttp-prometheus v0.1.0
-	github.com/geniusrabbit/gogeo v1.1.0
+	github.com/geniusrabbit/gogeo v1.1.1
 	github.com/geniusrabbit/gosql/v2 v2.3.2
 	github.com/geniusrabbit/hourstable v1.0.0
 	github.com/geniusrabbit/notificationcenter/v2 v2.5.0
-	github.com/geniusrabbit/udetect v0.0.0-20260930085427-fd156a2b914c
+	github.com/geniusrabbit/udetect v0.0.0-20261001130658-d7490319208d
 	github.com/google/uuid v1.6.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
@@ -46,7 +46,7 @@ require (
 	github.com/felixge/fgprof v0.9.5 // indirect
 	github.com/frankban/quicktest v1.14.6 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
-	github.com/google/pprof v0.0.0-20260926063103-aaccee046517 // indirect
+	github.com/google/pprof v0.0.0-20261001064331-60bf690a9302 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.31.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.4 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect

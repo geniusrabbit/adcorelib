@@ -11,31 +11,43 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestUnsortedTrafficSourceIncludeExclude(t *testing.T) {
+	var include BaseFilter
+	include.SetTrafficSources([]uint64{5, 1}, true)
+	require.NoError(t, include.Test(stubTarget{sourceID: 1}))
+	require.ErrorIs(t, include.Test(stubTarget{sourceID: 2}), ErrTrafficSourceNotAllowed)
+
+	var exclude BaseFilter
+	exclude.SetTrafficSources([]uint64{5, 1}, false)
+	require.ErrorIs(t, exclude.Test(stubTarget{sourceID: 1}), ErrTrafficSourceNotAllowed)
+	require.NoError(t, exclude.Test(stubTarget{sourceID: 2}))
+}
+
 func TestSetExtZonesExclude(t *testing.T) {
 	var fl BaseFilter
-	fl.SetExtZones(gosql.NullableStringArray{"-tspop-zone-2", "-other"})
+	fl.SetExtZones(gosql.NullableStringArray{"tspop-zone-2", "other"}, false)
 	assert.Equal(t, gosql.StringArray{"tspop-zone-2", "other"}, fl.ExtZones)
 	assert.NotZero(t, fl.excludeMask&(1<<FieldExtZones))
 }
 
 func TestSetExtAppsInclude(t *testing.T) {
 	var fl BaseFilter
-	fl.SetExtApps(gosql.NullableStringArray{"34002", "app-b"})
+	fl.SetExtApps(gosql.NullableStringArray{"34002", "app-b"}, true)
 	assert.Equal(t, gosql.StringArray{"34002", "app-b"}, fl.ExtApps)
 	assert.Zero(t, fl.excludeMask&(1<<FieldExtApps))
 }
 
 func TestSetExtZonesEmpty(t *testing.T) {
 	var fl BaseFilter
-	fl.SetExtZones(nil)
+	fl.SetExtZones(nil, true)
 	assert.Empty(t, fl.ExtZones)
 	assert.Zero(t, fl.excludeMask&(1<<FieldExtZones))
 }
 
 func TestResetClearsExtFilters(t *testing.T) {
 	var fl BaseFilter
-	fl.SetExtZones(gosql.NullableStringArray{"-z1"})
-	fl.SetExtApps(gosql.NullableStringArray{"-a1"})
+	fl.SetExtZones(gosql.NullableStringArray{"z1"}, false)
+	fl.SetExtApps(gosql.NullableStringArray{"a1"}, false)
 	fl.Reset()
 	assert.Empty(t, fl.ExtZones)
 	assert.Empty(t, fl.ExtApps)
@@ -44,7 +56,7 @@ func TestResetClearsExtFilters(t *testing.T) {
 
 func TestExtZonesExcludeBlocksExternalTargetID(t *testing.T) {
 	var fl BaseFilter
-	fl.SetExtZones(gosql.NullableStringArray{"-tspop-zone-2"})
+	fl.SetExtZones(gosql.NullableStringArray{"tspop-zone-2"}, false)
 	err := fl.Test(stubTarget{zoneExt: "tspop-zone-2"})
 	require.ErrorIs(t, err, ErrTargetNotAllowed)
 	err = fl.Test(stubTarget{zoneExt: "other-zone"})
@@ -53,7 +65,7 @@ func TestExtZonesExcludeBlocksExternalTargetID(t *testing.T) {
 
 func TestExtAppsIncludeMatchesAppThenSiteExtID(t *testing.T) {
 	var fl BaseFilter
-	fl.SetExtApps(gosql.NullableStringArray{"34002"})
+	fl.SetExtApps(gosql.NullableStringArray{"34002"}, true)
 	err := fl.Test(stubTarget{appExt: "34002"})
 	require.NoError(t, err)
 	err = fl.Test(stubTarget{siteExt: "34002"})
@@ -63,9 +75,10 @@ func TestExtAppsIncludeMatchesAppThenSiteExtID(t *testing.T) {
 }
 
 type stubTarget struct {
-	appExt  string
-	siteExt string
-	zoneExt string
+	appExt   string
+	siteExt  string
+	zoneExt  string
+	sourceID uint64
 }
 
 type emptyFormats struct{}
@@ -87,7 +100,7 @@ func (stubTarget) IsInterstitial() bool      { return false }
 func (stubTarget) DeviceInfo() *DeviceInfo   { return &DeviceInfo{} }
 func (stubTarget) BrowserInfo() *BrowserInfo { return &BrowserInfo{} }
 func (stubTarget) OSInfo() *OSInfo           { return &OSInfo{} }
-func (stubTarget) TrafficSourceID() uint64   { return 0 }
+func (s stubTarget) TrafficSourceID() uint64 { return s.sourceID }
 func (stubTarget) AppID() uint64             { return 0 }
 func (s stubTarget) AppInfo() *AppInfo {
 	if s.appExt == "" {

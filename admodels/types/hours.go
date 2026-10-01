@@ -3,7 +3,6 @@ package types
 import (
 	"time"
 
-	"github.com/geniusrabbit/adcorelib/errtype"
 	"github.com/geniusrabbit/adcorelib/fasttime"
 	"github.com/geniusrabbit/hourstable"
 )
@@ -13,12 +12,12 @@ type Hours = hourstable.Hours
 
 // Preallocated schedule reject reasons for hot-path Test methods.
 var (
-	ErrHoursNotAllowed         = errtype.Error("hours not allowed")
-	ErrDateNotStarted          = errtype.Error("date not started")
-	ErrDateEnded               = errtype.Error("date ended")
-	ErrBudgetValueNotAllowed   = errtype.Error("budget value not allowed")
-	ErrPacingNotAllowed        = errtype.Error("pacing not allowed")
-	ErrAdFormatNotAllowed      = errtype.Error("ad format not allowed")
+	ErrHoursNotAllowed         = ErrFilterError.WithMessage("hours not allowed")
+	ErrDateNotStarted          = ErrFilterError.WithMessage("date not started")
+	ErrDateEnded               = ErrFilterError.WithMessage("date ended")
+	ErrBudgetValueNotAllowed   = ErrFilterError.WithMessage("budget value not allowed")
+	ErrPacingNotAllowed        = ErrFilterError.WithMessage("pacing not allowed")
+	ErrAdFormatNotAllowed      = ErrFilterError.WithMessage("ad format not allowed")
 	ErrAdPopoverNotAllowed     = ErrAdFormatNotAllowed.WithMessage("ad popover (interstitial) not allowed")
 	ErrAdOnlyPopoverNotAllowed = ErrAdFormatNotAllowed.WithMessage("ad only popover (interstitial) not allowed")
 )

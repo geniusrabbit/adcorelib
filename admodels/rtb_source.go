@@ -84,17 +84,17 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 
 	filter.SetFormats(cl.Formats)
 	filter.SetInterstitialFormats(cl.InterstitialFormats)
-	filter.SetDeviceTypes(cl.DeviceTypes)
-	filter.SetDevices(cl.Devices)
-	filter.SetOS(cl.OS)
-	filter.SetBrowsers(cl.Browsers)
-	filter.SetCategories(cl.Categories)
-	filter.SetCountries(cl.Countries)
-	filter.SetLanguages(cl.Languages)
+	filter.SetDeviceTypes([]uint64(cl.DeviceTypes), true)
+	filter.SetDevices([]uint64(cl.Devices), true)
+	filter.SetOS([]uint64(cl.OS), true)
+	filter.SetBrowsers([]uint64(cl.Browsers), true)
+	filter.SetCategories([]uint64(cl.Categories), true)
+	filter.SetCountries(cl.Countries, true)
+	filter.SetLanguages(cl.Languages, true)
 
-	filter.SetAppIDs(cl.Applications)
-	filter.SetZoneIDs(cl.Zones)
-	filter.SetDomains(cl.Domains)
+	filter.SetAppIDs([]uint64(cl.Applications), true)
+	filter.SetZoneIDs([]uint64(cl.Zones), true)
+	filter.SetDomains(cl.Domains, true)
 
 	return &RTBSource{
 		ID:      cl.ID,

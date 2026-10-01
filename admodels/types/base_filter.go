@@ -6,31 +6,34 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/geniusrabbit/adcorelib/errtype"
 	"github.com/geniusrabbit/gosql/v2"
 )
 
 var (
-	ErrFormatNotAllowed              = errtype.Error("format not allowed")
-	ErrSecureNotAllowed              = errtype.Error("secure not allowed")
-	ErrSecureOnlyNotAllowed          = errtype.Error("secure only not allowed")
-	ErrAdBlockNotAllowed             = errtype.Error("ad block not allowed")
-	ErrAdBlockOnlyNotAllowed         = errtype.Error("ad block only not allowed")
-	ErrPrivateBrowsingNotAllowed     = errtype.Error("private browsing not allowed")
-	ErrPrivateBrowsingOnlyNotAllowed = errtype.Error("private browsing only allowed")
-	ErrIPv6NotAllowed                = errtype.Error("IPv6 not allowed")
-	ErrIPv4NotAllowed                = errtype.Error("IPv4 not allowed")
-	ErrTrafficSourceNotAllowed       = errtype.Error("traffic source not allowed")
-	ErrTargetNotAllowed              = errtype.Error("target not allowed")
-	ErrAppNotAllowed                 = errtype.Error("app not allowed")
-	ErrDomainNotAllowed              = errtype.Error("domain not allowed")
-	ErrDeviceTypeNotAllowed          = errtype.Error("device type not allowed")
-	ErrDeviceIDNotAllowed            = errtype.Error("device ID not allowed")
-	ErrOSIDNotAllowed                = errtype.Error("OS ID not allowed")
-	ErrBrowserIDNotAllowed           = errtype.Error("browser ID not allowed")
-	ErrCategoriesNotAllowed          = errtype.Error("categories not allowed")
-	ErrCountryIDNotAllowed           = errtype.Error("country ID not allowed")
-	ErrLanguageIDNotAllowed          = errtype.Error("language ID not allowed")
+	ErrFilterError                   = errtype.Error("filter")
+	ErrFormatNotAllowed              = ErrFilterError.WithMessage("format not allowed")
+	ErrSecureNotAllowed              = ErrFilterError.WithMessage("secure not allowed")
+	ErrSecureOnlyNotAllowed          = ErrFilterError.WithMessage("secure only not allowed")
+	ErrAdBlockNotAllowed             = ErrFilterError.WithMessage("ad block not allowed")
+	ErrAdBlockOnlyNotAllowed         = ErrFilterError.WithMessage("ad block only not allowed")
+	ErrPrivateBrowsingNotAllowed     = ErrFilterError.WithMessage("private browsing not allowed")
+	ErrPrivateBrowsingOnlyNotAllowed = ErrFilterError.WithMessage("private browsing only allowed")
+	ErrIPv6NotAllowed                = ErrFilterError.WithMessage("IPv6 not allowed")
+	ErrIPv4NotAllowed                = ErrFilterError.WithMessage("IPv4 not allowed")
+	ErrTrafficSourceNotAllowed       = ErrFilterError.WithMessage("traffic source not allowed")
+	ErrTargetNotAllowed              = ErrFilterError.WithMessage("target not allowed")
+	ErrAppNotAllowed                 = ErrFilterError.WithMessage("app not allowed")
+	ErrDomainNotAllowed              = ErrFilterError.WithMessage("domain not allowed")
+	ErrDeviceTypeNotAllowed          = ErrFilterError.WithMessage("device type not allowed")
+	ErrDeviceIDNotAllowed            = ErrFilterError.WithMessage("device ID not allowed")
+	ErrOSIDNotAllowed                = ErrFilterError.WithMessage("OS ID not allowed")
+	ErrBrowserIDNotAllowed           = ErrFilterError.WithMessage("browser ID not allowed")
+	ErrCategoriesNotAllowed          = ErrFilterError.WithMessage("categories not allowed")
+	ErrCountryIDNotAllowed           = ErrFilterError.WithMessage("country ID not allowed")
+	ErrLanguageIDNotAllowed          = ErrFilterError.WithMessage("language ID not allowed")
 )
 
 // FilterField identifies a filter dimension in [BaseFilter].
@@ -95,10 +98,9 @@ const (
 //   - bit SET   → exclude list: request passes when the value is NOT found
 //   - empty list → no constraint (field is ignored)
 //
-// For signed-integer source arrays (int64 convention): positive values build
-// an include list, negative values build an exclude list (absolute values are
-// stored; see IDArrayFilter). Use [BaseFilter.SetPositive] to set the polarity
-// directly when building from uint64 or pre-processed data.
+// List setters take the values and an include flag. include=true clears the
+// bit; include=false sets it. Numeric lists are sorted so IndexOf/OneOf can
+// find them. String values are stored as given (no '-' prefix).
 //
 // Format selection is context-aware:
 //   - Non-interstitial requests are matched against Formats.
@@ -146,150 +148,117 @@ func (fl *BaseFilter) SetInterstitialFormats(arr []string) {
 	fl.InterstitialFormats = arr
 }
 
-// SetDeviceTypes sets the device-type filter from a signed ([]int64) or
-// unsigned ([]uint64) slice. Negative int64 values denote exclusion.
-func (fl *BaseFilter) SetDeviceTypes(data any) {
-	var positive bool
-	fl.DeviceTypes, positive = IDArrayFilterAny(data, "invalid type for DeviceTypes")
-	fl.SetPositive(FieldDeviceTypes, positive)
+// SetDeviceTypes sets the device-type filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetDeviceTypes(arr []uint64, include bool) {
+	fl.DeviceTypes = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldDeviceTypes, !include)
 }
 
-// SetDevices sets the device-model filter from a signed ([]int64) or
-// unsigned ([]uint64) slice. Negative int64 values denote exclusion.
-func (fl *BaseFilter) SetDevices(data any) {
-	var positive bool
-	fl.Devices, positive = IDArrayFilterAny(data, "invalid type for Devices")
-	fl.SetPositive(FieldDevices, positive)
+// SetDevices sets the device-model filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetDevices(arr []uint64, include bool) {
+	fl.Devices = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldDevices, !include)
 }
 
-// SetOS sets the operating-system filter from a signed ([]int64) or
-// unsigned ([]uint64) slice. Negative int64 values denote exclusion.
-func (fl *BaseFilter) SetOS(data any) {
-	var positive bool
-	fl.OS, positive = IDArrayFilterAny(data, "invalid type for OS")
-	fl.SetPositive(FieldOS, positive)
+// SetOS sets the operating-system filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetOS(arr []uint64, include bool) {
+	fl.OS = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldOS, !include)
 }
 
-// SetBrowsers sets the browser filter from a signed ([]int64) or unsigned
-// ([]uint64) slice. Negative int64 values denote exclusion.
-func (fl *BaseFilter) SetBrowsers(data any) {
-	var positive bool
-	fl.Browsers, positive = IDArrayFilterAny(data, "invalid type for Browsers")
-	fl.SetPositive(FieldBrowsers, positive)
+// SetBrowsers sets the browser filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetBrowsers(arr []uint64, include bool) {
+	fl.Browsers = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldBrowsers, !include)
 }
 
-// SetCategories sets the IAB content-category filter from a signed ([]int64)
-// or unsigned ([]uint64) slice. Negative int64 values denote exclusion.
-func (fl *BaseFilter) SetCategories(data any) {
-	var positive bool
-	fl.Categories, positive = IDArrayFilterAny(data, "invalid type for Categories")
-	fl.SetPositive(FieldCategories, positive)
+// SetCategories sets the IAB content-category filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetCategories(arr []uint64, include bool) {
+	fl.Categories = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldCategories, !include)
 }
 
-// SetCountries sets the country filter. Accepts numeric ID slices ([]int64,
-// []uint64) or ISO 3166-1 alpha-2 code arrays (gosql.StringArray /
-// gosql.NullableStringArray). Prefix a code with '-' to exclude that country.
-func (fl *BaseFilter) SetCountries(data any) {
-	var positive bool
+// SetCountries sets the country filter. Accepts numeric ID slices ([]uint64 /
+// NullableOrderedNumberArray) or ISO 3166-1 alpha-2 code arrays. Codes are
+// resolved to geo IDs. include=false marks the list as exclude.
+func (fl *BaseFilter) SetCountries(data any, include bool) {
 	switch vl := data.(type) {
-	case []int64, []uint64:
-		fl.Countries, positive = IDArrayFilterAny(vl, "")
+	case []uint64:
+		fl.Countries = gosql.NullableOrderedNumberArray[uint64](vl).Sort()
+	case gosql.NullableOrderedNumberArray[uint64]:
+		fl.Countries = vl.Sort()
 	case gosql.StringArray:
-		fl.Countries, positive = CountryFilter(gosql.NullableStringArray(vl))
+		fl.Countries = countryCodesToIDs(gosql.NullableStringArray(vl))
 	case gosql.NullableStringArray:
-		fl.Countries, positive = CountryFilter(vl)
+		fl.Countries = countryCodesToIDs(vl)
 	}
-	fl.SetPositive(FieldCountries, positive)
+	fl.setExcluded(FieldCountries, !include)
 }
 
-// SetLanguages sets the language filter. Accepts numeric ID slices ([]int64,
-// []uint64) or BCP-47 code arrays (gosql.StringArray / gosql.NullableStringArray).
-// Prefix a code with '-' to exclude that language.
-func (fl *BaseFilter) SetLanguages(data any) {
-	var positive bool
+// SetLanguages sets the language filter. Accepts numeric ID slices ([]uint64 /
+// NullableOrderedNumberArray) or BCP-47 code arrays. Codes are resolved to
+// language IDs. include=false marks the list as exclude.
+func (fl *BaseFilter) SetLanguages(data any, include bool) {
 	switch vl := data.(type) {
-	case []int64, []uint64:
-		fl.Languages, positive = IDArrayFilterAny(vl, "")
+	case []uint64:
+		fl.Languages = gosql.NullableOrderedNumberArray[uint64](vl).Sort()
+	case gosql.NullableOrderedNumberArray[uint64]:
+		fl.Languages = vl.Sort()
 	case gosql.StringArray:
-		fl.Languages, positive = LanguageFilter(gosql.NullableStringArray(vl))
+		fl.Languages = languageCodesToIDs(gosql.NullableStringArray(vl))
 	case gosql.NullableStringArray:
-		fl.Languages, positive = LanguageFilter(vl)
+		fl.Languages = languageCodesToIDs(vl)
 	}
-	fl.SetPositive(FieldLanguages, positive)
+	fl.setExcluded(FieldLanguages, !include)
 }
 
-// SetTrafficSources sets the traffic-source filter from a signed ([]int64) or
-// unsigned ([]uint64) slice. Negative int64 values denote exclusion.
-func (fl *BaseFilter) SetTrafficSources(data any) {
-	var positive bool
-	fl.TrafficSources, positive = IDArrayFilterAny(data, "invalid type for TrafficSources")
-	fl.SetPositive(FieldTrafficSources, positive)
+// SetTrafficSources sets the traffic-source filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetTrafficSources(arr []uint64, include bool) {
+	fl.TrafficSources = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldTrafficSources, !include)
 }
 
-// SetDomains sets the domain / bundle-name filter. Values with a leading '-'
-// are treated as an exclusion list; all others form an inclusion list.
-func (fl *BaseFilter) SetDomains(arr gosql.NullableStringArray) {
-	var positive bool
-	fl.Domains, positive = StringArrayFilter(arr)
-	fl.SetPositive(FieldDomains, positive)
+// SetDomains sets the domain / bundle-name filter. Values are stored as given.
+// include=false marks the list as exclude.
+func (fl *BaseFilter) SetDomains(arr gosql.NullableStringArray, include bool) {
+	fl.Domains = gosql.StringArray(arr)
+	fl.setExcluded(FieldDomains, !include)
 }
 
-// SetApps sets the app filter from a signed integer slice.
-// Positive values form an include list; negative values (absolute value stored)
-// form an exclude list.
-func (fl *BaseFilter) SetApps(arr []int64) {
-	var positive bool
-	fl.Apps, positive = IDArrayFilter(gosql.NullableOrderedNumberArray[int64](arr))
-	fl.SetPositive(FieldApps, positive)
+// SetAppIDs sets the app filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetAppIDs(arr []uint64, include bool) {
+	fl.Apps = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldApps, !include)
 }
 
-// SetAppIDs sets the app filter as an explicit include list of unsigned IDs.
-func (fl *BaseFilter) SetAppIDs(arr []uint64) {
-	fl.Apps = arr
-	fl.SetPositive(FieldApps, false) // false = include mode (bit clear)
+// SetZoneIDs sets the zone filter. include=false marks the list as exclude.
+func (fl *BaseFilter) SetZoneIDs(arr []uint64, include bool) {
+	fl.Zones = gosql.NullableOrderedNumberArray[uint64](arr).Sort()
+	fl.setExcluded(FieldZones, !include)
 }
 
-// SetZones sets the zone filter from a signed integer slice.
-// Positive values form an include list; negative values (absolute value stored)
-// form an exclude list.
-func (fl *BaseFilter) SetZones(arr []int64) {
-	var positive bool
-	fl.Zones, positive = IDArrayFilter(gosql.NullableOrderedNumberArray[int64](arr))
-	fl.SetPositive(FieldZones, positive)
+// SetExtApps sets the external app/site ExtID filter. Values are stored as given.
+// include=false marks the list as exclude.
+func (fl *BaseFilter) SetExtApps(arr gosql.NullableStringArray, include bool) {
+	fl.ExtApps = gosql.StringArray(arr)
+	fl.setExcluded(FieldExtApps, !include)
 }
 
-// SetZoneIDs sets the zone filter as an explicit include list of unsigned IDs.
-func (fl *BaseFilter) SetZoneIDs(arr []uint64) {
-	fl.Zones = arr
-	fl.SetPositive(FieldZones, false) // false = include mode (bit clear)
+// SetExtZones sets the external zone/tagid filter. Values are stored as given.
+// include=false marks the list as exclude.
+func (fl *BaseFilter) SetExtZones(arr gosql.NullableStringArray, include bool) {
+	fl.ExtZones = gosql.StringArray(arr)
+	fl.setExcluded(FieldExtZones, !include)
 }
 
-// SetExtApps sets the external app/site ExtID filter. Values with a leading
-// '-' are treated as an exclusion list; all others form an inclusion list.
-func (fl *BaseFilter) SetExtApps(arr gosql.NullableStringArray) {
-	var positive bool
-	fl.ExtApps, positive = StringArrayFilter(arr)
-	fl.SetPositive(FieldExtApps, positive)
-}
-
-// SetExtZones sets the external zone/tagid filter. Values with a leading '-'
-// are treated as an exclusion list; all others form an inclusion list.
-func (fl *BaseFilter) SetExtZones(arr gosql.NullableStringArray) {
-	var positive bool
-	fl.ExtZones, positive = StringArrayFilter(arr)
-	fl.SetPositive(FieldExtZones, positive)
-}
-
-// SetPositive records the include/exclude polarity for the given field in
-// excludeMask. Despite the name, positive=true activates exclude mode
-// (sets the corresponding bit); positive=false activates include mode
-// (clears the bit). The parameter mirrors the "executed" return value of
-// [IDArrayFilter]: true means the exclude path was taken.
-func (fl *BaseFilter) SetPositive(field uint64, positive bool) {
-	if positive {
-		fl.excludeMask |= 1 << field // exclude mode: pass when NOT found
+// setExcluded records whether field is an exclude list.
+// excluded=true sets the bit (pass when the value is not found);
+// excluded=false clears it (pass when the value is found).
+func (fl *BaseFilter) setExcluded(field uint64, excluded bool) {
+	if excluded {
+		fl.excludeMask |= 1 << field
 	} else {
-		fl.excludeMask &= ^(1 << field) // include mode: pass when found
+		fl.excludeMask &= ^(1 << field)
 	}
 }
 
@@ -407,6 +376,7 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 	}
 
 	if !fl.multyCheckUintArr(t.CategoryIDs(), FieldCategories, fl.Categories) {
+		fmt.Println("=== ErrCategoriesNotAllowed", t.CategoryIDs(), fl.Categories)
 		return ErrCategoriesNotAllowed
 	}
 
@@ -455,7 +425,7 @@ func (fl *BaseFilter) checkUintArr(v uint64, off uint64, arr gosql.NullableOrder
 //
 //go:inline
 func (fl *BaseFilter) multyCheckUintArr(v []uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
-	return arr.Len() < 1 || arr.OneOf(v) == (fl.excludeMask&(1<<off) == 0)
+	return arr.Len() < 1 || arr.OneOf(v) == !fl.IsExcluded(off)
 }
 
 // checkStringArr is the string-slice equivalent of multyCheckUintArr.
