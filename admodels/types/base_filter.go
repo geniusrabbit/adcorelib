@@ -6,8 +6,6 @@
 package types
 
 import (
-	"fmt"
-
 	"github.com/geniusrabbit/adcorelib/errtype"
 	"github.com/geniusrabbit/gosql/v2"
 )
@@ -376,11 +374,10 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 	}
 
 	if !fl.multyCheckUintArr(t.CategoryIDs(), FieldCategories, fl.Categories) {
-		fmt.Println("=== ErrCategoriesNotAllowed", t.CategoryIDs(), fl.Categories)
 		return ErrCategoriesNotAllowed
 	}
 
-	if !fl.checkUintArr(uint64(t.GeoInfo().ID), FieldCountries, fl.Countries) {
+	if !fl.checkUintArr(t.GeoInfo().CountryID(), FieldCountries, fl.Countries) {
 		return ErrCountryIDNotAllowed
 	}
 

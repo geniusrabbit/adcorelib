@@ -21,7 +21,6 @@ func applyCloudflareGeo(geo *udetect.Geo, h *fasthttp.RequestHeader) {
 
 	if geo.Country.ISO2() == adgeo.UndefinedCountryCodeISO2 {
 		if country, ok := cloudflareCountry(peekHeader(h, "CF-IPCountry")); ok {
-			geo.ID = uint(country.ID)
 			geo.Country = country.Code2
 		}
 	}

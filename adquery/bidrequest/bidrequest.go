@@ -530,7 +530,7 @@ func (r *BidRequest) GeoID() uint64 {
 	if r == nil || r.User == nil || r.User.Geo == nil {
 		return 0
 	}
-	return uint64(r.User.Geo.ID)
+	return r.User.Geo.CountryID()
 }
 
 // GeoInfo returns the geographical information associated with the BidRequest.

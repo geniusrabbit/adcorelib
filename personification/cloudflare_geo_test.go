@@ -29,7 +29,7 @@ func TestApplyCloudflareGeoFillMissing(t *testing.T) {
 	if geo.Country.ISO2() != "SK" {
 		t.Fatalf("Country = %q, want SK", geo.Country.ISO2())
 	}
-	if geo.ID == 0 {
+	if geo.CountryID() == 0 {
 		t.Fatal("Country ID was not filled")
 	}
 	if geo.Region.ISO3166() != "SK-BL" {
@@ -77,7 +77,6 @@ func TestApplyCloudflareGeoRegionSuffix(t *testing.T) {
 func TestApplyCloudflareGeoKeepDetectorCountry(t *testing.T) {
 	sk := adgeo.CountryByCode2("SK")
 	geo := &udetect.Geo{
-		ID:        uint(sk.ID),
 		Country:   sk.Code2,
 		City:      "Bratislava",
 		ZIP:       "81101",
@@ -136,8 +135,8 @@ func TestApplyCloudflareGeoSkipXX(t *testing.T) {
 	if geo.Country.ISO2() != adgeo.UndefinedCountryCodeISO2 {
 		t.Fatalf("XX must not set Country, got %q", geo.Country.ISO2())
 	}
-	if geo.ID != 0 {
-		t.Fatalf("XX must not set Country ID, got %d", geo.ID)
+	if geo.CountryID() != 0 {
+		t.Fatalf("XX must not set Country ID, got %d", geo.CountryID())
 	}
 	if geo.City != "Unknown" {
 		t.Fatalf("City should still fill when country is skipped, got %q", geo.City)
