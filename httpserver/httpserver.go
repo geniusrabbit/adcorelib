@@ -127,6 +127,7 @@ func (srv *Server) newRouter(ctx context.Context) *router.Router {
 	// Utility part
 	nrt.GET("/healthcheck", srv.healthCheck)
 	nrt.GET("/check", srv.check)
+	nrt.GET("/healthz", func(ctx *fasthttp.RequestCtx) { ctx.SetStatusCode(fasthttp.StatusOK) })
 
 	if srv.customRouter != nil {
 		srv.customRouter(nrt)
