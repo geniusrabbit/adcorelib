@@ -63,8 +63,8 @@ github.com/geniusrabbit/hourstable v1.0.0 h1:EUCWRTUaL5w4UdT5JbWQuAojClxoJ8iWMjo
 github.com/geniusrabbit/hourstable v1.0.0/go.mod h1:+48Ixd29rHlMofwXJzuMgtOUs9QwTOMykFs2fDgujak=
 github.com/geniusrabbit/notificationcenter/v2 v2.5.0 h1:n51meoNN5WW8VnWXF+gdwQxJSiWkKKcnRSrcnuAPgF0=
 github.com/geniusrabbit/notificationcenter/v2 v2.5.0/go.mod h1:hBoJzRKoytMCLX+VnbRXJlkWuNwb4WLRbSc5iUCgDGQ=
-github.com/geniusrabbit/udetect v0.0.0-20261001133339-6e2b6f9bdee1 h1:cWxlBKYYyv+rdEIlc9Pg8oKGcg1D9p1KK9mrv2qQSwQ=
-github.com/geniusrabbit/udetect v0.0.0-20261001133339-6e2b6f9bdee1/go.mod h1:3EJvZVkoP1CnrmWpt+SmTCQf+XhhRaKSYY9Nvc+/7eE=
+github.com/geniusrabbit/udetect v0.0.0-20261003082446-9c8bfb7c4862 h1:z2/rrVtM9lzptopox/oIlXk8HfNUODmODH/y/czcIhM=
+github.com/geniusrabbit/udetect v0.0.0-20261003082446-9c8bfb7c4862/go.mod h1:TIKvkNvw6f/XMUOQqBtcA7H3thh02m+6MELU8+FGr1c=
 github.com/gobwas/httphead v0.1.0/go.mod h1:O/RXo79gxV8G+RqlR/otEwx4Q36zl9rqC5u12GKvMCM=
 github.com/gobwas/pool v0.2.1/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6WezmKEw=
 github.com/gobwas/ws v1.2.1/go.mod h1:hRKAFb8wOxFROYNsT1bqfWnhX+b5MFeJM9r2ZSwg/KY=
