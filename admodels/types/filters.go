@@ -7,10 +7,10 @@ package types
 
 import (
 	"github.com/demdxx/gocast/v2"
+	"github.com/demdxx/langlib"
 	"github.com/geniusrabbit/gosql/v2"
 
 	"github.com/geniusrabbit/adcorelib/geo"
-	"github.com/geniusrabbit/adcorelib/i18n/languages"
 )
 
 // IntArrayToUint64 converts a []int slice to a sorted
@@ -149,7 +149,7 @@ func languageCodesToIDs(arr gosql.NullableStringArray) gosql.NullableOrderedNumb
 	}
 	narr := make(gosql.NullableOrderedNumberArray[uint64], 0, len(arr))
 	for _, lg := range arr {
-		narr = append(narr, uint64(languages.GetLanguageIdByCodeString(lg)))
+		narr = append(narr, uint64(langlib.IDFromString(lg)))
 	}
 	narr.Sort()
 	return narr
@@ -194,7 +194,7 @@ func LanguageFilter(arr gosql.NullableStringArray) (narr gosql.NullableOrderedNu
 		return narr, executed
 	}
 	for _, lg := range sarr {
-		narr = append(narr, uint64(languages.GetLanguageIdByCodeString(lg)))
+		narr = append(narr, uint64(langlib.IDFromString(lg)))
 	}
 	narr.Sort()
 	return narr, executed

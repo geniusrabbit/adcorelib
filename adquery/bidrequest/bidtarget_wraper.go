@@ -35,7 +35,7 @@ func (b *BidTargetWrapper) AuctionType() types.AuctionType {
 // LanguageCode implements [types.TargetPointer].
 func (b *BidTargetWrapper) LanguageCode() string {
 	if langs := b.BidReq.BrowserInfo().Languages; len(langs) > 0 {
-		return langs[0]
+		return langs[0].String()
 	}
 	return ""
 }

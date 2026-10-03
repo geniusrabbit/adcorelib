@@ -149,7 +149,7 @@ func ContentPreparer(response Response, item ResponseItem) *strings.Replacer {
 		// Country, City, Latitude, Longitude, Language
 		Country:   req.GeoInfo().Country.ISO2(),
 		City:      req.GeoInfo().City,
-		Language:  req.BrowserInfo().PrimaryLanguage,
+		Language:  req.BrowserInfo().PrimaryLanguage.String(),
 		Latitude:  gocast.Str(req.GeoInfo().Lat),
 		Longitude: gocast.Str(req.GeoInfo().Lon),
 

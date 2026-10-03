@@ -22,7 +22,6 @@ import (
 	"github.com/geniusrabbit/adcorelib/adtype"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/fasttime"
-	"github.com/geniusrabbit/adcorelib/i18n/languages"
 	"github.com/geniusrabbit/adcorelib/personification"
 )
 
@@ -368,9 +367,7 @@ func (r *BidRequest) AppID() uint64 {
 
 // LanguageID returns the language ID based on the primary language of the browser.
 func (r *BidRequest) LanguageID() uint64 {
-	return uint64(languages.GetLanguageIdByCodeString(
-		r.BrowserInfo().PrimaryLanguage,
-	))
+	return uint64(r.BrowserInfo().PrimaryLanguage.ID())
 }
 
 // Keywords returns a slice of keywords associated with the user.

@@ -35,6 +35,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/demdxx/gocast/v2 v2.12.2 h1:ywMDXvzGviTIUQqVWTjyhTkoChWHwQFOxsuNeCdFM/g=
 github.com/demdxx/gocast/v2 v2.12.2/go.mod h1:OO0W9cCpk5UWll6Ys6bhm53hqzyVljCoAkaGqFM9oDo=
+github.com/demdxx/langlib v0.0.0-20261003075711-e0ae5360cecc h1:o2lhLXrcanX3hyVQEV8fLk9kbgVhPPYJywiugy/cfVI=
+github.com/demdxx/langlib v0.0.0-20261003075711-e0ae5360cecc/go.mod h1:xn2BRR+zpvUNXIJmII0/RaEjlAcf6KN27/0TmiJ5bbA=
 github.com/demdxx/rpool/v2 v2.0.1 h1:ZxgPqK4u5bn4xvr2OcMKMwalUmcKyn3LIacg1FMGvwM=
 github.com/demdxx/rpool/v2 v2.0.1/go.mod h1:iJef6bxMV9GPN8bi+CrmJEYAoUvR6l5qjXfNwQcYf20=
 github.com/demdxx/xtypes v0.3.1 h1:U2wyM928SOgot4mDMsqbmX0+o7P8Rz17jGcX/62ljnM=

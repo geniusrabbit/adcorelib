@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/demdxx/gocast/v2"
+	"github.com/demdxx/langlib"
 	"github.com/geniusrabbit/udetect"
 	"github.com/google/uuid"
 	"github.com/valyala/fasthttp"
@@ -121,17 +122,17 @@ func (sign *Signature) SignCookie(resp Person, req *fasthttp.RequestCtx) {
 	}
 }
 
-func pareseAcceptLanguage(langs string) (primaryLanguage string, langArr []string) {
+func pareseAcceptLanguage(langs string) (primaryLanguage langlib.Code, langArr []langlib.Code) {
 	arr := strings.SplitSeq(langs, ",")
 	for lang := range arr {
-		lang = strings.TrimSpace(lang)
-		if len(lang) < 2 {
+		code := langlib.CodeFromString(strings.TrimSpace(lang))
+		if code.IsUndefined() {
 			continue
 		}
-		if primaryLanguage == "" {
-			primaryLanguage = lang[:2]
+		if primaryLanguage.IsUndefined() {
+			primaryLanguage = code
 		} else {
-			langArr = append(langArr, lang[:2])
+			langArr = append(langArr, code)
 		}
 	}
 	return primaryLanguage, langArr

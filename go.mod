@@ -8,6 +8,7 @@ require (
 	github.com/bsm/openrtb v2.1.2+incompatible
 	github.com/bsm/openrtb/v3 v3.2.1
 	github.com/demdxx/gocast/v2 v2.12.2
+	github.com/demdxx/langlib v0.0.0-20261003075711-e0ae5360cecc
 	github.com/demdxx/rpool/v2 v2.0.1
 	github.com/demdxx/xtypes v0.3.1
 	github.com/fasthttp/router v1.5.4
