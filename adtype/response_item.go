@@ -115,7 +115,7 @@ type ResponseItem interface {
 	ContentFields() map[string]any
 
 	// MainAsset returns the primary asset of the advertisement (e.g., image, video).
-	MainAsset() *admodels.AdFileAsset
+	MainAsset(assetType types.AdFileAssetType) *admodels.AdFileAsset
 
 	// Assets returns a list of all assets associated with the advertisement.
 	Assets() admodels.AdFileAssets

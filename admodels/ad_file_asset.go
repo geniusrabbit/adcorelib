@@ -45,6 +45,7 @@ type AdFileAsset struct {
 	Height      int                   `json:"height,omitempty"`
 	Duration    int                   `json:"duration,omitempty"` // Duration in seconds, for video assets
 	Thumbs      []AdFileAssetThumb    `json:"thumbs,omitempty"`
+	FocalPoint  *types.FocalPoint     `json:"focal_point,omitempty"`
 }
 
 // ThumbBy size borders and specific type
@@ -67,9 +68,20 @@ func (f *AdFileAsset) ThumbBy(w, h, wmin, hmin int) (th *AdFileAssetThumb) {
 
 // ClosestThumbBy returns the thumb nearest to (w, h). Thumbs that fit the
 // size borders (IsSuits) are preferred; if none fit, the closest of all
-// thumbs is returned. w/h <= 0 means that axis is unbounded (same as ThumbBy).
+// thumbs is returned. w or h <= 0 leaves that axis unbounded for the fit
+// check and measures closeness against wmin or hmin. Equal distance keeps
+// the smaller thumb.
 func (f *AdFileAsset) ClosestThumbBy(w, h, wmin, hmin int) *AdFileAssetThumb {
+	if f == nil {
+		return nil
+	}
 	tw, th := w, h
+	if tw <= 0 {
+		tw = wmin
+	}
+	if th <= 0 {
+		th = hmin
+	}
 	if w <= 0 {
 		w = 0x0fffffff
 	}
@@ -84,12 +96,13 @@ func (f *AdFileAsset) ClosestThumbBy(w, h, wmin, hmin int) *AdFileAssetThumb {
 		t := &f.Thumbs[i]
 		suits := t.IsSuits(w, h, wmin, hmin)
 		dist := thumbSizeDist2(t, tw, th)
-		if best == nil ||
-			(suits && !bestSuits) ||
-			(suits == bestSuits && dist < bestDist) {
+		if closerThumb(best, bestSuits, bestDist, t, suits, dist) {
 			best = t
 			bestDist = dist
 			bestSuits = suits
+			if dist == 0 {
+				break
+			}
 		}
 	}
 	if best == nil && f.URL != "" {
@@ -101,6 +114,25 @@ func (f *AdFileAsset) ClosestThumbBy(w, h, wmin, hmin int) *AdFileAssetThumb {
 		}
 	}
 	return best
+}
+
+// closerThumb reports whether candidate should replace best. A fitting thumb
+// beats one that does not. Otherwise the smaller squared distance wins, and
+// an equal distance keeps the smaller width, then the smaller height.
+func closerThumb(best *AdFileAssetThumb, bestSuits bool, bestDist int64, candidate *AdFileAssetThumb, suits bool, dist int64) bool {
+	if best == nil {
+		return true
+	}
+	if suits != bestSuits {
+		return suits
+	}
+	if dist != bestDist {
+		return dist < bestDist
+	}
+	if candidate.Width != best.Width {
+		return candidate.Width < best.Width
+	}
+	return candidate.Height < best.Height
 }
 
 func thumbSizeDist2(t *AdFileAssetThumb, tw, th int) int64 {
@@ -116,20 +148,20 @@ func thumbSizeDist2(t *AdFileAssetThumb, tw, th int) int64 {
 
 // IsImage file type
 func (f *AdFileAsset) IsImage() bool {
-	return f.Type.IsImage()
+	return f != nil && f.Type.IsImage()
 }
 
 // IsVideo file type
 func (f *AdFileAsset) IsVideo() bool {
-	return f.Type.IsVideo()
+	return f != nil && f.Type.IsVideo()
 }
 
 // IsHTML5 file type
 func (f *AdFileAsset) IsHTML5() bool {
-	return f.Type.IsHTML5()
+	return f != nil && f.Type.IsHTML5()
 }
 
 // IsAudio file type
 func (f *AdFileAsset) IsAudio() bool {
-	return f.Type.IsAudio()
+	return f != nil && f.Type.IsAudio()
 }

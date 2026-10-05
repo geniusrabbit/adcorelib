@@ -86,6 +86,8 @@ func (m *MacroMapper) Prepare(extra map[string]string) *strings.Replacer {
 		"{{domain}}", m.Domain,
 		"{{app_id}}", m.AppID,
 		"{{appid}}", m.AppID,
+		"{{app}}", m.AppID,
+		"{{zone}}", m.ZoneCode,
 		"{{zone_id}}", m.ZoneID,
 		"{{zoneid}}", m.ZoneID,
 		"{{zone_code}}", m.ZoneCode,

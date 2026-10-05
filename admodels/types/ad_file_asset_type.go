@@ -17,6 +17,7 @@ type AdFileAssetType uint
 // AdFileAssetType values
 const (
 	AdFileAssetUndefinedType AdFileAssetType = 0
+	AdFileAssetAny                           = AdFileAssetUndefinedType
 	AdFileAssetImageType     AdFileAssetType = 1
 	AdFileAssetVideoType     AdFileAssetType = 2
 	AdFileAssetHTML5Type     AdFileAssetType = 3

@@ -120,7 +120,7 @@ func (*ResponseItemEmpty) ContentItemString(name string) string { return "" }
 func (*ResponseItemEmpty) ContentFields() map[string]any { return nil }
 
 // MainAsset from response
-func (*ResponseItemEmpty) MainAsset() *admodels.AdFileAsset { return nil }
+func (*ResponseItemEmpty) MainAsset(types.AdFileAssetType) *admodels.AdFileAsset { return nil }
 
 // Asset by name
 func (*ResponseItemEmpty) Asset(name string) *admodels.AdFileAsset { return nil }
