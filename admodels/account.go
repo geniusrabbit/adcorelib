@@ -9,6 +9,12 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/billing"
+	"github.com/geniusrabbit/adcorelib/errtype"
+	"github.com/geniusrabbit/gosql/v2"
+)
+
+var (
+	ErrAccessPointNotAllowed = errtype.Error("access point not allowed")
 )
 
 type AccountBalanceState interface {
@@ -22,6 +28,9 @@ type Account struct {
 
 	MaxDaily     billing.Money
 	CurrentState AccountBalanceState
+
+	// AccessPointsAllowed is a list of access points allowed for the account
+	AccessPointsAllowed gosql.OrderedNumberArray[uint64]
 
 	// RevenueShare it's amount of percent of the raw incode which will be shared with the publisher company
 	// For example:
@@ -75,4 +84,12 @@ func (c *Account) CommissionShareFactor() float64 {
 // TestBudgetValue tests if the account has enough balance to spend
 func (c *Account) TestBudgetValue() bool {
 	return c.CurrentState == nil || c.Balance() > 0
+}
+
+// TestRequest tests if the account has access to the access point
+func (c *Account) TestRequest(accessPointID uint64) error {
+	if len(c.AccessPointsAllowed) == 0 || c.AccessPointsAllowed.IndexOf(accessPointID) != -1 {
+		return nil
+	}
+	return ErrAccessPointNotAllowed
 }
