@@ -43,7 +43,7 @@ func (at AuctionType) Name() string {
 	case SecondPriceAuctionType:
 		return `second_price`
 	}
-	return `auto`
+	return `undefined`
 }
 
 // DisplayName of the auction
