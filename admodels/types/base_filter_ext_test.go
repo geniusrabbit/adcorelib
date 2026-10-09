@@ -74,11 +74,56 @@ func TestExtAppsIncludeMatchesAppThenSiteExtID(t *testing.T) {
 	require.ErrorIs(t, err, ErrAppNotAllowed)
 }
 
+func TestOSAndBrowserIncludeMatchesFamilyOrVersion(t *testing.T) {
+	const (
+		parentID     uint64 = 10
+		versionID    uint64 = 100
+		otherVersion uint64 = 101
+		otherParent  uint64 = 11
+	)
+
+	var osVersion BaseFilter
+	osVersion.SetOS([]uint64{versionID}, true)
+	require.NoError(t, osVersion.Test(osTarget(parentID, versionID)))
+	require.ErrorIs(t, osVersion.Test(osTarget(parentID, otherVersion)), ErrOSIDNotAllowed)
+	require.ErrorIs(t, osVersion.Test(osTarget(parentID, 0)), ErrOSIDNotAllowed)
+
+	var osFamily BaseFilter
+	osFamily.SetOS([]uint64{parentID}, true)
+	require.NoError(t, osFamily.Test(osTarget(parentID, versionID)))
+	require.NoError(t, osFamily.Test(osTarget(parentID, otherVersion)))
+	require.NoError(t, osFamily.Test(osTarget(parentID, 0)))
+	require.ErrorIs(t, osFamily.Test(osTarget(otherParent, versionID)), ErrOSIDNotAllowed)
+
+	var browserVersion BaseFilter
+	browserVersion.SetBrowsers([]uint64{versionID}, true)
+	require.NoError(t, browserVersion.Test(browserTarget(parentID, versionID)))
+	require.ErrorIs(t, browserVersion.Test(browserTarget(parentID, otherVersion)), ErrBrowserIDNotAllowed)
+	require.ErrorIs(t, browserVersion.Test(browserTarget(parentID, 0)), ErrBrowserIDNotAllowed)
+
+	var browserFamily BaseFilter
+	browserFamily.SetBrowsers([]uint64{parentID}, true)
+	require.NoError(t, browserFamily.Test(browserTarget(parentID, versionID)))
+	require.NoError(t, browserFamily.Test(browserTarget(parentID, otherVersion)))
+	require.NoError(t, browserFamily.Test(browserTarget(parentID, 0)))
+	require.ErrorIs(t, browserFamily.Test(browserTarget(otherParent, versionID)), ErrBrowserIDNotAllowed)
+}
+
+func osTarget(id, versionID uint64) stubTarget {
+	return stubTarget{os: &OSInfo{ID: uint(id), VersionID: uint(versionID)}}
+}
+
+func browserTarget(id, versionID uint64) stubTarget {
+	return stubTarget{browser: &BrowserInfo{ID: id, VersionID: versionID}}
+}
+
 type stubTarget struct {
 	appExt   string
 	siteExt  string
 	zoneExt  string
 	sourceID uint64
+	os       *OSInfo
+	browser  *BrowserInfo
 }
 
 type emptyFormats struct{}
@@ -87,19 +132,29 @@ func (emptyFormats) List() []*Format                         { return nil }
 func (emptyFormats) Bitset() *searchtypes.NumberBitset[uint] { return nil }
 func (emptyFormats) TypeMask() FormatTypeBitset              { return 0 }
 
-func (s stubTarget) Formats() BidFormater    { return emptyFormats{} }
-func (stubTarget) Size() (int, int)          { return 0, 0 }
-func (stubTarget) IsDebug() bool             { return false }
-func (stubTarget) IsSecure() bool            { return false }
-func (stubTarget) IsAdBlock() bool           { return false }
-func (stubTarget) IsPrivateBrowsing() bool   { return false }
-func (stubTarget) IsRobot() bool             { return false }
-func (stubTarget) IsProxy() bool             { return false }
-func (stubTarget) IsIPv6() bool              { return false }
-func (stubTarget) IsInterstitial() bool      { return false }
-func (stubTarget) DeviceInfo() *DeviceInfo   { return &DeviceInfo{} }
-func (stubTarget) BrowserInfo() *BrowserInfo { return &BrowserInfo{} }
-func (stubTarget) OSInfo() *OSInfo           { return &OSInfo{} }
+func (s stubTarget) Formats() BidFormater  { return emptyFormats{} }
+func (stubTarget) Size() (int, int)        { return 0, 0 }
+func (stubTarget) IsDebug() bool           { return false }
+func (stubTarget) IsSecure() bool          { return false }
+func (stubTarget) IsAdBlock() bool         { return false }
+func (stubTarget) IsPrivateBrowsing() bool { return false }
+func (stubTarget) IsRobot() bool           { return false }
+func (stubTarget) IsProxy() bool           { return false }
+func (stubTarget) IsIPv6() bool            { return false }
+func (stubTarget) IsInterstitial() bool    { return false }
+func (stubTarget) DeviceInfo() *DeviceInfo { return &DeviceInfo{} }
+func (s stubTarget) BrowserInfo() *BrowserInfo {
+	if s.browser == nil {
+		return &BrowserInfo{}
+	}
+	return s.browser
+}
+func (s stubTarget) OSInfo() *OSInfo {
+	if s.os == nil {
+		return &OSInfo{}
+	}
+	return s.os
+}
 func (s stubTarget) TrafficSourceID() uint64 { return s.sourceID }
 func (stubTarget) AppID() uint64             { return 0 }
 func (s stubTarget) AppInfo() *AppInfo {

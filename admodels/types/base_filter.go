@@ -365,12 +365,22 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 		return ErrDeviceIDNotAllowed
 	}
 
-	if !fl.checkUintArr(uint64(t.OSInfo().ID), FieldOS, fl.OS) {
-		return ErrOSIDNotAllowed
+	if fl.OS.Len() > 0 {
+		os := t.OSInfo()
+		if !fl.checkUintArr(uint64(os.ID), FieldOS, fl.OS) {
+			if os.VersionID == 0 || !fl.checkUintArr(uint64(os.VersionID), FieldOS, fl.OS) {
+				return ErrOSIDNotAllowed
+			}
+		}
 	}
 
-	if !fl.checkUintArr(t.BrowserInfo().ID, FieldBrowsers, fl.Browsers) {
-		return ErrBrowserIDNotAllowed
+	if fl.Browsers.Len() > 0 {
+		brw := t.BrowserInfo()
+		if !fl.checkUintArr(brw.ID, FieldBrowsers, fl.Browsers) {
+			if brw.VersionID == 0 || !fl.checkUintArr(brw.VersionID, FieldBrowsers, fl.Browsers) {
+				return ErrBrowserIDNotAllowed
+			}
+		}
 	}
 
 	if !fl.multyCheckUintArr(t.CategoryIDs(), FieldCategories, fl.Categories) {

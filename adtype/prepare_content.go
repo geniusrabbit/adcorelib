@@ -37,13 +37,15 @@ type MacroMapper struct {
 	UserIP    string
 	CarrierID string
 
-	DeviceType  string
-	DeviceID    string
-	DeviceName  string
-	OSID        string
-	OSName      string
-	BrowserID   string
-	BrowserName string
+	DeviceType       string
+	DeviceID         string
+	DeviceName       string
+	OSID             string
+	OSName           string
+	OSVersionID      string
+	BrowserID        string
+	BrowserName      string
+	BrowserVersionID string
 
 	Price float64
 }
@@ -103,12 +105,14 @@ func (m *MacroMapper) Prepare(extra map[string]string) *strings.Replacer {
 		"{{device_type}}", m.DeviceType,
 		"{{device_id}}", m.DeviceID,
 		"{{device_name}}", m.DeviceName,
+		"{{os}}", firstOr(m.OSVersionID, m.OSID),
 		"{{os_id}}", m.OSID,
 		"{{os_name}}", m.OSName,
-		"{{os}}", m.OSName,
+		"{{os_ver_id}}", m.OSVersionID,
+		"{{browser}}", firstOr(m.BrowserVersionID, m.BrowserID),
 		"{{browser_id}}", m.BrowserID,
+		"{{browser_ver_id}}", m.BrowserVersionID,
 		"{{browser_name}}", m.BrowserName,
-		"{{browser}}", m.BrowserName,
 	}
 	for k, v := range extra {
 		args = append(args, "{{"+k+"}}", v)
@@ -167,14 +171,16 @@ func ContentPreparer(response Response, item ResponseItem) *strings.Replacer {
 		UserIP:    req.GeoInfo().IP.String(),
 
 		// Device identifiers
-		CarrierID:   gocast.Str(req.CarrierInfo().ID),
-		DeviceType:  types.PlatformType(req.DeviceInfo().DeviceType).Name(),
-		DeviceID:    gocast.Str(req.DeviceInfo().ID),
-		DeviceName:  "",
-		OSID:        gocast.Str(req.OSInfo().ID),
-		OSName:      req.OSInfo().Name,
-		BrowserID:   gocast.Str(req.BrowserInfo().ID),
-		BrowserName: req.BrowserInfo().Name,
+		CarrierID:        gocast.Str(req.CarrierInfo().ID),
+		DeviceType:       types.PlatformType(req.DeviceInfo().DeviceType).Name(),
+		DeviceID:         gocast.Str(req.DeviceInfo().ID),
+		DeviceName:       "",
+		OSID:             gocast.Str(req.OSInfo().ID),
+		OSName:           req.OSInfo().Name,
+		OSVersionID:      gocast.Str(req.OSInfo().VersionID),
+		BrowserID:        gocast.Str(req.BrowserInfo().ID),
+		BrowserName:      req.BrowserInfo().Name,
+		BrowserVersionID: gocast.Str(req.BrowserInfo().VersionID),
 
 		Price: item.Price(ActionImp).Float64(),
 	}
@@ -192,4 +198,11 @@ func ContentMappingPreparer(response Response, item ResponseItem) *strings.Repla
 		return strings.NewReplacer(args...)
 	}
 	return nil
+}
+
+func firstOr(v1, v2 string) string {
+	if v1 != "" {
+		return v1
+	}
+	return v2
 }
