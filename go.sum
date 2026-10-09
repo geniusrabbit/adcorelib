@@ -171,8 +171,8 @@ github.com/redis/go-redis/v9 v9.22.0/go.mod h1:y2g0Wj8rQvuK0ELM+oxSudcLtC09JScs9
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
 github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0tI/otEQ=
 github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7so1lCWt35ZSgc=
-github.com/rtb-0/rtbdict v0.0.0-20260930080334-2cd28f6a6de9 h1:zc87PyzCHtFtRlY0QHRwBa2W1kkMMVTuqVMAn7Y/fzw=
-github.com/rtb-0/rtbdict v0.0.0-20260930080334-2cd28f6a6de9/go.mod h1:Pd2FirhA5WWR7Vra44o2HBOOjUKZQViAlbj5etixR/Q=
+github.com/rtb-0/rtbdict v0.0.0-20261009120354-f445ddb8c327 h1:nYYZde2qlVQsEgWZMiLOer1Mzf8kvz/m2h7YaB9AbkI=
+github.com/rtb-0/rtbdict v0.0.0-20261009120354-f445ddb8c327/go.mod h1:Pd2FirhA5WWR7Vra44o2HBOOjUKZQViAlbj5etixR/Q=
 github.com/savsgio/gotils v0.0.0-20250924091648-bce9a52d7761 h1:McifyVxygw1d67y6vxUqls2D46J8W9nrki9c8c0eVvE=
 github.com/savsgio/gotils v0.0.0-20250924091648-bce9a52d7761/go.mod h1:Vi9gvHvTw4yCUHIznFl5TPULS7aXwgaTByGeBY75Wko=
 github.com/segmentio/ksuid v1.0.4 h1:sBo2BdShXjmcugAMwjugoGUdUV0pcxY5mW4xKRn3v4c=

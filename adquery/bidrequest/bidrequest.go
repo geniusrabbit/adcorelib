@@ -35,7 +35,7 @@ var defaultUserdata = adtype.User{Geo: &udetect.GeoDefault, AgeStart: 0, AgeEnd:
 
 type CategoryMatcher interface {
 	MatchCategoryID(key string, cattax int) uint64
-	MatchCategoryIDFromKeyword(keyword string) uint64
+	MatchCategoryIDFromKeyword(allowedCats []uint64, keyword string) uint64
 	// CategoryCode returns the r0 code for an r0 id. An unknown id returns "".
 	CategoryCode(id uint64) string
 }
@@ -122,7 +122,7 @@ func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper Cat
 			}
 		}
 		for _, tag := range r.tags {
-			if id := categoryMapper.MatchCategoryIDFromKeyword(tag); id != 0 {
+			if id := categoryMapper.MatchCategoryIDFromKeyword(r.categoryIDs, tag); id != 0 {
 				r.categoryIDs = append(r.categoryIDs, uint64(id))
 			}
 		}

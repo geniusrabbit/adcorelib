@@ -69,7 +69,7 @@ require (
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20250401214520-65e299d6c5c9 // indirect
 	github.com/redis/go-redis/v9 v9.22.0 // indirect
-	github.com/rtb-0/rtbdict v0.0.0-20260930080334-2cd28f6a6de9 // indirect
+	github.com/rtb-0/rtbdict v0.0.0-20261009120354-f445ddb8c327 // indirect
 	github.com/savsgio/gotils v0.0.0-20250924091648-bce9a52d7761 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
