@@ -22,6 +22,7 @@ type MacroMapper struct {
 	PriceModel string
 
 	Country   string
+	Region    string
 	City      string
 	Latitude  string
 	Longitude string
@@ -77,6 +78,8 @@ func (m *MacroMapper) Prepare(extra map[string]string) *strings.Replacer {
 		// Country, City, Latitude, Longitude, Language, Domain
 		"{{cc}}", m.Country,
 		"{{country}}", m.Country,
+		"{{region}}", m.Region,
+		"{{reg}}", m.Region,
 		"{{city}}", m.City,
 		"{{lang}}", m.Language,
 		"{{lat}}", m.Latitude,
@@ -154,6 +157,7 @@ func ContentPreparer(response Response, item ResponseItem) *strings.Replacer {
 
 		// Country, City, Latitude, Longitude, Language
 		Country:   req.GeoInfo().Country.ISO2(),
+		Region:    req.GeoInfo().Region.ISO3166(),
 		City:      req.GeoInfo().City,
 		Language:  req.BrowserInfo().PrimaryLanguage.String(),
 		Latitude:  gocast.Str(req.GeoInfo().Lat),

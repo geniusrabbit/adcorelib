@@ -208,9 +208,19 @@ func (it *ResponseItemEmpty) IsBackup() bool { return false }
 func (*ResponseItemEmpty) ActionURL() string { return "" }
 
 // Width of item
-func (*ResponseItemEmpty) Width() int { return 0 }
+func (it *ResponseItemEmpty) Width() int {
+	if it == nil || it.Imp == nil {
+		return 0
+	}
+	return it.Imp.Width
+}
 
 // Height of item
-func (*ResponseItemEmpty) Height() int { return 0 }
+func (it *ResponseItemEmpty) Height() int {
+	if it == nil || it.Imp == nil {
+		return 0
+	}
+	return it.Imp.Height
+}
 
 var _ ResponseItem = (*ResponseItemEmpty)(nil)

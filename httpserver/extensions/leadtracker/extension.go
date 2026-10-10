@@ -138,11 +138,14 @@ func writeLeadResponse(rctx *fasthttp.RequestCtx, pixelType string) {
 	case "js":
 		rctx.SetContentType("application/javascript")
 		dataCode = []byte(trakingJSCode)
+	case "json":
+		rctx.SetContentType("application/json")
+		dataCode = []byte(`{"status": "success"}`)
 	case "gif":
 		rctx.SetContentType("image/gif")
 		dataCode = []byte(trakingGIFPixel)
 	default:
-		rctx.SetContentType("plain/text")
+		rctx.SetContentType("text/plain")
 	}
 	rctx.SetStatusCode(http.StatusOK)
 	rctx.Response.Header.Set("Last-Modified", time.Now().UTC().Format(http.TimeFormat))

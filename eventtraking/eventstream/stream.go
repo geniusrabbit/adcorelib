@@ -139,12 +139,32 @@ func (s *stream[EventT, UserInfoT]) SendAccessPointBid(response adtype.Response,
 
 // SendAccessPointSkip event for the response
 func (s *stream[EventT, UserInfoT]) SendAccessPointSkip(response adtype.Response) error {
-	return s.Send(events.AccessPointSkip, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
+	return s.sendEmptyImpressions(response, events.AccessPointSkip)
 }
 
 // SendAccessPointNoBid event for the response
 func (s *stream[EventT, UserInfoT]) SendAccessPointNoBid(response adtype.Response) error {
-	return s.Send(events.AccessPointNoBid, events.StatusUndefined, response, (*adtype.ResponseItemEmpty)(nil))
+	return s.sendEmptyImpressions(response, events.AccessPointNoBid)
+}
+
+func (s *stream[EventT, UserInfoT]) sendEmptyImpressions(response adtype.Response, event events.Type) error {
+	req := response.Request()
+	imps := req.Impressions()
+	if len(imps) == 0 {
+		return nil
+	} else if len(imps) == 1 {
+		return s.Send(event, events.StatusUndefined, response, &adtype.ResponseItemEmpty{Req: req, Imp: imps[0]})
+	}
+	sent := map[string]bool{}
+	for _, imp := range imps {
+		if sent[imp.ExternalTargetID] {
+			continue
+		}
+		sent[imp.ExternalTargetID] = true
+		_ = s.Send(event, events.StatusUndefined, response,
+			&adtype.ResponseItemEmpty{Req: req, Imp: imp})
+	}
+	return nil
 }
 
 // SendAccessPointFail event for the response
