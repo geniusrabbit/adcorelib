@@ -77,9 +77,6 @@ func (f *FormatFileRequirement) MinMaxHeight() (mn, mx int) {
 
 // IsRequired asset
 func (f *FormatFileRequirement) IsRequired() bool {
-	if !f.Required {
-		f.Required = f.IsMain()
-	}
 	return f.Required
 }
 

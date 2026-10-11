@@ -73,6 +73,12 @@ func (f *Format) GetConfig() *FormatConfig {
 	return f.Config
 }
 
+// RequiresLink reports whether an AdLink is mandatory for this format.
+// A nil format or config does not require a link (LinkRequired defaults to false).
+func (f *Format) RequiresLink() bool {
+	return f != nil && f.Config != nil && f.Config.LinkRequired
+}
+
 // Compare formats
 func (f Format) Compare(format *Format) (r int) {
 	if f.ID > 0 && f.ID == format.ID {

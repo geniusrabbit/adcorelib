@@ -6,6 +6,9 @@ package types
 
 // FormatConfig description
 type FormatConfig struct {
+	// By default false, if true, then the link from Ad object is required
+	LinkRequired bool `json:"link_required,omitempty"`
+
 	// Assets list of the files and configs
 	Assets []FormatFileRequirement `json:"assets,omitempty"`
 

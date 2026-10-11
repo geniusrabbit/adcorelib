@@ -269,6 +269,17 @@ func (i *Impression) Size() (w, h int) {
 	return i.Width, i.Height
 }
 
+// IsFixedSize returns true if the impression has a fixed size
+func (i *Impression) IsFixedSize() bool {
+	if i == nil {
+		return false
+	}
+	if (i.WidthMax != 0 && i.WidthMax != i.Width) || (i.HeightMax != 0 && i.HeightMax != i.Height) {
+		return false
+	}
+	return i.Width > 0 && i.Height > 0
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// OpenRTB methods
 ///////////////////////////////////////////////////////////////////////////////
