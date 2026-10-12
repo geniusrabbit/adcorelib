@@ -55,7 +55,7 @@ func applyCloudflareGeo(geo *udetect.Geo, h *fasthttp.RequestHeader) {
 	}
 
 	if geo.UTCOffset == 0 {
-		if off, ok := timezoneOffsetHours(peekHeader(h, "CF-Timezone")); ok {
+		if off, ok := timezoneOffsetMinutes(peekHeader(h, "CF-Timezone")); ok {
 			geo.UTCOffset = off
 		}
 	}
@@ -78,7 +78,7 @@ func cloudflareCountry(code string) (*adgeo.Country, bool) {
 	return country, true
 }
 
-func timezoneOffsetHours(name string) (int, bool) {
+func timezoneOffsetMinutes(name string) (int, bool) {
 	if name == "" {
 		return 0, false
 	}
@@ -87,5 +87,5 @@ func timezoneOffsetHours(name string) (int, bool) {
 		return 0, false
 	}
 	_, seconds := time.Now().In(loc).Zone()
-	return seconds / 3600, true
+	return seconds / 60, true
 }

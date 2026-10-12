@@ -47,9 +47,9 @@ func TestApplyCloudflareGeoFillMissing(t *testing.T) {
 	if geo.Lat != 48.1486 || geo.Lon != 17.1077 {
 		t.Fatalf("LatLon = (%v, %v)", geo.Lat, geo.Lon)
 	}
-	wantOff := timezoneOffsetHoursForTest(t, "Europe/Bratislava")
+	wantOff := timezoneOffsetMinutesForTest(t, "Europe/Bratislava")
 	if geo.UTCOffset != wantOff {
-		t.Fatalf("UTCOffset = %d, want %d hours", geo.UTCOffset, wantOff)
+		t.Fatalf("UTCOffset = %d, want %d minutes", geo.UTCOffset, wantOff)
 	}
 }
 
@@ -82,7 +82,7 @@ func TestApplyCloudflareGeoKeepDetectorCountry(t *testing.T) {
 		ZIP:       "81101",
 		Lat:       48.1,
 		Lon:       17.1,
-		UTCOffset: 1,
+		UTCOffset: 60,
 	}
 	h := cfHeaders(map[string]string{
 		"CF-IPCountry":   "US",
@@ -101,7 +101,7 @@ func TestApplyCloudflareGeoKeepDetectorCountry(t *testing.T) {
 	if geo.City != "Bratislava" || geo.ZIP != "81101" {
 		t.Fatalf("City/ZIP overwritten: %q / %q", geo.City, geo.ZIP)
 	}
-	if geo.Lat != 48.1 || geo.Lon != 17.1 || geo.UTCOffset != 1 {
+	if geo.Lat != 48.1 || geo.Lon != 17.1 || geo.UTCOffset != 60 {
 		t.Fatal("Lat/Lon/UTCOffset overwritten")
 	}
 	if geo.Region.ISO3166() != "SK-BL" {
@@ -156,12 +156,12 @@ func cfHeaders(values map[string]string) *fasthttp.RequestHeader {
 	return h
 }
 
-func timezoneOffsetHoursForTest(t *testing.T, name string) int {
+func timezoneOffsetMinutesForTest(t *testing.T, name string) int {
 	t.Helper()
 	loc, err := time.LoadLocation(name)
 	if err != nil {
 		t.Fatal(err)
 	}
 	_, seconds := time.Now().In(loc).Zone()
-	return seconds / 3600
+	return seconds / 60
 }

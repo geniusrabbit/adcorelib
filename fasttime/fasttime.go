@@ -28,13 +28,13 @@ func NowUTC() time.Time {
 	return time.Unix(0, int64(UnixTimestampNano())).UTC()
 }
 
-// NowUTCPlusOffset return  current time object in UTC with offset in hours
-func NowUTCPlusOffset(offset int) time.Time {
+// NowUTCPlusOffset returns the current UTC time shifted by offset minutes.
+func NowUTCPlusOffset(offsetMinutes int) time.Time {
 	tm := NowUTC()
-	if offset == 0 {
+	if offsetMinutes == 0 {
 		return tm
 	}
-	return tm.Add(time.Duration(offset) * time.Hour)
+	return tm.Add(time.Duration(offsetMinutes) * time.Minute)
 }
 
 // UnixTimestampNano returns the current unix timestamp in nanoseconds.

@@ -33,10 +33,11 @@ type TimeRequestPointer interface {
 }
 
 // TimeRequestNow returns the clock used for hours / EVENLY pacing.
-// Fixed UTCOffset in [-12, 14] uses NowUTCPlusOffset; otherwise geo time.
-func TimeRequestNow(UTCOffset int, pointer TimeRequestPointer) time.Time {
-	if UTCOffset >= -12 && UTCOffset <= 14 {
-		return fasttime.NowUTCPlusOffset(UTCOffset)
+// utcOffsetMinutes in [-12h, +14h] is a fixed offset passed to NowUTCPlusOffset.
+// A value outside that range uses the request geo clock.
+func TimeRequestNow(utcOffsetMinutes int, pointer TimeRequestPointer) time.Time {
+	if utcOffsetMinutes >= -12*60 && utcOffsetMinutes <= 14*60 {
+		return fasttime.NowUTCPlusOffset(utcOffsetMinutes)
 	}
 	if pointer != nil {
 		return pointer.CurrentGeoTime()
@@ -65,13 +66,15 @@ func HoursActiveMinutes(h Hours, t time.Time) (total, elapsed int) {
 	return total, elapsed
 }
 
-// TestTimeRequest checks hours for the request pointer
+// TestTimeRequest checks hours for the request pointer.
+// utcOffsetMinutes is the fixed UTC offset in minutes; a value outside
+// [-12h, +14h] uses the request geo clock.
 //
 //go:inline
-func TestTimeRequest(h Hours, UTCOffset int, pointer TimeRequestPointer) bool {
+func TestTimeRequest(h Hours, utcOffsetMinutes int, pointer TimeRequestPointer) bool {
 	// Check current time in ad hours
 	if !h.IsAllActive() {
-		if !h.TestTime(TimeRequestNow(UTCOffset, pointer)) {
+		if !h.TestTime(TimeRequestNow(utcOffsetMinutes, pointer)) {
 			return false
 		}
 	}
