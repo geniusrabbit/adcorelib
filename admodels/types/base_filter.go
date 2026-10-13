@@ -424,7 +424,7 @@ func (fl *BaseFilter) TestInterstitialFormat(f *Format) bool {
 //
 //go:inline
 func (fl *BaseFilter) checkUintArr(v uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
-	return arr.Len() < 1 || (arr.IndexOf(v) >= 0) == !fl.IsExcluded(off)
+	return arr.Len() == 0 || (arr.IndexOf(v) >= 0) == !fl.IsExcluded(off)
 }
 
 // multyCheckUintArr is like checkUintArr but accepts a slice of values and
@@ -432,14 +432,14 @@ func (fl *BaseFilter) checkUintArr(v uint64, off uint64, arr gosql.NullableOrder
 //
 //go:inline
 func (fl *BaseFilter) multyCheckUintArr(v []uint64, off uint64, arr gosql.NullableOrderedNumberArray[uint64]) bool {
-	return arr.Len() < 1 || arr.OneOf(v) == !fl.IsExcluded(off)
+	return arr.Len() == 0 || arr.OneOf(v) == !fl.IsExcluded(off)
 }
 
 // checkStringArr is the string-slice equivalent of multyCheckUintArr.
 //
 //go:inline
 func (fl *BaseFilter) checkStringArr(v []string, off uint64, arr gosql.StringArray) bool {
-	return arr.Len() < 1 || arr.OneOf(v) == !fl.IsExcluded(off)
+	return arr.Len() == 0 || arr.OneOf(v) == !fl.IsExcluded(off)
 }
 
 // Reset clears all filter fields and resets excludeMask and tristate flags to
