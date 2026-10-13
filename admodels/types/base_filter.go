@@ -388,11 +388,11 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 	}
 
 	if !fl.checkUintArr(t.GeoInfo().CountryID(), FieldCountries, fl.Countries) {
-		return ErrCountryIDNotAllowed
+		return ErrCountryIDNotAllowed.WithMessageFmt("Country [%s] ID %d", t.GeoInfo().Country.ISO2(), t.GeoInfo().CountryID())
 	}
 
 	if !fl.checkUintArr(t.LanguageID(), FieldLanguages, fl.Languages) {
-		return ErrLanguageIDNotAllowed
+		return ErrLanguageIDNotAllowed.WithMessageFmt("Lng %d", t.LanguageID())
 	}
 
 	return nil
