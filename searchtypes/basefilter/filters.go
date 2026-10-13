@@ -3,7 +3,7 @@
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2017
 //
 
-package types
+package basefilter
 
 import (
 	"github.com/demdxx/gocast/v2"

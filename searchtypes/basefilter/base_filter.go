@@ -3,9 +3,10 @@
 // @author Dmitry Ponomarev <demdxx@gmail.com> 2017 - 2018, 2022, 2026
 //
 
-package types
+package basefilter
 
 import (
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/errtype"
 	"github.com/geniusrabbit/gosql/v2"
 )
@@ -32,6 +33,16 @@ var (
 	ErrCategoriesNotAllowed          = ErrFilterError.WithMessage("categories not allowed")
 	ErrCountryIDNotAllowed           = ErrFilterError.WithMessage("country ID not allowed")
 	ErrLanguageIDNotAllowed          = ErrFilterError.WithMessage("language ID not allowed")
+
+	// Preallocated schedule reject reasons for hot-path Test methods.
+	ErrHoursNotAllowed         = ErrFilterError.WithMessage("hours not allowed")
+	ErrDateNotStarted          = ErrFilterError.WithMessage("date not started")
+	ErrDateEnded               = ErrFilterError.WithMessage("date ended")
+	ErrBudgetValueNotAllowed   = ErrFilterError.WithMessage("budget value not allowed")
+	ErrPacingNotAllowed        = ErrFilterError.WithMessage("pacing not allowed")
+	ErrAdFormatNotAllowed      = ErrFilterError.WithMessage("ad format not allowed")
+	ErrAdPopoverNotAllowed     = ErrAdFormatNotAllowed.WithMessage("ad popover (interstitial) not allowed")
+	ErrAdOnlyPopoverNotAllowed = ErrAdFormatNotAllowed.WithMessage("ad only popover (interstitial) not allowed")
 )
 
 // FilterField identifies a filter dimension in [BaseFilter].
@@ -271,7 +282,7 @@ func (fl BaseFilter) IsExcluded(field FilterField) bool {
 // private browsing, IP version) → source identifiers (traffic source, zone,
 // app, domain) → device / OS / browser / geo / language.
 // Any single failing check short-circuits and returns a preallocated sentinel error.
-func (fl *BaseFilter) Test(t TargetPointer) error {
+func (fl *BaseFilter) Test(t types.TargetPointer) error {
 	formatList := t.Formats().List()
 	// Select the active format allowlist: InterstitialFormats takes precedence
 	// when the request is interstitial and the list is configured.
@@ -404,7 +415,7 @@ func (fl *BaseFilter) Test(t TargetPointer) error {
 // context-aware format matching that respects [TargetPointer.IsInterstitial].
 //
 //go:inline
-func (fl *BaseFilter) TestFormat(f *Format) bool {
+func (fl *BaseFilter) TestFormat(f *types.Format) bool {
 	return len(fl.Formats) == 0 || fl.Formats.IndexOf(f.Codename) >= 0
 }
 
@@ -414,7 +425,7 @@ func (fl *BaseFilter) TestFormat(f *Format) bool {
 // format matching that respects [TargetPointer.IsInterstitial].
 //
 //go:inline
-func (fl *BaseFilter) TestInterstitialFormat(f *Format) bool {
+func (fl *BaseFilter) TestInterstitialFormat(f *types.Format) bool {
 	return len(fl.InterstitialFormats) == 0 || fl.InterstitialFormats.IndexOf(f.Codename) >= 0
 }
 
@@ -467,7 +478,7 @@ func (fl *BaseFilter) Reset() {
 	fl.IP = IPAny
 }
 
-func extAppIDs(t TargetPointer) []string {
+func extAppIDs(t types.TargetPointer) []string {
 	var ids []string
 	if app := t.AppInfo(); app != nil && app.ExtID != "" {
 		ids = append(ids, app.ExtID)
@@ -478,7 +489,7 @@ func extAppIDs(t TargetPointer) []string {
 	return ids
 }
 
-func extZoneIDs(t TargetPointer) []string {
+func extZoneIDs(t types.TargetPointer) []string {
 	if id := t.ExtarnalTargetID(); id != "" {
 		return []string{id}
 	}

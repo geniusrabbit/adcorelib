@@ -14,6 +14,7 @@ import (
 	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/models"
+	"github.com/geniusrabbit/adcorelib/searchtypes/basefilter"
 )
 
 // Request types
@@ -48,7 +49,7 @@ type RTBSource struct {
 	Headers     gosql.NullableJSON[map[string]string]
 
 	Options RTBSourceFlags
-	Filter  types.BaseFilter
+	Filter  basefilter.BaseFilter
 
 	AuctionType types.AuctionType // default: 0 – first price type, 1 – second price type
 	RPS         int               // 0 – unlimit
@@ -75,7 +76,7 @@ func RTBSourceFromModel(cl *models.RTBSource, acc *Account) (src *RTBSource) {
 		return nil
 	}
 
-	filter := types.BaseFilter{
+	filter := basefilter.BaseFilter{
 		Secure:          int8(cl.Secure),
 		AdBlock:         int8(cl.AdBlock),
 		PrivateBrowsing: int8(cl.PrivateBrowsing),

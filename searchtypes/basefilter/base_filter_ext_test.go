@@ -1,9 +1,10 @@
-package types
+package basefilter
 
 import (
 	"testing"
 	"time"
 
+	"github.com/geniusrabbit/adcorelib/admodels/types"
 	"github.com/geniusrabbit/adcorelib/billing"
 	"github.com/geniusrabbit/adcorelib/searchtypes"
 	"github.com/geniusrabbit/gosql/v2"
@@ -110,11 +111,11 @@ func TestOSAndBrowserIncludeMatchesFamilyOrVersion(t *testing.T) {
 }
 
 func osTarget(id, versionID uint64) stubTarget {
-	return stubTarget{os: &OSInfo{ID: uint(id), VersionID: uint(versionID)}}
+	return stubTarget{os: &types.OSInfo{ID: uint(id), VersionID: uint(versionID)}}
 }
 
 func browserTarget(id, versionID uint64) stubTarget {
-	return stubTarget{browser: &BrowserInfo{ID: id, VersionID: versionID}}
+	return stubTarget{browser: &types.BrowserInfo{ID: id, VersionID: versionID}}
 }
 
 type stubTarget struct {
@@ -122,69 +123,69 @@ type stubTarget struct {
 	siteExt  string
 	zoneExt  string
 	sourceID uint64
-	os       *OSInfo
-	browser  *BrowserInfo
+	os       *types.OSInfo
+	browser  *types.BrowserInfo
 }
 
 type emptyFormats struct{}
 
-func (emptyFormats) List() []*Format                         { return nil }
+func (emptyFormats) List() []*types.Format                   { return nil }
 func (emptyFormats) Bitset() *searchtypes.NumberBitset[uint] { return nil }
-func (emptyFormats) TypeMask() FormatTypeBitset              { return 0 }
+func (emptyFormats) TypeMask() types.FormatTypeBitset        { return 0 }
 
-func (s stubTarget) Formats() BidFormater  { return emptyFormats{} }
-func (stubTarget) Size() (int, int)        { return 0, 0 }
-func (stubTarget) IsDebug() bool           { return false }
-func (stubTarget) IsSecure() bool          { return false }
-func (stubTarget) IsAdBlock() bool         { return false }
-func (stubTarget) IsPrivateBrowsing() bool { return false }
-func (stubTarget) IsRobot() bool           { return false }
-func (stubTarget) IsProxy() bool           { return false }
-func (stubTarget) IsIPv6() bool            { return false }
-func (stubTarget) IsInterstitial() bool    { return false }
-func (stubTarget) DeviceInfo() *DeviceInfo { return &DeviceInfo{} }
-func (s stubTarget) BrowserInfo() *BrowserInfo {
+func (s stubTarget) Formats() types.BidFormater  { return emptyFormats{} }
+func (stubTarget) Size() (int, int)              { return 0, 0 }
+func (stubTarget) IsDebug() bool                 { return false }
+func (stubTarget) IsSecure() bool                { return false }
+func (stubTarget) IsAdBlock() bool               { return false }
+func (stubTarget) IsPrivateBrowsing() bool       { return false }
+func (stubTarget) IsRobot() bool                 { return false }
+func (stubTarget) IsProxy() bool                 { return false }
+func (stubTarget) IsIPv6() bool                  { return false }
+func (stubTarget) IsInterstitial() bool          { return false }
+func (stubTarget) DeviceInfo() *types.DeviceInfo { return &types.DeviceInfo{} }
+func (s stubTarget) BrowserInfo() *types.BrowserInfo {
 	if s.browser == nil {
-		return &BrowserInfo{}
+		return &types.BrowserInfo{}
 	}
 	return s.browser
 }
-func (s stubTarget) OSInfo() *OSInfo {
+func (s stubTarget) OSInfo() *types.OSInfo {
 	if s.os == nil {
-		return &OSInfo{}
+		return &types.OSInfo{}
 	}
 	return s.os
 }
 func (s stubTarget) TrafficSourceID() uint64 { return s.sourceID }
 func (stubTarget) AppID() uint64             { return 0 }
-func (s stubTarget) AppInfo() *AppInfo {
+func (s stubTarget) AppInfo() *types.AppInfo {
 	if s.appExt == "" {
 		return nil
 	}
-	return &AppInfo{ExtID: s.appExt}
+	return &types.AppInfo{ExtID: s.appExt}
 }
-func (s stubTarget) SiteInfo() *SiteInfo {
+func (s stubTarget) SiteInfo() *types.SiteInfo {
 	if s.siteExt == "" {
 		return nil
 	}
-	return &SiteInfo{ExtID: s.siteExt}
+	return &types.SiteInfo{ExtID: s.siteExt}
 }
-func (stubTarget) Domain() []string           { return nil }
-func (stubTarget) DomainName() string         { return "" }
-func (stubTarget) GeoID() uint64              { return 0 }
-func (stubTarget) GeoInfo() *GeoInfo          { return &GeoInfo{} }
-func (stubTarget) CountryCode() string        { return "" }
-func (stubTarget) CarrierInfo() *CarrierInfo  { return nil }
-func (stubTarget) LanguageID() uint64         { return 0 }
-func (stubTarget) LanguageCode() string       { return "" }
-func (stubTarget) TargetID() uint64           { return 0 }
-func (s stubTarget) ExtarnalTargetID() string { return s.zoneExt }
-func (stubTarget) AuctionType() AuctionType   { return 0 }
-func (stubTarget) Sex() uint                  { return 0 }
-func (stubTarget) Age() uint                  { return 0 }
-func (stubTarget) Tags() []string             { return nil }
-func (stubTarget) CategoryIDs() []uint64      { return nil }
-func (stubTarget) CategoryCodes() []string    { return nil }
-func (stubTarget) MinECPM() billing.Money     { return 0 }
-func (stubTarget) Time() time.Time            { return time.Time{} }
-func (stubTarget) CurrentGeoTime() time.Time  { return time.Time{} }
+func (stubTarget) Domain() []string                { return nil }
+func (stubTarget) DomainName() string              { return "" }
+func (stubTarget) GeoID() uint64                   { return 0 }
+func (stubTarget) GeoInfo() *types.GeoInfo         { return &types.GeoInfo{} }
+func (stubTarget) CountryCode() string             { return "" }
+func (stubTarget) CarrierInfo() *types.CarrierInfo { return nil }
+func (stubTarget) LanguageID() uint64              { return 0 }
+func (stubTarget) LanguageCode() string            { return "" }
+func (stubTarget) TargetID() uint64                { return 0 }
+func (s stubTarget) ExtarnalTargetID() string      { return s.zoneExt }
+func (stubTarget) AuctionType() types.AuctionType  { return 0 }
+func (stubTarget) Sex() uint                       { return 0 }
+func (stubTarget) Age() uint                       { return 0 }
+func (stubTarget) Tags() []string                  { return nil }
+func (stubTarget) CategoryIDs() []uint64           { return nil }
+func (stubTarget) CategoryCodes() []string         { return nil }
+func (stubTarget) MinECPM() billing.Money          { return 0 }
+func (stubTarget) Time() time.Time                 { return time.Time{} }
+func (stubTarget) CurrentGeoTime() time.Time       { return time.Time{} }

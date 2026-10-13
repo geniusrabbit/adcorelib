@@ -1,6 +1,9 @@
 package admodels
 
-import "github.com/geniusrabbit/adcorelib/admodels/types"
+import (
+	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/searchtypes/basefilter"
+)
 
 // TrafficRouter represents a traffic router in the system.
 type TrafficRouter struct {
@@ -13,7 +16,7 @@ type TrafficRouter struct {
 	Percent float32
 
 	// Filter criteria for routing traffic
-	Filter types.BaseFilter
+	Filter basefilter.BaseFilter
 }
 
 // Test checks if the target matches the filter criteria.

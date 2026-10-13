@@ -34,6 +34,24 @@ func (e Error) WithMessageFmt(format string, args ...any) WithMessageError {
 	return e.WithMessage(fmt.Sprintf(format, args...))
 }
 
+// Wrap attaches err as a cause. errors.Is matches the sentinel and err.
+// A nil err returns the sentinel itself.
+func (e Error) Wrap(err error) error {
+	if err == nil {
+		return e
+	}
+	return &wrapError{base: e, err: err}
+}
+
+type wrapError struct {
+	base Error
+	err  error
+}
+
+func (e *wrapError) Error() string { return e.base.Error() + ": " + e.err.Error() }
+
+func (e *wrapError) Unwrap() []error { return []error{e.base, e.err} }
+
 type withMessage struct {
 	base error
 	msg  string

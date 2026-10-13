@@ -10,18 +10,6 @@ import (
 // Hours SQL type declaration
 type Hours = hourstable.Hours
 
-// Preallocated schedule reject reasons for hot-path Test methods.
-var (
-	ErrHoursNotAllowed         = ErrFilterError.WithMessage("hours not allowed")
-	ErrDateNotStarted          = ErrFilterError.WithMessage("date not started")
-	ErrDateEnded               = ErrFilterError.WithMessage("date ended")
-	ErrBudgetValueNotAllowed   = ErrFilterError.WithMessage("budget value not allowed")
-	ErrPacingNotAllowed        = ErrFilterError.WithMessage("pacing not allowed")
-	ErrAdFormatNotAllowed      = ErrFilterError.WithMessage("ad format not allowed")
-	ErrAdPopoverNotAllowed     = ErrAdFormatNotAllowed.WithMessage("ad popover (interstitial) not allowed")
-	ErrAdOnlyPopoverNotAllowed = ErrAdFormatNotAllowed.WithMessage("ad only popover (interstitial) not allowed")
-)
-
 // HoursByString returns hours object by string pattern
 func HoursByString(s string) (Hours, error) {
 	return hourstable.HoursByString(s)
