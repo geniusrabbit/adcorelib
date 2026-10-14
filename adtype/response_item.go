@@ -80,9 +80,6 @@ type ResponseItemCommon interface {
 type ResponseItem interface {
 	ResponseItemCommon
 
-	// NetworkName returns the name of the ad network that provided the response.
-	NetworkName() string
-
 	// AccountID returns the unique identifier of the advertiser's account.
 	AccountID() uint64
 

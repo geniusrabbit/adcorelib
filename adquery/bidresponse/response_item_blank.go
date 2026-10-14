@@ -40,9 +40,6 @@ func (it *ResponseItemBlank) ExtTargetID() string { return it.Imp.ExternalTarget
 // TargetCodename of the target placement codename
 func (it *ResponseItemBlank) TargetCodename() string { return it.Imp.TargetCodename() }
 
-// NetworkName by source
-func (*ResponseItemBlank) NetworkName() string { return "" }
-
 // Validate item
 func (*ResponseItemBlank) Validate() error { return nil }
 

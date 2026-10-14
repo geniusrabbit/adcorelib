@@ -38,6 +38,3 @@ func (*SourceEmpty) Test(request BidRequester) error { return ErrSourceEmptyReje
 // Returns percent from 0 to 1 for reducing of the value
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
 func (s *SourceEmpty) PriceCorrectionReduceFactor() float64 { return s.PriceCorrectionReduce }
-
-// RequestStrategy description
-func (*SourceEmpty) RequestStrategy() RequestStrategy { return 0 }

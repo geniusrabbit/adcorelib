@@ -76,11 +76,10 @@ type SourceTimeoutSetter interface {
 // Source of advertisement and where will be selled the traffic
 type Source interface {
 	SourceMinimal
+	SourceTesteChecker
 
 	// AccountID of the source driver
 	AccountID() uint64
-
-	SourceTesteChecker
 
 	// ID of the source driver
 	ID() uint64
@@ -98,9 +97,6 @@ type Source interface {
 	// Returns percent from 0 to 1 for reducing of the value
 	// If there is 10% of price correction, it means that 10% of the final price must be ignored
 	PriceCorrectionReduceFactor() float64
-
-	// RequestStrategy description
-	RequestStrategy() RequestStrategy
 }
 
 // SourceTester interface

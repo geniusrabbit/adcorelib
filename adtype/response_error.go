@@ -27,6 +27,14 @@ func NewErrorResponse(request BidRequester, err error) *ResponseError {
 	return &ResponseError{err: err}
 }
 
+// NewSkippedErrorResponse object
+func NewSkippedErrorResponse(request BidRequester, err error) *ResponseError {
+	if err == nil {
+		return NewErrorResponse(request, ErrResponseSkipped)
+	}
+	return NewErrorResponse(request, ErrResponseSkipped.WithMessage(err.Error()))
+}
+
 // AuctionID response
 func (r *ResponseError) AuctionID() string {
 	if r == nil || r.request == nil {

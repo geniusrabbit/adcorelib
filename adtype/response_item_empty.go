@@ -145,9 +145,6 @@ func (*ResponseItemEmpty) ViewTrackerLinks() []string { return nil }
 // ClickTrackerLinks returns traking links for click action
 func (*ResponseItemEmpty) ClickTrackerLinks() []string { return nil }
 
-// NetworkName by source
-func (*ResponseItemEmpty) NetworkName() string { return "" }
-
 // ECPM item value
 func (*ResponseItemEmpty) ECPM() billing.Money { return 0 }
 

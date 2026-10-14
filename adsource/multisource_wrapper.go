@@ -219,7 +219,7 @@ func (wrp *MultisourceWrapper) Bid(request adtype.BidRequester) (response adtype
 				wrp.metrics.IncrementBidErrorCount(src, request, resp.Error())
 			}
 		})
-		if src.RequestStrategy().IsSingle() || count < 1 {
+		if count < 1 {
 			break
 		}
 	}
@@ -313,11 +313,6 @@ func (wrp *MultisourceWrapper) Sources() adtype.SourceAccessor {
 	return wrp.sources
 }
 
-// RequestStrategy returns the request strategy
-func (wrp *MultisourceWrapper) RequestStrategy() adtype.RequestStrategy {
-	return adtype.AsynchronousRequestStrategy
-}
-
 // RevenueShareReduceFactor returns the revenue share reduce factor
 func (wrp *MultisourceWrapper) RevenueShareReduceFactor() float64 { return 0 }
 
@@ -376,7 +371,7 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 		}
 	} else if (respErr == nil || errors.Is(respErr, adtype.ErrResponseNoBid) || errors.Is(respErr, adtype.ErrResponseEmpty)) && len(response.Ads()) == 0 {
 		_ = eventStream.SendSourceNoBid(response)
-	} else if respErr != nil && (errors.Is(respErr, adtype.ErrResponseSkipped) || strings.Contains(respErr.Error(), "skip")) {
+	} else if respErr != nil && (errors.Is(respErr, adtype.ErrSkipped) || strings.Contains(respErr.Error(), "skip")) {
 		_ = eventStream.SendSourceSkip(response)
 	} else {
 		_ = eventStream.SendSourceFail(response)

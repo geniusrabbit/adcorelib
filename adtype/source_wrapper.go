@@ -37,11 +37,6 @@ func (wp minimalSourceWrapper) ProcessResponseItem(response Response, item Respo
 // If there is 10% of price correction, it means that 10% of the final price must be ignored
 func (wp minimalSourceWrapper) PriceCorrectionReduceFactor() float64 { return 0 }
 
-// RequestStrategy description
-func (wp minimalSourceWrapper) RequestStrategy() RequestStrategy {
-	return AsynchronousRequestStrategy
-}
-
 // ToSource interface from different types of interfaces with the implementation of unsupported methods
 func ToSource(val SourceMinimal) Source {
 	switch v := val.(type) {

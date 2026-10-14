@@ -69,8 +69,3 @@ func (w *sourceTester) Metrics() *openlatency.MetricsInfo {
 func (w *sourceTester) PriceCorrectionReduceFactor() float64 {
 	return w.sourceInfo.PriceCorrectionReduceFactor()
 }
-
-// RequestStrategy description
-func (w *sourceTester) RequestStrategy() adtype.RequestStrategy {
-	return adtype.AsynchronousRequestStrategy
-}
