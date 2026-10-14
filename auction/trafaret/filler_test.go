@@ -1,6 +1,9 @@
 package trafaret
 
 import (
+	"slices"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/geniusrabbit/adcorelib/adquery/bidresponse"
@@ -267,6 +270,81 @@ func TestPackAdObjectsExactFit(t *testing.T) {
 	s2 := blankAd("s2", "imp1", 1)
 	singles := packAdObjects([]adtype.ResponseItemCommon{s1, s2}, 2)
 	assert.ElementsMatch(t, []string{"s1", "s2"}, adIDs(singles))
+}
+
+func TestFillerFillMixedSizeVariesKeepsPriority(t *testing.T) {
+	highSingles := []adtype.ResponseItemCommon{
+		blankAd("h1", "imp1", 1),
+		blankAd("h2", "imp1", 1),
+		blankAd("h3", "imp1", 1),
+		blankAd("h4", "imp1", 1),
+	}
+	block := blockAd(
+		blankAd("hb1", "imp1", 1),
+		blankAd("hb2", "imp1", 1),
+	)
+	lowSingles := []adtype.ResponseItemCommon{
+		blankAd("l1", "imp1", 1),
+		blankAd("l2", "imp1", 1),
+		blankAd("l3", "imp1", 1),
+		blankAd("l4", "imp1", 1),
+	}
+
+	filler := &Filler{}
+	filler.Push(0.75, append([]adtype.ResponseItemCommon{block}, highSingles...)...)
+	filler.Push(0.25, lowSingles...)
+
+	allowed := map[string]bool{
+		"h1": true, "h2": true, "h3": true, "h4": true,
+		"l1": true, "l2": true, "l3": true, "l4": true,
+	}
+	highIDs := map[string]bool{"h1": true, "h2": true, "h3": true, "h4": true}
+
+	for _, size := range []int{2, 3} {
+		t.Run("size "+strconv.Itoa(size), func(t *testing.T) {
+			const runs = 400
+			signatures := map[string]struct{}{}
+			var highSlots, totalSlots int
+			sawLow := false
+
+			for range runs {
+				ls := filler.Copy().Fill("imp1", size)
+				gotSize := adsListRealSize(ls)
+				require.GreaterOrEqual(t, gotSize, 1)
+				require.LessOrEqual(t, gotSize, size)
+
+				sigParts := make([]string, 0, len(ls))
+				sawBlock := false
+				for _, ad := range ls {
+					if multi, ok := ad.(adtype.ResponseMultipleItem); ok {
+						require.False(t, sawBlock, "block must stay one item")
+						sawBlock = true
+						require.Equal(t, 2, multi.Count())
+						require.Equal(t, 2, adSize(ad))
+						sigParts = append(sigParts, "h-block")
+						highSlots += 2
+						totalSlots += 2
+						continue
+					}
+					id := ad.ID()
+					require.Truef(t, allowed[id], "unexpected id %s", id)
+					sigParts = append(sigParts, id)
+					totalSlots++
+					if highIDs[id] {
+						highSlots++
+					} else {
+						sawLow = true
+					}
+				}
+				slices.Sort(sigParts)
+				signatures[strings.Join(sigParts, ",")] = struct{}{}
+			}
+
+			assert.GreaterOrEqual(t, len(signatures), 3, "fills should not collapse to one set")
+			assert.Greater(t, float64(highSlots)/float64(totalSlots), 0.6)
+			assert.True(t, sawLow, "low-priority bucket should still appear")
+		})
+	}
 }
 
 func TestPackAdObjectsEmptyAndZeroSize(t *testing.T) {
