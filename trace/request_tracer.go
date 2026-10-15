@@ -115,3 +115,11 @@ func jsonTraceValue(value any) any {
 	}
 	return value
 }
+
+func JSONString(tracer RequestTracer) string {
+	if tracer == nil || tracer.IsNoopTracer() {
+		return ""
+	}
+	data, _ := json.Marshal(tracer)
+	return string(data)
+}
