@@ -35,7 +35,7 @@ type RequestTracer interface {
 	Trace(msg string, opts ...RequestTracerOpt)
 	StartSubTrace(key string) RequestTracer
 	StartSubTraceFmt(format string, args ...any) RequestTracer
-	_isNoopTracer() bool
+	IsNoopTracer() bool
 }
 
 type RequestTracerEntry struct {
@@ -75,7 +75,7 @@ func (t *RequestTracerEntry) StartSubTraceFmt(format string, args ...any) Reques
 	return t.StartSubTrace(fmt.Sprintf(format, args...))
 }
 
-func (t *RequestTracerEntry) _isNoopTracer() bool {
+func (t *RequestTracerEntry) IsNoopTracer() bool {
 	return false
 }
 

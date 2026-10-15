@@ -7,7 +7,7 @@ var (
 )
 
 func ContextWithRequestTracer(ctx context.Context, tracer RequestTracer) context.Context {
-	if tracer._isNoopTracer() {
+	if tracer.IsNoopTracer() {
 		return ctx
 	}
 	return context.WithValue(ctx, ctxTracerKey, tracer)
@@ -23,7 +23,7 @@ func RequestTracerFromContext(ctx context.Context) RequestTracer {
 
 func RequestTracerBegin(ctx context.Context, key string) (RequestTracer, context.Context) {
 	tracer := RequestTracerFromContext(ctx)
-	if tracer._isNoopTracer() {
+	if tracer.IsNoopTracer() {
 		return tracer, ctx
 	}
 	tracer = tracer.StartSubTrace(key)

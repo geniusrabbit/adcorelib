@@ -21,7 +21,7 @@ func (t *RequestNoopTracer) StartSubTraceFmt(format string, args ...any) Request
 	return t
 }
 
-func (t *RequestNoopTracer) _isNoopTracer() bool {
+func (t *RequestNoopTracer) IsNoopTracer() bool {
 	return true
 }
 
