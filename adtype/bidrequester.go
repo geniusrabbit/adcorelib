@@ -111,4 +111,6 @@ type BidRequester interface {
 	Context() context.Context // Request context
 	SetContext(ctx context.Context)
 	Done() <-chan struct{} // Channel that closes when context is done
+
+	RandomValue() int64
 }

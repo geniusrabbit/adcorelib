@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math/rand/v2"
 	"slices"
 	"strings"
 	"time"
@@ -72,6 +73,8 @@ type BidRequest struct {
 	StateFlags BidRequestFlags       `json:"flags"`                // State flags for the request
 	Ext        map[string]any        `json:"ext,omitempty"`        // Additional extensions
 	Tracer     any                   `json:"-"`                    // Tracing information
+
+	randomValue int64
 
 	// Internal caches for efficient access
 	categoryIDs   []uint64  // Cached r0 category IDs
@@ -181,6 +184,7 @@ func (r *BidRequest) PrepareRequest(defaultCategoryID uint64, categoryMapper Cat
 		}
 		r.targets = targets
 	}
+	r.randomValue = rand.Int64()
 	return nil
 }
 
@@ -645,6 +649,14 @@ func (r *BidRequest) Release() {
 			r.Release()
 		}
 	}
+}
+
+// RandomValue returns a random value between 0 and 1000000
+func (r *BidRequest) RandomValue() int64 {
+	if r == nil {
+		return 0
+	}
+	return r.randomValue
 }
 
 var _ adtype.BidRequester = (*BidRequest)(nil)
