@@ -6,8 +6,6 @@
 package adtype
 
 import (
-	"fmt"
-
 	openrtbnreq "github.com/bsm/openrtb/native/request"
 	openrtbnreq3 "github.com/bsm/openrtb/v3/native/request"
 
@@ -87,10 +85,6 @@ func (i *Impression) InitFormatsBySizeAndTypes(w, h, minw, minh int, formatTypes
 
 	// Extract formats by size
 	i.formats = formats.FormatsBySize(w+10, h+10, minw, minh, formatTypes)
-
-	for _, f := range i.formats {
-		fmt.Println("=== format", f.ID, f.Codename, f.Types, "@", formatTypes.Types())
-	}
 
 	// Update format types
 	i.formatBitset.Reset()
