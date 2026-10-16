@@ -56,7 +56,7 @@ func applyCloudflareGeo(geo *udetect.Geo, h *fasthttp.RequestHeader) {
 
 	if geo.UTCOffset == 0 {
 		if off, ok := timezoneOffsetMinutes(peekHeader(h, "CF-Timezone")); ok {
-			geo.UTCOffset = off
+			geo.SetUTCOffsetWithAutocorrection(off)
 		}
 	}
 }
