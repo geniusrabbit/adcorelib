@@ -369,7 +369,7 @@ func (fl *BaseFilter) Test(t types.TargetPointer) error {
 	// ===========================================================================
 
 	if !fl.checkUintArr(uint64(t.DeviceInfo().DeviceType), FieldDeviceTypes, fl.DeviceTypes) {
-		return ErrDeviceTypeNotAllowed
+		return ErrDeviceTypeNotAllowed.WithMessageFmt("Device type %d not allowed, allowed: %v", t.DeviceInfo().DeviceType, fl.DeviceTypes)
 	}
 
 	if !fl.checkUintArr(uint64(t.DeviceInfo().ID), FieldDevices, fl.Devices) {
