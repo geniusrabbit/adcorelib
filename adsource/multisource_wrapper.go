@@ -38,7 +38,6 @@ package adsource
 import (
 	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"sync/atomic"
@@ -155,7 +154,6 @@ func (wrp *MultisourceWrapper) Test(request adtype.BidRequester) error { return 
 
 // Bid handles a bid request and processes it through the appropriate sources
 func (wrp *MultisourceWrapper) Bid(request adtype.BidRequester) (response adtype.Response) {
-	fmt.Println("===== Bid", wrp, request)
 	if wrp == nil {
 		return bidresponse.NewEmptyResponse(request, nil, errors.New("wrapper is nil"))
 	}
