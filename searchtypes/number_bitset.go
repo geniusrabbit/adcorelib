@@ -6,7 +6,7 @@
 package searchtypes
 
 import (
-	"sort"
+	"slices"
 )
 
 // Integer type constraint for generic NumberBitset
@@ -53,7 +53,7 @@ func (b *NumberBitset[T]) Set(vals ...T) *NumberBitset[T] {
 			b.mask |= 1 << uint64(v%64)
 			b.values = append(b.values, v)
 			// Keep sorted so subsequent Has() in this call sees a valid order.
-			sort.Slice(b.values, func(i, j int) bool { return b.values[i] < b.values[j] })
+			slices.Sort(b.values)
 		}
 	}
 	return b
@@ -64,10 +64,8 @@ func (b *NumberBitset[T]) Unset(vals ...T) *NumberBitset[T] {
 	newVals := b.values
 	changed := false
 	for _, v := range vals {
-		idx := sort.Search(len(newVals), func(i int) bool {
-			return newVals[i] >= v
-		})
-		if idx < len(newVals) && newVals[idx] == v {
+		idx, found := slices.BinarySearch(newVals, v)
+		if found {
 			newVals = append(newVals[:idx:idx], newVals[idx+1:]...)
 			changed = true
 		}
@@ -80,13 +78,41 @@ func (b *NumberBitset[T]) Unset(vals ...T) *NumberBitset[T] {
 
 // Has type in bitset
 func (b *NumberBitset[T]) Has(v T) bool {
-	if b != nil && b.mask&(1<<uint64(v%64)) != 0 {
-		idx := sort.Search(b.Len(), func(i int) bool {
-			return b.values[i] >= v
-		})
-		return idx >= 0 && idx < b.Len() && b.values[idx] == v
+	if b == nil || b.mask&(1<<uint64(v%64)) == 0 {
+		return false
+	}
+	return b.hasSorted(v)
+}
+
+// HasOneOf reports whether the set contains any of vals.
+func (b *NumberBitset[T]) HasOneOf(vals ...T) bool {
+	if b == nil || len(b.values) == 0 || len(vals) == 0 {
+		return false
+	}
+	mask := b.mask
+	for _, v := range vals {
+		if mask&(1<<uint64(v%64)) == 0 {
+			continue
+		}
+		if b.hasSorted(v) {
+			return true
+		}
 	}
 	return false
+}
+
+func (b *NumberBitset[T]) hasSorted(v T) bool {
+	values := b.values
+	lo, hi := 0, len(values)
+	for lo < hi {
+		mid := int(uint(lo+hi) >> 1)
+		if values[mid] < v {
+			lo = mid + 1
+		} else {
+			hi = mid
+		}
+	}
+	return lo < len(values) && values[lo] == v
 }
 
 // Reset bitset value

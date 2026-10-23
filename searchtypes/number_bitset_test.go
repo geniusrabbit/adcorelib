@@ -165,6 +165,46 @@ func TestNumberBitset_ContainsAllFrom(t *testing.T) {
 	}
 }
 
+func TestNumberBitset_HasOneOf(t *testing.T) {
+	var nilBits *NumberBitset[uint]
+	if nilBits.HasOneOf(1) {
+		t.Fatal("nil HasOneOf should be false")
+	}
+
+	empty := NewNumberBitset[uint]()
+	if empty.HasOneOf(1) || empty.HasOneOf() {
+		t.Fatal("empty HasOneOf should be false")
+	}
+
+	bits := NewNumberBitset[uint](1, 3, 5)
+	if bits.HasOneOf() {
+		t.Fatal("no args should be false")
+	}
+	if !bits.HasOneOf(9, 4, 3, 8) {
+		t.Fatal("expected a hit on 3")
+	}
+	if bits.HasOneOf(2, 4, 6) {
+		t.Fatal("all misses should be false")
+	}
+
+	onlyOne := NewNumberBitset[uint](1)
+	if onlyOne.HasOneOf(65) {
+		t.Fatal("65 shares a mask bit with 1 but is not in the set")
+	}
+	with65 := NewNumberBitset[uint](65)
+	if !with65.HasOneOf(1, 65) {
+		t.Fatal("65 should match despite the shared mask bit with 1")
+	}
+
+	// A long query uses the same binary search as a short one.
+	if !bits.HasOneOf(10, 11, 12, 13, 14, 15, 16, 17, 5) {
+		t.Fatal("long query should find 5")
+	}
+	if bits.HasOneOf(10, 11, 12, 13, 14, 15, 16, 17, 65) {
+		t.Fatal("long query must not treat a mask collision as a hit")
+	}
+}
+
 func TestNumberBitset_Int64(t *testing.T) {
 	bits := NewNumberBitset[int64](1, 0, 2)
 	if bits.Len() != 3 {
@@ -202,4 +242,68 @@ func BenchmarkNumberBitset(b *testing.B) {
 			cursor = 0
 		}
 	}
+}
+
+var sink bool
+
+func BenchmarkNumberBitset_Has(b *testing.B) {
+	bits := NewNumberBitset[uint](1, 2, 3)
+	b.Run("Hit", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = bits.Has(2)
+		}
+	})
+	b.Run("MaskMiss", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = bits.Has(64)
+		}
+	})
+}
+
+func BenchmarkNumberBitset_HasOneOf(b *testing.B) {
+	bits := NewNumberBitset[uint](1, 2, 3)
+	shortHit := []uint{8, 9, 10, 3}
+	maskMiss := []uint{64, 128, 192}
+	collisionSet := NewNumberBitset[uint](1)
+	collision := []uint{65}
+
+	longMiss := make([]uint, 128)
+	for i := range longMiss {
+		longMiss[i] = uint(10 + i)
+	}
+	longHit := append([]uint(nil), longMiss...)
+	longHit[len(longHit)-1] = 2
+
+	b.Run("ShortHit", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = bits.HasOneOf(shortHit...)
+		}
+	})
+	b.Run("MaskMiss", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = bits.HasOneOf(maskMiss...)
+		}
+	})
+	b.Run("Collision", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = collisionSet.HasOneOf(collision...)
+		}
+	})
+	b.Run("LongMiss", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = bits.HasOneOf(longMiss...)
+		}
+	})
+	b.Run("LongHit", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			sink = bits.HasOneOf(longHit...)
+		}
+	})
 }
