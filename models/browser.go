@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/gosql/v2"
 )
 
 // Browser model description
@@ -21,10 +22,11 @@ type Browser struct {
 	YearEndSupport int `json:"year_end_support,omitempty"`
 
 	// Match expressions
-	MatchNameExp       string `json:"match_name_exp,omitempty"`
-	MatchUserAgentExp  string `json:"match_ua_exp,omitempty"`
-	MatchVersionMinExp string `json:"match_ver_min_exp,omitempty"`
-	MatchVersionMaxExp string `json:"match_ver_max_exp,omitempty"`
+	MatchNameExp       string                    `json:"match_name_exp,omitempty"`
+	MatchNames         gosql.NullableStringArray `json:"match_names,omitempty" gorm:"column:match_names;type:text[]"`
+	MatchUserAgentExp  string                    `json:"match_ua_exp,omitempty"`
+	MatchVersionMinExp string                    `json:"match_ver_min_exp,omitempty"`
+	MatchVersionMaxExp string                    `json:"match_ver_max_exp,omitempty"`
 
 	Active types.ActiveStatus `gorm:"type:ActiveStatus" json:"active,omitempty"`
 

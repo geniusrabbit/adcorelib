@@ -230,7 +230,6 @@ func (i *Impression) MinimumPrice(action Action) billing.Money {
 		if i.BidFloorCPM > 0 {
 			return i.BidFloorCPM / 1000
 		}
-		return 0
 	}
 	return 0
 }
