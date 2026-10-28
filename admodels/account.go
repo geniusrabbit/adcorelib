@@ -6,6 +6,8 @@
 package admodels
 
 import (
+	"math"
+
 	"go.uber.org/zap"
 
 	"github.com/geniusrabbit/adcorelib/billing"
@@ -83,7 +85,18 @@ func (c *Account) CommissionShareFactor() float64 {
 
 // TestBudgetValue tests if the account has enough balance to spend
 func (c *Account) TestBudgetValue() bool {
-	return c.CurrentState == nil || c.Balance() > 0
+	return c.Balance() > 0 && c.RemainingSpendBalance() > 0
+}
+
+// RemainingSpendBalance returns the remaining spend balance for the account.
+func (c *Account) RemainingSpendBalance() billing.Money {
+	if c.CurrentState == nil {
+		return 0
+	}
+	if c.MaxDaily <= 0 {
+		return billing.Money(math.MaxInt64)
+	}
+	return c.MaxDaily - c.CurrentState.Spend()
 }
 
 // TestRequest tests if the account has access to the access point
