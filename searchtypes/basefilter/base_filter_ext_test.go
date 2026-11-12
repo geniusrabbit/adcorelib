@@ -143,6 +143,7 @@ func (stubTarget) IsRobot() bool                 { return false }
 func (stubTarget) IsProxy() bool                 { return false }
 func (stubTarget) IsIPv6() bool                  { return false }
 func (stubTarget) IsInterstitial() bool          { return false }
+func (stubTarget) IsPush() bool                  { return false }
 func (stubTarget) DeviceInfo() *types.DeviceInfo { return &types.DeviceInfo{} }
 func (s stubTarget) BrowserInfo() *types.BrowserInfo {
 	if s.browser == nil {

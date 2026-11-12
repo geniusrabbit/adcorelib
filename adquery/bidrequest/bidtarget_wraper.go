@@ -131,6 +131,11 @@ func (b *BidTargetWrapper) IsInterstitial() bool {
 	return b.Imp.IsInterstitial()
 }
 
+// IsPush returns true if the impression slot is push notification.
+func (b *BidTargetWrapper) IsPush() bool {
+	return b.Imp.IsPush()
+}
+
 // IsPrivateBrowsing returns true if the request originates from a private / incognito session.
 func (b *BidTargetWrapper) IsPrivateBrowsing() bool {
 	return b.BidReq.IsPrivateBrowsing()

@@ -43,6 +43,8 @@ var (
 	ErrAdFormatNotAllowed      = ErrFilterError.WithMessage("ad format not allowed")
 	ErrAdPopoverNotAllowed     = ErrAdFormatNotAllowed.WithMessage("ad popover (interstitial) not allowed")
 	ErrAdOnlyPopoverNotAllowed = ErrAdFormatNotAllowed.WithMessage("ad only popover (interstitial) not allowed")
+	ErrAdPushNotAllowed        = ErrAdFormatNotAllowed.WithMessage("ad push not allowed")
+	ErrAdOnlyPushNotAllowed    = ErrAdFormatNotAllowed.WithMessage("ad only push not allowed")
 )
 
 // FilterField identifies a filter dimension in [BaseFilter].

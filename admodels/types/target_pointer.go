@@ -52,6 +52,7 @@ type TargetPointer interface {
 	IsProxy() bool           // True if proxy detected
 	IsIPv6() bool            // True if IP is IPv6
 	IsInterstitial() bool    // True if ad slot is interstitial (full-screen takeover)
+	IsPush() bool            // True if ad slot is push notification
 
 	// Device and environment
 	DeviceInfo() *DeviceInfo   // Full device info

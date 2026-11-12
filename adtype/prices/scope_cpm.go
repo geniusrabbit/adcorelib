@@ -1,6 +1,8 @@
 package prices
 
-import "github.com/geniusrabbit/adcorelib/billing"
+import (
+	"github.com/geniusrabbit/adcorelib/billing"
+)
 
 // CPMScope prices the impression action. Both values are stored in CPM units,
 // which is the price of 1000 impressions.
