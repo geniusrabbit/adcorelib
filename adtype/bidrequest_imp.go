@@ -170,10 +170,19 @@ func (i *Impression) TargetCodename() string {
 	return i.Target.Codename()
 }
 
-// AccountID returns the account ID
+// AccountID returns the account ID.
+// A target that stores its own id (zone, smartlink) is used first, so a missing
+// account object still records the publisher id. A nil account interface is skipped.
+// A boxed nil *admodels.Account is safe because Account.ID accepts a nil receiver.
 func (i *Impression) AccountID() uint64 {
-	if i != nil && i.Target != nil {
-		return i.Target.Account().ID()
+	if i == nil || i.Target == nil {
+		return 0
+	}
+	if withID, ok := i.Target.(interface{ AccountID() uint64 }); ok {
+		return withID.AccountID()
+	}
+	if acc := i.Target.Account(); acc != nil {
+		return acc.ID()
 	}
 	return 0
 }

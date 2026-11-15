@@ -14,10 +14,10 @@ require (
 	github.com/fasthttp/router v1.5.4
 	github.com/flf2ko/fasthttp-prometheus v0.1.0
 	github.com/geniusrabbit/gogeo v1.3.0
-	github.com/geniusrabbit/gosql/v2 v2.3.2
+	github.com/geniusrabbit/gosql/v2 v2.3.3
 	github.com/geniusrabbit/hourstable v1.0.0
 	github.com/geniusrabbit/notificationcenter/v2 v2.5.0
-	github.com/geniusrabbit/udetect v0.0.0-20261016135747-8acb1a69742d
+	github.com/geniusrabbit/udetect v0.1.0
 	github.com/google/uuid v1.6.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/mileusna/useragent v1.3.5
@@ -63,10 +63,10 @@ require (
 	github.com/nats-io/nkeys v0.4.17 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
-	github.com/pandatix/go-abnf v0.5.3 // indirect
+	github.com/pandatix/go-abnf v0.5.5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.33 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
-	github.com/prometheus/common v0.73.1 // indirect
+	github.com/prometheus/common v0.74.0 // indirect
 	github.com/prometheus/procfs v0.23.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20250401214520-65e299d6c5c9 // indirect
 	github.com/redis/go-redis/v9 v9.23.0 // indirect
@@ -78,7 +78,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/crypto v0.59.0 // indirect
-	golang.org/x/exp v0.0.0-20261109185158-a52e3aef5920 // indirect
+	golang.org/x/exp v0.0.0-20261113113407-e3970619a1a4 // indirect
 	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/text v0.44.0 // indirect

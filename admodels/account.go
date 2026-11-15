@@ -45,22 +45,31 @@ type Account struct {
 
 // ID of object
 func (c *Account) ID() uint64 {
+	if c == nil {
+		return 0
+	}
 	return c.IDval
 }
 
 // ObjectKey of the target
 func (c *Account) ObjectKey() uint64 {
+	if c == nil {
+		return 0
+	}
 	return c.IDval
 }
 
 // DailyBudget of the account
 func (c *Account) DailyBudget() billing.Money {
+	if c == nil {
+		return 0
+	}
 	return c.MaxDaily
 }
 
 // Balance of the account
 func (c *Account) Balance() billing.Money {
-	if c.CurrentState == nil {
+	if c == nil || c.CurrentState == nil {
 		return 0
 	}
 	return c.CurrentState.Balance()
@@ -68,7 +77,7 @@ func (c *Account) Balance() billing.Money {
 
 // Spend of the account
 func (c *Account) Spend() billing.Money {
-	if c.CurrentState == nil {
+	if c == nil || c.CurrentState == nil {
 		return 0
 	}
 	return c.CurrentState.Spend()
@@ -85,12 +94,15 @@ func (c *Account) CommissionShareFactor() float64 {
 
 // TestBudgetValue tests if the account has enough balance to spend
 func (c *Account) TestBudgetValue() bool {
+	if c == nil {
+		return false
+	}
 	return c.Balance() > 0 && c.RemainingSpendBalance() > 0
 }
 
 // RemainingSpendBalance returns the remaining spend balance for the account.
 func (c *Account) RemainingSpendBalance() billing.Money {
-	if c.CurrentState == nil {
+	if c == nil || c.CurrentState == nil {
 		return 0
 	}
 	if c.MaxDaily <= 0 {
@@ -101,6 +113,9 @@ func (c *Account) RemainingSpendBalance() billing.Money {
 
 // TestRequest tests if the account has access to the access point
 func (c *Account) TestRequest(accessPointID uint64) error {
+	if c == nil {
+		return ErrAccessPointNotAllowed
+	}
 	if len(c.AccessPointsAllowed) == 0 || c.AccessPointsAllowed.IndexOf(accessPointID) != -1 {
 		return nil
 	}

@@ -35,7 +35,12 @@ func (l *TargetEmpty) PurchasePrice(action Action) billing.Money { return 0 }
 func (l *TargetEmpty) Account() Account { return l.Acc }
 
 // AccountID of current target
-func (l *TargetEmpty) AccountID() uint64 { return l.Acc.ID() }
+func (l *TargetEmpty) AccountID() uint64 {
+	if l == nil || l.Acc == nil {
+		return 0
+	}
+	return l.Acc.ID()
+}
 
 // SetAccount for target
 func (l *TargetEmpty) SetAccount(acc Account) { l.Acc = acc }
