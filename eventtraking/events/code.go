@@ -10,6 +10,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"net/url"
+	"strings"
 
 	lz4 "github.com/bkaradzic/go-lz4"
 
@@ -93,18 +95,45 @@ func (c Code) ErrorObj() error {
 	return c.err
 }
 
-// URLEncode data for URL using
+// URLEncode data for URL using. RawURLEncoding has no '=' padding, so the
+// token stays inside [A-Za-z0-9-_] and needs no query escaping. A padded
+// token becomes %3D, and an SSP that encodes the nurl again turns that into
+// %253D, which URLEncoding.DecodeString rejects.
 func (c Code) URLEncode() Code {
 	if len(c.data) < 1 {
 		return CodeObj(nil, ErrEmptyData)
 	}
-	return CodeObj([]byte(base64.URLEncoding.EncodeToString(c.data)), nil)
+	return CodeObj([]byte(base64.RawURLEncoding.EncodeToString(c.data)), nil)
 }
 
-// URLDecode value
+// URLDecode value. Accepts the raw token, a legacy padded token, a token
+// whose '=' survived as %3D, and a token with trailing garbage (for example
+// a JSON \u0026 that an SSP glued onto the query value).
 func (c Code) URLDecode() Code {
-	data, err := base64.URLEncoding.DecodeString(string(c.data))
+	s := string(c.data)
+	if strings.Contains(s, "%") {
+		if unescaped, err := url.PathUnescape(s); err == nil {
+			s = unescaped
+		}
+	}
+	end := 0
+	for end < len(s) && isRawURLBase64Byte(s[end]) {
+		end++
+	}
+	s = strings.TrimRight(s[:end], "=")
+	data, err := base64.RawURLEncoding.DecodeString(s)
 	return CodeObj(data, err)
+}
+
+func isRawURLBase64Byte(c byte) bool {
+	switch {
+	case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z', c >= '0' && c <= '9':
+		return true
+	case c == '-', c == '_', c == '=':
+		return true
+	default:
+		return false
+	}
 }
 
 // DecodeObject converts current object data to target
