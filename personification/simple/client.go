@@ -2,12 +2,15 @@ package simple
 
 import (
 	"context"
+	"net/netip"
 	"strings"
 
 	"github.com/google/uuid"
 	useragent "github.com/mileusna/useragent"
 
 	"github.com/geniusrabbit/adcorelib/admodels/types"
+	"github.com/geniusrabbit/adcorelib/personification"
+	"github.com/geniusrabbit/gogeo"
 	"github.com/geniusrabbit/udetect"
 )
 
@@ -31,6 +34,9 @@ type Item struct {
 type SimpleClient struct {
 	BrowserList []*Item
 	OSList      []*Item
+	// CountryByIP is an optional IP to ISO-3166-1 alpha-2 lookup.
+	// Nil leaves Geo unset so the caller can fill it another way.
+	CountryByIP personification.CountryByIP
 }
 
 // New returns a SimpleClient with the given catalog lists.
@@ -51,7 +57,7 @@ func (s *SimpleClient) Detect(ctx context.Context, req *udetect.Request) (*udete
 	ua := useragent.Parse(req.UA)
 	osID, osVerID := s.osGet(ua.OS, ua.OSVersion)
 	brID, brVerID := s.browserGet(ua.Name, ua.Version)
-	return &udetect.Response{
+	resp := &udetect.Response{
 		User: &udetect.User{
 			UUID:      req.UID,
 			SessionID: req.SessID.String(),
@@ -83,7 +89,26 @@ func (s *SimpleClient) Detect(ctx context.Context, req *udetect.Request) (*udete
 				FlashVer:        req.FlashVer,
 			},
 		},
-	}, nil
+	}
+	s.setCountry(resp, req.IP)
+	return resp, nil
+}
+
+func (s *SimpleClient) setCountry(resp *udetect.Response, ip string) {
+	if s == nil || s.CountryByIP == nil || ip == "" {
+		return
+	}
+	addr, err := netip.ParseAddr(ip)
+	if err != nil {
+		return
+	}
+	code, ok := s.CountryByIP.LookupCountry(addr)
+	if !ok {
+		return
+	}
+	geo := udetect.GeoDefault
+	geo.Country = gogeo.CountryCode2{code[0], code[1]}
+	resp.Geo = &geo
 }
 
 func (s *SimpleClient) browserGet(name, version string) (rootID, versionID uint) {

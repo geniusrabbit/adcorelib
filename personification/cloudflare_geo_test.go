@@ -24,7 +24,7 @@ func TestApplyCloudflareGeoFillMissing(t *testing.T) {
 		"CF-Region":      "Bratislava", // name — ignored
 	})
 	geo := &udetect.Geo{}
-	applyCloudflareGeo(geo, h)
+	ApplyCloudflare(geo, h)
 
 	if geo.Country.ISO2() != "SK" {
 		t.Fatalf("Country = %q, want SK", geo.Country.ISO2())
@@ -68,13 +68,13 @@ func TestApplyCloudflareGeoRegionSuffix(t *testing.T) {
 		"CF-Region-Code": "CA",
 	})
 	geo := &udetect.Geo{}
-	applyCloudflareGeo(geo, h)
+	ApplyCloudflare(geo, h)
 	if geo.Country.ISO2() != "US" || geo.Region.ISO3166() != "US-CA" {
 		t.Fatalf("US + CA → country %q region %q, want US / US-CA", geo.Country.ISO2(), geo.Region.ISO3166())
 	}
 }
 
-func TestApplyCloudflareGeoKeepDetectorCountry(t *testing.T) {
+func TestApplyCloudflareGeoOverwritesPresentHeaders(t *testing.T) {
 	sk := adgeo.CountryByCode2("SK")
 	geo := &udetect.Geo{
 		Country:   sk.Code2,
@@ -86,32 +86,73 @@ func TestApplyCloudflareGeoKeepDetectorCountry(t *testing.T) {
 	}
 	h := cfHeaders(map[string]string{
 		"CF-IPCountry":   "US",
-		"CF-Region-Code": "BL",
+		"CF-Region-Code": "CA",
 		"CF-IPCity":      "Los Angeles",
 		"CF-Postal-Code": "90001",
 		"CF-IPLatitude":  "34.05",
 		"CF-IPLongitude": "-118.25",
 		"CF-Timezone":    "America/Los_Angeles",
 	})
-	applyCloudflareGeo(geo, h)
-
-	if geo.Country.ISO2() != "SK" {
-		t.Fatalf("Country overwritten: %q", geo.Country.ISO2())
+	if !ApplyCloudflare(geo, h) {
+		t.Fatal("expected a country from CF-IPCountry")
 	}
-	if geo.City != "Bratislava" || geo.ZIP != "81101" {
-		t.Fatalf("City/ZIP overwritten: %q / %q", geo.City, geo.ZIP)
+	if geo.Country.ISO2() != "US" {
+		t.Fatalf("Country = %q, want US", geo.Country.ISO2())
+	}
+	if geo.City != "Los Angeles" || geo.ZIP != "90001" {
+		t.Fatalf("City/ZIP = %q / %q", geo.City, geo.ZIP)
+	}
+	if geo.Lat != 34.05 || geo.Lon != -118.25 {
+		t.Fatalf("Lat/Lon = (%v, %v)", geo.Lat, geo.Lon)
+	}
+	if geo.Region.ISO3166() != "US-CA" {
+		t.Fatalf("Region = %q, want US-CA", geo.Region.ISO3166())
+	}
+	wantOff := timezoneOffsetMinutesForTest(t, "America/Los_Angeles")
+	if geo.UTCOffset != wantOff {
+		t.Fatalf("UTCOffset = %d, want %d", geo.UTCOffset, wantOff)
+	}
+}
+
+func TestApplyCloudflareGeoKeepsValuesWhenHeaderEmpty(t *testing.T) {
+	sk := adgeo.CountryByCode2("SK")
+	geo := &udetect.Geo{
+		Country:   sk.Code2,
+		City:      "Bratislava",
+		ZIP:       "81101",
+		Lat:       48.1,
+		Lon:       17.1,
+		UTCOffset: 60,
+	}
+	if ApplyCloudflare(geo, cfHeaders(map[string]string{
+		"CF-Region-Code": "BL",
+	})) {
+		t.Fatal("a region header must not count as a country")
+	}
+	if geo.Country.ISO2() != "SK" || geo.City != "Bratislava" || geo.ZIP != "81101" {
+		t.Fatalf("empty headers overwrote country/city/zip: %q / %q / %q", geo.Country.ISO2(), geo.City, geo.ZIP)
 	}
 	if geo.Lat != 48.1 || geo.Lon != 17.1 || geo.UTCOffset != 60 {
-		t.Fatal("Lat/Lon/UTCOffset overwritten")
+		t.Fatal("empty headers overwrote lat/lon/offset")
 	}
 	if geo.Region.ISO3166() != "SK-BL" {
-		t.Fatalf("empty Region should still fill from CF using detector country: got %q", geo.Region.ISO3166())
+		t.Fatalf("Region = %q, want SK-BL", geo.Region.ISO3166())
+	}
+}
+
+func TestApplyCloudflareGeoXXDoesNotClearCountry(t *testing.T) {
+	geo := &udetect.Geo{Country: adgeo.CountryByCode2("SK").Code2}
+	if ApplyCloudflare(geo, cfHeaders(map[string]string{"CF-IPCountry": "XX"})) {
+		t.Fatal("XX is not a country")
+	}
+	if geo.Country.ISO2() != "SK" {
+		t.Fatalf("XX cleared country: %q", geo.Country.ISO2())
 	}
 }
 
 func TestApplyCloudflareGeoHeaderCaseInsensitive(t *testing.T) {
 	geo := &udetect.Geo{}
-	applyCloudflareGeo(geo, cfHeaders(map[string]string{
+	ApplyCloudflare(geo, cfHeaders(map[string]string{
 		"cf-ipcountry":   "SK",
 		"cf-region-code": "BL",
 		"cf-ipcity":      "Bratislava",
@@ -128,7 +169,7 @@ func TestApplyCloudflareGeoHeaderCaseInsensitive(t *testing.T) {
 
 func TestApplyCloudflareGeoSkipXX(t *testing.T) {
 	geo := &udetect.Geo{}
-	applyCloudflareGeo(geo, cfHeaders(map[string]string{
+	ApplyCloudflare(geo, cfHeaders(map[string]string{
 		"CF-IPCountry": "XX",
 		"CF-IPCity":    "Unknown",
 	}))
@@ -142,7 +183,7 @@ func TestApplyCloudflareGeoSkipXX(t *testing.T) {
 		t.Fatalf("City should still fill when country is skipped, got %q", geo.City)
 	}
 
-	applyCloudflareGeo(geo, cfHeaders(map[string]string{"CF-IPCountry": "T1"}))
+	ApplyCloudflare(geo, cfHeaders(map[string]string{"CF-IPCountry": "T1"}))
 	if geo.Country.ISO2() != adgeo.UndefinedCountryCodeISO2 {
 		t.Fatalf("T1 must not set Country, got %q", geo.Country.ISO2())
 	}

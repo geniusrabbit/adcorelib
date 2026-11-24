@@ -71,6 +71,8 @@ github.com/geniusrabbit/udetect v0.0.0-20261016135747-8acb1a69742d h1:L3+9IfPLll
 github.com/geniusrabbit/udetect v0.0.0-20261016135747-8acb1a69742d/go.mod h1:TIKvkNvw6f/XMUOQqBtcA7H3thh02m+6MELU8+FGr1c=
 github.com/geniusrabbit/udetect v0.1.0 h1:t4lScnZY/mYlrQrGZ8/Iu+SSPwMFHJx74nVCWHh51wg=
 github.com/geniusrabbit/udetect v0.1.0/go.mod h1:+eZD90fHdoPpwLzwC5/eb5vVjmRH1ERK86mGiPqwLA4=
+github.com/geniusrabbit/udetect v0.1.1-0.20261124143443-8e9e9c185050 h1:zeLvF5JcuSiDdQ/As0LlkPlfA3jaHleg5+hu4Krg8r0=
+github.com/geniusrabbit/udetect v0.1.1-0.20261124143443-8e9e9c185050/go.mod h1:+eZD90fHdoPpwLzwC5/eb5vVjmRH1ERK86mGiPqwLA4=
 github.com/gobwas/httphead v0.1.0/go.mod h1:O/RXo79gxV8G+RqlR/otEwx4Q36zl9rqC5u12GKvMCM=
 github.com/gobwas/pool v0.2.1/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6WezmKEw=
 github.com/gobwas/ws v1.2.1/go.mod h1:hRKAFb8wOxFROYNsT1bqfWnhX+b5MFeJM9r2ZSwg/KY=

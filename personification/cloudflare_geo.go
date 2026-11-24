@@ -10,55 +10,49 @@ import (
 	adgeo "github.com/geniusrabbit/adcorelib/geo"
 )
 
-// applyCloudflareGeo fills empty/undefined udetect.Geo fields from CloudFlare
-// request headers. Detector values win: each field is written only when it is
-// still empty. There is no outer “country missing” gate — city/region can be
-// filled while country is already set.
-func applyCloudflareGeo(geo *udetect.Geo, h *fasthttp.RequestHeader) {
+// ApplyCloudflare writes CloudFlare geo headers onto geo.
+// A header with usable data replaces the current value. An empty or unusable
+// header leaves the existing value. country is true when CF-IPCountry set the country.
+// There is no outer “country missing” gate: city and region are applied on their own.
+func ApplyCloudflare(geo *udetect.Geo, h *fasthttp.RequestHeader) (country bool) {
 	if geo == nil || h == nil {
-		return
+		return false
 	}
 
-	if geo.Country.ISO2() == adgeo.UndefinedCountryCodeISO2 {
-		if country, ok := cloudflareCountry(peekHeader(h, "CF-IPCountry")); ok {
-			geo.Country = country.Code2
+	if found, ok := cloudflareCountry(peekHeader(h, "CF-IPCountry")); ok {
+		geo.Country = found.Code2
+		country = true
+	}
+
+	if rc := adgeo.RegionCodeByPartial(peekHeader(h, "CF-Region-Code"), geo.Country); rc != adgeo.UndefinedRegionCode {
+		geo.Region = rc
+	}
+
+	if city := peekHeader(h, "CF-IPCity"); city != "" {
+		geo.City = city
+	}
+	if zip := peekHeader(h, "CF-Postal-Code"); zip != "" {
+		geo.ZIP = zip
+	}
+	if metro := peekHeader(h, "CF-Metro-Code"); metro != "" {
+		geo.Metro = metro
+	}
+
+	latS := peekHeader(h, "CF-IPLatitude")
+	lonS := peekHeader(h, "CF-IPLongitude")
+	if latS != "" && lonS != "" {
+		lat, latErr := strconv.ParseFloat(latS, 64)
+		lon, lonErr := strconv.ParseFloat(lonS, 64)
+		if latErr == nil && lonErr == nil {
+			geo.Lat = lat
+			geo.Lon = lon
 		}
 	}
 
-	if geo.Region == adgeo.UndefinedRegionCode {
-		if rc := adgeo.RegionCodeByPartial(peekHeader(h, "CF-Region-Code"), geo.Country); rc != adgeo.UndefinedRegionCode {
-			geo.Region = rc
-		}
+	if off, ok := timezoneOffsetMinutes(peekHeader(h, "CF-Timezone")); ok {
+		geo.SetUTCOffsetWithAutocorrection(off)
 	}
-
-	if geo.City == "" {
-		geo.City = peekHeader(h, "CF-IPCity")
-	}
-	if geo.ZIP == "" {
-		geo.ZIP = peekHeader(h, "CF-Postal-Code")
-	}
-	if geo.Metro == "" {
-		geo.Metro = peekHeader(h, "CF-Metro-Code")
-	}
-
-	if geo.Lat == 0 && geo.Lon == 0 {
-		latS := peekHeader(h, "CF-IPLatitude")
-		lonS := peekHeader(h, "CF-IPLongitude")
-		if latS != "" && lonS != "" {
-			lat, latErr := strconv.ParseFloat(latS, 64)
-			lon, lonErr := strconv.ParseFloat(lonS, 64)
-			if latErr == nil && lonErr == nil {
-				geo.Lat = lat
-				geo.Lon = lon
-			}
-		}
-	}
-
-	if geo.UTCOffset == 0 {
-		if off, ok := timezoneOffsetMinutes(peekHeader(h, "CF-Timezone")); ok {
-			geo.SetUTCOffsetWithAutocorrection(off)
-		}
-	}
+	return country
 }
 
 func peekHeader(h *fasthttp.RequestHeader, key string) string {
