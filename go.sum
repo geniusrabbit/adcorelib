@@ -57,6 +57,8 @@ github.com/fsnotify/fsnotify v1.10.1 h1:b0/UzAf9yR5rhf3RPm9gf3ehBPpf0oZKIjtpKrx5
 github.com/fsnotify/fsnotify v1.10.1/go.mod h1:TLheqan6HD6GBK6PrDWyDPBaEV8LspOxvPSjC+bVfgo=
 github.com/geniusrabbit/gogeo v1.3.0 h1:wbivZKnIfNkrsQooXr9smx4Ww6UBCOyIqC+0ks9Z5Dw=
 github.com/geniusrabbit/gogeo v1.3.0/go.mod h1:SO7efiKnlpC/PxX5OfxM5PFTCbypoA0UhFBPbjR8dc4=
+github.com/geniusrabbit/gogeo v1.3.1-0.20261123153416-bf0a57121410 h1:tFmuqh0G7REL75o6wQbAdys1XOzmxrk9bBEgT7mLoCI=
+github.com/geniusrabbit/gogeo v1.3.1-0.20261123153416-bf0a57121410/go.mod h1:SO7efiKnlpC/PxX5OfxM5PFTCbypoA0UhFBPbjR8dc4=
 github.com/geniusrabbit/gosql/v2 v2.3.2 h1:dZTIEZ2JcnYG/uExZwWRMxpahblnN/PpyfPTva9Wz8w=
 github.com/geniusrabbit/gosql/v2 v2.3.2/go.mod h1:0AfJ5CwRl/Nsuc4b/z1IcPxOhaooKvAiWFFxyvz6K4g=
 github.com/geniusrabbit/gosql/v2 v2.3.3 h1:NyDz1aeqIFl7dKkzRRfuH+XVRNIAgAizPWqDYSUAxgU=
