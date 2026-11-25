@@ -57,6 +57,9 @@ type Stream interface {
 
 	// SendAccessPointFail event for the response
 	SendAccessPointFail(response adtype.Response) error
+
+	// SendAccessPointFraud event for a blacklisted request, one row per impression
+	SendAccessPointFraud(response adtype.Response) error
 }
 
 type stream[EventT EventType, UserInfoT UserInfoType] struct {
@@ -179,4 +182,10 @@ func (s *stream[EventT, UserInfoT]) sendEmptyImpressions(response adtype.Respons
 // SendAccessPointFail event for the response
 func (s *stream[EventT, UserInfoT]) SendAccessPointFail(response adtype.Response) error {
 	return s.Send(events.AccessPointFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
+}
+
+// SendAccessPointFraud event for a blacklisted request.
+// One event per impression, same dimensions as an access-point skip.
+func (s *stream[EventT, UserInfoT]) SendAccessPointFraud(response adtype.Response) error {
+	return s.sendEmptyImpressions(response, events.AccessPointFraud)
 }

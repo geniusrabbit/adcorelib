@@ -28,6 +28,7 @@ const (
 	AccessPointBillingNotice Type = "ap.bin"
 	AccessPointFail          Type = "ap.fail"
 	AccessPointSkip          Type = "ap.skip"
+	AccessPointFraud         Type = "ap.fraud"
 )
 
 // Event status
