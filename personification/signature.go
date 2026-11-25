@@ -80,7 +80,29 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 		Extensions:      nil,
 	}
 
-	response, err := sign.Detector.Detect(ctx, request)
+	person, err := sign.Identify(ctx, request, "")
+	if geo := personGeo(person); geo != nil {
+		ApplyCloudflare(geo, &req.Request.Header)
+	}
+	return person, err
+}
+
+// Identify detects the visitor described by request.
+// country is an ISO-3166 alpha-2 or alpha-3 code already supplied by the caller.
+// A usable country is kept and the IP database is not consulted. An empty, "XX",
+// "T1", or unknown code falls through to the IP lookup when the detector left
+// the country unset. Identify does not read HTTP headers or set cookies.
+func (sign *Signature) Identify(ctx context.Context, request *udetect.Request, country string) (Person, error) {
+	if sign == nil || request == nil {
+		return nil, nil
+	}
+	var (
+		response *udetect.Response
+		err      error
+	)
+	if sign.Detector != nil {
+		response, err = sign.Detector.Detect(ctx, request)
+	}
 	if response == nil {
 		response = &udetect.Response{}
 	}
@@ -88,7 +110,11 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 	if len(response.Geo.IP) == 0 {
 		response.Geo.IP = net.ParseIP(request.IP)
 	}
-	ApplyCloudflare(response.Geo, &req.Request.Header)
+	if code, ok := usableCountry(country); ok {
+		response.Geo.Country = code
+	} else if response.Geo.Country.ISO2() == adgeo.UndefinedCountryCodeISO2 {
+		sign.ApplyCountry(response.Geo)
+	}
 	return &PersonType{
 		Request: request,
 		UserInfoValue: UserInfo{
@@ -96,6 +122,25 @@ func (sign *Signature) Whois(ctx context.Context, req *fasthttp.RequestCtx) (Per
 			Geo:    response.Geo,
 		},
 	}, err
+}
+
+func personGeo(person Person) *udetect.Geo {
+	if person == nil {
+		return nil
+	}
+	return person.UserInfo().GeoInfo()
+}
+
+func usableCountry(code string) (adgeo.CountryCode2, bool) {
+	switch strings.TrimSpace(code) {
+	case "", "XX", "T1", "XXX":
+		return adgeo.UndefinedCountryCode2, false
+	}
+	country := adgeo.CountryCode2ByString(code)
+	if country.ISO2() == adgeo.UndefinedCountryCodeISO2 {
+		return adgeo.UndefinedCountryCode2, false
+	}
+	return country, true
 }
 
 // SignCookie do sign request by traking response

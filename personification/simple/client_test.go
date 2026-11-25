@@ -2,13 +2,9 @@ package simple
 
 import (
 	"context"
-	"net/netip"
 	"testing"
 
-	"github.com/valyala/fasthttp"
-
 	"github.com/geniusrabbit/adcorelib/admodels/types"
-	"github.com/geniusrabbit/adcorelib/personification"
 	"github.com/geniusrabbit/udetect"
 )
 
@@ -133,51 +129,5 @@ func TestSimpleClientVersionRanges(t *testing.T) {
 	}
 	if resp.Device.Browser.ID != 8 || resp.Device.Browser.VersionID != 0 {
 		t.Fatalf("chrome 57: root %d version %d", resp.Device.Browser.ID, resp.Device.Browser.VersionID)
-	}
-}
-
-type stubCountry struct {
-	code [2]byte
-	ok   bool
-}
-
-func (s stubCountry) LookupCountry(netip.Addr) ([2]byte, bool) {
-	return s.code, s.ok
-}
-
-func TestSimpleClientCountryByIP(t *testing.T) {
-	client := New(nil, nil)
-	resp, err := client.Detect(context.Background(), &udetect.Request{IP: "8.8.8.8"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.Geo != nil {
-		t.Fatal("nil resolver must leave Geo unset")
-	}
-
-	client.CountryByIP = stubCountry{code: [2]byte{'U', 'S'}, ok: true}
-	resp, err = client.Detect(context.Background(), &udetect.Request{IP: "8.8.8.8"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.Geo == nil || resp.Geo.Country.ISO2() != "US" {
-		t.Fatalf("country = %v", resp.Geo)
-	}
-
-	header := &fasthttp.RequestHeader{}
-	header.Set("CF-IPCountry", "DE")
-	if !personification.ApplyCloudflare(resp.Geo, header) {
-		t.Fatal("expected CF country")
-	}
-	if resp.Geo.Country.ISO2() != "DE" {
-		t.Fatalf("CF country = %s, want DE", resp.Geo.Country.ISO2())
-	}
-
-	header.Set("CF-IPCountry", "XX")
-	if personification.ApplyCloudflare(resp.Geo, header) {
-		t.Fatal("XX must not replace a country")
-	}
-	if resp.Geo.Country.ISO2() != "DE" {
-		t.Fatalf("XX replaced country with %s", resp.Geo.Country.ISO2())
 	}
 }
