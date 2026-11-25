@@ -186,6 +186,14 @@ func (s *stream[EventT, UserInfoT]) SendAccessPointFail(response adtype.Response
 
 // SendAccessPointFraud event for a blacklisted request.
 // One event per impression, same dimensions as an access-point skip.
+// A request with no impressions still publishes one event.
 func (s *stream[EventT, UserInfoT]) SendAccessPointFraud(response adtype.Response) error {
+	if response == nil || response.Request() == nil || len(response.Request().Impressions()) == 0 {
+		var req adtype.BidRequester
+		if response != nil {
+			req = response.Request()
+		}
+		return s.Send(events.AccessPointFraud, events.StatusUndefined, response, &adtype.ResponseItemEmpty{Req: req})
+	}
 	return s.sendEmptyImpressions(response, events.AccessPointFraud)
 }
