@@ -20,6 +20,7 @@ const (
 	SourceWin   Type = "src.win"
 	SourceFail  Type = "src.fail"
 	SourceSkip  Type = "src.skip"
+	SourceFraud Type = "src.fraud"
 	// Access Point types
 	AccessPointNoBid         Type = "ap.nobid"
 	AccessPointBid           Type = "ap.bid"

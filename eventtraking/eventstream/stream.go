@@ -43,6 +43,9 @@ type Stream interface {
 	// SendSourceFail event for the response
 	SendSourceFail(response adtype.Response) error
 
+	// SendSourceFraud event for a request rejected before the auction
+	SendSourceFraud(response adtype.Response) error
+
 	// SendAccessPointBid event for the response
 	SendAccessPointBid(response adtype.Response, it ...adtype.ResponseItem) error
 
@@ -124,6 +127,12 @@ func (s *stream[EventT, UserInfoT]) SendSourceNoBid(response adtype.Response) er
 // SendSourceFail event for the response
 func (s *stream[EventT, UserInfoT]) SendSourceFail(response adtype.Response) error {
 	return s.Send(events.SourceFail, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
+}
+
+// SendSourceFraud event for a request rejected before the auction.
+// One event per request, same shape as SendSourceFail.
+func (s *stream[EventT, UserInfoT]) SendSourceFraud(response adtype.Response) error {
+	return s.Send(events.SourceFraud, events.StatusFailed, response, (*adtype.ResponseItemEmpty)(nil))
 }
 
 // SendAccessPointBid event for the response
