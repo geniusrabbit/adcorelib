@@ -36,12 +36,16 @@
 package adsource
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	"github.com/demdxx/rpool/v2"
 	"github.com/geniusrabbit/adcorelib/adquery/bidrequest"
 	"github.com/geniusrabbit/adcorelib/adtype"
+	"github.com/geniusrabbit/adcorelib/errtype"
+	"github.com/geniusrabbit/adcorelib/eventtraking/events"
+	"github.com/geniusrabbit/adcorelib/eventtraking/eventstream"
 )
 
 func TestMultisourceWrapper_sourceResponseLog(t *testing.T) {
@@ -74,5 +78,40 @@ func TestMultisourceWrapper_sourceResponseLog(t *testing.T) {
 			}
 			wrp.sourceResponseLog(tt.args.in0, tt.args.response)
 		})
+	}
+}
+
+type recordingStream struct {
+	fraud int
+	fail  int
+}
+
+func (recordingStream) SendEvent(context.Context, any) error { return nil }
+func (recordingStream) Send(events.Type, uint8, adtype.Response, adtype.ResponseItem) error {
+	return nil
+}
+func (recordingStream) SendLeadEvent(context.Context, any) error { return nil }
+func (recordingStream) SendSourceSkip(adtype.Response) error     { return nil }
+func (recordingStream) SendSourceNoBid(adtype.Response) error    { return nil }
+func (s *recordingStream) SendSourceFail(adtype.Response) error  { s.fail++; return nil }
+func (s *recordingStream) SendSourceFraud(adtype.Response) error { s.fraud++; return nil }
+func (recordingStream) SendAccessPointBid(adtype.Response, ...adtype.ResponseItem) error {
+	return nil
+}
+func (recordingStream) SendAccessPointSkip(adtype.Response) error  { return nil }
+func (recordingStream) SendAccessPointNoBid(adtype.Response) error { return nil }
+func (recordingStream) SendAccessPointFail(adtype.Response) error  { return nil }
+func (recordingStream) SendAccessPointFraud(adtype.Response) error { return nil }
+
+func TestSourceResponseLogFraudIsNotFail(t *testing.T) {
+	stream := &recordingStream{}
+	req := &bidrequest.BidRequest{}
+	req.SetContext(eventstream.WithStream(context.Background(), stream))
+	response := adtype.NewErrorResponse(req, errtype.Error("response fraud").WithMessage("blacklist"))
+
+	(&MultisourceWrapper{}).sourceResponseLog(req, response)
+
+	if stream.fraud != 1 || stream.fail != 0 {
+		t.Fatalf("fraud=%d fail=%d, want fraud event", stream.fraud, stream.fail)
 	}
 }

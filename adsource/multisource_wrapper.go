@@ -369,6 +369,8 @@ func (wrp *MultisourceWrapper) sourceResponseLog( /* bidRequest */ _ adtype.BidR
 					&adtype.ResponseItemEmpty{Req: response.Request(), Imp: imp})
 			}
 		}
+	} else if errors.Is(respErr, adtype.ErrResponseFraud) {
+		_ = eventStream.SendSourceFraud(response)
 	} else if (respErr == nil || errors.Is(respErr, adtype.ErrResponseNoBid) || errors.Is(respErr, adtype.ErrResponseEmpty)) && len(response.Ads()) == 0 {
 		_ = eventStream.SendSourceNoBid(response)
 	} else if respErr != nil && (errors.Is(respErr, adtype.ErrSkipped) || strings.Contains(respErr.Error(), "skip")) {

@@ -99,7 +99,7 @@ func (*ResponseItemEmpty) CreativeID() string { return "" }
 
 // Format object
 func (it *ResponseItemEmpty) Format() *types.Format {
-	if it != nil {
+	if it != nil && it.Imp != nil {
 		if fmtLst := it.Imp.Formats(); len(fmtLst) > 0 {
 			return fmtLst[0]
 		}
